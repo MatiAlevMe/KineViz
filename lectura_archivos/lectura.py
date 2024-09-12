@@ -1,117 +1,129 @@
+import os
 import pandas as pd
 
 def formato_personalizado(valor):
-    """
-    Formatea el valor para que si es 0, se muestre como '0' en lugar de '0.0' u otros ceros innecesarios.
-    """
     if isinstance(valor, float):
         if valor == 0:
             return "0"
         else:
-            return f"{valor:.6f}".rstrip('0').rstrip('.')  # Eliminar ceros y punto final si es necesario
+            return f"{valor:.6f}".rstrip('0').rstrip('.')
     return str(valor)
 
-def leer_archivo_csv_o_txt(ruta_archivo):
-    """
-    Función para leer un archivo CSV o TXT y exportar la primera sección en formato separado por ';'.
-    El archivo puede tener columnas con datos separados por tabulaciones o espacios múltiples.
-    """
+def agregar_columnas(fila, nuevas_columnas, posicion):
+    for nueva_columna in nuevas_columnas:
+        fila.insert(posicion, nueva_columna)
+    return fila
 
+def ajustar_fila(lista):
+    fila_final = []
+    for item in lista:
+        if item.strip():
+            fila_final.append(item)
+        else:
+            fila_final.append('')  
+    return ";".join(fila_final)
+
+def leer_seccion(file, num_frames, ruta_archivo):
+    """
+    Lee una sección del archivo desde los atributos hasta los valores de medición,
+    exportando el resultado a la ruta especificada.
+    """
+    # Leer atributos, columnas, unidades
+    atributos = file.readline().rstrip("\n").split("\t")
+    columnas = file.readline().rstrip("\n").split("\t")
+    unidades = file.readline().rstrip("\n").split("\t")
+
+    # Agregar la columna "Tiempo"
+    nuevas_columnas = ["Tiempo"]
+    atributos = agregar_columnas(atributos, [""] * len(nuevas_columnas), 2)
+    columnas = agregar_columnas(columnas, nuevas_columnas, 2)
+    unidades = agregar_columnas(unidades, [""] * len(nuevas_columnas), 2)
+
+    # Ajustar filas
+    atributos_str = ajustar_fila(atributos)
+    columnas_str = ajustar_fila(columnas)
+    unidades_str = ajustar_fila(unidades)
+
+    # Leer las mediciones
+    mediciones = []
+    tiempo_anterior = 0
+    for i, line in enumerate(file):
+        if line.strip():
+            columnas_medicion = line.strip().replace("\t", ";").split(";")
+            if i == 0:
+                tiempo_actual = 0
+            else:
+                tiempo_actual = tiempo_anterior + (1 / num_frames)
+            columnas_medicion.insert(2, f"{tiempo_actual:.6f}")
+            tiempo_anterior = tiempo_actual
+            mediciones.append([float(val) if j > 1 else val for j, val in enumerate(columnas_medicion)])
+        else:
+            break  # Detener la lectura cuando se encuentra una fila vacía
+
+    # Escribir la sección al archivo
+    with open(ruta_archivo, 'w') as output_file:
+        output_file.write(f"{num_frames}\n{atributos_str}\n{columnas_str}\n{unidades_str}\n")
+        for medicion in mediciones:
+            output_file.write(";".join(formato_personalizado(x) for x in medicion) + "\n")
+    
+    return mediciones, columnas
+
+def calcular_max_min_rango(df, columnas):
+    maximos = [''] * 2 + [df[col].max() for col in columnas[3:]]
+    minimos = [''] * 2 + [df[col].min() for col in columnas[3:]]
+    rangos = [''] * 2 + [(df[col].max() - df[col].min()) for col in columnas[3:]]
+    return maximos, minimos, rangos
+
+def exportar_calculos(output_file, maximos, minimos, rangos):
+    output_file.write(f";;MAXIMO;{';'.join(map(str, maximos[2:]))}\n")
+    output_file.write(f";;MINIMO;{';'.join(map(str, minimos[2:]))}\n")
+    output_file.write(f";;RANGO;{';'.join(map(str, rangos[2:]))}\n")
+
+def leer_archivo_csv_o_txt(ruta_archivo, nombre_estudio):
+    """
+    Lee el archivo completo, detectando todas las secciones y exportando cada una en su
+    carpeta correspondiente según la frecuencia de medición.
+    """
     try:
+        ruta_estudio = os.path.join("estudios", nombre_estudio)
+        os.makedirs(ruta_estudio, exist_ok=True)
+
         with open(ruta_archivo, 'r') as file:
-            # Leer la primera línea (cabecera)
-            primera_fila = file.readline().rstrip()
+            while True:
+                primera_fila = file.readline().rstrip()
+                if not primera_fila:  # EOF
+                    break
 
-            # Leer la segunda línea (número de frames)
-            segunda_fila = file.readline().rstrip()
-            num_frames = int(segunda_fila)
-            print(f"Número de frames: {num_frames}")
+                segunda_fila = file.readline().rstrip()
+                if not segunda_fila.isdigit():
+                    break
+                num_frames = int(segunda_fila)
 
-            # Leer la tercera línea (atributos)
-            atributos = file.readline().rstrip("\n")
-            atributos_separados = atributos.split("\t")  # Mantener las tabulaciones originales
-
-            # Leer la cuarta línea (nombres de columnas)
-            columnas = file.readline().rstrip("\n").split("\t")
-
-            # Leer la quinta línea (unidades de medida)
-            unidades = file.readline().rstrip("\n").split("\t")
-
-            # Definir una lista de nuevas columnas que quieras agregar
-            nuevas_columnas = ["Tiempo"]  # Se puede expandir a más columnas
-    
-            # Función para agregar nuevas columnas en la posición deseada
-            def agregar_columnas(fila, nuevas_columnas, posicion):
-                for nueva_columna in nuevas_columnas:
-                    fila.insert(posicion, nueva_columna)
-                return fila
-
-            # Ajuste general para cualquier fila (atributos, nombres de columnas, unidades, etc.)
-            # Mantener las tabulaciones y espacios en blanco, pero unificar la lógica
-            def ajustar_fila(lista):
-                fila_final = []
-                for item in lista:
-                    if item.strip():  # Si el valor no está vacío
-                        fila_final.append(item)
-                    else:
-                        fila_final.append('')  # Mantener la separación (espacios/tabulaciones en blanco)
-                return ";".join(fila_final)
-            
-            # Agregar las nuevas columnas (vacías o con nombre) en la tercera posición
-            atributos = agregar_columnas(atributos_separados, [""] * len(nuevas_columnas), 2)
-            columnas = agregar_columnas(columnas, nuevas_columnas, 2)
-            unidades = agregar_columnas(unidades, [""] * len(nuevas_columnas), 2)
-
-            # Ajustar y convertir las filas leídas en cadenas separadas por ';'
-            atributos_str = ajustar_fila(atributos_separados)
-            columnas_str = ajustar_fila(columnas)
-            unidades_str = ajustar_fila(unidades)
-
-            # Exportar las primeras 5 filas en formato separado por ";"
-            with open("estudios/test1.txt", 'w') as output_file:
-                output_file.write(f"{primera_fila}\n{segunda_fila}\n{atributos_str}\n{columnas_str}\n{unidades_str}\n")
-    
-            # Leer las filas de mediciones a partir de la fila 6 y agregar la nueva columna "Tiempo"
-            mediciones = []
-            tiempo_anterior = 0  # Inicializar el tiempo
-            for i, line in enumerate(file):
-                if line.strip():  # Si la línea no está vacía
-                    columnas_medicion = line.strip().replace("\t", ";").split(";")
-                    if i == 0:
-                        tiempo_actual = 0  # La primera fila siempre es 0
-                    else:
-                        tiempo_actual = tiempo_anterior + (1 / num_frames)
-
-                    # Insertar la nueva columna "Tiempo" en la tercera posición
-                    columnas_medicion.insert(2, f"{tiempo_actual:.6f}")
-                    tiempo_anterior = tiempo_actual  # Actualizar el tiempo anterior
-
-                    # Volver a juntar las columnas con ";"
-                    mediciones.append([float(val) if i > 1 else val for i, val in enumerate(columnas_medicion)])
+                if 100 <= num_frames <= 200:
+                    tipo_frecuencia = "Cinemática"
+                elif num_frames == 1000:
+                    tipo_frecuencia = "Cinética"
+                elif num_frames == 2000:
+                    tipo_frecuencia = "Electromiográfica"
                 else:
-                    break  # Detener la lectura cuando se encuentra una fila vacía
+                    tipo_frecuencia = "Desconocida"
 
-            # Convertir las mediciones a un DataFrame para calcular max, min y rango
-            df = pd.DataFrame(mediciones, columns=columnas)
+                carpeta_frecuencia = os.path.join(ruta_estudio, tipo_frecuencia)
+                os.makedirs(carpeta_frecuencia, exist_ok=True)
 
-            # Calcular Maximo, Minimo, Rango a partir de las columnas de medición (a partir de Fx en adelante)
-            maximos = [''] * 2 + [df[col].max() for col in df.columns[3:]]
-            minimos = [''] * 2 + [df[col].min() for col in df.columns[3:]]
-            rangos = [''] * 2 + [(df[col].max() - df[col].min()) for col in df.columns[3:]]
+                nombre_archivo = os.path.basename(ruta_archivo).replace(".txt", f"_{tipo_frecuencia}.txt")
+                ruta_archivo_seccion = os.path.join(carpeta_frecuencia, nombre_archivo)
 
-            # Añadir los cálculos de Maximo, Minimo y Rango al archivo exportado
-            with open("estudios/test1.txt", 'a') as output_file:
-                for medicion in mediciones:
-                    # Usar la función personalizada de formato
-                    output_file.write(";".join(formato_personalizado(x) for x in medicion) + "\n")
-                output_file.write(f";;MAXIMO;{';'.join(map(str, maximos[2:]))}\n")
-                output_file.write(f";;MINIMO;{';'.join(map(str, minimos[2:]))}\n")
-                output_file.write(f";;RANGO;{';'.join(map(str, rangos[2:]))}\n")
+                # Leer y exportar la sección
+                mediciones, columnas = leer_seccion(file, num_frames, ruta_archivo_seccion)
 
-            print("Primera sección exportada correctamente en 'estudios/test1.txt'.")
+                # Convertir mediciones a DataFrame para calcular max/min/rango
+                df = pd.DataFrame(mediciones, columns=columnas)
+                maximos, minimos, rangos = calcular_max_min_rango(df, columnas)
 
-            return True
+                # Exportar cálculos de Maximo, Minimo y Rango al archivo
+                with open(ruta_archivo_seccion, 'a') as output_file:
+                    exportar_calculos(output_file, maximos, minimos, rangos)
 
     except Exception as e:
         print(f"Error al leer el archivo: {e}")
-        return None
