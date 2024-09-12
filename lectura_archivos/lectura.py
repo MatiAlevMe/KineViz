@@ -46,6 +46,19 @@ def leer_archivo_csv_o_txt(ruta_archivo):
             with open("estudios/test1.txt", 'w') as output_file:
                 output_file.write(f"{primera_fila}\n{segunda_fila}\n{atributos_str}\n{columnas_str}\n{unidades_str}\n")
 
+            # Leer las filas de mediciones a partir de la fila 6
+            mediciones = []
+            for line in file:
+                if line.strip():  # Si la línea no está vacía
+                    mediciones.append(line.strip().replace("\t", ";"))
+                else:
+                    break  # Detener la lectura cuando se encuentra una fila vacía
+
+            # Escribir las mediciones al archivo
+            with open("estudios/test1.txt", 'a') as output_file:  # Modo 'a' para añadir al archivo existente
+                for medicion in mediciones:
+                    output_file.write(f"{medicion}\n")
+
             print("Primera sección exportada correctamente en 'estudios/test1.txt'.")
 
             return True
