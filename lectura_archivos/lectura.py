@@ -1,5 +1,16 @@
 import pandas as pd
 
+def formato_personalizado(valor):
+    """
+    Formatea el valor para que si es 0, se muestre como '0' en lugar de '0.0' u otros ceros innecesarios.
+    """
+    if isinstance(valor, float):
+        if valor == 0:
+            return "0"
+        else:
+            return f"{valor:.6f}".rstrip('0').rstrip('.')  # Eliminar ceros y punto final si es necesario
+    return str(valor)
+
 def leer_archivo_csv_o_txt(ruta_archivo):
     """
     Función para leer un archivo CSV o TXT y exportar la primera sección en formato separado por ';'.
@@ -59,20 +70,26 @@ def leer_archivo_csv_o_txt(ruta_archivo):
             # Exportar las primeras 5 filas en formato separado por ";"
             with open("estudios/test1.txt", 'w') as output_file:
                 output_file.write(f"{primera_fila}\n{segunda_fila}\n{atributos_str}\n{columnas_str}\n{unidades_str}\n")
-
-          # Leer las mediciones a partir de la fila 6 y calcular la nueva columna "Tiempo"
+    
+            # Leer las filas de mediciones a partir de la fila 6 y agregar la nueva columna "Tiempo"
             mediciones = []
-            tiempo_actual = 0.0
-            delta_tiempo = 1 / num_frames
+            tiempo_anterior = 0  # Inicializar el tiempo
+            for i, line in enumerate(file):
+                if line.strip():  # Si la línea no está vacía
+                    columnas_medicion = line.strip().replace("\t", ";").split(";")
+                    if i == 0:
+                        tiempo_actual = 0  # La primera fila siempre es 0
+                    else:
+                        tiempo_actual = tiempo_anterior + (1 / num_frames)
 
-            for line in file:
-                if line.strip():
-                    columnas_medicion = line.strip().split("\t")
-                    columnas_medicion.insert(2, f"{round(tiempo_actual, 2)}")  # Añadir la columna de tiempo redondeada
+                    # Insertar la nueva columna "Tiempo" en la tercera posición
+                    columnas_medicion.insert(2, f"{tiempo_actual:.6f}")
+                    tiempo_anterior = tiempo_actual  # Actualizar el tiempo anterior
+
+                    # Volver a juntar las columnas con ";"
                     mediciones.append([float(val) if i > 1 else val for i, val in enumerate(columnas_medicion)])
-                    tiempo_actual += delta_tiempo
                 else:
-                    break  # Detener la lectura al encontrar una fila vacía
+                    break  # Detener la lectura cuando se encuentra una fila vacía
 
             # Convertir las mediciones a un DataFrame para calcular max, min y rango
             df = pd.DataFrame(mediciones, columns=columnas)
@@ -85,7 +102,8 @@ def leer_archivo_csv_o_txt(ruta_archivo):
             # Añadir los cálculos de Maximo, Minimo y Rango al archivo exportado
             with open("estudios/test1.txt", 'a') as output_file:
                 for medicion in mediciones:
-                    output_file.write(";".join(map(str, medicion)) + "\n")
+                    # Usar la función personalizada de formato
+                    output_file.write(";".join(formato_personalizado(x) for x in medicion) + "\n")
                 output_file.write(f";;MAXIMO;{';'.join(map(str, maximos[2:]))}\n")
                 output_file.write(f";;MINIMO;{';'.join(map(str, minimos[2:]))}\n")
                 output_file.write(f";;RANGO;{';'.join(map(str, rangos[2:]))}\n")
