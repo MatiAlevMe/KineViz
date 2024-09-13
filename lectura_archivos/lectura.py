@@ -85,6 +85,7 @@ def leer_seccion(file, num_frames, ruta_archivo):
 def calcular_max_min_rango(df, columnas):
     # No es necesario rellenar NaN, Pandas maneja NaN en cálculos
     # Calcular máximos, mínimos y rangos, ignorando los NaN
+    #print(df.head()) 
     maximos = [''] * 2 + [df[col].max(skipna=True) for col in columnas[3:]]
     minimos = [''] * 2 + [df[col].min(skipna=True) for col in columnas[3:]]
     rangos = [''] * 2 + [(df[col].max(skipna=True) - df[col].min(skipna=True)) for col in columnas[3:]]
@@ -135,6 +136,8 @@ def leer_archivo_csv_o_txt(ruta_archivo, nombre_estudio):
 
                 # Convertir mediciones a DataFrame para calcular max/min/rango
                 df = pd.DataFrame(mediciones, columns=columnas)
+                df.columns = [f'{col}_{i}' if df.columns.duplicated()[i] else col for i, col in enumerate(df.columns)]
+                print(df.columns)
 
                 maximos, minimos, rangos = calcular_max_min_rango(df, columnas)
 
