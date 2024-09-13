@@ -47,18 +47,30 @@ def leer_seccion(file, num_frames, ruta_archivo):
     # Leer las mediciones
     mediciones = []
     tiempo_anterior = 0
+    #num_columnas = len(columnas) 
+
     for i, line in enumerate(file):
-        if line.strip():
-            columnas_medicion = line.strip().replace("\t", ";").split(";")
+        if line.rstrip("\n"):  # Conserva las tabulaciones pero elimina el salto de línea
+            columnas_medicion = line.rstrip("\n").split("\t")  # Dividir correctamente por tabulaciones
+            
+            #print("columnas",columnas_medicion)
+            
+            # Añadir la columna de tiempo en el lugar correcto
             if i == 0:
                 tiempo_actual = 0
             else:
                 tiempo_actual = tiempo_anterior + (1 / num_frames)
             columnas_medicion.insert(2, f"{tiempo_actual:.6f}")
             tiempo_anterior = tiempo_actual
-            mediciones.append([float(val) if j > 1 else val for j, val in enumerate(columnas_medicion)])
+
+            # Convertir los valores en flotantes si no están vacíos
+            mediciones.append([float(val) if val.strip() != '' else 0 for val in columnas_medicion])
         else:
-            break  # Detener la lectura cuando se encuentra una fila vacía
+            break  # Si hay una línea vacía, salir del bucle
+
+    # Verificar la longitud de las columnas y mediciones
+    #print(f"Longitud de columnas: {num_columnas}")
+    #print(f"Longitud de mediciones (primera fila): {len(mediciones[0]) if mediciones else 'Sin mediciones'}")
 
     # Escribir la sección al archivo
     with open(ruta_archivo, 'w') as output_file:
@@ -119,6 +131,7 @@ def leer_archivo_csv_o_txt(ruta_archivo, nombre_estudio):
 
                 # Convertir mediciones a DataFrame para calcular max/min/rango
                 df = pd.DataFrame(mediciones, columns=columnas)
+
                 maximos, minimos, rangos = calcular_max_min_rango(df, columnas)
 
                 # Exportar cálculos de Maximo, Minimo y Rango al archivo
