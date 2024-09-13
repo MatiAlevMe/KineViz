@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import numpy as np
 
 def formato_personalizado(valor):
     if isinstance(valor, float):
@@ -63,8 +64,9 @@ def leer_seccion(file, num_frames, ruta_archivo):
             columnas_medicion.insert(2, f"{tiempo_actual:.6f}")
             tiempo_anterior = tiempo_actual
 
-            # Convertir los valores en flotantes si no están vacíos
-            mediciones.append([float(val) if val.strip() != '' else 0 for val in columnas_medicion])
+            # Convertir los valores en flotantes si no están vacíos, de lo contrario, usar NaN
+            mediciones.append([float(val) if val.strip() != '' else np.nan for val in columnas_medicion])
+
         else:
             break  # Si hay una línea vacía, salir del bucle
 
@@ -81,9 +83,11 @@ def leer_seccion(file, num_frames, ruta_archivo):
     return mediciones, columnas
 
 def calcular_max_min_rango(df, columnas):
-    maximos = [''] * 2 + [df[col].max() for col in columnas[3:]]
-    minimos = [''] * 2 + [df[col].min() for col in columnas[3:]]
-    rangos = [''] * 2 + [(df[col].max() - df[col].min()) for col in columnas[3:]]
+    # No es necesario rellenar NaN, Pandas maneja NaN en cálculos
+    # Calcular máximos, mínimos y rangos, ignorando los NaN
+    maximos = [''] * 2 + [df[col].max(skipna=True) for col in columnas[3:]]
+    minimos = [''] * 2 + [df[col].min(skipna=True) for col in columnas[3:]]
+    rangos = [''] * 2 + [(df[col].max(skipna=True) - df[col].min(skipna=True)) for col in columnas[3:]]
     return maximos, minimos, rangos
 
 def exportar_calculos(output_file, maximos, minimos, rangos):
