@@ -1,8 +1,17 @@
+"""
+Funciones para leer y formatear archivos de texto.
+"""
 import os
 import pandas as pd
 import numpy as np
 
+
 def formato_personalizado(valor):
+    """
+    Formatea un valor de medición para ser exportado a un archivo de texto.
+    Si el valor es un número, lo formatea con 6 decimales.
+    Si el valor es una cadena, lo formatea como una cadena.
+    """
     if isinstance(valor, float):
         if valor == 0:
             return "0"
@@ -11,17 +20,24 @@ def formato_personalizado(valor):
     return str(valor)
 
 def agregar_columnas(fila, nuevas_columnas, posicion):
+    """
+    Agrega columnas a una fila de mediciones.
+    """
     for nueva_columna in nuevas_columnas:
         fila.insert(posicion, nueva_columna)
     return fila
 
 def ajustar_fila(lista):
+    """
+    Ajusta una fila de mediciones para que contenga el mismo número de columnas.
+    Si una columna está vacía, la agrega con un valor vacío.
+    """
     fila_final = []
     for item in lista:
         if item.strip():
             fila_final.append(item)
         else:
-            fila_final.append('')  
+            fila_final.append('')
     return ";".join(fila_final)
 
 def leer_seccion(file, num_frames, ruta_archivo):
@@ -48,14 +64,11 @@ def leer_seccion(file, num_frames, ruta_archivo):
     # Leer las mediciones
     mediciones = []
     tiempo_anterior = 0
-    #num_columnas = len(columnas) 
 
     for i, line in enumerate(file):
         if line.rstrip("\n"):  # Conserva las tabulaciones pero elimina el salto de línea
-            columnas_medicion = line.rstrip("\n").split("\t")  # Dividir correctamente por tabulaciones
-            
-            #print("columnas",columnas_medicion)
-            
+            # Dividir correctamente por tabulaciones
+            columnas_medicion = line.rstrip("\n").split("\t")
             # Añadir la columna de tiempo en el lugar correcto
             if i == 0:
                 tiempo_actual = 0
@@ -65,33 +78,35 @@ def leer_seccion(file, num_frames, ruta_archivo):
             tiempo_anterior = tiempo_actual
 
             # Convertir los valores en flotantes si no están vacíos, de lo contrario, usar NaN
-            mediciones.append([float(val) if val.strip() != '' else np.nan for val in columnas_medicion])
+            mediciones.append([float(val) if val.strip() !=
+                               '' else np.nan for val in columnas_medicion])
 
         else:
             break  # Si hay una línea vacía, salir del bucle
-
-    # Verificar la longitud de las columnas y mediciones
-    #print(f"Longitud de columnas: {num_columnas}")
-    #print(f"Longitud de mediciones (primera fila): {len(mediciones[0]) if mediciones else 'Sin mediciones'}")
-
     # Escribir la sección al archivo
-    with open(ruta_archivo, 'w') as output_file:
+    with open(ruta_archivo, 'w',encoding= 'utf-8') as output_file:
         output_file.write(f"{num_frames}\n{atributos_str}\n{columnas_str}\n{unidades_str}\n")
         for medicion in mediciones:
             output_file.write(";".join(formato_personalizado(x) for x in medicion) + "\n")
-    
     return mediciones, columnas
 
 def calcular_max_min_rango(df, columnas):
+    """
+    Calcula máximos, mínimos y rangos de mediciones en una DataFrame.
+    Ignora NaN.
+    """
     # No es necesario rellenar NaN, Pandas maneja NaN en cálculos
     # Calcular máximos, mínimos y rangos, ignorando los NaN
-    #print(df.head()) 
     maximos = [''] * 2 + [df[col].max(skipna=True) for col in columnas[3:]]
     minimos = [''] * 2 + [df[col].min(skipna=True) for col in columnas[3:]]
-    rangos = [''] * 2 + [(df[col].max(skipna=True) - df[col].min(skipna=True)) for col in columnas[3:]]
+    rangos = [''] * 2 + [(df[col].max(skipna=True) - df[col].min(skipna=True))
+                         for col in columnas[3:]]
     return maximos, minimos, rangos
 
 def exportar_calculos(output_file, maximos, minimos, rangos):
+    """
+    Exporta cálculos de Maximo, Minimo y Rango a un archivo de texto.
+    """
     output_file.write(f";;MAXIMO;{';'.join(map(str, maximos[2:]))}\n")
     output_file.write(f";;MINIMO;{';'.join(map(str, minimos[2:]))}\n")
     output_file.write(f";;RANGO;{';'.join(map(str, rangos[2:]))}\n")
@@ -105,7 +120,7 @@ def leer_archivo_csv_o_txt(ruta_archivo, nombre_estudio):
         ruta_estudio = os.path.join("estudios", nombre_estudio)
         os.makedirs(ruta_estudio, exist_ok=True)
 
-        with open(ruta_archivo, 'r') as file:
+        with open(ruta_archivo, 'r',encoding= 'utf-8') as file:
             while True:
                 primera_fila = file.readline().rstrip()
                 if not primera_fila:  # EOF
@@ -128,7 +143,8 @@ def leer_archivo_csv_o_txt(ruta_archivo, nombre_estudio):
                 carpeta_frecuencia = os.path.join(ruta_estudio, tipo_frecuencia)
                 os.makedirs(carpeta_frecuencia, exist_ok=True)
 
-                nombre_archivo = os.path.basename(ruta_archivo).replace(".txt", f"_{tipo_frecuencia}.txt")
+                nombre_archivo = os.path.basename(ruta_archivo).replace(".txt",
+                                                                        f"_{tipo_frecuencia}.txt")
                 ruta_archivo_seccion = os.path.join(carpeta_frecuencia, nombre_archivo)
 
                 # Leer y exportar la sección
@@ -136,14 +152,20 @@ def leer_archivo_csv_o_txt(ruta_archivo, nombre_estudio):
 
                 # Convertir mediciones a DataFrame para calcular max/min/rango
                 df = pd.DataFrame(mediciones, columns=columnas)
-                df.columns = [f'{col}_{i}' if df.columns.duplicated()[i] else col for i, col in enumerate(df.columns)]
-                print(df.columns)
+                df.columns = [f'{col}_{i}' if df.columns.duplicated()[i]
+                              else col for i, col in enumerate(df.columns)]
 
                 maximos, minimos, rangos = calcular_max_min_rango(df, columnas)
 
                 # Exportar cálculos de Maximo, Minimo y Rango al archivo
-                with open(ruta_archivo_seccion, 'a') as output_file:
+                with open(ruta_archivo_seccion, 'a',encoding= 'utf-8') as output_file:
                     exportar_calculos(output_file, maximos, minimos, rangos)
 
+    except FileNotFoundError:
+        print("Error: El archivo no se encontró.")
+    except IOError as e:
+        print(f"Error de entrada/salida al leer el archivo: {e}")
+    except ValueError as e:
+        print(f"Error: Formato de datos inválido en el archivo: {e}")
     except Exception as e:
-        print(f"Error al leer el archivo: {e}")
+        print(f"Error inesperado: {e}")
