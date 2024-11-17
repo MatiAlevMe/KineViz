@@ -1,36 +1,16 @@
 import tkinter as tk
-from tkinter import filedialog, messagebox
-from lectura_archivos.lectura import leer_archivo_csv_o_txt
+from main import create_deck
 
-def crear_estudio():
-    nombre_estudio = entrada_nombre.get()
-    if not nombre_estudio:
-        messagebox.showerror("Error", "El nombre del estudio no puede estar vacío")
-        return
-    
-    archivo_seleccionado = filedialog.askopenfilename(title="Seleccionar archivo CSV o TXT", 
-                                                      filetypes=[("Archivos CSV", "*.csv"), ("Archivos TXT", "*.txt")])
-    if archivo_seleccionado:
-        # Leer y procesar el archivo con el nombre del estudio
-        leer_archivo_csv_o_txt(archivo_seleccionado, nombre_estudio)
-        messagebox.showinfo("Éxito", f"Archivo {archivo_seleccionado} cargado correctamente")
-    else:
-        messagebox.showerror("Error", "No se seleccionó ningún archivo")
-        
 def abrir_interfaz():
+    deck = create_deck() 
+
     ventana = tk.Tk()
-    ventana.title('Creación de Estudios Kinesiológicos')
-    
-    # Nombre del estudio
-    tk.Label(ventana, text="Nombre del estudio:").pack()
-    global entrada_nombre
-    entrada_nombre = tk.Entry(ventana)
-    entrada_nombre.pack()
-    
-    # Botón para crear estudio
-    btn_crear_estudio = tk.Button(ventana, text='Crear Estudio', command=crear_estudio)
-    btn_crear_estudio.pack()
-    
+    ventana.title('Solitaire')
+
+    # (For now, just display the first card as an example)
+    card_label = tk.Label(ventana, text=str(deck[0])) 
+    card_label.pack()
+
     ventana.mainloop()
 
 if __name__ == "__main__":
