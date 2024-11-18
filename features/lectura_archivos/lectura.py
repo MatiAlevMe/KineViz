@@ -5,7 +5,6 @@ import os
 import pandas as pd
 import numpy as np
 
-
 def formato_personalizado(valor):
     """
     Formatea un valor de medición para ser exportado a un archivo de texto.
