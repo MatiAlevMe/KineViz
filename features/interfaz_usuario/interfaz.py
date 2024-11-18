@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
-from lectura_archivos.lectura import leer_archivo_csv_o_txt
+from features.lectura_archivos.lectura import leer_archivo_csv_o_txt
 
 def crear_estudio():
     nombre_estudio = entrada_nombre.get()
