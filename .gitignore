@@ -2,6 +2,9 @@ env/
 __pycache__/
 *.pyc
 .DS_Store
+
 estudios/
 zyphariel/
 .*
+*.docx
+kineviz.db

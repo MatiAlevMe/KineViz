@@ -1,0 +1,32 @@
+# Manual de Usuario KineViz
+
+## Introducción
+KineViz es una aplicación diseñada para la gestión y análisis de estudios kinesiológicos. Permite cargar archivos de estudio en formato CSV o TXT, crear estudios, gestionar archivos y exportar resultados en formato TXT o PDF.
+
+## Cómo Crear un Estudio
+1. **Nombre del Estudio:** Ingrese el nombre del estudio.
+2. **Número de Sujetos de Prueba:** Especifique el número de sujetos de prueba.
+3. **Formato de los Sujetos de Prueba:** Defina el formato de los sujetos de prueba.
+4. **Tipos de Prueba:** Indique si el estudio tiene tipos de prueba y especifique cuántos tipos de prueba hay. Luego, ingrese el nombre de cada tipo de prueba.
+5. **Periodos de Prueba:** Indique si el estudio tiene períodos de prueba y especifique cuántos períodos de prueba hay. Luego, ingrese el nombre de cada periodo de prueba.
+6. **Intentos de Prueba:** Especifique el número de intentos de prueba y el formato de los intentos de prueba.
+7. **Guardar:** Haga clic en el botón "Guardar" para guardar el estudio. Si no se han completado todos los campos, se mostrará un mensaje de error y se solicitará que se vuelva a intentar.
+
+## Cómo Gestionar Estudios
+1. **Ver:** Haga clic en el botón "Ver" para ver los archivos asociados con un estudio.
+2. **Editar:** Haga clic en el botón "Editar" para modificar los detalles del estudio.
+3. **Eliminar:** Haga clic en el botón "Eliminar" para eliminar un estudio.
+
+## Cómo Exportar Datos
+1. **Exportar:** Haga clic en el botón "Exportar" para exportar los datos del estudio en formato TXT o PDF.
+2. **Gráficos:** Para la exportación en PDF, seleccione el cálculo principal y los cálculos adicionales que desea incluir en el gráfico.
+
+## Cómo Agregar Archivos
+1. **Agregar Archivos:** Haga clic en el botón "Agregar Archivos" para agregar archivos al estudio. Asegúrese de que los archivos estén en el formato especificado al crear el estudio.
+2. **Formato de Archivo:** Los archivos deben seguir el formato "P01 CMJ PRE 04.txt", donde se detalla el sujeto, tipo de prueba, periodo de prueba e intento de prueba.
+
+## Cómo Eliminar Archivos
+1. **Eliminar Archivos:** Haga clic en el botón "Eliminar" junto a un archivo para eliminarlo del estudio.
+
+## Cómo Personalizar la Interfaz
+1. **Abrir en Nueva Pestaña:** Haga clic en el botón "Ver" para abrir los detalles del estudio en una nueva pestaña.
