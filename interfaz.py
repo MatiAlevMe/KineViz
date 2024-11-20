@@ -8,6 +8,8 @@ Este sistema permite gestionar estudios kinesiológicos, incluyendo:
 - Eliminación de estudios
 - Gestión de sujetos y pruebas
 """
+import subprocess
+import sys
 import tkinter as tk
 from tkinter import filedialog, messagebox, Toplevel, Text, Scrollbar, ttk
 from lectura import leer_archivo_csv_o_txt
@@ -283,24 +285,6 @@ class KineVizApp:
             messagebox.showerror("Error", "La cantidad de intentos debe ser un número positivo")
             return
         
-        # Recopilar tipos de prueba si están habilitados
-        tipos_prueba = []
-        if self.var_tipo_prueba.get():
-            for i in range(2, len(self.tipo_prueba_widgets), 2):
-                if isinstance(self.tipo_prueba_widgets[i+1], ttk.Entry):
-                    tipo = self.tipo_prueba_widgets[i+1].get()
-                    if tipo:
-                        tipos_prueba.append(tipo)
-        
-        # Recopilar periodos de prueba si están habilitados
-        periodos_prueba = []
-        if self.var_periodo_prueba.get():
-            for i in range(2, len(self.periodo_prueba_widgets), 2):
-                if isinstance(self.periodo_prueba_widgets[i+1], ttk.Entry):
-                    periodo = self.periodo_prueba_widgets[i+1].get()
-                    if periodo:
-                        periodos_prueba.append(periodo)
-        
         # Guardar en la base de datos
         conn = sqlite3.connect('kineviz.db')
         cursor = conn.cursor()
@@ -313,8 +297,8 @@ class KineVizApp:
         ''', (
             self.var_nombre.get(),
             num_sujetos,
-            self.var_tipos_prueba.get(),
-            self.var_periodos_prueba.get(),
+            ','.join([x.strip() for x in self.var_tipos_prueba.get().split(',') if x.strip()]) if self.var_tipos_prueba.get() else None, 
+            ','.join([x.strip() for x in self.var_periodos_prueba.get().split(',') if x.strip()]) if self.var_periodos_prueba.get() else None,
             cantidad_intentos,
         ))
         
@@ -365,14 +349,10 @@ class KineVizApp:
             ttk.Label(scroll_frame, text=f"Número de sujetos: {num_sujetos}").pack(pady=5)
 
             if tipos_prueba:
-                ttk.Label(scroll_frame, text="Tipos de prueba:").pack(pady=5)
-                for tipo in tipos_prueba.split(','):
-                    ttk.Label(scroll_frame, text=f"- {tipo}").pack(pady=2)
+                ttk.Label(scroll_frame, text=f"Tipos de prueba: {tipos_prueba}").pack(pady=5)
 
             if periodos_prueba:
-                ttk.Label(scroll_frame, text="Periodos de prueba:").pack(pady=5)
-                for periodo in periodos_prueba.split(','):
-                    ttk.Label(scroll_frame, text=f"- {periodo}").pack(pady=2)
+                ttk.Label(scroll_frame, text=f"Periodos de prueba: {periodos_prueba}").pack(pady=5)
             
             ttk.Label(scroll_frame, text=f"Cantidad de intentos: {cantidad_intentos}").pack(pady=5)
             
@@ -457,7 +437,10 @@ class KineVizApp:
 
     def abrir_carpeta_estudio(self, estudio_path):
         if os.path.exists(estudio_path):
-            os.startfile(estudio_path)
+            if sys.platform == 'win32':
+                os.startfile(estudio_path)
+            else:
+                subprocess.call(['open', estudio_path])
         else:
             messagebox.showerror("Error", "La carpeta del estudio no existe")
 
@@ -524,6 +507,9 @@ class KineVizApp:
         scrollbar.pack(side="right", fill="y")
 
     def guardar_edicion(self, id_estudio):
+        # Get the original name for comparison later
+        nombre_estudio_original = self.var_nombre.get()   
+
         # Validar campos obligatorios
         if not self.var_nombre.get():
             messagebox.showerror("Error", "El nombre del estudio es obligatorio")
@@ -555,24 +541,6 @@ class KineVizApp:
         except ValueError:
             messagebox.showerror("Error", "La cantidad de intentos debe ser un número positivo")
             return
-            
-        # Recopilar tipos de prueba si están habilitados
-        tipos_prueba = []
-        if self.var_tipo_prueba.get():
-            for i in range(2, len(self.tipo_prueba_widgets), 2):
-                if isinstance(self.tipo_prueba_widgets[i+1], ttk.Entry):
-                    tipo = self.tipo_prueba_widgets[i+1].get()
-                    if tipo:
-                        tipos_prueba.append(tipo)
-        
-        # Recopilar periodos de prueba si están habilitados
-        periodos_prueba = []
-        if self.var_periodo_prueba.get():
-            for i in range(2, len(self.periodo_prueba_widgets), 2):
-                if isinstance(self.periodo_prueba_widgets[i+1], ttk.Entry):
-                    periodo = self.periodo_prueba_widgets[i+1].get()
-                    if periodo:
-                        periodos_prueba.append(periodo)
         
         # Actualizar en la base de datos
         conn = sqlite3.connect('kineviz.db')
@@ -581,12 +549,6 @@ class KineVizApp:
             UPDATE estudios 
             SET nombre_estudio = ?, 
                 num_sujetos = ?, 
-                num_sujetos = ?, 
-                formato_sujetos = ?,
-                tiene_tipo_prueba = ?,
-                num_sujetos = ?,
-                formato_sujetos = ?,
-                tiene_tipo_prueba = ?,
                 tipos_prueba = ?,
                 periodos_prueba = ?,
                 cantidad_intentos_prueba = ?
@@ -594,14 +556,14 @@ class KineVizApp:
         ''', (
             self.var_nombre.get(),
             num_sujetos,
-            self.var_tipos_prueba.get(),
-            self.var_periodos_prueba.get(),
+            ','.join([x.strip() for x in self.var_tipos_prueba.get().split(',') if x.strip()]) if self.var_tipos_prueba.get() else None, 
+            ','.join([x.strip() for x in self.var_periodos_prueba.get().split(',') if x.strip()]) if self.var_periodos_prueba.get() else None,
             cantidad_intentos,
             id_estudio
         ))
 
         # Renombrar carpeta si el nombre del estudio cambió
-        if nombre_estudio != self.var_nombre.get():
+        if nombre_estudio_original != self.var_nombre.get():
             old_path = os.path.join("estudios", nombre_estudio)
             new_path = os.path.join("estudios", self.var_nombre.get())
             
