@@ -1,9 +1,11 @@
 """
 Funciones para leer y formatear archivos de texto.
 """
+from genericpath import isfile
 import os
 import pandas as pd
 import numpy as np
+from tkinter import messagebox
 
 def formato_personalizado(valor):
     """
@@ -110,7 +112,10 @@ def exportar_calculos(output_file, maximos, minimos, rangos):
     output_file.write(f";;MINIMO;{';'.join(map(str, minimos[2:]))}\n")
     output_file.write(f";;RANGO;{';'.join(map(str, rangos[2:]))}\n")
 
-def leer_archivo_csv_o_txt(ruta_archivo, nombre_estudio):
+def obtener_nombre_paciente(nombre_archivo):
+    return nombre_archivo.split(" ")[0]
+
+def leer_archivo_csv_o_txt(ruta_archivo, nombre_estudio, nombre_paciente=None):
     """
     Lee el archivo completo, detectando todas las secciones y exportando cada una en su
     carpeta correspondiente según la frecuencia de medición.
@@ -118,6 +123,11 @@ def leer_archivo_csv_o_txt(ruta_archivo, nombre_estudio):
     try:
         ruta_estudio = os.path.join("estudios", nombre_estudio)
         os.makedirs(ruta_estudio, exist_ok=True)
+        
+        if nombre_paciente is None:
+            nombre_paciente = obtener_nombre_paciente(os.path.basename(ruta_archivo))
+        ruta_paciente = os.path.join(ruta_estudio, nombre_paciente)
+        os.makedirs(ruta_paciente, exist_ok=True)
 
         with open(ruta_archivo, 'r',encoding= 'utf-8') as file:
             while True:
@@ -139,7 +149,7 @@ def leer_archivo_csv_o_txt(ruta_archivo, nombre_estudio):
                 else:
                     tipo_frecuencia = "Desconocida"
 
-                carpeta_frecuencia = os.path.join(ruta_estudio, tipo_frecuencia)
+                carpeta_frecuencia = os.path.join(ruta_paciente, tipo_frecuencia)
                 os.makedirs(carpeta_frecuencia, exist_ok=True)
 
                 nombre_archivo = os.path.basename(ruta_archivo).replace(".txt",
@@ -161,10 +171,11 @@ def leer_archivo_csv_o_txt(ruta_archivo, nombre_estudio):
                     exportar_calculos(output_file, maximos, minimos, rangos)
 
     except FileNotFoundError:
-        print("Error: El archivo no se encontró.")
+        messagebox.showerror("Error", f"Error: El archivo {ruta_archivo} no se encontró.")
     except IOError as e:
-        print(f"Error de entrada/salida al leer el archivo: {e}")
+        messagebox.showerror("Error", f"Error de entrada/salida al leer el archivo: {e}")
     except ValueError as e:
-        print(f"Error: Formato de datos inválido en el archivo: {e}")
+        messagebox.showerror("Error", f"Error: Formato de datos inválido en el archivo: {e}")
     except Exception as e:
-        print(f"Error inesperado: {e}")
+        messagebox.showerror("Error", f"Error inesperado: {e}")
+    return nombre_paciente
