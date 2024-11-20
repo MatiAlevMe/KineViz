@@ -421,38 +421,32 @@ class KineVizApp:
                 ttk.Label(scroll_frame, text=f"Periodos de prueba: {periodos_prueba}").pack(pady=5)
             
             ttk.Label(scroll_frame, text=f"Cantidad de intentos: {cantidad_intentos}").pack(pady=5)
-            
-            # Frame para archivos
-            files_frame = ttk.LabelFrame(scroll_frame, text="Archivos del estudio")
-            files_frame.pack(pady=10, fill="x", padx=5)
-            
+
             estudio_path = os.path.join("estudios", nombre_estudio)
-            if os.path.exists(estudio_path):
-                archivos = os.listdir(estudio_path)
-                if archivos:
-                    for archivo in archivos:
-                        file_frame = ttk.Frame(files_frame)
-                        file_frame.pack(fill="x", pady=2)
-                        
-                        ttk.Label(file_frame, text=archivo).pack(side="left", padx=5)
-                        
-                        ttk.Button(file_frame, text="Eliminar", 
-                                 command=lambda a=archivo: self.eliminar_archivo(estudio_path, a, files_frame)).pack(side="right", padx=5)
-                else:
-                    ttk.Label(files_frame, text="No hay archivos").pack(pady=5)
-            else:
-                ttk.Label(files_frame, text="No hay archivos").pack(pady=5)
             
             # Botón para agregar archivos
             ttk.Button(scroll_frame, text="Agregar Archivos", 
-                      command=lambda: self.agregar_archivos(estudio_path, files_frame)).pack(pady=10)
-                        
+                      command=lambda: self.agregar_archivos(estudio_path,self.archivos_frame)).pack(pady=10)
+                                    
             ttk.Button(scroll_frame, text="Abrir Carpeta del Estudio", 
                       command=lambda: self.abrir_carpeta_estudio(estudio_path)).pack(pady=10)
+
+            # Frame para archivos
+            self.archivos_frame = ttk.LabelFrame(scroll_frame, text="Archivos")
+            self.archivos_frame.pack(pady=10, fill="x", padx=5)
+            self.crear_tabla_archivos(self.archivos_frame, ('Nombre', 'Frecuencia', 'Ver', 'Eliminar', 'Nombre OG', 'Ver OG', 'Eliminar OG'))
         
         # Configurar scroll
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
+
+    def crear_tabla_archivos(self, parent_frame, columns):
+        tree = ttk.Treeview(parent_frame, columns=columns, show='headings')
+        for col in columns:
+            tree.heading(col, text=col)
+            tree.column(col, width=75)
+        tree.pack(pady=5)
+
 
     def eliminar_archivo(self, estudio_path, archivo, frame):
         if messagebox.askyesno("Confirmar", f"¿Desea eliminar el archivo {archivo}?"):
