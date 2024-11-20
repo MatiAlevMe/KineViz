@@ -432,7 +432,7 @@ class KineVizApp:
                       command=lambda: self.abrir_carpeta_estudio(estudio_path)).pack(pady=10)
 
             # Frame para archivos
-            self.archivos_frame = ttk.LabelFrame(scroll_frame, text="Archivos")
+            self.archivos_frame = ttk.LabelFrame(scroll_frame, text="Archivos Resultantes")
             self.archivos_frame.pack(pady=10, fill="x", padx=5)
             self.crear_tabla_archivos(self.archivos_frame, ('Nombre', 'Frecuencia', 'Ver', 'Eliminar', 'Nombre OG', 'Ver OG', 'Eliminar OG'))
         
