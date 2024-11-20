@@ -15,16 +15,23 @@ from tkinter import filedialog, messagebox, Toplevel, Text, Scrollbar, ttk
 from lectura import leer_archivo_csv_o_txt
 import os
 import sqlite3
+import shutil
+import configparser
 
 class KineVizApp:
     def __init__(self, root):
         self.root = root
         self.root.title('KineViz')
+
+        # Load settings from config file
+        self.load_config()
         
         # Variables para campos dinámicos
         self.tipo_prueba_widgets = []
         self.periodo_prueba_widgets = []
-        
+        self.current_page = 1 # Initialize current_page here
+
+
         # Configurar la base de datos
         self.setup_database()
         
@@ -33,6 +40,16 @@ class KineVizApp:
             self.mostrar_main_page()
         else:
             self.mostrar_landing_page()
+
+    def load_config(self):
+        self.config = configparser.ConfigParser()
+        try:
+            self.config.read('config.ini')
+            self.estudios_por_pagina = int(self.config['SETTINGS']['estudios_por_pagina'])
+        except Exception as e:
+            # Handle errors (e.g., file not found, invalid values)
+            messagebox.showerror("Error", f"Error loading configuration: {str(e)}")
+            self.estudios_por_pagina = 10 # Default value
 
     def setup_database(self):
         conn = sqlite3.connect('kineviz.db')
@@ -61,6 +78,17 @@ class KineVizApp:
     def limpiar_ventana(self):
         for widget in self.root.winfo_children():
             widget.destroy()
+
+    def restablecer_valores_por_defecto(self):
+        if messagebox.askyesno("Confirmar", "¿Está seguro de que desea restablecer los valores por defecto?\nEsta acción eliminará todos los estudios y la base de datos."):
+            try:
+                os.remove("kineviz.db")
+                shutil.rmtree("estudios", ignore_errors=True)  # Eliminar la carpeta "estudios"
+                self.setup_database()
+                messagebox.showinfo("Éxito", "Valores por defecto restablecidos correctamente")
+                self.mostrar_landing_page()  # Mostrar la landing page después de reiniciar
+            except Exception as e:
+                messagebox.showerror("Error", f"Error al restablecer valores: {str(e)}")
 
     def mostrar_bienvenida(self):
         messagebox.showinfo("Introducción", 
@@ -127,7 +155,16 @@ class KineVizApp:
         
         # Botones de la landing page en el header
         ttk.Button(header_frame, text='Manual', command=self.abrir_manual_usuario).pack(side=tk.RIGHT, padx=5)
+        ttk.Button(header_frame, text='Configuración', command=self.mostrar_configuracion).pack(side=tk.RIGHT, padx=5)
         ttk.Button(header_frame, text='Ayuda', command=self.mostrar_bienvenida).pack(side=tk.RIGHT, padx=5)
+
+        # Frame de búsqueda
+        search_frame = ttk.Frame(main_frame)
+        search_frame.pack(fill=tk.X, pady=(0, 10))
+        ttk.Label(search_frame, text="Buscar estudio:").pack(side=tk.LEFT)
+        self.search_entry = ttk.Entry(search_frame)
+        self.search_entry.pack(side=tk.LEFT, padx=5)
+        ttk.Button(search_frame, text="Buscar", command=self.buscar_estudio).pack(side=tk.LEFT)
         
         # Frame para la tabla de estudios
         table_frame = ttk.Frame(main_frame)
@@ -153,6 +190,11 @@ class KineVizApp:
         
         # Cargar estudios
         self.cargar_estudios()
+
+        # Frame de paginación
+        self.pagination_frame = ttk.Frame(main_frame)
+        self.pagination_frame.pack(pady=(10, 0))
+        self.update_pagination()
         
         # Botón para crear nuevo estudio
         ttk.Button(main_frame, text='Crear Nuevo Estudio', 
@@ -160,6 +202,30 @@ class KineVizApp:
                 
         ttk.Button(main_frame, text='Refrescar', 
                   command=self.cargar_estudios).pack(pady=20)
+        
+    def mostrar_configuracion(self):
+        config_window = Toplevel(self.root)
+        config_window.title('Configuración')
+
+        reset_button = ttk.Button(config_window, text="Restablecer Valores por Defecto", command=self.restablecer_valores_por_defecto)
+        reset_button.pack(pady=20)
+
+    def buscar_estudio(self):
+        query = self.search_entry.get()
+        # Limpiar la tabla
+        for i in self.tree.get_children():
+            self.tree.delete(i)
+        # Realizar la búsqueda en la base de datos y mostrar los resultados
+        conn = sqlite3.connect('kineviz.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT id_estudio, nombre_estudio FROM estudios WHERE nombre_estudio LIKE ?", ('%' + query + '%',))
+        estudios = cursor.fetchall()
+        conn.close()
+        # Insertar los resultados en la tabla
+        for estudio in estudios:
+            id_estudio, nombre = estudio
+            self.tree.insert("", "end", values=(nombre, 'Ver', 'Editar', 'Eliminar'), tags=(str(id_estudio),))
+        self.update_pagination()
 
     def cargar_estudios(self):
         # Limpiar tabla existente
@@ -169,7 +235,7 @@ class KineVizApp:
         # Cargar estudios desde la base de datos
         conn = sqlite3.connect('kineviz.db')
         cursor = conn.cursor()
-        cursor.execute('SELECT id_estudio, nombre_estudio FROM estudios')
+        cursor.execute("SELECT id_estudio, nombre_estudio FROM estudios LIMIT ? OFFSET ?", (self.estudios_por_pagina, (self.current_page - 1) * self.estudios_por_pagina))
         estudios = cursor.fetchall()
         conn.close()
         
@@ -500,16 +566,13 @@ class KineVizApp:
         ttk.Entry(scroll_frame, textvariable=self.var_cantidad_intentos).pack(pady=5)
         
         ttk.Button(scroll_frame, text="Guardar", 
-                  command=lambda: self.guardar_edicion(id_estudio)).pack(pady=20)
+                  command=lambda: self.guardar_edicion(id_estudio, nombre_estudio)).pack(pady=20)
         
         # Configurar scroll
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
 
-    def guardar_edicion(self, id_estudio):
-        # Get the original name for comparison later
-        nombre_estudio_original = self.var_nombre.get()   
-
+    def guardar_edicion(self, id_estudio, nombre_estudio_original):
         # Validar campos obligatorios
         if not self.var_nombre.get():
             messagebox.showerror("Error", "El nombre del estudio es obligatorio")
@@ -564,7 +627,7 @@ class KineVizApp:
 
         # Renombrar carpeta si el nombre del estudio cambió
         if nombre_estudio_original != self.var_nombre.get():
-            old_path = os.path.join("estudios", nombre_estudio)
+            old_path = os.path.join("estudios", nombre_estudio_original)
             new_path = os.path.join("estudios", self.var_nombre.get())
             
             if os.path.exists(old_path):
@@ -613,6 +676,52 @@ class KineVizApp:
                 self.mostrar_main_page()
             except Exception as e:
                 messagebox.showerror("Error", f"Error al eliminar estudio: {str(e)}")
+
+    def update_pagination(self):
+        # Clear existing pagination buttons
+        for widget in self.pagination_frame.winfo_children():
+            widget.destroy()
+
+        conn = sqlite3.connect('kineviz.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM estudios")
+        total_estudios = cursor.fetchone()[0]
+        conn.close()
+
+        self.total_pages = (total_estudios // self.estudios_por_pagina) + (1 if total_estudios % self.estudios_por_pagina else 0)
+        self.current_page = 1
+
+        if self.total_pages > 1:
+            ttk.Button(self.pagination_frame, text="<<", command=self.go_to_first_page).pack(side=tk.LEFT)
+            ttk.Button(self.pagination_frame, text="<", command=self.go_to_previous_page).pack(side=tk.LEFT)
+
+            for page in range(1, self.total_pages + 1):
+                ttk.Button(self.pagination_frame, text=str(page), command=lambda p=page: self.go_to_page(p)).pack(side=tk.LEFT)
+
+            ttk.Button(self.pagination_frame, text=">", command=self.go_to_next_page).pack(side=tk.LEFT)
+            ttk.Button(self.pagination_frame, text=">>", command=self.go_to_last_page).pack(side=tk.LEFT)
+
+    def go_to_first_page(self):
+        self.current_page = 1
+        self.cargar_estudios()
+
+    def go_to_previous_page(self):
+        if self.current_page > 1:
+            self.current_page -= 1
+            self.cargar_estudios()
+
+    def go_to_next_page(self):
+        if self.current_page < self.total_pages:
+            self.current_page += 1
+            self.cargar_estudios()
+
+    def go_to_last_page(self):
+        self.current_page = self.total_pages
+        self.cargar_estudios()
+
+    def go_to_page(self, page):
+        self.current_page = page
+        self.cargar_estudios()
 
 def main():
     root = tk.Tk()
