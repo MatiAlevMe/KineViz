@@ -434,7 +434,7 @@ class KineVizApp:
             # Frame para archivos
             self.archivos_frame = ttk.LabelFrame(scroll_frame, text="Archivos Resultantes")
             self.archivos_frame.pack(pady=10, fill="x", padx=5)
-            self.crear_tabla_archivos(self.archivos_frame, ('Nombre', 'Frecuencia', 'Ver', 'Eliminar', 'Nombre OG', 'Ver OG', 'Eliminar OG'))
+            self.crear_tabla_archivos(self.archivos_frame, ('Paciente', 'Nombre', 'Frecuencia', 'Ver', 'Nombre OG', 'Ver OG', 'Eliminar'))
         
         # Configurar scroll
         canvas.pack(side="left", fill="both", expand=True)
