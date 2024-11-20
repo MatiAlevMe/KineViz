@@ -40,14 +40,10 @@ class KineVizApp:
                 id_estudio INTEGER PRIMARY KEY AUTOINCREMENT,
                 nombre_estudio TEXT NOT NULL,
                 num_sujetos INTEGER NOT NULL,
-                formato_sujetos TEXT NOT NULL,
-                tiene_tipo_prueba BOOLEAN NOT NULL,
                 tipos_prueba TEXT,
-                tiene_periodo_prueba BOOLEAN NOT NULL,
                 periodos_prueba TEXT,
-                cantidad_intentos_prueba INTEGER NOT NULL,
-                formato_intentos_prueba TEXT NOT NULL
-            )
+                cantidad_intentos_prueba INTEGER NOT NULL
+            )               
         ''')
         conn.commit()
         conn.close()
@@ -159,6 +155,9 @@ class KineVizApp:
         # Botón para crear nuevo estudio
         ttk.Button(main_frame, text='Crear Nuevo Estudio', 
                   command=self.mostrar_crear_estudio).pack(pady=20)
+                
+        ttk.Button(main_frame, text='Refrescar', 
+                  command=self.cargar_estudios).pack(pady=20)
 
     def cargar_estudios(self):
         # Limpiar tabla existente
@@ -224,11 +223,9 @@ class KineVizApp:
         # Variables para campos
         self.var_nombre = tk.StringVar()
         self.var_num_sujetos = tk.StringVar()
-        self.var_formato_sujetos = tk.StringVar()
-        self.var_tipo_prueba = tk.BooleanVar()
-        self.var_periodo_prueba = tk.BooleanVar()
+        self.var_tipos_prueba = tk.StringVar()
+        self.var_periodos_prueba = tk.StringVar()
         self.var_cantidad_intentos = tk.StringVar()
-        self.var_formato_intentos = tk.StringVar()
         
         # Campos del formulario
         ttk.Label(scroll_frame, text="Nombre del estudio:").pack(pady=5)
@@ -237,30 +234,14 @@ class KineVizApp:
         ttk.Label(scroll_frame, text="Número de Sujetos:").pack(pady=5)
         ttk.Entry(scroll_frame, textvariable=self.var_num_sujetos).pack(pady=5)
         
-        ttk.Label(scroll_frame, text="Formato de Sujetos:").pack(pady=5)
-        ttk.Entry(scroll_frame, textvariable=self.var_formato_sujetos).pack(pady=5)
+        ttk.Label(scroll_frame, text="Tipos de Prueba:").pack(pady=5)
+        ttk.Entry(scroll_frame, textvariable=self.var_tipos_prueba).pack(pady=5)
         
-        # Frame para tipos de prueba
-        self.tipo_prueba_frame = ttk.LabelFrame(scroll_frame, text="Tipos de Prueba")
-        self.tipo_prueba_frame.pack(pady=10, fill="x", padx=5)
-        
-        ttk.Checkbutton(self.tipo_prueba_frame, text="Tiene Tipo de Prueba", 
-                       variable=self.var_tipo_prueba, 
-                       command=self.actualizar_campos_tipo_prueba).pack(pady=5)
-        
-        # Frame para periodos de prueba
-        self.periodo_prueba_frame = ttk.LabelFrame(scroll_frame, text="Periodos de Prueba")
-        self.periodo_prueba_frame.pack(pady=10, fill="x", padx=5)
-        
-        ttk.Checkbutton(self.periodo_prueba_frame, text="Tiene Periodo de Prueba", 
-                       variable=self.var_periodo_prueba, 
-                       command=self.actualizar_campos_periodo_prueba).pack(pady=5)
-        
+        ttk.Label(scroll_frame, text="Periodos de Prueba:").pack(pady=5)
+        ttk.Entry(scroll_frame, textvariable=self.var_periodos_prueba).pack(pady=5)
+
         ttk.Label(scroll_frame, text="Cantidad de Intentos:").pack(pady=5)
         ttk.Entry(scroll_frame, textvariable=self.var_cantidad_intentos).pack(pady=5)
-        
-        ttk.Label(scroll_frame, text="Formato de Intentos:").pack(pady=5)
-        ttk.Entry(scroll_frame, textvariable=self.var_formato_intentos).pack(pady=5)
         
         ttk.Button(scroll_frame, text="Guardar", 
                   command=self.guardar_estudio).pack(pady=20)
@@ -269,92 +250,21 @@ class KineVizApp:
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
 
-    def actualizar_campos_tipo_prueba(self):
-        # Limpiar widgets anteriores
-        for widget in self.tipo_prueba_widgets:
-            widget.destroy()
-        self.tipo_prueba_widgets.clear()
-        
-        if self.var_tipo_prueba.get():
-            # Entrada para cantidad
-            label = ttk.Label(self.tipo_prueba_frame, text="Cantidad de Tipos:")
-            label.pack(pady=5)
-            self.tipo_prueba_widgets.append(label)
-            
-            entry = ttk.Entry(self.tipo_prueba_frame)
-            entry.pack(pady=5)
-            self.tipo_prueba_widgets.append(entry)
-            
-            def agregar_campos_tipo():
-                try:
-                    cantidad = int(entry.get())
-                    # Limpiar campos anteriores excepto la cantidad
-                    for widget in self.tipo_prueba_widgets[2:]:
-                        widget.destroy()
-                    self.tipo_prueba_widgets[2:] = []
-                    
-                    # Agregar nuevos campos
-                    for i in range(cantidad):
-                        label = ttk.Label(self.tipo_prueba_frame, text=f"Tipo {i+1}:")
-                        label.pack(pady=2)
-                        self.tipo_prueba_widgets.append(label)
-                        
-                        entry = ttk.Entry(self.tipo_prueba_frame)
-                        entry.pack(pady=2)
-                        self.tipo_prueba_widgets.append(entry)
-                except ValueError:
-                    messagebox.showerror("Error", "Por favor ingrese un número válido")
-            
-            btn = ttk.Button(self.tipo_prueba_frame, text="Agregar campos", 
-                           command=agregar_campos_tipo)
-            btn.pack(pady=5)
-            self.tipo_prueba_widgets.append(btn)
-
-    def actualizar_campos_periodo_prueba(self):
-        # Limpiar widgets anteriores
-        for widget in self.periodo_prueba_widgets:
-            widget.destroy()
-        self.periodo_prueba_widgets.clear()
-        
-        if self.var_periodo_prueba.get():
-            # Entrada para cantidad
-            label = ttk.Label(self.periodo_prueba_frame, text="Cantidad de Periodos:")
-            label.pack(pady=5)
-            self.periodo_prueba_widgets.append(label)
-            
-            entry = ttk.Entry(self.periodo_prueba_frame)
-            entry.pack(pady=5)
-            self.periodo_prueba_widgets.append(entry)
-            
-            def agregar_campos_periodo():
-                try:
-                    cantidad = int(entry.get())
-                    # Limpiar campos anteriores excepto la cantidad
-                    for widget in self.periodo_prueba_widgets[2:]:
-                        widget.destroy()
-                    self.periodo_prueba_widgets[2:] = []
-                    
-                    # Agregar nuevos campos
-                    for i in range(cantidad):
-                        label = ttk.Label(self.periodo_prueba_frame, text=f"Periodo {i+1}:")
-                        label.pack(pady=2)
-                        self.periodo_prueba_widgets.append(label)
-                        
-                        entry = ttk.Entry(self.periodo_prueba_frame)
-                        entry.pack(pady=2)
-                        self.periodo_prueba_widgets.append(entry)
-                except ValueError:
-                    messagebox.showerror("Error", "Por favor ingrese un número válido")
-            
-            btn = ttk.Button(self.periodo_prueba_frame, text="Agregar campos", 
-                           command=agregar_campos_periodo)
-            btn.pack(pady=5)
-            self.periodo_prueba_widgets.append(btn)
-
     def guardar_estudio(self):
         # Validar campos obligatorios
         if not self.var_nombre.get():
             messagebox.showerror("Error", "El nombre del estudio es obligatorio")
+            return
+
+        # Validar si el nombre del estudio ya existe
+        conn = sqlite3.connect('kineviz.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT COUNT(*) FROM estudios WHERE nombre_estudio = ?', (self.var_nombre.get(),))
+        count = cursor.fetchone()[0]
+        conn.close()
+        
+        if count > 0:
+            messagebox.showerror("Error", "Ya existe un estudio con ese nombre")
             return
             
         try:
@@ -364,21 +274,13 @@ class KineVizApp:
         except ValueError:
             messagebox.showerror("Error", "El número de sujetos debe ser un número positivo")
             return
-            
-        if not self.var_formato_sujetos.get():
-            messagebox.showerror("Error", "El formato de sujetos es obligatorio")
-            return
-            
+
         try:
             cantidad_intentos = int(self.var_cantidad_intentos.get())
             if cantidad_intentos <= 0:
                 raise ValueError()
         except ValueError:
             messagebox.showerror("Error", "La cantidad de intentos debe ser un número positivo")
-            return
-            
-        if not self.var_formato_intentos.get():
-            messagebox.showerror("Error", "El formato de intentos es obligatorio")
             return
         
         # Recopilar tipos de prueba si están habilitados
@@ -404,22 +306,24 @@ class KineVizApp:
         cursor = conn.cursor()
         cursor.execute('''
             INSERT INTO estudios (
-                nombre_estudio, num_sujetos, formato_sujetos, 
-                tiene_tipo_prueba, tipos_prueba, 
-                tiene_periodo_prueba, periodos_prueba,
-                cantidad_intentos_prueba, formato_intentos_prueba
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                nombre_estudio, num_sujetos, 
+                tipos_prueba, periodos_prueba,
+                cantidad_intentos_prueba
+            ) VALUES (?, ?, ?, ?, ?)
         ''', (
             self.var_nombre.get(),
             num_sujetos,
-            self.var_formato_sujetos.get(),
-            self.var_tipo_prueba.get(),
-            ','.join(tipos_prueba) if tipos_prueba else None,
-            self.var_periodo_prueba.get(),
-            ','.join(periodos_prueba) if periodos_prueba else None,
+            self.var_tipos_prueba.get(),
+            self.var_periodos_prueba.get(),
             cantidad_intentos,
-            self.var_formato_intentos.get()
         ))
+        
+        # Crear carpeta para el estudio
+        estudio_path = os.path.join("estudios", self.var_nombre.get())
+        
+        if not os.path.exists(estudio_path):
+            os.makedirs(estudio_path)
+
         conn.commit()
         conn.close()
         
@@ -453,26 +357,24 @@ class KineVizApp:
         conn.close()
         
         if estudio:
-            _, nombre_estudio, num_sujetos, formato_sujetos, tiene_tipo_prueba, tipos_prueba, tiene_periodo_prueba, periodos_prueba, cantidad_intentos, formato_intentos = estudio
+            _, nombre_estudio, num_sujetos, tipos_prueba, periodos_prueba, cantidad_intentos = estudio
             
             # Mostrar información del estudio
             ttk.Label(scroll_frame, text=f"Nombre: {nombre_estudio}", 
                      font=('Helvetica', 12, 'bold')).pack(pady=10)
             ttk.Label(scroll_frame, text=f"Número de sujetos: {num_sujetos}").pack(pady=5)
-            ttk.Label(scroll_frame, text=f"Formato de sujetos: {formato_sujetos}").pack(pady=5)
-            
-            if tiene_tipo_prueba and tipos_prueba:
+
+            if tipos_prueba:
                 ttk.Label(scroll_frame, text="Tipos de prueba:").pack(pady=5)
                 for tipo in tipos_prueba.split(','):
                     ttk.Label(scroll_frame, text=f"- {tipo}").pack(pady=2)
-            
-            if tiene_periodo_prueba and periodos_prueba:
+
+            if periodos_prueba:
                 ttk.Label(scroll_frame, text="Periodos de prueba:").pack(pady=5)
                 for periodo in periodos_prueba.split(','):
                     ttk.Label(scroll_frame, text=f"- {periodo}").pack(pady=2)
             
             ttk.Label(scroll_frame, text=f"Cantidad de intentos: {cantidad_intentos}").pack(pady=5)
-            ttk.Label(scroll_frame, text=f"Formato de intentos: {formato_intentos}").pack(pady=5)
             
             # Frame para archivos
             files_frame = ttk.LabelFrame(scroll_frame, text="Archivos del estudio")
@@ -498,6 +400,9 @@ class KineVizApp:
             # Botón para agregar archivos
             ttk.Button(scroll_frame, text="Agregar Archivos", 
                       command=lambda: self.agregar_archivos(estudio_path, files_frame)).pack(pady=10)
+                        
+            ttk.Button(scroll_frame, text="Abrir Carpeta del Estudio", 
+                      command=lambda: self.abrir_carpeta_estudio(estudio_path)).pack(pady=10)
         
         # Configurar scroll
         canvas.pack(side="left", fill="both", expand=True)
@@ -550,6 +455,12 @@ class KineVizApp:
             except Exception as e:
                 messagebox.showerror("Error", f"Error al agregar archivo: {str(e)}")
 
+    def abrir_carpeta_estudio(self, estudio_path):
+        if os.path.exists(estudio_path):
+            os.startfile(estudio_path)
+        else:
+            messagebox.showerror("Error", "La carpeta del estudio no existe")
+
     def editar_estudio(self, id_estudio):
         # Similar a mostrar_crear_estudio pero con datos precargados
         self.ventana_editar = Toplevel(self.root)
@@ -567,8 +478,8 @@ class KineVizApp:
             messagebox.showerror("Error", "Estudio no encontrado")
             return
         
-        _, nombre_estudio, num_sujetos, formato_sujetos, tiene_tipo_prueba, tipos_prueba, tiene_periodo_prueba, periodos_prueba, cantidad_intentos, formato_intentos = estudio
-        
+        _, nombre_estudio, num_sujetos, tipos_prueba, periodos_prueba, cantidad_intentos = estudio
+
         # Frame principal con scroll
         canvas = tk.Canvas(self.ventana_editar)
         scrollbar = ttk.Scrollbar(self.ventana_editar, orient="vertical", command=canvas.yview)
@@ -585,11 +496,9 @@ class KineVizApp:
         # Variables para campos
         self.var_nombre = tk.StringVar(value=nombre_estudio)
         self.var_num_sujetos = tk.StringVar(value=str(num_sujetos))
-        self.var_formato_sujetos = tk.StringVar(value=formato_sujetos)
-        self.var_tipo_prueba = tk.BooleanVar(value=tiene_tipo_prueba)
-        self.var_periodo_prueba = tk.BooleanVar(value=tiene_periodo_prueba)
+        self.var_tipos_prueba = tk.StringVar(value=tipos_prueba)
+        self.var_periodos_prueba = tk.StringVar(value=periodos_prueba)
         self.var_cantidad_intentos = tk.StringVar(value=str(cantidad_intentos))
-        self.var_formato_intentos = tk.StringVar(value=formato_intentos)
         
         # Campos del formulario
         ttk.Label(scroll_frame, text="Nombre del estudio:").pack(pady=5)
@@ -598,30 +507,14 @@ class KineVizApp:
         ttk.Label(scroll_frame, text="Número de Sujetos:").pack(pady=5)
         ttk.Entry(scroll_frame, textvariable=self.var_num_sujetos).pack(pady=5)
         
-        ttk.Label(scroll_frame, text="Formato de Sujetos:").pack(pady=5)
-        ttk.Entry(scroll_frame, textvariable=self.var_formato_sujetos).pack(pady=5)
+        ttk.Label(scroll_frame, text="Tipos de Prueba:").pack(pady=5)
+        ttk.Entry(scroll_frame, textvariable=self.var_tipos_prueba).pack(pady=5)
         
-        # Frame para tipos de prueba
-        self.tipo_prueba_frame = ttk.LabelFrame(scroll_frame, text="Tipos de Prueba")
-        self.tipo_prueba_frame.pack(pady=10, fill="x", padx=5)
-        
-        ttk.Checkbutton(self.tipo_prueba_frame, text="Tiene Tipo de Prueba", 
-                       variable=self.var_tipo_prueba, 
-                       command=self.actualizar_campos_tipo_prueba).pack(pady=5)
-        
-        # Frame para periodos de prueba
-        self.periodo_prueba_frame = ttk.LabelFrame(scroll_frame, text="Periodos de Prueba")
-        self.periodo_prueba_frame.pack(pady=10, fill="x", padx=5)
-        
-        ttk.Checkbutton(self.periodo_prueba_frame, text="Tiene Periodo de Prueba", 
-                       variable=self.var_periodo_prueba, 
-                       command=self.actualizar_campos_periodo_prueba).pack(pady=5)
-        
+        ttk.Label(scroll_frame, text="Periodos de Prueba:").pack(pady=5)
+        ttk.Entry(scroll_frame, textvariable=self.var_periodos_prueba).pack(pady=5)
+
         ttk.Label(scroll_frame, text="Cantidad de Intentos:").pack(pady=5)
         ttk.Entry(scroll_frame, textvariable=self.var_cantidad_intentos).pack(pady=5)
-        
-        ttk.Label(scroll_frame, text="Formato de Intentos:").pack(pady=5)
-        ttk.Entry(scroll_frame, textvariable=self.var_formato_intentos).pack(pady=5)
         
         ttk.Button(scroll_frame, text="Guardar", 
                   command=lambda: self.guardar_edicion(id_estudio)).pack(pady=20)
@@ -635,6 +528,17 @@ class KineVizApp:
         if not self.var_nombre.get():
             messagebox.showerror("Error", "El nombre del estudio es obligatorio")
             return
+
+        # Validar si el nombre del estudio ya existe (excluyendo el nombre actual)
+        conn = sqlite3.connect('kineviz.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT COUNT(*) FROM estudios WHERE nombre_estudio = ? AND id_estudio != ?', (self.var_nombre.get(), id_estudio))
+        count = cursor.fetchone()[0]
+        conn.close()
+        
+        if count > 0:
+            messagebox.showerror("Error", "Ya existe un estudio con ese nombre")
+            return
             
         try:
             num_sujetos = int(self.var_num_sujetos.get())
@@ -642,10 +546,6 @@ class KineVizApp:
                 raise ValueError()
         except ValueError:
             messagebox.showerror("Error", "El número de sujetos debe ser un número positivo")
-            return
-            
-        if not self.var_formato_sujetos.get():
-            messagebox.showerror("Error", "El formato de sujetos es obligatorio")
             return
             
         try:
@@ -656,10 +556,6 @@ class KineVizApp:
             messagebox.showerror("Error", "La cantidad de intentos debe ser un número positivo")
             return
             
-        if not self.var_formato_intentos.get():
-            messagebox.showerror("Error", "El formato de intentos es obligatorio")
-            return
-        
         # Recopilar tipos de prueba si están habilitados
         tipos_prueba = []
         if self.var_tipo_prueba.get():
@@ -685,26 +581,36 @@ class KineVizApp:
             UPDATE estudios 
             SET nombre_estudio = ?, 
                 num_sujetos = ?, 
+                num_sujetos = ?, 
+                formato_sujetos = ?,
+                tiene_tipo_prueba = ?,
+                num_sujetos = ?,
                 formato_sujetos = ?,
                 tiene_tipo_prueba = ?,
                 tipos_prueba = ?,
-                tiene_periodo_prueba = ?,
                 periodos_prueba = ?,
-                cantidad_intentos_prueba = ?,
-                formato_intentos_prueba = ?
+                cantidad_intentos_prueba = ?
             WHERE id_estudio = ?
         ''', (
             self.var_nombre.get(),
             num_sujetos,
-            self.var_formato_sujetos.get(),
-            self.var_tipo_prueba.get(),
-            ','.join(tipos_prueba) if tipos_prueba else None,
-            self.var_periodo_prueba.get(),
-            ','.join(periodos_prueba) if periodos_prueba else None,
+            self.var_tipos_prueba.get(),
+            self.var_periodos_prueba.get(),
             cantidad_intentos,
-            self.var_formato_intentos.get(),
             id_estudio
         ))
+
+        # Renombrar carpeta si el nombre del estudio cambió
+        if nombre_estudio != self.var_nombre.get():
+            old_path = os.path.join("estudios", nombre_estudio)
+            new_path = os.path.join("estudios", self.var_nombre.get())
+            
+            if os.path.exists(old_path):
+                os.rename(old_path, new_path)
+            else:
+                # Si la carpeta no existe, créala (en caso de que se haya creado el estudio sin carpeta)
+                os.makedirs(new_path)
+
         conn.commit()
         conn.close()
         
@@ -719,8 +625,13 @@ class KineVizApp:
                 conn = sqlite3.connect('kineviz.db')
                 cursor = conn.cursor()
                 cursor.execute('SELECT nombre_estudio FROM estudios WHERE id_estudio = ?', (id_estudio,))
-                nombre_estudio = cursor.fetchone()[0]
+                nombre_estudio = cursor.fetchone() 
                 
+                if nombre_estudio is not None:
+                    nombre_estudio = nombre_estudio[0]
+                else:
+                    raise Exception("Estudio no encontrado en la base de datos")
+
                 # Eliminar archivos físicos
                 estudio_path = os.path.join("estudios", nombre_estudio)
                 if os.path.exists(estudio_path):
