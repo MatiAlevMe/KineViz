@@ -426,7 +426,7 @@ class KineVizApp:
             
             # Botón para agregar archivos
             ttk.Button(scroll_frame, text="Agregar Archivos", 
-                      command=lambda: self.agregar_archivos(estudio_path,self.archivos_frame)).pack(pady=10)
+                      command=lambda: self.agregar_archivos(estudio_path, nombre_estudio)).pack(pady=10)
                                     
             ttk.Button(scroll_frame, text="Abrir Carpeta del Estudio", 
                       command=lambda: self.abrir_carpeta_estudio(estudio_path)).pack(pady=10)
@@ -434,64 +434,141 @@ class KineVizApp:
             # Frame para archivos
             self.archivos_frame = ttk.LabelFrame(scroll_frame, text="Archivos Resultantes")
             self.archivos_frame.pack(pady=10, fill="x", padx=5)
-            self.crear_tabla_archivos(self.archivos_frame, ('Paciente', 'Nombre', 'Frecuencia', 'Ver', 'Nombre OG', 'Ver OG', 'Eliminar'))
+
+            # Frame para filtros
+            filter_frame = ttk.Frame(self.archivos_frame)
+            filter_frame.pack(fill=tk.X, pady=(0, 10))
+
+            ttk.Label(filter_frame, text="Buscar archivo:").pack(side=tk.LEFT)
+            self.search_file_entry = ttk.Entry(filter_frame)
+            self.search_file_entry.pack(side=tk.LEFT, padx=5)
+
+            ttk.Label(filter_frame, text="Filtrar por tipo:").pack(side=tk.LEFT)
+            self.filter_type_var = tk.StringVar(value="Todos")
+            filter_options = ["Todos", "Cinemática", "Cinética", "Electromiográfica", "OG"]
+            filter_menu = ttk.OptionMenu(filter_frame, self.filter_type_var, *filter_options)
+            filter_menu.pack(side=tk.LEFT, padx=5)
+
+            ttk.Button(filter_frame, text="Aplicar", command=lambda: self.cargar_archivos(estudio_path, nombre_estudio)).pack(side=tk.LEFT)
+
+            # Crear tabla de archivos
+            self.crear_tabla_archivos(self.archivos_frame, ('Paciente', 'Nombre', 'Tipo', 'Frecuencia', 'Ver', 'Eliminar'))
+            self.cargar_archivos(estudio_path, nombre_estudio)
+
+            # Frame de paginación de archivos
+            self.file_pagination_frame = ttk.Frame(self.archivos_frame)
+            self.file_pagination_frame.pack(pady=(10, 0))
+            self.update_file_pagination(estudio_path, nombre_estudio)
         
         # Configurar scroll
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
 
     def crear_tabla_archivos(self, parent_frame, columns):
-        tree = ttk.Treeview(parent_frame, columns=columns, show='headings')
+        self.archivos_tree = ttk.Treeview(parent_frame, columns=columns, show='headings')
         for col in columns:
-            tree.heading(col, text=col)
-            tree.column(col, width=75)
-        tree.pack(pady=5)
+            self.archivos_tree.heading(col, text=col)
+            self.archivos_tree.column(col, width=75)
+        self.archivos_tree.pack(pady=5)
+        self.archivos_tree.bind('<ButtonRelease-1>', self.on_file_tree_click)
 
+    def cargar_archivos(self, estudio_path, nombre_estudio):
+        # Limpiar tabla existente
+        for item in self.archivos_tree.get_children():
+            self.archivos_tree.delete(item)
 
-    def eliminar_archivo(self, estudio_path, archivo, frame):
+        # Obtener la lista de archivos
+        archivos = []
+        for root, _, files in os.walk(estudio_path):
+            for file in files:
+                if file.endswith(".txt"):
+                    archivos.append(os.path.relpath(os.path.join(root, file), estudio_path))
+
+        # Aplicar filtros
+        search_query = self.search_file_entry.get().lower()
+        filter_type = self.filter_type_var.get()
+
+        filtered_archivos = []
+        for archivo in archivos:
+            tipo = ""
+            frecuencia = ""
+            paciente = archivo.split(os.sep)[0]  # Obtener el nombre del paciente de la ruta
+
+            if "OG" in archivo:
+                tipo = "OG"
+            elif "Cinemática" in archivo:
+                tipo = "New"
+                frecuencia = "Cinemática"
+            elif "Cinética" in archivo:
+                tipo = "New"
+                frecuencia = "Cinética"
+            elif "Electromiográfica" in archivo:
+                tipo = "New"
+                frecuencia = "Electromiográfica"
+
+            if (search_query in archivo.lower() or search_query in paciente.lower()) and (filter_type == "Todos" or filter_type == tipo):
+                filtered_archivos.append((paciente, archivo, tipo, frecuencia))
+
+        # Paginación
+        start_idx = (self.current_file_page - 1) * self.files_per_page
+        end_idx = min(start_idx + self.files_per_page, len(filtered_archivos))
+        paginated_archivos = filtered_archivos[start_idx:end_idx]
+
+        # Insertar filas en la tabla
+        for paciente, archivo, tipo, frecuencia in paginated_archivos:
+            self.archivos_tree.insert("", tk.END, values=(
+                paciente,
+                os.path.basename(archivo),
+                tipo,
+                frecuencia,
+                'Ver',
+                'Eliminar'
+            ), tags=(archivo,))
+
+        self.update_file_pagination(estudio_path, nombre_estudio)
+
+    def on_file_tree_click(self, event):
+        region = self.archivos_tree.identify("region", event.x, event.y)
+        if region == "cell":
+            column = self.archivos_tree.identify_column(event.x)
+            row = self.archivos_tree.identify_row(event.y)
+            archivo = self.archivos_tree.item(row, "tags")[0]
+            
+            if column == "#5":  # Ver
+                self.abrir_archivo(os.path.join("estudios", nombre_estudio, archivo))
+            elif column == "#6":  # Eliminar
+                self.eliminar_archivo(os.path.join("estudios", nombre_estudio), archivo)
+
+    def abrir_archivo(self, archivo_path):
+        if os.path.exists(archivo_path):
+            if sys.platform == 'win32':
+                os.startfile(archivo_path)
+            else:
+                subprocess.call(['open', archivo_path])
+        else:
+            messagebox.showerror("Error", "El archivo no existe")
+
+    def eliminar_archivo(self, estudio_path, archivo):
         if messagebox.askyesno("Confirmar", f"¿Desea eliminar el archivo {archivo}?"):
             try:
                 os.remove(os.path.join(estudio_path, archivo))
                 messagebox.showinfo("Éxito", "Archivo eliminado correctamente")
                 # Actualizar vista de archivos
-                for widget in frame.winfo_children():
-                    widget.destroy()
-                archivos = os.listdir(estudio_path)
-                if archivos:
-                    for arch in archivos:
-                        file_frame = ttk.Frame(frame)
-                        file_frame.pack(fill="x", pady=2)
-                        ttk.Label(file_frame, text=arch).pack(side="left", padx=5)
-                        ttk.Button(file_frame, text="Eliminar", 
-                                 command=lambda a=arch: self.eliminar_archivo(estudio_path, a, frame)).pack(side="right", padx=5)
-                else:
-                    ttk.Label(frame, text="No hay archivos").pack(pady=5)
+                self.cargar_archivos(estudio_path, os.path.basename(estudio_path))
             except Exception as e:
                 messagebox.showerror("Error", f"Error al eliminar archivo: {str(e)}")
 
-    def agregar_archivos(self, estudio_path, frame):
+    def agregar_archivos(self, estudio_path, nombre_estudio):
         archivo = filedialog.askopenfilename(
             title="Seleccionar archivo",
             filetypes=[("Archivos de texto", "*.txt"), ("Archivos CSV", "*.csv")]
         )
         if archivo:
             try:
-                nombre_estudio = os.path.basename(estudio_path)
                 leer_archivo_csv_o_txt(archivo, nombre_estudio)
                 messagebox.showinfo("Éxito", "Archivo agregado correctamente")
                 # Actualizar vista de archivos
-                for widget in frame.winfo_children():
-                    widget.destroy()
-                archivos = os.listdir(estudio_path)
-                if archivos:
-                    for arch in archivos:
-                        file_frame = ttk.Frame(frame)
-                        file_frame.pack(fill="x", pady=2)
-                        ttk.Label(file_frame, text=arch).pack(side="left", padx=5)
-                        ttk.Button(file_frame, text="Eliminar", 
-                                 command=lambda a=arch: self.eliminar_archivo(estudio_path, a, frame)).pack(side="right", padx=5)
-                else:
-                    ttk.Label(frame, text="No hay archivos").pack(pady=5)
+                self.cargar_archivos(estudio_path, nombre_estudio)
             except Exception as e:
                 messagebox.showerror("Error", f"Error al agregar archivo: {str(e)}")
 
