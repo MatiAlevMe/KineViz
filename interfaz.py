@@ -159,6 +159,8 @@ class KineVizApp:
         ttk.Button(header_frame, text='Manual', command=self.abrir_manual_usuario).pack(side=tk.RIGHT, padx=5)
         ttk.Button(header_frame, text='Configuración', command=self.mostrar_configuracion).pack(side=tk.RIGHT, padx=5)
         ttk.Button(header_frame, text='Ayuda', command=self.mostrar_bienvenida).pack(side=tk.RIGHT, padx=5)
+        ttk.Button(header_frame, text='Abrir Carpeta de Estudios', 
+                  command=lambda: self.abrir_carpeta("estudios")).pack(side=tk.RIGHT, padx=5)
 
         # Frame de búsqueda
         search_frame = ttk.Frame(main_frame)
@@ -206,6 +208,15 @@ class KineVizApp:
         ttk.Button(main_frame, text='Refrescar', 
                   command=self.cargar_estudios).pack(pady=20)
 
+    def abrir_carpeta(self, path):
+        """Abre una carpeta en el explorador de archivos del sistema"""
+        if not os.path.exists(path):
+            os.makedirs(path)
+        if sys.platform == 'win32':
+            os.startfile(path)
+        else:
+            subprocess.call(['open', path])
+
     def verificar_estudios_existentes(self):
         """Verifica si las carpetas de los estudios existen y elimina los que no tienen carpeta"""
         conn = sqlite3.connect('kineviz.db')
@@ -246,6 +257,9 @@ class KineVizApp:
         self.update_pagination()
 
     def cargar_estudios(self):
+        # Verificar estudios existentes antes de cargar
+        self.verificar_estudios_existentes()
+        
         # Limpiar tabla existente
         for item in self.tree.get_children():
             self.tree.delete(item)
@@ -453,7 +467,7 @@ class KineVizApp:
             self.archivos_frame = ttk.LabelFrame(scroll_frame, text="Archivos Resultantes")
             self.archivos_frame.pack(pady=10, fill="x", padx=5)
 
-            # Frame para filtros
+            # Frame para filtros y botones
             filter_frame = ttk.Frame(self.archivos_frame)
             filter_frame.pack(fill=tk.X, pady=(0, 10))
 
@@ -467,9 +481,13 @@ class KineVizApp:
             filter_menu = ttk.OptionMenu(filter_frame, self.filter_type_var, *filter_options)
             filter_menu.pack(side=tk.LEFT, padx=5)
 
-            ttk.Button(filter_frame, text="Aplicar", command=lambda: self.cargar_archivos(estudio_path, nombre_estudio)).pack(side=tk.LEFT)
+            ttk.Button(filter_frame, text="Aplicar", 
+                      command=lambda: self.cargar_archivos(estudio_path, nombre_estudio)).pack(side=tk.LEFT)
+            
+            ttk.Button(filter_frame, text="Refrescar", 
+                      command=lambda: self.cargar_archivos(estudio_path, nombre_estudio)).pack(side=tk.LEFT, padx=5)
 
-           # Crear tabla de archivos
+            # Crear tabla de archivos
             self.crear_tabla_archivos(self.archivos_frame, ('Paciente', 'Nombre', 'Tipo', 'Frecuencia', 'Ver', 'Eliminar'))
 
             # Create file pagination frame BEFORE using it
