@@ -32,7 +32,6 @@ class KineVizApp:
         self.current_page = 1 # Initialize current_page here
         self.current_file_page = 1  # Initialize current_file_page here
 
-
         # Configurar la base de datos
         self.setup_database()
         
@@ -191,7 +190,8 @@ class KineVizApp:
         self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         
-        # Cargar estudios
+        # Cargar estudios y verificar existencia de carpetas
+        self.verificar_estudios_existentes()
         self.cargar_estudios()
 
         # Frame de paginación
@@ -202,9 +202,24 @@ class KineVizApp:
         # Botón para crear nuevo estudio
         ttk.Button(main_frame, text='Crear Nuevo Estudio', 
                   command=self.mostrar_crear_estudio).pack(pady=20)
-                
+
         ttk.Button(main_frame, text='Refrescar', 
                   command=self.cargar_estudios).pack(pady=20)
+
+    def verificar_estudios_existentes(self):
+        """Verifica si las carpetas de los estudios existen y elimina los que no tienen carpeta"""
+        conn = sqlite3.connect('kineviz.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT id_estudio, nombre_estudio FROM estudios')
+        estudios = cursor.fetchall()
+        
+        for id_estudio, nombre_estudio in estudios:
+            ruta_estudio = os.path.join("estudios", nombre_estudio)
+            if not os.path.exists(ruta_estudio):
+                cursor.execute('DELETE FROM estudios WHERE id_estudio = ?', (id_estudio,))
+        
+        conn.commit()
+        conn.close()
         
     def mostrar_configuracion(self):
         config_window = Toplevel(self.root)
@@ -454,14 +469,15 @@ class KineVizApp:
 
             ttk.Button(filter_frame, text="Aplicar", command=lambda: self.cargar_archivos(estudio_path, nombre_estudio)).pack(side=tk.LEFT)
 
-            # Crear tabla de archivos
+           # Crear tabla de archivos
             self.crear_tabla_archivos(self.archivos_frame, ('Paciente', 'Nombre', 'Tipo', 'Frecuencia', 'Ver', 'Eliminar'))
-            self.cargar_archivos(estudio_path, nombre_estudio)
 
-            # Frame de paginación de archivos
+            # Create file pagination frame BEFORE using it
             self.file_pagination_frame = ttk.Frame(self.archivos_frame)
             self.file_pagination_frame.pack(pady=(10, 0))
-            self.update_file_pagination(estudio_path, nombre_estudio)
+
+            # Now load files and update pagination
+            self.cargar_archivos(estudio_path, nombre_estudio)
         
         # Configurar scroll
         canvas.pack(side="left", fill="both", expand=True)
@@ -485,32 +501,42 @@ class KineVizApp:
         for root, _, files in os.walk(estudio_path):
             for file in files:
                 if file.endswith(".txt"):
-                    archivos.append(os.path.relpath(os.path.join(root, file), estudio_path))
+                    rel_path = os.path.relpath(os.path.join(root, file), estudio_path)
+                    tipo = ""
+                    frecuencia = ""
+                    paciente = os.path.basename(os.path.dirname(os.path.dirname(os.path.join(root, file))))
+
+                    # Determinar tipo y frecuencia basado en la ruta del archivo
+                    if "OG" in root:
+                        tipo = "OG"
+                    elif "Cinemática" in root:
+                        tipo = "New"
+                        frecuencia = "Cinemática"
+                    elif "Cinética" in root:
+                        tipo = "New"
+                        frecuencia = "Cinética"
+                    elif "Electromiográfica" in root:
+                        tipo = "New"
+                        frecuencia = "Electromiográfica"
+
+                    archivos.append((paciente, rel_path, tipo, frecuencia))
 
         # Aplicar filtros
         search_query = self.search_file_entry.get().lower()
         filter_type = self.filter_type_var.get()
 
         filtered_archivos = []
-        for archivo in archivos:
-            tipo = ""
-            frecuencia = ""
-            paciente = archivo.split(os.sep)[0]  # Obtener el nombre del paciente de la ruta
-
-            if "OG" in archivo:
-                tipo = "OG"
-            elif "Cinemática" in archivo:
-                tipo = "New"
-                frecuencia = "Cinemática"
-            elif "Cinética" in archivo:
-                tipo = "New"
-                frecuencia = "Cinética"
-            elif "Electromiográfica" in archivo:
-                tipo = "New"
-                frecuencia = "Electromiográfica"
-
-            if (search_query in archivo.lower() or search_query in paciente.lower()) and (filter_type == "Todos" or filter_type == tipo):
+        for paciente, archivo, tipo, frecuencia in archivos:
+            if (search_query in archivo.lower() or search_query in paciente.lower()) and \
+               (filter_type == "Todos" or 
+                (filter_type == "Cinemática" and "Cinemática" in archivo) or
+                (filter_type == "Cinética" and "Cinética" in archivo) or
+                (filter_type == "Electromiográfica" and "Electromiográfica" in archivo) or
+                (filter_type == "OG" and "OG" in archivo)):
                 filtered_archivos.append((paciente, archivo, tipo, frecuencia))
+
+        # Reset filter_type_var to "Todos" after filtering
+        self.filter_type_var.set("Todos")  
 
         # Paginación
         start_idx = (self.current_file_page - 1) * self.files_per_page
@@ -530,6 +556,59 @@ class KineVizApp:
 
         self.update_file_pagination(estudio_path, nombre_estudio)
 
+    def update_file_pagination(self, estudio_path, nombre_estudio):
+        """Update pagination for files table"""
+        # Clear existing pagination buttons
+        for widget in self.file_pagination_frame.winfo_children():
+            widget.destroy()
+
+        # Count total files
+        total_files = 0
+        for root, _, files in os.walk(estudio_path):
+            for file in files:
+                if file.endswith(".txt"):
+                    total_files += 1
+
+        # Calculate total pages
+        total_pages = (total_files // self.files_per_page) + (1 if total_files % self.files_per_page else 0)
+
+        if total_pages > 1:
+            ttk.Button(self.file_pagination_frame, text="<<", 
+                      command=lambda: self.go_to_first_file_page(estudio_path, nombre_estudio)).pack(side=tk.LEFT)
+            ttk.Button(self.file_pagination_frame, text="<", 
+                      command=lambda: self.go_to_previous_file_page(estudio_path, nombre_estudio)).pack(side=tk.LEFT)
+
+            for page in range(1, total_pages + 1):
+                ttk.Button(self.file_pagination_frame, text=str(page), 
+                          command=lambda p=page: self.go_to_file_page(p, estudio_path, nombre_estudio)).pack(side=tk.LEFT)
+
+            ttk.Button(self.file_pagination_frame, text=">", 
+                      command=lambda: self.go_to_next_file_page(estudio_path, nombre_estudio, total_pages)).pack(side=tk.LEFT)
+            ttk.Button(self.file_pagination_frame, text=">>", 
+                      command=lambda: self.go_to_last_file_page(estudio_path, nombre_estudio, total_pages)).pack(side=tk.LEFT)
+
+    def go_to_first_file_page(self, estudio_path, nombre_estudio):
+        self.current_file_page = 1
+        self.cargar_archivos(estudio_path, nombre_estudio)
+
+    def go_to_previous_file_page(self, estudio_path, nombre_estudio):
+        if self.current_file_page > 1:
+            self.current_file_page -= 1
+            self.cargar_archivos(estudio_path, nombre_estudio)
+
+    def go_to_next_file_page(self, estudio_path, nombre_estudio, total_pages):
+        if self.current_file_page < total_pages:
+            self.current_file_page += 1
+            self.cargar_archivos(estudio_path, nombre_estudio)
+
+    def go_to_last_file_page(self, estudio_path, nombre_estudio, total_pages):
+        self.current_file_page = total_pages
+        self.cargar_archivos(estudio_path, nombre_estudio)
+
+    def go_to_file_page(self, page, estudio_path, nombre_estudio):
+        self.current_file_page = page
+        self.cargar_archivos(estudio_path, nombre_estudio)
+
     def on_file_tree_click(self, event):
         region = self.archivos_tree.identify("region", event.x, event.y)
         if region == "cell":
@@ -538,12 +617,13 @@ class KineVizApp:
             archivo = self.archivos_tree.item(row, "tags")[0]
 
             # Obtener el nombre del estudio de la ruta del archivo
-            nombre_estudio = os.path.dirname(archivo).split(os.sep)[-1]
+            nombre_estudio = os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(archivo))))
+            estudio_path = os.path.join("estudios", nombre_estudio)
 
             if column == "#5":  # Ver
-                self.abrir_archivo(os.path.join("estudios", nombre_estudio, archivo))
+                self.abrir_archivo(os.path.join(estudio_path, archivo))
             elif column == "#6":  # Eliminar
-                self.eliminar_archivo(os.path.join("estudios", nombre_estudio), archivo)
+                self.eliminar_archivo(estudio_path, archivo)
 
     def abrir_archivo(self, archivo_path):
         if os.path.exists(archivo_path):
@@ -557,15 +637,33 @@ class KineVizApp:
     def eliminar_archivo(self, estudio_path, archivo):
         if messagebox.askyesno("Confirmar", f"¿Desea eliminar el archivo {archivo}?"):
             try:
-                os.remove(os.path.join(estudio_path, archivo))
+                archivo_path = os.path.join(estudio_path, archivo)
+                os.remove(archivo_path)
                 messagebox.showinfo("Éxito", "Archivo eliminado correctamente")
-                # Actualizar vista de archivos
-                self.cargar_archivos(estudio_path, os.path.basename(estudio_path))
-
-                # Actualizar la vista principal si la carpeta del estudio está vacía
+                
+                # Verificar si la carpeta del tipo de archivo está vacía
+                tipo_path = os.path.dirname(archivo_path)
+                if not os.listdir(tipo_path):
+                    os.rmdir(tipo_path)
+                
+                # Verificar si la carpeta del paciente está vacía
+                paciente_path = os.path.dirname(tipo_path)
+                if not os.listdir(paciente_path):
+                    os.rmdir(paciente_path)
+                
+                # Verificar si la carpeta del estudio está vacía
                 if not os.listdir(estudio_path):
+                    os.rmdir(estudio_path)
+                    # Si la carpeta del estudio está vacía, eliminar el estudio de la base de datos
+                    conn = sqlite3.connect('kineviz.db')
+                    cursor = conn.cursor()
+                    cursor.execute('DELETE FROM estudios WHERE nombre_estudio = ?', (os.path.basename(estudio_path),))
+                    conn.commit()
+                    conn.close()
                     self.mostrar_main_page()
-
+                else:
+                    # Actualizar vista de archivos
+                    self.cargar_archivos(estudio_path, os.path.basename(estudio_path))
             except Exception as e:
                 messagebox.showerror("Error", f"Error al eliminar archivo: {str(e)}")
 
