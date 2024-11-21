@@ -30,6 +30,7 @@ class KineVizApp:
         self.tipo_prueba_widgets = []
         self.periodo_prueba_widgets = []
         self.current_page = 1 # Initialize current_page here
+        self.current_file_page = 1  # Initialize current_file_page here
 
 
         # Configurar la base de datos
@@ -46,10 +47,12 @@ class KineVizApp:
         try:
             self.config.read('config.ini')
             self.estudios_por_pagina = int(self.config['SETTINGS']['estudios_por_pagina'])
+            self.files_per_page = int(self.config['SETTINGS']['files_per_page'])  # Load files_per_page
         except Exception as e:
             # Handle errors (e.g., file not found, invalid values)
             messagebox.showerror("Error", f"Error loading configuration: {str(e)}")
             self.estudios_por_pagina = 10 # Default value
+            self.files_per_page = 10  # Default value for files_per_page
 
     def setup_database(self):
         conn = sqlite3.connect('kineviz.db')
@@ -533,7 +536,10 @@ class KineVizApp:
             column = self.archivos_tree.identify_column(event.x)
             row = self.archivos_tree.identify_row(event.y)
             archivo = self.archivos_tree.item(row, "tags")[0]
-            
+
+            # Obtener el nombre del estudio de la ruta del archivo
+            nombre_estudio = os.path.dirname(archivo).split(os.sep)[-1]
+
             if column == "#5":  # Ver
                 self.abrir_archivo(os.path.join("estudios", nombre_estudio, archivo))
             elif column == "#6":  # Eliminar
@@ -555,6 +561,11 @@ class KineVizApp:
                 messagebox.showinfo("Éxito", "Archivo eliminado correctamente")
                 # Actualizar vista de archivos
                 self.cargar_archivos(estudio_path, os.path.basename(estudio_path))
+
+                # Actualizar la vista principal si la carpeta del estudio está vacía
+                if not os.listdir(estudio_path):
+                    self.mostrar_main_page()
+
             except Exception as e:
                 messagebox.showerror("Error", f"Error al eliminar archivo: {str(e)}")
 
