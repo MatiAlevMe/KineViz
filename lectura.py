@@ -121,11 +121,13 @@ def leer_archivo_csv_o_txt(ruta_archivo, nombre_estudio, nombre_paciente=None):
     carpeta correspondiente según la frecuencia de medición.
     """
     try:
-        ruta_estudio = os.path.join("estudios", nombre_estudio)
-        os.makedirs(ruta_estudio, exist_ok=True)
-        
         if nombre_paciente is None:
             nombre_paciente = obtener_nombre_paciente(os.path.basename(ruta_archivo))
+
+        # Crear la estructura de directorios correcta
+        ruta_estudio = os.path.join("estudios", nombre_estudio)
+        os.makedirs(ruta_estudio, exist_ok=True)
+
         ruta_paciente = os.path.join(ruta_estudio, nombre_paciente)
         os.makedirs(ruta_paciente, exist_ok=True)
 
