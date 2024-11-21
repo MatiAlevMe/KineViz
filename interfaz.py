@@ -688,11 +688,39 @@ class KineVizApp:
         if region == "cell":
             column = self.archivos_tree.identify_column(event.x)
             row = self.archivos_tree.identify_row(event.y)
+            if not row:
+                return
+                
+            values = self.archivos_tree.item(row)['values']
+            if not values:
+                return
+                
             archivo = self.archivos_tree.item(row, "tags")[0]
+            if not archivo:
+                return
 
-            # Obtener el nombre del estudio de la ruta del archivo
-            nombre_estudio = os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(archivo))))
-            estudio_path = os.path.join("estudios", nombre_estudio)
+            # Get the study name from the current window title
+            current_window = event.widget.winfo_toplevel()
+            study_name = None
+            
+            # Get all studies from database
+            conn = sqlite3.connect('kineviz.db')
+            cursor = conn.cursor()
+            cursor.execute('SELECT nombre_estudio FROM estudios')
+            studies = cursor.fetchall()
+            conn.close()
+            
+            # Find which study this file belongs to
+            for (nombre_estudio,) in studies:
+                if os.path.exists(os.path.join("estudios", nombre_estudio, archivo)):
+                    study_name = nombre_estudio
+                    break
+            
+            if not study_name:
+                messagebox.showerror("Error", "No se pudo encontrar el estudio asociado al archivo")
+                return
+
+            estudio_path = os.path.join("estudios", study_name)
 
             if column == "#5":  # Ver
                 self.abrir_archivo(os.path.join(estudio_path, archivo))
