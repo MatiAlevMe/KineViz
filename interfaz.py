@@ -529,6 +529,63 @@ class KineVizApp:
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
 
+    def setup_parameter_selection(self, parent, title):
+        """Configura una sección de selección de parámetros"""
+        frame = ttk.LabelFrame(parent, text=title)
+        frame.pack(fill=tk.X, pady=5)
+        
+        # Listbox para opciones disponibles
+        listbox = tk.Listbox(frame, height=5)
+        listbox.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        
+        # Scrollbar para el listbox
+        scrollbar = ttk.Scrollbar(frame, orient="vertical", command=listbox.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        listbox.configure(yscrollcommand=scrollbar.set)
+        
+        # Botón para agregar
+        ttk.Button(frame, text="Agregar", 
+                  command=lambda: self.add_to_analysis(title, listbox.get(tk.ACTIVE))).pack(side=tk.LEFT)
+        
+        # Guardar referencia al listbox
+        setattr(self, f"{title.lower().replace(' ', '_')}_listbox", listbox)
+
+    def setup_analysis_list(self, parent, title):
+        """Configura una sección de lista de análisis"""
+        frame = ttk.LabelFrame(parent, text=title)
+        frame.pack(fill=tk.X, pady=5)
+        
+        # Listbox para elementos seleccionados
+        listbox = tk.Listbox(frame, height=5)
+        listbox.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        
+        # Scrollbar para el listbox
+        scrollbar = ttk.Scrollbar(frame, orient="vertical", command=listbox.yview)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        listbox.configure(yscrollcommand=scrollbar.set)
+        
+        # Botón para eliminar
+        ttk.Button(frame, text="X", 
+                  command=lambda: self.remove_from_analysis(title, listbox.get(tk.ACTIVE))).pack(side=tk.LEFT)
+        
+        # Guardar referencia al listbox
+        setattr(self, f"{title.lower().replace(' ', '_')}_analysis_listbox", listbox)
+
+    def add_to_analysis(self, category, item):
+        """Agrega un elemento a la lista de análisis"""
+        if item:
+            analysis_listbox = getattr(self, f"{category.lower().replace(' ', '_')}_analysis_listbox")
+            if item not in analysis_listbox.get(0, tk.END):
+                analysis_listbox.insert(tk.END, item)
+
+    def remove_from_analysis(self, category, item):
+        """Elimina un elemento de la lista de análisis"""
+        if item:
+            analysis_listbox = getattr(self, f"{category.lower().replace(' ', '_')}_analysis_listbox")
+            selection = analysis_listbox.curselection()
+            if selection:
+                analysis_listbox.delete(selection)
+
     def mostrar_analisis_estudio(self, id_estudio):
         """Muestra la ventana de análisis de estudio"""
         # Validar que haya al menos dos pacientes antes de abrir la ventana
@@ -551,6 +608,12 @@ class KineVizApp:
         freq_frame.pack(fill=tk.X, pady=(0, 10))
         freq_options = ["Cinemática", "Cinética", "Electromiográfica"]
         self.freq_var = tk.StringVar(value=freq_options[0])
+        
+        def on_freq_change(*args):
+            # Actualizar las listas basadas en la nueva frecuencia
+            self.actualizar_listas_parametros(id_estudio)
+        
+        self.freq_var.trace_add("write", on_freq_change)
         freq_menu = ttk.OptionMenu(freq_frame, self.freq_var, *freq_options)
         freq_menu.pack(pady=5)
 
@@ -615,6 +678,59 @@ class KineVizApp:
         pagination_frame.pack(fill=tk.X)
         for i in range(1, 6):
             ttk.Button(pagination_frame, text=str(i)).pack(side=tk.LEFT, padx=2)
+
+        # Cargar datos iniciales
+        self.actualizar_listas_parametros(id_estudio)
+
+    def actualizar_listas_parametros(self, id_estudio):
+        """Actualiza las listas de parámetros basado en la frecuencia seleccionada"""
+        # Obtener el nombre del estudio
+        conn = sqlite3.connect('kineviz.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT nombre_estudio FROM estudios WHERE id_estudio = ?', (id_estudio,))
+        nombre_estudio = cursor.fetchone()[0]
+        conn.close()
+
+        # Ruta del estudio
+        estudio_path = os.path.join("estudios", nombre_estudio)
+        frecuencia = self.freq_var.get()
+
+        # Limpiar listboxes
+        for categoria in ["pacientes", "tipo_de_prueba", "periodo_de_prueba"]:
+            listbox = getattr(self, f"{categoria}_listbox")
+            listbox.delete(0, tk.END)
+
+        # Obtener y mostrar datos
+        pacientes = set()
+        tipos_prueba = set()
+        periodos_prueba = set()
+
+        if os.path.exists(estudio_path):
+            for root, _, files in os.walk(estudio_path):
+                for file in files:
+                    if file.endswith('.txt'):
+                        file_path = os.path.join(root, file)
+                        if frecuencia in file_path:
+                            # Extraer información del path
+                            rel_path = os.path.relpath(file_path, estudio_path)
+                            parts = rel_path.split(os.sep)
+                            
+                            if len(parts) >= 2:
+                                pacientes.add(parts[0])  # Primer nivel es el paciente
+                                if len(parts) >= 3:
+                                    tipos_prueba.add(parts[1])  # Segundo nivel es el tipo de prueba
+                                    if len(parts) >= 4:
+                                        periodos_prueba.add(parts[2])  # Tercer nivel es el periodo
+
+        # Actualizar listboxes
+        for paciente in sorted(pacientes):
+            self.pacientes_listbox.insert(tk.END, paciente)
+        
+        for tipo in sorted(tipos_prueba):
+            self.tipo_de_prueba_listbox.insert(tk.END, tipo)
+        
+        for periodo in sorted(periodos_prueba):
+            self.periodo_de_prueba_listbox.insert(tk.END, periodo)
 
     def crear_tabla_archivos(self, parent_frame, columns):
         self.archivos_tree = ttk.Treeview(parent_frame, columns=columns, show='headings')
