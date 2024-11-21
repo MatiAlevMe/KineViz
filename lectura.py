@@ -3,6 +3,7 @@ Funciones para leer y formatear archivos de texto.
 """
 from genericpath import isfile
 import os
+import shutil
 import pandas as pd
 import numpy as np
 from tkinter import messagebox
@@ -130,6 +131,15 @@ def leer_archivo_csv_o_txt(ruta_archivo, nombre_estudio, nombre_paciente=None):
 
         ruta_paciente = os.path.join(ruta_estudio, nombre_paciente)
         os.makedirs(ruta_paciente, exist_ok=True)
+
+        # Crear la carpeta OG
+        ruta_og = os.path.join(ruta_paciente, "OG")
+        os.makedirs(ruta_og, exist_ok=True)
+
+        # Copiar el archivo original a la carpeta OG
+        nombre_archivo_og = os.path.basename(ruta_archivo)
+        ruta_archivo_og = os.path.join(ruta_og, nombre_archivo_og)
+        shutil.copy2(ruta_archivo, ruta_archivo_og)
 
         with open(ruta_archivo, 'r',encoding= 'utf-8') as file:
             while True:
