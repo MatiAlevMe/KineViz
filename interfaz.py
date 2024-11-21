@@ -302,6 +302,30 @@ class KineVizApp:
             elif column == "#4":  # Eliminar
                 self.eliminar_estudio(int(id_estudio))
 
+    def validar_pacientes_estudio(self, id_estudio):
+        """Valida que el estudio tenga al menos dos pacientes diferentes"""
+        # Obtener el nombre del estudio
+        conn = sqlite3.connect('kineviz.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT nombre_estudio FROM estudios WHERE id_estudio = ?', (id_estudio,))
+        nombre_estudio = cursor.fetchone()[0]
+        conn.close()
+
+        # Obtener la ruta del estudio
+        estudio_path = os.path.join("estudios", nombre_estudio)
+        
+        # Obtener lista de pacientes únicos
+        pacientes = set()
+        if os.path.exists(estudio_path):
+            for root, dirs, files in os.walk(estudio_path):
+                for file in files:
+                    if file.endswith('.txt'):
+                        # El paciente es el nombre del directorio dos niveles arriba del archivo
+                        paciente = os.path.basename(os.path.dirname(os.path.dirname(os.path.join(root, file))))
+                        pacientes.add(paciente)
+        
+        return len(pacientes) >= 2
+
     def mostrar_crear_estudio(self):
         self.ventana_crear = Toplevel(self.root)
         self.ventana_crear.title('Crear Estudio')
@@ -463,6 +487,10 @@ class KineVizApp:
             ttk.Button(scroll_frame, text="Abrir Carpeta del Estudio", 
                       command=lambda: self.abrir_carpeta_estudio(estudio_path)).pack(pady=10)
 
+            # Botón para abrir ventana de análisis
+            ttk.Button(scroll_frame, text="Análisis de Estudio",
+                      command=lambda: self.mostrar_analisis_estudio(id_estudio)).pack(pady=10)
+
             # Frame para archivos
             self.archivos_frame = ttk.LabelFrame(scroll_frame, text="Archivos Resultantes")
             self.archivos_frame.pack(pady=10, fill="x", padx=5)
@@ -500,6 +528,93 @@ class KineVizApp:
         # Configurar scroll
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
+
+    def mostrar_analisis_estudio(self, id_estudio):
+        """Muestra la ventana de análisis de estudio"""
+        # Validar que haya al menos dos pacientes antes de abrir la ventana
+        if not self.validar_pacientes_estudio(id_estudio):
+            messagebox.showwarning("Advertencia", 
+                                 "El estudio debe tener al menos dos pacientes diferentes para realizar el análisis.")
+            return
+
+        # Crear la ventana de análisis
+        analisis_window = Toplevel(self.root)
+        analisis_window.title('Análisis de Estudio')
+        analisis_window.geometry('1000x800')
+
+        # Frame principal con scroll
+        main_frame = ttk.Frame(analisis_window)
+        main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+
+        # Filtro de Frecuencia
+        freq_frame = ttk.LabelFrame(main_frame, text="Frecuencia")
+        freq_frame.pack(fill=tk.X, pady=(0, 10))
+        freq_options = ["Cinemática", "Cinética", "Electromiográfica"]
+        self.freq_var = tk.StringVar(value=freq_options[0])
+        freq_menu = ttk.OptionMenu(freq_frame, self.freq_var, *freq_options)
+        freq_menu.pack(pady=5)
+
+        # Frame para selección de parámetros y lista de análisis
+        params_frame = ttk.Frame(main_frame)
+        params_frame.pack(fill=tk.BOTH, expand=True)
+
+        # Frame izquierdo - Selección de parámetros
+        left_frame = ttk.LabelFrame(params_frame, text="Selección de Parámetros")
+        left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 10))
+
+        # Listboxes y botones para selección
+        self.setup_parameter_selection(left_frame, "Pacientes")
+        self.setup_parameter_selection(left_frame, "Tipo de Prueba")
+        self.setup_parameter_selection(left_frame, "Periodo de Prueba")
+
+        # Frame derecho - Lista de análisis
+        right_frame = ttk.LabelFrame(params_frame, text="Lista de Análisis")
+        right_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        # Listboxes para elementos seleccionados
+        self.setup_analysis_list(right_frame, "Pacientes")
+        self.setup_analysis_list(right_frame, "Tipo de Prueba")
+        self.setup_analysis_list(right_frame, "Periodo de Prueba")
+
+        # Frame inferior - Cálculos y acciones
+        bottom_frame = ttk.Frame(main_frame)
+        bottom_frame.pack(fill=tk.X, pady=10)
+
+        # Selección de cálculo
+        calc_frame = ttk.LabelFrame(bottom_frame, text="Cálculo")
+        calc_frame.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
+        calc_options = ["Máximo", "Mínimo", "Rango"]
+        self.calc_var = tk.StringVar(value=calc_options[0])
+        calc_menu = ttk.OptionMenu(calc_frame, self.calc_var, *calc_options)
+        calc_menu.pack(pady=5)
+
+        # Lista de cálculos
+        calc_list_frame = ttk.LabelFrame(bottom_frame, text="Lista de Cálculos")
+        calc_list_frame.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        self.calc_listbox = tk.Listbox(calc_list_frame, height=4)
+        self.calc_listbox.pack(fill=tk.X, pady=5)
+
+        # Frame para botones de acción
+        action_frame = ttk.Frame(main_frame)
+        action_frame.pack(fill=tk.X, pady=10)
+
+        # Botones de acción
+        ttk.Button(action_frame, text="Crear Reporte PDF").pack(side=tk.LEFT, padx=5)
+        ttk.Button(action_frame, text="Ver PDF").pack(side=tk.LEFT, padx=5)
+        ttk.Button(action_frame, text="Eliminar PDF").pack(side=tk.LEFT, padx=5)
+        ttk.Button(action_frame, text="Nuevo Análisis").pack(side=tk.LEFT, padx=5)
+
+        # Frame para búsqueda y paginación
+        search_frame = ttk.Frame(main_frame)
+        search_frame.pack(fill=tk.X, pady=10)
+        ttk.Entry(search_frame).pack(side=tk.LEFT, padx=5)
+        ttk.Button(search_frame, text="Buscar").pack(side=tk.LEFT)
+
+        # Paginación
+        pagination_frame = ttk.Frame(main_frame)
+        pagination_frame.pack(fill=tk.X)
+        for i in range(1, 6):
+            ttk.Button(pagination_frame, text=str(i)).pack(side=tk.LEFT, padx=2)
 
     def crear_tabla_archivos(self, parent_frame, columns):
         self.archivos_tree = ttk.Treeview(parent_frame, columns=columns, show='headings')
