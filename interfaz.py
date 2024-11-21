@@ -532,7 +532,7 @@ class KineVizApp:
                 (filter_type == "Cinemática" and "Cinemática" in archivo) or
                 (filter_type == "Cinética" and "Cinética" in archivo) or
                 (filter_type == "Electromiográfica" and "Electromiográfica" in archivo) or
-                (filter_type == "OG" and "OG" in archivo)):
+                (filter_type == "OG" and tipo == "OG")):
                 filtered_archivos.append((paciente, archivo, tipo, frecuencia))
 
         # Reset filter_type_var to "Todos" after filtering
@@ -554,6 +554,7 @@ class KineVizApp:
                 'Eliminar'
             ), tags=(archivo,))
 
+        # Update pagination without resetting filter
         self.update_file_pagination(estudio_path, nombre_estudio)
 
     def update_file_pagination(self, estudio_path, nombre_estudio):
@@ -562,30 +563,85 @@ class KineVizApp:
         for widget in self.file_pagination_frame.winfo_children():
             widget.destroy()
 
-        # Count total files
-        total_files = 0
+        # Get all files and apply filters to get accurate count
+        archivos = []
         for root, _, files in os.walk(estudio_path):
             for file in files:
                 if file.endswith(".txt"):
-                    total_files += 1
+                    rel_path = os.path.relpath(os.path.join(root, file), estudio_path)
+                    tipo = ""
+                    frecuencia = ""
+                    paciente = os.path.basename(os.path.dirname(os.path.dirname(os.path.join(root, file))))
 
-        # Calculate total pages
-        total_pages = (total_files // self.files_per_page) + (1 if total_files % self.files_per_page else 0)
+                    # Determinar tipo y frecuencia basado en la ruta del archivo
+                    if "OG" in root:
+                        tipo = "OG"
+                    elif "Cinemática" in root:
+                        tipo = "New"
+                        frecuencia = "Cinemática"
+                    elif "Cinética" in root:
+                        tipo = "New"
+                        frecuencia = "Cinética"
+                    elif "Electromiográfica" in root:
+                        tipo = "New"
+                        frecuencia = "Electromiográfica"
+
+                    archivos.append((paciente, rel_path, tipo, frecuencia))
+
+        # Apply filters
+        search_query = self.search_file_entry.get().lower()
+        filter_type = self.filter_type_var.get()
+
+        filtered_archivos = []
+        for paciente, archivo, tipo, frecuencia in archivos:
+            if (search_query in archivo.lower() or search_query in paciente.lower()) and \
+               (filter_type == "Todos" or 
+                (filter_type == "Cinemática" and "Cinemática" in archivo) or
+                (filter_type == "Cinética" and "Cinética" in archivo) or
+                (filter_type == "Electromiográfica" and "Electromiográfica" in archivo) or
+                (filter_type == "OG" and tipo == "OG")):
+                filtered_archivos.append((paciente, archivo, tipo, frecuencia))
+
+        # Calculate total pages based on filtered files
+        total_pages = (len(filtered_archivos) // self.files_per_page) + (1 if len(filtered_archivos) % self.files_per_page else 0)
+        total_pages = max(1, total_pages)  # Ensure at least 1 page
 
         if total_pages > 1:
-            ttk.Button(self.file_pagination_frame, text="<<", 
-                      command=lambda: self.go_to_first_file_page(estudio_path, nombre_estudio)).pack(side=tk.LEFT)
-            ttk.Button(self.file_pagination_frame, text="<", 
-                      command=lambda: self.go_to_previous_file_page(estudio_path, nombre_estudio)).pack(side=tk.LEFT)
+            # First page button
+            ttk.Button(
+                self.file_pagination_frame, 
+                text="<<", 
+                command=lambda e=estudio_path, n=nombre_estudio: self.go_to_first_file_page(e, n)
+            ).pack(side=tk.LEFT)
+            
+            # Previous page button
+            ttk.Button(
+                self.file_pagination_frame, 
+                text="<", 
+                command=lambda e=estudio_path, n=nombre_estudio: self.go_to_previous_file_page(e, n)
+            ).pack(side=tk.LEFT)
 
+            # Page number buttons
             for page in range(1, total_pages + 1):
-                ttk.Button(self.file_pagination_frame, text=str(page), 
-                          command=lambda p=page: self.go_to_file_page(p, estudio_path, nombre_estudio)).pack(side=tk.LEFT)
+                ttk.Button(
+                    self.file_pagination_frame, 
+                    text=str(page),
+                    command=lambda p=page, e=estudio_path, n=nombre_estudio: self.go_to_file_page(p, e, n)
+                ).pack(side=tk.LEFT)
 
-            ttk.Button(self.file_pagination_frame, text=">", 
-                      command=lambda: self.go_to_next_file_page(estudio_path, nombre_estudio, total_pages)).pack(side=tk.LEFT)
-            ttk.Button(self.file_pagination_frame, text=">>", 
-                      command=lambda: self.go_to_last_file_page(estudio_path, nombre_estudio, total_pages)).pack(side=tk.LEFT)
+            # Next page button
+            ttk.Button(
+                self.file_pagination_frame, 
+                text=">", 
+                command=lambda e=estudio_path, n=nombre_estudio, t=total_pages: self.go_to_next_file_page(e, n, t)
+            ).pack(side=tk.LEFT)
+            
+            # Last page button
+            ttk.Button(
+                self.file_pagination_frame, 
+                text=">>", 
+                command=lambda e=estudio_path, n=nombre_estudio, t=total_pages: self.go_to_last_file_page(e, n, t)
+            ).pack(side=tk.LEFT)
 
     def go_to_first_file_page(self, estudio_path, nombre_estudio):
         self.current_file_page = 1
