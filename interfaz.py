@@ -38,6 +38,7 @@ class KineVizApp:
         self.periodo_prueba_widgets = []
         self.current_page = 1 # Initialize current_page here
         self.current_file_page = 1  # Initialize current_file_page here
+        self.current_pdf_page = 1  # Initialize current_pdf_page here
 
         # Configurar la base de datos
         self.setup_database()
@@ -1263,36 +1264,64 @@ class KineVizApp:
     def procesar_datos(self, estudio_path, paciente, frecuencia, tipo, periodo):
         """Procesa los datos de un archivo específico"""
         # Construir la ruta del archivo
-        archivo_path = os.path.join(estudio_path, paciente, frecuencia, f"{paciente} {tipo} {periodo}.txt")
+        archivo_path = os.path.join(estudio_path, paciente, frecuencia)
         
         if not os.path.exists(archivo_path):
-            # Intentar con orden inverso (periodo, tipo)
-            archivo_path = os.path.join(estudio_path, paciente, frecuencia, f"{paciente} {periodo} {tipo}.txt")
-            if not os.path.exists(archivo_path):
-                # Intentar con número al final
-                for i in range(1, 101):  # Buscar archivos con números del 1 al 100
-                    archivo_path = os.path.join(estudio_path, paciente, frecuencia, f"{paciente} {tipo} {periodo} {i}.txt")
-                    if os.path.exists(archivo_path):
-                        break
-                    archivo_path = os.path.join(estudio_path, paciente, frecuencia, f"{paciente} {periodo} {tipo} {i}.txt")
-                    if os.path.exists(archivo_path):
-                        break
-                else:
-                    return None
-        
-        try:
-            with open(archivo_path, 'r') as f:
-                # Leer los valores numéricos del archivo
-                valores = []
-                for line in f:
-                    try:
-                        valor = float(line.strip())
-                        valores.append(valor)
-                    except ValueError:
-                        continue
-                return valores
-        except:
+            print(f"- Directorio no encontrado: {archivo_path}")
             return None
+            
+        print(f"- Buscando en: {archivo_path}")
+        
+        # Get all files in directory
+        try:
+            archivos = os.listdir(archivo_path)
+            # Filter files that match our pattern
+            archivos_validos = [
+                f for f in archivos 
+                if f.startswith(f"{paciente} {tipo} {periodo}") and 
+                "_" in f and 
+                f.split("_")[1] == f"{frecuencia}.txt"
+            ]
+            
+            print(f"- Archivos encontrados: {archivos_validos}")
+            
+            # Process each matching file
+            for nombre in archivos_validos:
+                path = os.path.join(archivo_path, nombre)
+                print(f"- Procesando: {path}")
+                try:
+                    valores = []
+                    with open(path, 'r') as f:
+                        # Skip first 4 lines (headers)
+                        for _ in range(4):
+                            next(f)
+                        
+                        # Read values until we find MAXIMO, MINIMO or RANGO
+                        for line in f:
+                            if any(x in line for x in ["MAXIMO", "MINIMO", "RANGO"]):
+                                break
+                            try:
+                                # Values are separated by semicolons
+                                partes = line.strip().split(';')
+                                if len(partes) > 2:  # Make sure we have values
+                                    # Take third value onwards (first two are indices)
+                                    for valor in partes[2:]:
+                                        if valor.strip():  # If not empty
+                                            valores.append(float(valor))
+                            except ValueError:
+                                continue
+                    
+                    if valores:  # If we found valid values
+                        return valores
+                except Exception as e:
+                    print(f"- Error procesando {path}: {str(e)}")
+                    continue
+            
+            print("- No se encontraron datos válidos")
+        except Exception as e:
+            print(f"- Error listando archivos: {str(e)}")
+        
+        return None
 
     def generar_nombre_pdf(self, reporte_id, calculos, frecuencias):
         """Genera el nombre del PDF según el formato especificado"""
@@ -1686,66 +1715,89 @@ class KineVizApp:
         # Ruta del estudio
         estudio_path = os.path.join("estudios", nombre_estudio)
         
-        # Procesar datos y generar gráficos para cada frecuencia
-        for frecuencia in frecuencias:
-            elements.append(Paragraph(f"Análisis para {frecuencia}:", heading_style))
-            elements.append(Spacer(1, 12))
-            
-            # Para cada tipo y periodo
-            for tipo in tipos:
-                for periodo in periodos:
-                    elements.append(Paragraph(f"{tipo} - {periodo}", heading2_style))
-                    elements.append(Spacer(1, 6))
-                    
-                    # Recopilar datos para el gráfico
-                    datos_pacientes = {}
-                    for paciente in pacientes:
-                        valores = self.procesar_datos(estudio_path, paciente, frecuencia, tipo, periodo)
-                        if valores:
-                            datos_pacientes[paciente] = valores
-                    
-                    if datos_pacientes:
-                        # Crear gráfico de caja (boxplot)
-                        plt.figure(figsize=(8, 6))
-                        plt.boxplot([datos_pacientes[p] for p in datos_pacientes.keys()],
-                                  labels=list(datos_pacientes.keys()))
-                        plt.title(f"{tipo} - {periodo}")
-                        plt.ylabel("Valores")
-                        plt.xticks(rotation=45)
-                        
-                        # Guardar gráfico temporalmente
-                        temp_plot = f"temp_plot_{frecuencia}_{tipo}_{periodo}.png"
-                        plt.savefig(temp_plot, bbox_inches='tight')
-                        plt.close()
-                        
-                        # Agregar gráfico al PDF
-                        elements.append(Image(temp_plot, width=400, height=300))
-                        elements.append(Spacer(1, 12))
-                        
-                        # Eliminar archivo temporal
-                        os.remove(temp_plot)
-                        
-                        # Agregar resultados estadísticos
-                        for calculo in calculos:
-                            elements.append(Paragraph(f"Resultados para {calculo}:", normal_style))
-                            
-                            # Tabla de resultados
-                            resultados = []
-                            for paciente in datos_pacientes:
-                                valor = self.calcular_estadisticas(datos_pacientes[paciente], calculo)
-                                if valor is not None:
-                                    resultados.append(f"{paciente}: {valor:.2f}")
-                            
-                            if resultados:
-                                elements.append(Paragraph("<br/>".join(resultados), normal_style))
-                            elements.append(Spacer(1, 6))
-                    else:
-                        elements.append(Paragraph("No hay datos disponibles para esta combinación", normal_style))
-                    
-                    elements.append(Spacer(1, 12))
+        # Crear directorio temporal para gráficos si no existe
+        temp_dir = os.path.join(estudio_path, "temp")
+        if not os.path.exists(temp_dir):
+            os.makedirs(temp_dir)
         
-        # Generar PDF
-        doc.build(elements)
+        try:
+            # Procesar datos y generar gráficos para cada frecuencia
+            for frecuencia in frecuencias:
+                elements.append(Paragraph(f"Análisis para {frecuencia}:", heading_style))
+                elements.append(Spacer(1, 12))
+                
+                # Para cada tipo y periodo
+                for tipo in tipos:
+                    for periodo in periodos:
+                        elements.append(Paragraph(f"{tipo} - {periodo}", heading2_style))
+                        elements.append(Spacer(1, 6))
+                        
+                        # Recopilar datos para el gráfico
+                        datos_pacientes = {}
+                        for paciente in pacientes:
+                            valores = self.procesar_datos(estudio_path, paciente, frecuencia, tipo, periodo)
+                            if valores:
+                                datos_pacientes[paciente] = valores
+                        
+                        if datos_pacientes:
+                            # Crear gráfico de caja (boxplot)
+                            plt.figure(figsize=(8, 6))
+                            plt.boxplot([datos_pacientes[p] for p in datos_pacientes.keys()],
+                                      tick_labels=list(datos_pacientes.keys()))
+                            plt.title(f"{tipo} - {periodo}")
+                            plt.ylabel("Valores")
+                            plt.xticks(rotation=45)
+                            
+                            # Guardar gráfico temporalmente
+                            temp_plot = os.path.join(temp_dir, f"temp_plot_{frecuencia}_{tipo}_{periodo}.png")
+                            plt.savefig(temp_plot, bbox_inches='tight')
+                            plt.close()
+                            
+                            # Agregar gráfico al PDF
+                            elements.append(Image(temp_plot, width=400, height=300))
+                            elements.append(Spacer(1, 12))
+                            
+                            # Agregar resultados estadísticos
+                            for calculo in calculos:
+                                elements.append(Paragraph(f"Resultados para {calculo}:", normal_style))
+                                
+                                # Tabla de resultados
+                                resultados = []
+                                for paciente in datos_pacientes:
+                                    valor = self.calcular_estadisticas(datos_pacientes[paciente], calculo)
+                                    if valor is not None:
+                                        resultados.append(f"{paciente}: {valor:.2f}")
+                                
+                                if resultados:
+                                    elements.append(Paragraph("<br/>".join(resultados), normal_style))
+                                elements.append(Spacer(1, 6))
+                        else:
+                            elements.append(Paragraph("No hay datos disponibles para esta combinación", normal_style))
+                        
+                        elements.append(Spacer(1, 12))
+            
+            # Generar PDF
+            doc.build(elements)
+            
+            # Limpiar archivos temporales
+            if os.path.exists(temp_dir):
+                for file in os.listdir(temp_dir):
+                    os.remove(os.path.join(temp_dir, file))
+                os.rmdir(temp_dir)
+                
+        except Exception as e:
+            # Asegurar limpieza de archivos temporales incluso si hay error
+            if os.path.exists(temp_dir):
+                for file in os.listdir(temp_dir):
+                    try:
+                        os.remove(os.path.join(temp_dir, file))
+                    except:
+                        pass
+                try:
+                    os.rmdir(temp_dir)
+                except:
+                    pass
+            raise e
 
     def eliminar_pdf(self):
         """Elimina el PDF seleccionado"""
