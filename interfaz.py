@@ -1613,7 +1613,6 @@ class KineVizApp:
         
         # Resetear filtros
         self.freq_var.set("Todos")
-        self.calc_var.set("Todos")
 
     def crear_tabla_archivos(self, parent_frame, columns):
         self.archivos_tree = ttk.Treeview(parent_frame, columns=columns, show='headings')
