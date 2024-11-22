@@ -1227,9 +1227,10 @@ class KineVizApp:
 
     def crear_reporte_pdf(self, id_estudio):
         """Crea un reporte PDF con los análisis seleccionados"""
-        # Verificar que haya selecciones
-        if not self.pacientes_analysis_listbox.get(0, tk.END):
-            messagebox.showerror("Error", "Debe seleccionar al menos un paciente")
+        # Verificar que haya al menos dos pacientes seleccionados
+        pacientes = list(self.pacientes_analysis_listbox.get(0, tk.END))
+        if len(pacientes) < 2:
+            messagebox.showerror("Error", "Debe seleccionar al menos dos pacientes")
             return
             
         if not self.frecuencia_medicion_analysis_listbox.get(0, tk.END):
@@ -1244,16 +1245,15 @@ class KineVizApp:
             messagebox.showerror("Error", "Debe seleccionar al menos un periodo de prueba")
             return
             
-        if not self.calc_listbox.get(0, tk.END):
+        if not self.calculo_analysis_listbox.get(0, tk.END):
             messagebox.showerror("Error", "Debe seleccionar al menos un cálculo")
             return
 
         # Obtener datos seleccionados
-        pacientes = list(self.pacientes_analysis_listbox.get(0, tk.END))
         frecuencias = list(self.frecuencia_medicion_analysis_listbox.get(0, tk.END))
         tipos = list(self.tipo_prueba_analysis_listbox.get(0, tk.END))
         periodos = list(self.periodo_prueba_analysis_listbox.get(0, tk.END))
-        calculos = list(self.calc_listbox.get(0, tk.END))
+        calculos = list(self.calculo_analysis_listbox.get(0, tk.END))
 
         # Obtener nombre del estudio
         conn = sqlite3.connect('kineviz.db')
@@ -1609,7 +1609,7 @@ class KineVizApp:
         self.frecuencia_medicion_analysis_listbox.delete(0, tk.END)
         self.tipo_prueba_analysis_listbox.delete(0, tk.END)
         self.periodo_prueba_analysis_listbox.delete(0, tk.END)
-        self.calc_listbox.delete(0, tk.END)
+        self.calculo_analysis_listbox.delete(0, tk.END)
         
         # Resetear filtros
         self.freq_var.set("Todos")
