@@ -984,17 +984,6 @@ class KineVizApp:
         freq_frame.pack(fill=tk.X, pady=(0, 10))
         freq_options = ["Todos", "Cinemática", "Cinética", "Electromiográfica"]
         self.freq_var = tk.StringVar(value=freq_options[0])
-        
-        def on_freq_change(*args):
-            self.actualizar_listas_parametros(id_estudio)
-        
-        self.freq_var.trace_add("write", on_freq_change)
-        freq_menu = ttk.OptionMenu(freq_frame, self.freq_var, freq_options[0], *freq_options)
-        freq_menu.pack(side=tk.LEFT, pady=5)
-        
-        # Botón para resetear frecuencia
-        ttk.Button(freq_frame, text="Resetear", 
-                  command=lambda: self.reset_filter(self.freq_var, freq_options[0])).pack(side=tk.LEFT, padx=5)
 
         # Frame para selección de parámetros y lista de análisis
         params_frame = ttk.Frame(main_frame)
@@ -1157,6 +1146,18 @@ class KineVizApp:
         self.pagination_frame = ttk.Frame(main_frame)
         self.pagination_frame.pack(fill=tk.X)
         self.update_pdf_pagination()
+
+         # Now define the on_freq_change function and call actualizar_listas_parametros
+        def on_freq_change(*args):
+            self.actualizar_listas_parametros(id_estudio)
+
+        self.freq_var.trace_add("write", on_freq_change)
+        freq_menu = ttk.OptionMenu(freq_frame, self.freq_var, freq_options[0], *freq_options)
+        freq_menu.pack(side=tk.LEFT, pady=5)
+
+        # Botón para resetear frecuencia
+        ttk.Button(freq_frame, text="Resetear", 
+                  command=lambda: self.reset_filter(self.freq_var, freq_options[0])).pack(side=tk.LEFT, padx=5)
 
         # Cargar datos iniciales
         self.actualizar_listas_parametros(id_estudio)
