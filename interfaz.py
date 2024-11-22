@@ -1005,20 +1005,106 @@ class KineVizApp:
         left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 10))
 
         # Listboxes y botones para selección
-        self.pacientes_listbox = self.setup_parameter_selection(left_frame, "Pacientes")
-        self.frecuencia_medicion_listbox = self.setup_parameter_selection(left_frame, "Frecuencia de Medición")
-        self.tipo_prueba_listbox = self.setup_parameter_selection(left_frame, "Tipo de Prueba")
-        self.periodo_prueba_listbox = self.setup_parameter_selection(left_frame, "Periodo de Prueba")
+        # Pacientes
+        pacientes_frame = ttk.LabelFrame(left_frame, text="Pacientes")
+        pacientes_frame.pack(fill=tk.X, pady=5)
+        self.pacientes_listbox = tk.Listbox(pacientes_frame, height=4, selectmode=tk.SINGLE)
+        self.pacientes_listbox.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        ttk.Button(pacientes_frame, text="Agregar", 
+                  command=lambda: self.add_to_analysis("Pacientes", 
+                  self.pacientes_listbox.get(self.pacientes_listbox.curselection()) if self.pacientes_listbox.curselection() else None
+                  )).pack(side=tk.LEFT, padx=5)
+        ttk.Button(pacientes_frame, text="Agregar Todo", 
+                  command=lambda: self.add_all_to_analysis("Pacientes", self.pacientes_listbox)).pack(side=tk.LEFT, padx=5)
+
+        # Frecuencia de Medición
+        freq_med_frame = ttk.LabelFrame(left_frame, text="Frecuencia de Medición")
+        freq_med_frame.pack(fill=tk.X, pady=5)
+        self.frecuencia_medicion_listbox = tk.Listbox(freq_med_frame, height=4, selectmode=tk.SINGLE)
+        self.frecuencia_medicion_listbox.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        ttk.Button(freq_med_frame, text="Agregar", 
+                  command=lambda: self.add_to_analysis("Frecuencia de Medición",
+                  self.frecuencia_medicion_listbox.get(self.frecuencia_medicion_listbox.curselection()) if self.frecuencia_medicion_listbox.curselection() else None
+                  )).pack(side=tk.LEFT, padx=5)
+        ttk.Button(freq_med_frame, text="Agregar Todo", 
+                  command=lambda: self.add_all_to_analysis("Frecuencia de Medición", self.frecuencia_medicion_listbox)).pack(side=tk.LEFT, padx=5)
+
+        # Tipo de Prueba
+        tipo_prueba_frame = ttk.LabelFrame(left_frame, text="Tipo de Prueba")
+        tipo_prueba_frame.pack(fill=tk.X, pady=5)
+        self.tipo_prueba_listbox = tk.Listbox(tipo_prueba_frame, height=4, selectmode=tk.SINGLE)
+        self.tipo_prueba_listbox.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        ttk.Button(tipo_prueba_frame, text="Agregar", 
+                  command=lambda: self.add_to_analysis("Tipo de Prueba",
+                  self.tipo_prueba_listbox.get(self.tipo_prueba_listbox.curselection()) if self.tipo_prueba_listbox.curselection() else None
+                  )).pack(side=tk.LEFT, padx=5)
+        ttk.Button(tipo_prueba_frame, text="Agregar Todo", 
+                  command=lambda: self.add_all_to_analysis("Tipo de Prueba", self.tipo_prueba_listbox)).pack(side=tk.LEFT, padx=5)
+
+        # Periodo de Prueba
+        periodo_prueba_frame = ttk.LabelFrame(left_frame, text="Periodo de Prueba")
+        periodo_prueba_frame.pack(fill=tk.X, pady=5)
+        self.periodo_prueba_listbox = tk.Listbox(periodo_prueba_frame, height=4, selectmode=tk.SINGLE)
+        self.periodo_prueba_listbox.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        ttk.Button(periodo_prueba_frame, text="Agregar", 
+                  command=lambda: self.add_to_analysis("Periodo de Prueba",
+                  self.periodo_prueba_listbox.get(self.periodo_prueba_listbox.curselection()) if self.periodo_prueba_listbox.curselection() else None
+                  )).pack(side=tk.LEFT, padx=5)
+        ttk.Button(periodo_prueba_frame, text="Agregar Todo", 
+                  command=lambda: self.add_all_to_analysis("Periodo de Prueba", self.periodo_prueba_listbox)).pack(side=tk.LEFT, padx=5)
 
         # Frame derecho - Lista de análisis
         right_frame = ttk.LabelFrame(params_frame, text="Lista de Análisis")
         right_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         # Listboxes para elementos seleccionados
-        self.pacientes_analysis_listbox = self.setup_analysis_list(right_frame, "Pacientes")
-        self.frecuencia_medicion_analysis_listbox = self.setup_analysis_list(right_frame, "Frecuencia de Medición")
-        self.tipo_prueba_analysis_listbox = self.setup_analysis_list(right_frame, "Tipo de Prueba")
-        self.periodo_prueba_analysis_listbox = self.setup_analysis_list(right_frame, "Periodo de Prueba")
+        # Pacientes Analysis
+        pacientes_analysis_frame = ttk.LabelFrame(right_frame, text="Pacientes")
+        pacientes_analysis_frame.pack(fill=tk.X, pady=5)
+        self.pacientes_analysis_listbox = tk.Listbox(pacientes_analysis_frame, height=4)
+        self.pacientes_analysis_listbox.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        ttk.Button(pacientes_analysis_frame, text="Eliminar", 
+                  command=lambda: self.remove_from_analysis("Pacientes",
+                  self.pacientes_analysis_listbox.get(self.pacientes_analysis_listbox.curselection()) if self.pacientes_analysis_listbox.curselection() else None
+                  )).pack(side=tk.LEFT, padx=5)
+        ttk.Button(pacientes_analysis_frame, text="Eliminar Todo", 
+                  command=lambda: self.remove_all_from_analysis("Pacientes")).pack(side=tk.LEFT, padx=5)
+
+        # Frecuencia de Medición Analysis
+        freq_med_analysis_frame = ttk.LabelFrame(right_frame, text="Frecuencia de Medición")
+        freq_med_analysis_frame.pack(fill=tk.X, pady=5)
+        self.frecuencia_medicion_analysis_listbox = tk.Listbox(freq_med_analysis_frame, height=4)
+        self.frecuencia_medicion_analysis_listbox.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        ttk.Button(freq_med_analysis_frame, text="Eliminar", 
+                  command=lambda: self.remove_from_analysis("Frecuencia de Medición",
+                  self.frecuencia_medicion_analysis_listbox.get(self.frecuencia_medicion_analysis_listbox.curselection()) if self.frecuencia_medicion_analysis_listbox.curselection() else None
+                  )).pack(side=tk.LEFT, padx=5)
+        ttk.Button(freq_med_analysis_frame, text="Eliminar Todo", 
+                  command=lambda: self.remove_all_from_analysis("Frecuencia de Medición")).pack(side=tk.LEFT, padx=5)
+
+        # Tipo de Prueba Analysis
+        tipo_prueba_analysis_frame = ttk.LabelFrame(right_frame, text="Tipo de Prueba")
+        tipo_prueba_analysis_frame.pack(fill=tk.X, pady=5)
+        self.tipo_prueba_analysis_listbox = tk.Listbox(tipo_prueba_analysis_frame, height=4)
+        self.tipo_prueba_analysis_listbox.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        ttk.Button(tipo_prueba_analysis_frame, text="Eliminar", 
+                  command=lambda: self.remove_from_analysis("Tipo de Prueba",
+                  self.tipo_prueba_analysis_listbox.get(self.tipo_prueba_analysis_listbox.curselection()) if self.tipo_prueba_analysis_listbox.curselection() else None
+                  )).pack(side=tk.LEFT, padx=5)
+        ttk.Button(tipo_prueba_analysis_frame, text="Eliminar Todo", 
+                  command=lambda: self.remove_all_from_analysis("Tipo de Prueba")).pack(side=tk.LEFT, padx=5)
+
+        # Periodo de Prueba Analysis
+        periodo_prueba_analysis_frame = ttk.LabelFrame(right_frame, text="Periodo de Prueba")
+        periodo_prueba_analysis_frame.pack(fill=tk.X, pady=5)
+        self.periodo_prueba_analysis_listbox = tk.Listbox(periodo_prueba_analysis_frame, height=4)
+        self.periodo_prueba_analysis_listbox.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        ttk.Button(periodo_prueba_analysis_frame, text="Eliminar", 
+                  command=lambda: self.remove_from_analysis("Periodo de Prueba",
+                  self.periodo_prueba_analysis_listbox.get(self.periodo_prueba_analysis_listbox.curselection()) if self.periodo_prueba_analysis_listbox.curselection() else None
+                  )).pack(side=tk.LEFT, padx=5)
+        ttk.Button(periodo_prueba_analysis_frame, text="Eliminar Todo", 
+                  command=lambda: self.remove_all_from_analysis("Periodo de Prueba")).pack(side=tk.LEFT, padx=5)
 
         # Frame inferior - Cálculos y acciones
         bottom_frame = ttk.Frame(main_frame)
@@ -1048,9 +1134,13 @@ class KineVizApp:
         self.calc_listbox = tk.Listbox(calc_list_frame, height=4)
         self.calc_listbox.pack(fill=tk.X, pady=5)
 
-        # Botón para eliminar cálculo
-        ttk.Button(calc_list_frame, text="Eliminar", 
+        # Botones para cálculos
+        calc_buttons_frame = ttk.Frame(calc_list_frame)
+        calc_buttons_frame.pack(fill=tk.X)
+        ttk.Button(calc_buttons_frame, text="Eliminar", 
                   command=self.remove_selected_calculation).pack(side=tk.LEFT)
+        ttk.Button(calc_buttons_frame, text="Eliminar Todo", 
+                  command=lambda: self.calc_listbox.delete(0, tk.END)).pack(side=tk.LEFT, padx=5)
 
         # Frame para botones de acción
         action_frame = ttk.Frame(main_frame)
@@ -1081,6 +1171,19 @@ class KineVizApp:
 
         # Cargar datos iniciales
         self.actualizar_listas_parametros(id_estudio)
+
+    def add_all_to_analysis(self, category, source_listbox):
+        """Agrega todos los elementos de un listbox a la lista de análisis"""
+        analysis_listbox = getattr(self, f"{category.lower().replace(' ', '_').replace('ó', 'o')}_analysis_listbox")
+        items = source_listbox.get(0, tk.END)
+        for item in items:
+            if item not in analysis_listbox.get(0, tk.END):
+                analysis_listbox.insert(tk.END, item)
+
+    def remove_all_from_analysis(self, category):
+        """Elimina todos los elementos de una lista de análisis"""
+        analysis_listbox = getattr(self, f"{category.lower().replace(' ', '_').replace('ó', 'o')}_analysis_listbox")
+        analysis_listbox.delete(0, tk.END)
 
     def remove_selected_calculation(self):
         """Elimina el cálculo seleccionado de la lista"""
