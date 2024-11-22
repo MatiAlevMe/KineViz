@@ -1353,180 +1353,197 @@ class KineVizApp:
         return max_id + 1
 
     def crear_reporte_pdf(self, id_estudio):
-        """Crea un reporte PDF con los análisis seleccionados"""
-        # Verificar que haya al menos dos pacientes seleccionados
-        pacientes = list(self.pacientes_analysis_listbox.get(0, tk.END))
-        if len(pacientes) < 2:
-            messagebox.showerror("Error", "Debe seleccionar al menos dos pacientes")
-            return
-            
-        if not self.frecuencia_medicion_analysis_listbox.get(0, tk.END):
-            messagebox.showerror("Error", "Debe seleccionar al menos una frecuencia de medición")
-            return
-            
-        if not self.tipo_prueba_analysis_listbox.get(0, tk.END):
-            messagebox.showerror("Error", "Debe seleccionar al menos un tipo de prueba")
-            return
-            
-        if not self.periodo_prueba_analysis_listbox.get(0, tk.END):
-            messagebox.showerror("Error", "Debe seleccionar al menos un periodo de prueba")
-            return
-            
-        if not self.calculo_analysis_listbox.get(0, tk.END):
-            messagebox.showerror("Error", "Debe seleccionar al menos un cálculo")
-            return
+            """Crea un reporte PDF con los análisis seleccionados"""
+            # Verificar que haya al menos dos pacientes seleccionados
+            pacientes = list(self.pacientes_analysis_listbox.get(0, tk.END))
+            if len(pacientes) < 2:
+                messagebox.showerror("Error", "Debe seleccionar al menos dos pacientes")
+                return
+                
+            if not self.frecuencia_medicion_analysis_listbox.get(0, tk.END):
+                messagebox.showerror("Error", "Debe seleccionar al menos una frecuencia de medición")
+                return
+                
+            if not self.tipo_prueba_analysis_listbox.get(0, tk.END):
+                messagebox.showerror("Error", "Debe seleccionar al menos un tipo de prueba")
+                return
+                
+            if not self.periodo_prueba_analysis_listbox.get(0, tk.END):
+                messagebox.showerror("Error", "Debe seleccionar al menos un periodo de prueba")
+                return
+                
+            if not self.calculo_analysis_listbox.get(0, tk.END):
+                messagebox.showerror("Error", "Debe seleccionar al menos un cálculo")
+                return
 
-        # Obtener datos seleccionados
-        frecuencias = list(self.frecuencia_medicion_analysis_listbox.get(0, tk.END))
-        tipos = list(self.tipo_prueba_analysis_listbox.get(0, tk.END))
-        periodos = list(self.periodo_prueba_analysis_listbox.get(0, tk.END))
-        calculos = list(self.calculo_analysis_listbox.get(0, tk.END))
+            # Obtener datos seleccionados
+            frecuencias = list(self.frecuencia_medicion_analysis_listbox.get(0, tk.END))
+            tipos = list(self.tipo_prueba_analysis_listbox.get(0, tk.END))
+            periodos = list(self.periodo_prueba_analysis_listbox.get(0, tk.END))
+            calculos = list(self.calculo_analysis_listbox.get(0, tk.END))
 
-        # Obtener nombre del estudio
-        conn = sqlite3.connect('kineviz.db')
-        cursor = conn.cursor()
-        cursor.execute('SELECT nombre_estudio FROM estudios WHERE id_estudio = ?', (id_estudio,))
-        nombre_estudio = cursor.fetchone()[0]
-        conn.close()
+            # Obtener nombre del estudio
+            conn = sqlite3.connect('kineviz.db')
+            cursor = conn.cursor()
+            cursor.execute('SELECT nombre_estudio FROM estudios WHERE id_estudio = ?', (id_estudio,))
+            nombre_estudio = cursor.fetchone()[0]
+            conn.close()
 
-        # Crear directorio para PDFs si no existe
-        pdf_dir = os.path.join("estudios", nombre_estudio, "reportes")
-        if not os.path.exists(pdf_dir):
-            os.makedirs(pdf_dir)
+            # Crear directorio para PDFs si no existe
+            pdf_dir = os.path.join("estudios", nombre_estudio, "reportes")
+            if not os.path.exists(pdf_dir):
+                os.makedirs(pdf_dir)
 
-        # Obtener siguiente ID de reporte y generar nombre del PDF
-        reporte_id = self.obtener_siguiente_reporte_id(pdf_dir)
-        pdf_name = self.generar_nombre_pdf(reporte_id, calculos, frecuencias)
-        pdf_path = os.path.join(pdf_dir, pdf_name)
+            # Crear directorio temporal para gráficos si no existe
+            temp_dir = os.path.join("estudios", nombre_estudio, "temp")
+            if not os.path.exists(temp_dir):
+                os.makedirs(temp_dir)
 
-        try:
-            # Crear PDF
-            doc = SimpleDocTemplate(pdf_path, pagesize=letter)
-            elements = []
-            
-            # Estilos
-            styles = getSampleStyleSheet()
-            title_style = styles['Title']
-            heading_style = styles['Heading1']
-            heading2_style = styles['Heading2']
-            normal_style = styles['Normal']
-            
-            # Título
-            elements.append(Paragraph(f"Reporte de Análisis - {nombre_estudio}", title_style))
-            elements.append(Spacer(1, 12))
-            
-            # Fecha
-            elements.append(Paragraph(f"Fecha: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}", normal_style))
-            elements.append(Spacer(1, 12))
-            
-            # Parámetros seleccionados
-            elements.append(Paragraph("Parámetros Seleccionados:", heading_style))
-            elements.append(Paragraph(f"Pacientes: {', '.join(pacientes)}", normal_style))
-            elements.append(Paragraph(f"Frecuencias: {', '.join(frecuencias)}", normal_style))
-            elements.append(Paragraph(f"Tipos de Prueba: {', '.join(tipos)}", normal_style))
-            elements.append(Paragraph(f"Periodos de Prueba: {', '.join(periodos)}", normal_style))
-            elements.append(Paragraph(f"Cálculos: {', '.join(calculos)}", normal_style))
-            elements.append(Spacer(1, 12))
-            
-            # Ruta del estudio
-            estudio_path = os.path.join("estudios", nombre_estudio)
-            
-            # Procesar datos y generar gráficos para cada frecuencia
-            for frecuencia in frecuencias:
-                elements.append(Paragraph(f"Análisis para {frecuencia}:", heading_style))
+            # Obtener siguiente ID de reporte y generar nombre del PDF
+            reporte_id = self.obtener_siguiente_reporte_id(pdf_dir)
+            pdf_name = self.generar_nombre_pdf(reporte_id, calculos, frecuencias)
+            pdf_path = os.path.join(pdf_dir, pdf_name)
+
+            try:
+                # Crear PDF
+                doc = SimpleDocTemplate(pdf_path, pagesize=letter)
+                elements = []
+                
+                # Estilos
+                styles = getSampleStyleSheet()
+                title_style = styles['Title']
+                heading_style = styles['Heading1']
+                heading2_style = styles['Heading2']
+                normal_style = styles['Normal']
+                
+                # Título
+                elements.append(Paragraph(f"Reporte de Análisis - {nombre_estudio}", title_style))
                 elements.append(Spacer(1, 12))
                 
-                # Para cada tipo y periodo
-                for tipo in tipos:
-                    for periodo in periodos:
-                        elements.append(Paragraph(f"{tipo} - {periodo}", heading2_style))
-                        elements.append(Spacer(1, 6))
-                        
-                        # Recopilar datos para el gráfico
-                        datos_pacientes = {}
-                        for paciente in pacientes:
-                            valores = self.procesar_datos(estudio_path, paciente, frecuencia, tipo, periodo)
-                            if valores:
-                                datos_pacientes[paciente] = valores
-                        
-                        if datos_pacientes:
-                            # Crear gráfico de caja (boxplot)
-                            plt.figure(figsize=(8, 6))
-                            plt.boxplot([datos_pacientes[p] for p in datos_pacientes.keys()],
-                                    labels=list(datos_pacientes.keys()))
-                            plt.title(f"Boxplot: {tipo} - {periodo}")
-                            plt.ylabel("Valores")
-                            plt.xticks(rotation=45)
-                            
-                            # Guardar gráfico temporalmente
-                            temp_plot = f"temp_plot_{frecuencia}_{tipo}_{periodo}.png"
-                            plt.savefig(temp_plot, bbox_inches='tight')
-                            plt.close()
-                            
-                            # Agregar gráfico al PDF
-                            elements.append(Image(temp_plot, width=400, height=300))
-                            elements.append(Spacer(1, 12))
-                            
-                            # Eliminar archivo temporal
-                            os.remove(temp_plot)
-                            
-                            # Agregar resultados estadísticos y generar gráficos de barras
-                            for calculo in calculos:
-                                elements.append(Paragraph(f"Resultados para {calculo}:", normal_style))
-                                
-                                # Calcular valores para el gráfico de barras
-                                medias = []
-                                nombres_pacientes = []
-                                for paciente in datos_pacientes:
-                                    valor = self.calcular_estadisticas(datos_pacientes[paciente], calculo)
-                                    if valor is not None:
-                                        medias.append(valor)
-                                        nombres_pacientes.append(paciente)
-                                
-                                if medias:
-                                    # Crear gráfico de barras
-                                    plt.figure(figsize=(8, 6))
-                                    plt.bar(nombres_pacientes, medias)
-                                    plt.title(f"Gráfico de Barras - {calculo}\n{tipo} - {periodo}")
-                                    plt.xlabel("Pacientes")
-                                    plt.ylabel(f"{calculo}")
-                                    plt.xticks(rotation=45)
-                                    
-                                    # Guardar gráfico temporalmente
-                                    temp_bar = f"temp_bar_{frecuencia}_{tipo}_{periodo}_{calculo}.png"
-                                    plt.savefig(temp_bar, bbox_inches='tight')
-                                    plt.close()
-                                    
-                                    # Agregar gráfico al PDF
-                                    elements.append(Image(temp_bar, width=400, height=300))
-                                    elements.append(Spacer(1, 12))
-                                    
-                                    # Eliminar archivo temporal
-                                    os.remove(temp_bar)
-                                    
-                                    # Agregar resultados numéricos
-                                    resultados = []
-                                    for paciente, valor in zip(nombres_pacientes, medias):
-                                        resultados.append(f"{paciente}: {valor:.2f}")
-                                    
-                                    if resultados:
-                                        elements.append(Paragraph("<br/>".join(resultados), normal_style))
-                                    elements.append(Spacer(1, 6))
-                        else:
-                            elements.append(Paragraph("No hay datos disponibles para esta combinación", normal_style))
-                        
-                        elements.append(Spacer(1, 12))
-            
-            # Generar PDF
-            doc.build(elements)
-            messagebox.showinfo("Éxito", "Reporte PDF generado correctamente")
-            
-            # Abrir el PDF
-            if messagebox.askyesno("Ver PDF", "¿Desea abrir el PDF generado?"):
-                self.abrir_archivo(pdf_path)
+                # Fecha
+                elements.append(Paragraph(f"Fecha: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}", normal_style))
+                elements.append(Spacer(1, 12))
                 
-        except Exception as e:
-            messagebox.showerror("Error", f"Error al generar PDF: {str(e)}")
+                # Parámetros seleccionados
+                elements.append(Paragraph("Parámetros Seleccionados:", heading_style))
+                elements.append(Paragraph(f"Pacientes: {', '.join(pacientes)}", normal_style))
+                elements.append(Paragraph(f"Frecuencias: {', '.join(frecuencias)}", normal_style))
+                elements.append(Paragraph(f"Tipos de Prueba: {', '.join(tipos)}", normal_style))
+                elements.append(Paragraph(f"Periodos de Prueba: {', '.join(periodos)}", normal_style))
+                elements.append(Paragraph(f"Cálculos: {', '.join(calculos)}", normal_style))
+                elements.append(Spacer(1, 12))
+                
+                # Ruta del estudio
+                estudio_path = os.path.join("estudios", nombre_estudio)
+                
+                # Procesar datos y generar gráficos para cada frecuencia
+                for frecuencia in frecuencias:
+                    elements.append(Paragraph(f"Análisis para {frecuencia}:", heading_style))
+                    elements.append(Spacer(1, 12))
+                    
+                    # Para cada tipo y periodo
+                    for tipo in tipos:
+                        for periodo in periodos:
+                            elements.append(Paragraph(f"{tipo} - {periodo}", heading2_style))
+                            elements.append(Spacer(1, 6))
+                            
+                            # Recopilar datos para el gráfico
+                            datos_pacientes = {}
+                            for paciente in pacientes:
+                                valores = self.procesar_datos(estudio_path, paciente, frecuencia, tipo, periodo)
+                                if valores:
+                                    datos_pacientes[paciente] = valores
+                            
+                            if datos_pacientes:
+                                # Crear gráfico de caja (boxplot)
+                                plt.figure(figsize=(8, 6))
+                                plt.boxplot([datos_pacientes[p] for p in datos_pacientes.keys()],
+                                        tick_labels=list(datos_pacientes.keys()))
+                                plt.title(f"Boxplot: {tipo} - {periodo}")
+                                plt.ylabel("Valores")
+                                plt.xticks(rotation=45)
+                                
+                                # Guardar gráfico temporalmente
+                                temp_plot = os.path.join(temp_dir, f"temp_plot_{frecuencia}_{tipo}_{periodo}.png")
+                                plt.savefig(temp_plot, bbox_inches='tight', dpi=300)
+                                plt.close()
+                                
+                                # Agregar gráfico al PDF
+                                elements.append(Image(temp_plot, width=400, height=300))
+                                elements.append(Spacer(1, 12))
+                                
+                                # Agregar resultados estadísticos y generar gráficos de barras
+                                for calculo in calculos:
+                                    elements.append(Paragraph(f"Resultados para {calculo}:", normal_style))
+                                    
+                                    # Calcular valores para el gráfico de barras
+                                    medias = []
+                                    nombres_pacientes = []
+                                    for paciente in datos_pacientes:
+                                        valor = self.calcular_estadisticas(datos_pacientes[paciente], calculo)
+                                        if valor is not None:
+                                            medias.append(valor)
+                                            nombres_pacientes.append(paciente)
+                                    
+                                    if medias:
+                                        # Crear gráfico de barras
+                                        plt.figure(figsize=(8, 6))
+                                        plt.bar(nombres_pacientes, medias)
+                                        plt.title(f"Gráfico de Barras - {calculo}\n{tipo} - {periodo}")
+                                        plt.xlabel("Pacientes")
+                                        plt.ylabel(f"{calculo}")
+                                        plt.xticks(rotation=45)
+                                        
+                                        # Guardar gráfico temporalmente
+                                        temp_bar = os.path.join(temp_dir, f"temp_bar_{frecuencia}_{tipo}_{periodo}_{calculo}.png")
+                                        plt.savefig(temp_bar, bbox_inches='tight', dpi=300)
+                                        plt.close()
+                                        
+                                        # Agregar gráfico al PDF
+                                        elements.append(Image(temp_bar, width=400, height=300))
+                                        elements.append(Spacer(1, 12))
+                                        
+                                        # Agregar resultados numéricos
+                                        resultados = []
+                                        for paciente, valor in zip(nombres_pacientes, medias):
+                                            resultados.append(f"{paciente}: {valor:.2f}")
+                                        
+                                        if resultados:
+                                            elements.append(Paragraph("<br/>".join(resultados), normal_style))
+                                        elements.append(Spacer(1, 6))
+                            else:
+                                elements.append(Paragraph("No hay datos disponibles para esta combinación", normal_style))
+                            
+                            elements.append(Spacer(1, 12))
+                
+                # Generar PDF
+                doc.build(elements)
+                
+                # Limpiar archivos temporales
+                if os.path.exists(temp_dir):
+                    for file in os.listdir(temp_dir):
+                        os.remove(os.path.join(temp_dir, file))
+                    os.rmdir(temp_dir)
+                    
+                messagebox.showinfo("Éxito", "Reporte PDF generado correctamente")
+                
+                # Abrir el PDF
+                if messagebox.askyesno("Ver PDF", "¿Desea abrir el PDF generado?"):
+                    self.abrir_archivo(pdf_path)
+                    
+            except Exception as e:
+                # Asegurar limpieza de archivos temporales incluso si hay error
+                if os.path.exists(temp_dir):
+                    for file in os.listdir(temp_dir):
+                        try:
+                            os.remove(os.path.join(temp_dir, file))
+                        except:
+                            pass
+                    try:
+                        os.rmdir(temp_dir)
+                    except:
+                        pass
+                messagebox.showerror("Error", f"Error al generar PDF: {str(e)}")
 
     def ver_pdf(self):
         """Abre el PDF seleccionado"""
@@ -1715,89 +1732,66 @@ class KineVizApp:
         # Ruta del estudio
         estudio_path = os.path.join("estudios", nombre_estudio)
         
-        # Crear directorio temporal para gráficos si no existe
-        temp_dir = os.path.join(estudio_path, "temp")
-        if not os.path.exists(temp_dir):
-            os.makedirs(temp_dir)
-        
-        try:
-            # Procesar datos y generar gráficos para cada frecuencia
-            for frecuencia in frecuencias:
-                elements.append(Paragraph(f"Análisis para {frecuencia}:", heading_style))
-                elements.append(Spacer(1, 12))
-                
-                # Para cada tipo y periodo
-                for tipo in tipos:
-                    for periodo in periodos:
-                        elements.append(Paragraph(f"{tipo} - {periodo}", heading2_style))
-                        elements.append(Spacer(1, 6))
+        # Procesar datos y generar gráficos para cada frecuencia
+        for frecuencia in frecuencias:
+            elements.append(Paragraph(f"Análisis para {frecuencia}:", heading_style))
+            elements.append(Spacer(1, 12))
+            
+            # Para cada tipo y periodo
+            for tipo in tipos:
+                for periodo in periodos:
+                    elements.append(Paragraph(f"{tipo} - {periodo}", heading2_style))
+                    elements.append(Spacer(1, 6))
+                    
+                    # Recopilar datos para el gráfico
+                    datos_pacientes = {}
+                    for paciente in pacientes:
+                        valores = self.procesar_datos(estudio_path, paciente, frecuencia, tipo, periodo)
+                        if valores:
+                            datos_pacientes[paciente] = valores
+                    
+                    if datos_pacientes:
+                        # Crear gráfico de caja (boxplot)
+                        plt.figure(figsize=(8, 6))
+                        plt.boxplot([datos_pacientes[p] for p in datos_pacientes.keys()],
+                                  labels=list(datos_pacientes.keys()))
+                        plt.title(f"{tipo} - {periodo}")
+                        plt.ylabel("Valores")
+                        plt.xticks(rotation=45)
                         
-                        # Recopilar datos para el gráfico
-                        datos_pacientes = {}
-                        for paciente in pacientes:
-                            valores = self.procesar_datos(estudio_path, paciente, frecuencia, tipo, periodo)
-                            if valores:
-                                datos_pacientes[paciente] = valores
+                        # Guardar gráfico temporalmente
+                        temp_plot = f"temp_plot_{frecuencia}_{tipo}_{periodo}.png"
+                        plt.savefig(temp_plot, bbox_inches='tight')
+                        plt.close()
                         
-                        if datos_pacientes:
-                            # Crear gráfico de caja (boxplot)
-                            plt.figure(figsize=(8, 6))
-                            plt.boxplot([datos_pacientes[p] for p in datos_pacientes.keys()],
-                                      tick_labels=list(datos_pacientes.keys()))
-                            plt.title(f"{tipo} - {periodo}")
-                            plt.ylabel("Valores")
-                            plt.xticks(rotation=45)
-                            
-                            # Guardar gráfico temporalmente
-                            temp_plot = os.path.join(temp_dir, f"temp_plot_{frecuencia}_{tipo}_{periodo}.png")
-                            plt.savefig(temp_plot, bbox_inches='tight')
-                            plt.close()
-                            
-                            # Agregar gráfico al PDF
-                            elements.append(Image(temp_plot, width=400, height=300))
-                            elements.append(Spacer(1, 12))
-                            
-                            # Agregar resultados estadísticos
-                            for calculo in calculos:
-                                elements.append(Paragraph(f"Resultados para {calculo}:", normal_style))
-                                
-                                # Tabla de resultados
-                                resultados = []
-                                for paciente in datos_pacientes:
-                                    valor = self.calcular_estadisticas(datos_pacientes[paciente], calculo)
-                                    if valor is not None:
-                                        resultados.append(f"{paciente}: {valor:.2f}")
-                                
-                                if resultados:
-                                    elements.append(Paragraph("<br/>".join(resultados), normal_style))
-                                elements.append(Spacer(1, 6))
-                        else:
-                            elements.append(Paragraph("No hay datos disponibles para esta combinación", normal_style))
-                        
+                        # Agregar gráfico al PDF
+                        elements.append(Image(temp_plot, width=400, height=300))
                         elements.append(Spacer(1, 12))
-            
-            # Generar PDF
-            doc.build(elements)
-            
-            # Limpiar archivos temporales
-            if os.path.exists(temp_dir):
-                for file in os.listdir(temp_dir):
-                    os.remove(os.path.join(temp_dir, file))
-                os.rmdir(temp_dir)
-                
-        except Exception as e:
-            # Asegurar limpieza de archivos temporales incluso si hay error
-            if os.path.exists(temp_dir):
-                for file in os.listdir(temp_dir):
-                    try:
-                        os.remove(os.path.join(temp_dir, file))
-                    except:
-                        pass
-                try:
-                    os.rmdir(temp_dir)
-                except:
-                    pass
-            raise e
+                        
+                        # Eliminar archivo temporal
+                        os.remove(temp_plot)
+                        
+                        # Agregar resultados estadísticos
+                        for calculo in calculos:
+                            elements.append(Paragraph(f"Resultados para {calculo}:", normal_style))
+                            
+                            # Tabla de resultados
+                            resultados = []
+                            for paciente in datos_pacientes:
+                                valor = self.calcular_estadisticas(datos_pacientes[paciente], calculo)
+                                if valor is not None:
+                                    resultados.append(f"{paciente}: {valor:.2f}")
+                            
+                            if resultados:
+                                elements.append(Paragraph("<br/>".join(resultados), normal_style))
+                            elements.append(Spacer(1, 6))
+                    else:
+                        elements.append(Paragraph("No hay datos disponibles para esta combinación", normal_style))
+                    
+                    elements.append(Spacer(1, 12))
+        
+        # Generar PDF
+        doc.build(elements)
 
     def eliminar_pdf(self):
         """Elimina el PDF seleccionado"""
