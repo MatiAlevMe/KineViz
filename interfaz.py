@@ -479,105 +479,17 @@ class KineVizApp:
                 periodo_prueba = parts[1]
         
         return tipo_prueba, periodo_prueba
-    
-    def guardar_edicion(self, id_estudio, nombre_estudio_original):
-        # Validar campos obligatorios
-        if not self.var_nombre.get():
-            messagebox.showerror("Error", "El nombre del estudio es obligatorio")
-            return
 
-        # Validar si el nombre del estudio ya existe (excluyendo el nombre actual)
-        conn = sqlite3.connect('kineviz.db')
-        cursor = conn.cursor()
-        cursor.execute('SELECT COUNT(*) FROM estudios WHERE nombre_estudio = ? AND id_estudio != ?', 
-                      (self.var_nombre.get(), id_estudio))
-        count = cursor.fetchone()[0]
-        
-        try:
-            num_sujetos = int(self.var_num_sujetos.get())
-            if num_sujetos <= 0:
-                raise ValueError()
-        except ValueError:
-            messagebox.showerror("Error", "El número de sujetos debe ser un número positivo")
-            return
+    def check_existing_files(self, estudio_path):
+        """Check if there are any files in the study directory"""
+        if not os.path.exists(estudio_path):
+            return False
             
-        try:
-            cantidad_intentos = int(self.var_cantidad_intentos.get())
-            if cantidad_intentos <= 0:
-                raise ValueError()
-        except ValueError:
-            messagebox.showerror("Error", "La cantidad de intentos debe ser un número positivo")
-            return
-
-        # Validar que no haya valores duplicados entre tipos y periodos de prueba
-        tipos_prueba = [x.strip() for x in self.var_tipos_prueba.get().split(',') if x.strip()]
-        periodos_prueba = [x.strip() for x in self.var_periodos_prueba.get().split(',') if x.strip()]
-        
-        duplicates = set(tipos_prueba) & set(periodos_prueba)
-        if duplicates:
-            messagebox.showerror("Error", 
-                               f"Los siguientes valores están duplicados en Tipos y Periodos de prueba: {', '.join(duplicates)}")
-            return
-
-        # Verificar si los archivos existentes cumplen con los nuevos criterios
-        estudio_path = os.path.join("estudios", nombre_estudio_original)
-        invalid_files = []
-        
-        if os.path.exists(estudio_path):
-            for root, _, files in os.walk(estudio_path):
-                for file in files:
-                    if file.endswith('.txt'):
-                        is_valid = self.validate_filename_format(file, tipos_prueba, periodos_prueba)
-                        if not is_valid:
-                            invalid_files.append(file)
-
-        if invalid_files:
-            if messagebox.askyesno("Advertencia", 
-                                 f"Los siguientes archivos no cumplen con los nuevos criterios:\n" +
-                                 "\n".join(invalid_files) +
-                                 "\n\n¿Desea eliminar estos archivos y continuar?"):
-                # Eliminar archivos inválidos
-                for file in invalid_files:
-                    file_path = os.path.join(estudio_path, file)
-                    if os.path.exists(file_path):
-                        os.remove(file_path)
-            else:
-                return
-
-        # Actualizar en la base de datos
-        cursor.execute('''
-            UPDATE estudios 
-            SET nombre_estudio = ?, 
-                num_sujetos = ?, 
-                tipos_prueba = ?,
-                periodos_prueba = ?,
-                cantidad_intentos_prueba = ?
-            WHERE id_estudio = ?
-        ''', (
-            self.var_nombre.get(),
-            num_sujetos,
-            ','.join(tipos_prueba),
-            ','.join(periodos_prueba),
-            cantidad_intentos,
-            id_estudio
-        ))
-
-        # Renombrar carpeta si el nombre del estudio cambió
-        if nombre_estudio_original != self.var_nombre.get():
-            old_path = os.path.join("estudios", nombre_estudio_original)
-            new_path = os.path.join("estudios", self.var_nombre.get())
-            
-            if os.path.exists(old_path):
-                os.rename(old_path, new_path)
-            else:
-                os.makedirs(new_path)
-
-        conn.commit()
-        conn.close()
-        
-        messagebox.showinfo("Éxito", "Estudio actualizado correctamente")
-        self.ventana_editar.destroy()
-        self.mostrar_main_page()
+        for root, _, files in os.walk(estudio_path):
+            for file in files:
+                if file.endswith('.txt'):
+                    return True
+        return False
 
     def validate_filename_format(self, filename, tipos_prueba, periodos_prueba):
         """
@@ -607,6 +519,136 @@ class KineVizApp:
             return False
         return (parts[1] in tipos_prueba and parts[2] in periodos_prueba) or \
                (parts[1] in periodos_prueba and parts[2] in tipos_prueba)
+
+    def get_invalid_files(self, estudio_path, tipos_prueba, periodos_prueba):
+        """Get list of files that don't meet the criteria"""
+        invalid_files = []
+        if os.path.exists(estudio_path):
+            for root, _, files in os.walk(estudio_path):
+                for file in files:
+                    if file.endswith('.txt'):
+                        rel_path = os.path.relpath(os.path.join(root, file), estudio_path)
+                        if not self.validate_filename_format(file, tipos_prueba, periodos_prueba):
+                            invalid_files.append(rel_path)
+        return invalid_files
+
+    def guardar_edicion(self, id_estudio, nombre_estudio_original):
+        # Validar campos obligatorios
+        if not self.var_nombre.get():
+            messagebox.showerror("Error", "El nombre del estudio es obligatorio")
+            return
+
+        # Validar si el nombre del estudio ya existe (excluyendo el nombre actual)
+        conn = sqlite3.connect('kineviz.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT COUNT(*) FROM estudios WHERE nombre_estudio = ? AND id_estudio != ?', 
+                      (self.var_nombre.get(), id_estudio))
+        count = cursor.fetchone()[0]
+        
+        if count > 0:
+            messagebox.showerror("Error", "Ya existe un estudio con ese nombre")
+            conn.close()
+            return
+            
+        try:
+            num_sujetos = int(self.var_num_sujetos.get())
+            if num_sujetos <= 0:
+                raise ValueError()
+        except ValueError:
+            messagebox.showerror("Error", "El número de sujetos debe ser un número positivo")
+            return
+            
+        try:
+            cantidad_intentos = int(self.var_cantidad_intentos.get())
+            if cantidad_intentos <= 0:
+                raise ValueError()
+        except ValueError:
+            messagebox.showerror("Error", "La cantidad de intentos debe ser un número positivo")
+            return
+
+        # Get current study criteria
+        cursor.execute('SELECT tipos_prueba, periodos_prueba FROM estudios WHERE id_estudio = ?', (id_estudio,))
+        current_tipos, current_periodos = cursor.fetchone()
+        
+        # Get new criteria
+        new_tipos = [x.strip() for x in self.var_tipos_prueba.get().split(',') if x.strip()]
+        new_periodos = [x.strip() for x in self.var_periodos_prueba.get().split(',') if x.strip()]
+
+        # Check for duplicates between tipos and periodos
+        duplicates = set(new_tipos) & set(new_periodos)
+        if duplicates:
+            messagebox.showerror("Error", 
+                               f"Los siguientes valores están duplicados en Tipos y Periodos de prueba: {', '.join(duplicates)}")
+            conn.close()
+            return
+
+        # Check if criteria changed and there are existing files
+        estudio_path = os.path.join("estudios", nombre_estudio_original)
+        has_files = self.check_existing_files(estudio_path)
+        
+        if has_files and (
+            ','.join(new_tipos) != (current_tipos or '') or 
+            ','.join(new_periodos) != (current_periodos or '')
+        ):
+            # Get list of invalid files
+            invalid_files = self.get_invalid_files(estudio_path, new_tipos, new_periodos)
+            
+            if invalid_files:
+                if messagebox.askyesno("Advertencia", 
+                                     f"Los siguientes archivos no cumplen con los nuevos criterios:\n" +
+                                     "\n".join(invalid_files) +
+                                     "\n\n¿Desea eliminar estos archivos y continuar?"):
+                    # Eliminar archivos inválidos
+                    for file in invalid_files:
+                        file_path = os.path.join(estudio_path, file)
+                        if os.path.exists(file_path):
+                            os.remove(file_path)
+                            # Remove parent directories if empty
+                            parent_dir = os.path.dirname(file_path)
+                            while parent_dir != estudio_path:
+                                try:
+                                    os.rmdir(parent_dir)
+                                    parent_dir = os.path.dirname(parent_dir)
+                                except OSError:
+                                    break
+                else:
+                    conn.close()
+                    return
+
+        # Actualizar en la base de datos
+        cursor.execute('''
+            UPDATE estudios 
+            SET nombre_estudio = ?, 
+                num_sujetos = ?, 
+                tipos_prueba = ?,
+                periodos_prueba = ?,
+                cantidad_intentos_prueba = ?
+            WHERE id_estudio = ?
+        ''', (
+            self.var_nombre.get(),
+            num_sujetos,
+            ','.join(new_tipos),
+            ','.join(new_periodos),
+            cantidad_intentos,
+            id_estudio
+        ))
+
+        # Renombrar carpeta si el nombre del estudio cambió
+        if nombre_estudio_original != self.var_nombre.get():
+            old_path = os.path.join("estudios", nombre_estudio_original)
+            new_path = os.path.join("estudios", self.var_nombre.get())
+            
+            if os.path.exists(old_path):
+                os.rename(old_path, new_path)
+            else:
+                os.makedirs(new_path)
+
+        conn.commit()
+        conn.close()
+        
+        messagebox.showinfo("Éxito", "Estudio actualizado correctamente")
+        self.ventana_editar.destroy()
+        self.mostrar_main_page()
 
     def validate_file_criteria(self, filename, id_estudio):
         """Validate if file meets the study criteria"""
@@ -1235,77 +1277,6 @@ class KineVizApp:
         # Configurar scroll
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
-
-    def guardar_edicion(self, id_estudio, nombre_estudio_original):
-        # Validar campos obligatorios
-        if not self.var_nombre.get():
-            messagebox.showerror("Error", "El nombre del estudio es obligatorio")
-            return
-
-        # Validar si el nombre del estudio ya existe (excluyendo el nombre actual)
-        conn = sqlite3.connect('kineviz.db')
-        cursor = conn.cursor()
-        cursor.execute('SELECT COUNT(*) FROM estudios WHERE nombre_estudio = ? AND id_estudio != ?', (self.var_nombre.get(), id_estudio))
-        count = cursor.fetchone()[0]
-        conn.close()
-        
-        if count > 0:
-            messagebox.showerror("Error", "Ya existe un estudio con ese nombre")
-            return
-            
-        try:
-            num_sujetos = int(self.var_num_sujetos.get())
-            if num_sujetos <= 0:
-                raise ValueError()
-        except ValueError:
-            messagebox.showerror("Error", "El número de sujetos debe ser un número positivo")
-            return
-            
-        try:
-            cantidad_intentos = int(self.var_cantidad_intentos.get())
-            if cantidad_intentos <= 0:
-                raise ValueError()
-        except ValueError:
-            messagebox.showerror("Error", "La cantidad de intentos debe ser un número positivo")
-            return
-        
-        # Actualizar en la base de datos
-        conn = sqlite3.connect('kineviz.db')
-        cursor = conn.cursor()
-        cursor.execute('''
-            UPDATE estudios 
-            SET nombre_estudio = ?, 
-                num_sujetos = ?, 
-                tipos_prueba = ?,
-                periodos_prueba = ?,
-                cantidad_intentos_prueba = ?
-            WHERE id_estudio = ?
-        ''', (
-            self.var_nombre.get(),
-            num_sujetos,
-            ','.join([x.strip() for x in self.var_tipos_prueba.get().split(',') if x.strip()]) if self.var_tipos_prueba.get() else None, 
-            ','.join([x.strip() for x in self.var_periodos_prueba.get().split(',') if x.strip()]) if self.var_periodos_prueba.get() else None,
-            cantidad_intentos,
-            id_estudio
-        ))
-
-        # Renombrar carpeta si el nombre del estudio cambió
-        if nombre_estudio_original != self.var_nombre.get():
-            old_path = os.path.join("estudios", nombre_estudio_original)
-            new_path = os.path.join("estudios", self.var_nombre.get())
-            
-            if os.path.exists(old_path):
-                os.rename(old_path, new_path)
-            else:
-                # Si la carpeta no existe, créala (en caso de que se haya creado el estudio sin carpeta)
-                os.makedirs(new_path)
-
-        conn.commit()
-        conn.close()
-        
-        messagebox.showinfo("Éxito", "Estudio actualizado correctamente")
-        self.ventana_editar.destroy()
-        self.mostrar_main_page()
 
     def eliminar_estudio(self, id_estudio):
         if messagebox.askyesno("Confirmar", "¿Está seguro de que desea eliminar este estudio?"):
