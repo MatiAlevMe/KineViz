@@ -86,7 +86,7 @@ def leer_seccion(file, num_frames, ruta_archivo):
         else:
             break  # Si hay una línea vacía, salir del bucle
     # Escribir la sección al archivo
-    with open(ruta_archivo, 'w',encoding= 'utf-8') as output_file:
+    with open(ruta_archivo, 'w') as output_file:
         output_file.write(f"{num_frames}\n{atributos_str}\n{columnas_str}\n{unidades_str}\n")
         for medicion in mediciones:
             output_file.write(";".join(formato_personalizado(x) for x in medicion) + "\n")
@@ -94,11 +94,11 @@ def leer_seccion(file, num_frames, ruta_archivo):
 
 def calcular_max_min_rango(df, columnas):
     """
-    Calcula máximos, mínimos y rangos de mediciones en una DataFrame.
+    Calcula maximos, minimos y rangos de mediciones en una DataFrame.
     Ignora NaN.
     """
     # No es necesario rellenar NaN, Pandas maneja NaN en cálculos
-    # Calcular máximos, mínimos y rangos, ignorando los NaN
+    # Calcular maximos, minimos y rangos, ignorando los NaN
     maximos = [''] * 2 + [df[col].max(skipna=True) for col in columnas[3:]]
     minimos = [''] * 2 + [df[col].min(skipna=True) for col in columnas[3:]]
     rangos = [''] * 2 + [(df[col].max(skipna=True) - df[col].min(skipna=True))
@@ -107,7 +107,7 @@ def calcular_max_min_rango(df, columnas):
 
 def exportar_calculos(output_file, maximos, minimos, rangos):
     """
-    Exporta cálculos de Maximo, Minimo y Rango a un archivo de texto.
+    Exporta calculos de Maximo, Minimo y Rango a un archivo de texto.
     """
     output_file.write(f";;MAXIMO;{';'.join(map(str, maximos[2:]))}\n")
     output_file.write(f";;MINIMO;{';'.join(map(str, minimos[2:]))}\n")
@@ -141,7 +141,7 @@ def leer_archivo_csv_o_txt(ruta_archivo, nombre_estudio, nombre_paciente=None):
         ruta_archivo_og = os.path.join(ruta_og, nombre_archivo_og)
         shutil.copy2(ruta_archivo, ruta_archivo_og)
 
-        with open(ruta_archivo, 'r',encoding= 'utf-8') as file:
+        with open(ruta_archivo, 'r') as file:
             while True:
                 primera_fila = file.readline().rstrip()
                 if not primera_fila:  # EOF
@@ -153,11 +153,11 @@ def leer_archivo_csv_o_txt(ruta_archivo, nombre_estudio, nombre_paciente=None):
                 num_frames = int(segunda_fila)
 
                 if 100 <= num_frames <= 200:
-                    tipo_frecuencia = "Cinemática"
+                    tipo_frecuencia = "Cinematica"
                 elif num_frames == 1000:
-                    tipo_frecuencia = "Cinética"
+                    tipo_frecuencia = "Cinetica"
                 elif num_frames == 2000:
-                    tipo_frecuencia = "Electromiográfica"
+                    tipo_frecuencia = "Electromiografica"
                 else:
                     tipo_frecuencia = "Desconocida"
 
@@ -178,8 +178,8 @@ def leer_archivo_csv_o_txt(ruta_archivo, nombre_estudio, nombre_paciente=None):
 
                 maximos, minimos, rangos = calcular_max_min_rango(df, columnas)
 
-                # Exportar cálculos de Maximo, Minimo y Rango al archivo
-                with open(ruta_archivo_seccion, 'a',encoding= 'utf-8') as output_file:
+                # Exportar calculos de Maximo, Minimo y Rango al archivo
+                with open(ruta_archivo_seccion, 'a') as output_file:
                     exportar_calculos(output_file, maximos, minimos, rangos)
 
     except FileNotFoundError:
@@ -187,7 +187,7 @@ def leer_archivo_csv_o_txt(ruta_archivo, nombre_estudio, nombre_paciente=None):
     except IOError as e:
         messagebox.showerror("Error", f"Error de entrada/salida al leer el archivo: {e}")
     except ValueError as e:
-        messagebox.showerror("Error", f"Error: Formato de datos inválido en el archivo: {e}")
+        messagebox.showerror("Error", f"Error: Formato de datos invalido en el archivo: {e}")
     except Exception as e:
         messagebox.showerror("Error", f"Error inesperado: {e}")
     return nombre_paciente
