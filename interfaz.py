@@ -815,7 +815,7 @@ class KineVizApp:
 
             ttk.Label(filter_frame, text="Filtrar por tipo:").pack(side=tk.LEFT)
             self.filter_type_var = tk.StringVar(value="Todos")
-            filter_options = ["Todos", "Cinemática", "Cinética", "Electromiográfica", "OG"]
+            filter_options = ["Todos", "Cinematica", "Cinetica", "Electromiografica", "OG"]
             filter_menu = ttk.OptionMenu(filter_frame, self.filter_type_var, *filter_options)
             filter_menu.pack(side=tk.LEFT, padx=5)
 
@@ -931,12 +931,12 @@ class KineVizApp:
                                 pacientes.add(parts[0])  # Primer nivel es el paciente
                                 
                                 # Determinar frecuencia del archivo
-                                if "Cinemática" in file_path:
-                                    frecuencias.add("Cinemática")
-                                elif "Cinética" in file_path:
-                                    frecuencias.add("Cinética")
-                                elif "Electromiográfica" in file_path:
-                                    frecuencias.add("Electromiográfica")
+                                if "Cinematica" in file_path:
+                                    frecuencias.add("Cinematica")
+                                elif "Cinetica" in file_path:
+                                    frecuencias.add("Cinetica")
+                                elif "Electromiografica" in file_path:
+                                    frecuencias.add("Electromiografica")
                                 
                                 # Extraer y validar tipo y periodo de prueba
                                 tipo_prueba, periodo_prueba = self.extract_test_info(file, 
@@ -976,7 +976,7 @@ class KineVizApp:
         for paciente in pacientes:
             valores_totales = []
             # Recorrer todas las carpetas de frecuencia
-            for frecuencia in ["Cinemática", "Cinética", "Electromiográfica"]:
+            for frecuencia in ["Cinematica", "Cinetica", "Electromiografica"]:
                 # Recorrer todos los tipos de prueba
                 for tipo in self.tipo_prueba_analysis_listbox.get(0, tk.END):
                     # Recorrer todos los periodos de prueba
@@ -1016,7 +1016,7 @@ class KineVizApp:
         # Filtro de Frecuencia
         freq_frame = ttk.LabelFrame(main_frame, text="Frecuencia")
         freq_frame.pack(fill=tk.X, pady=(0, 10))
-        freq_options = ["Todos", "Cinemática", "Cinética", "Electromiográfica"]
+        freq_options = ["Todos", "Cinematica", "Cinetica", "Electromiografica"]
         self.freq_var = tk.StringVar(value=freq_options[0])
 
         # Frame para selección de parámetros y lista de análisis
@@ -1081,7 +1081,7 @@ class KineVizApp:
         self.calculo_listbox = tk.Listbox(calculo_frame, height=4, selectmode=tk.SINGLE)
         self.calculo_listbox.pack(side=tk.LEFT, fill=tk.X, expand=True)
         # Add default calculation options
-        for calc in ["Máximo", "Mínimo", "Rango"]:
+        for calc in ["Maximo", "Minimo", "Rango"]:
             self.calculo_listbox.insert(tk.END, calc)
         ttk.Button(calculo_frame, text="Agregar", 
                   command=lambda: self.add_to_analysis("Cálculos",
@@ -1300,7 +1300,7 @@ class KineVizApp:
         date_str = datetime.now().strftime("%Y%m%d")
         
         # Formatear cálculos (ej: "max-min-rango")
-        calc_map = {"Máximo": "max", "Mínimo": "min", "Rango": "rango"}
+        calc_map = {"Maximo": "max", "Minimo": "min", "Rango": "rango"}
         calc_str = "-".join(calc_map[c] for c in calculos)
         
         # Formatear frecuencias
@@ -1424,8 +1424,8 @@ class KineVizApp:
                             # Crear gráfico de caja (boxplot)
                             plt.figure(figsize=(8, 6))
                             plt.boxplot([datos_pacientes[p] for p in datos_pacientes.keys()],
-                                      labels=list(datos_pacientes.keys()))
-                            plt.title(f"{tipo} - {periodo}")
+                                    labels=list(datos_pacientes.keys()))
+                            plt.title(f"Boxplot: {tipo} - {periodo}")
                             plt.ylabel("Valores")
                             plt.xticks(rotation=45)
                             
@@ -1441,20 +1441,48 @@ class KineVizApp:
                             # Eliminar archivo temporal
                             os.remove(temp_plot)
                             
-                            # Agregar resultados estadísticos
+                            # Agregar resultados estadísticos y generar gráficos de barras
                             for calculo in calculos:
                                 elements.append(Paragraph(f"Resultados para {calculo}:", normal_style))
                                 
-                                # Tabla de resultados
-                                resultados = []
+                                # Calcular valores para el gráfico de barras
+                                medias = []
+                                nombres_pacientes = []
                                 for paciente in datos_pacientes:
                                     valor = self.calcular_estadisticas(datos_pacientes[paciente], calculo)
                                     if valor is not None:
-                                        resultados.append(f"{paciente}: {valor:.2f}")
+                                        medias.append(valor)
+                                        nombres_pacientes.append(paciente)
                                 
-                                if resultados:
-                                    elements.append(Paragraph("<br/>".join(resultados), normal_style))
-                                elements.append(Spacer(1, 6))
+                                if medias:
+                                    # Crear gráfico de barras
+                                    plt.figure(figsize=(8, 6))
+                                    plt.bar(nombres_pacientes, medias)
+                                    plt.title(f"Gráfico de Barras - {calculo}\n{tipo} - {periodo}")
+                                    plt.xlabel("Pacientes")
+                                    plt.ylabel(f"{calculo}")
+                                    plt.xticks(rotation=45)
+                                    
+                                    # Guardar gráfico temporalmente
+                                    temp_bar = f"temp_bar_{frecuencia}_{tipo}_{periodo}_{calculo}.png"
+                                    plt.savefig(temp_bar, bbox_inches='tight')
+                                    plt.close()
+                                    
+                                    # Agregar gráfico al PDF
+                                    elements.append(Image(temp_bar, width=400, height=300))
+                                    elements.append(Spacer(1, 12))
+                                    
+                                    # Eliminar archivo temporal
+                                    os.remove(temp_bar)
+                                    
+                                    # Agregar resultados numéricos
+                                    resultados = []
+                                    for paciente, valor in zip(nombres_pacientes, medias):
+                                        resultados.append(f"{paciente}: {valor:.2f}")
+                                    
+                                    if resultados:
+                                        elements.append(Paragraph("<br/>".join(resultados), normal_style))
+                                    elements.append(Spacer(1, 6))
                         else:
                             elements.append(Paragraph("No hay datos disponibles para esta combinación", normal_style))
                         
@@ -1618,9 +1646,9 @@ class KineVizApp:
         if not valores:
             return None
             
-        if calculo == "Máximo":
+        if calculo == "Maximo":
             return max(valores)
-        elif calculo == "Mínimo":
+        elif calculo == "Minimo":
             return min(valores)
         elif calculo == "Rango":
             return max(valores) - min(valores)
@@ -1907,15 +1935,15 @@ class KineVizApp:
                     # Determinar tipo y frecuencia basado en la ruta del archivo
                     if "OG" in root:
                         tipo = "OG"
-                    elif "Cinemática" in root:
+                    elif "Cinematica" in root:
                         tipo = "New"
-                        frecuencia = "Cinemática"
-                    elif "Cinética" in root:
+                        frecuencia = "Cinematica"
+                    elif "Cinetica" in root:
                         tipo = "New"
-                        frecuencia = "Cinética"
-                    elif "Electromiográfica" in root:
+                        frecuencia = "Cinetica"
+                    elif "Electromiografica" in root:
                         tipo = "New"
-                        frecuencia = "Electromiográfica"
+                        frecuencia = "Electromiografica"
 
                     archivos.append((paciente, rel_path, tipo, frecuencia))
 
@@ -1927,9 +1955,9 @@ class KineVizApp:
         for paciente, archivo, tipo, frecuencia in archivos:
             if (search_query in archivo.lower() or search_query in paciente.lower()) and \
                (filter_type == "Todos" or 
-                (filter_type == "Cinemática" and "Cinemática" in archivo) or
-                (filter_type == "Cinética" and "Cinética" in archivo) or
-                (filter_type == "Electromiográfica" and "Electromiográfica" in archivo) or
+                (filter_type == "Cinematica" and "Cinematica" in archivo) or
+                (filter_type == "Cinetica" and "Cinetica" in archivo) or
+                (filter_type == "Electromiografica" and "Electromiografica" in archivo) or
                 (filter_type == "OG" and tipo == "OG")):
                 filtered_archivos.append((paciente, archivo, tipo, frecuencia))
 
@@ -1974,15 +2002,15 @@ class KineVizApp:
                     # Determinar tipo y frecuencia basado en la ruta del archivo
                     if "OG" in root:
                         tipo = "OG"
-                    elif "Cinemática" in root:
+                    elif "Cinematica" in root:
                         tipo = "New"
-                        frecuencia = "Cinemática"
-                    elif "Cinética" in root:
+                        frecuencia = "Cinematica"
+                    elif "Cinetica" in root:
                         tipo = "New"
-                        frecuencia = "Cinética"
-                    elif "Electromiográfica" in root:
+                        frecuencia = "Cinetica"
+                    elif "Electromiografica" in root:
                         tipo = "New"
-                        frecuencia = "Electromiográfica"
+                        frecuencia = "Electromiografica"
 
                     archivos.append((paciente, rel_path, tipo, frecuencia))
 
@@ -1994,9 +2022,9 @@ class KineVizApp:
         for paciente, archivo, tipo, frecuencia in archivos:
             if (search_query in archivo.lower() or search_query in paciente.lower()) and \
                (filter_type == "Todos" or 
-                (filter_type == "Cinemática" and "Cinemática" in archivo) or
-                (filter_type == "Cinética" and "Cinética" in archivo) or
-                (filter_type == "Electromiográfica" and "Electromiográfica" in archivo) or
+                (filter_type == "Cinematica" and "Cinematica" in archivo) or
+                (filter_type == "Cinetica" and "Cinetica" in archivo) or
+                (filter_type == "Electromiografica" and "Electromiografica" in archivo) or
                 (filter_type == "OG" and tipo == "OG")):
                 filtered_archivos.append((paciente, archivo, tipo, frecuencia))
 
