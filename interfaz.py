@@ -479,6 +479,134 @@ class KineVizApp:
                 periodo_prueba = parts[1]
         
         return tipo_prueba, periodo_prueba
+    
+    def guardar_edicion(self, id_estudio, nombre_estudio_original):
+        # Validar campos obligatorios
+        if not self.var_nombre.get():
+            messagebox.showerror("Error", "El nombre del estudio es obligatorio")
+            return
+
+        # Validar si el nombre del estudio ya existe (excluyendo el nombre actual)
+        conn = sqlite3.connect('kineviz.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT COUNT(*) FROM estudios WHERE nombre_estudio = ? AND id_estudio != ?', 
+                      (self.var_nombre.get(), id_estudio))
+        count = cursor.fetchone()[0]
+        
+        try:
+            num_sujetos = int(self.var_num_sujetos.get())
+            if num_sujetos <= 0:
+                raise ValueError()
+        except ValueError:
+            messagebox.showerror("Error", "El número de sujetos debe ser un número positivo")
+            return
+            
+        try:
+            cantidad_intentos = int(self.var_cantidad_intentos.get())
+            if cantidad_intentos <= 0:
+                raise ValueError()
+        except ValueError:
+            messagebox.showerror("Error", "La cantidad de intentos debe ser un número positivo")
+            return
+
+        # Validar que no haya valores duplicados entre tipos y periodos de prueba
+        tipos_prueba = [x.strip() for x in self.var_tipos_prueba.get().split(',') if x.strip()]
+        periodos_prueba = [x.strip() for x in self.var_periodos_prueba.get().split(',') if x.strip()]
+        
+        duplicates = set(tipos_prueba) & set(periodos_prueba)
+        if duplicates:
+            messagebox.showerror("Error", 
+                               f"Los siguientes valores están duplicados en Tipos y Periodos de prueba: {', '.join(duplicates)}")
+            return
+
+        # Verificar si los archivos existentes cumplen con los nuevos criterios
+        estudio_path = os.path.join("estudios", nombre_estudio_original)
+        invalid_files = []
+        
+        if os.path.exists(estudio_path):
+            for root, _, files in os.walk(estudio_path):
+                for file in files:
+                    if file.endswith('.txt'):
+                        is_valid = self.validate_filename_format(file, tipos_prueba, periodos_prueba)
+                        if not is_valid:
+                            invalid_files.append(file)
+
+        if invalid_files:
+            if messagebox.askyesno("Advertencia", 
+                                 f"Los siguientes archivos no cumplen con los nuevos criterios:\n" +
+                                 "\n".join(invalid_files) +
+                                 "\n\n¿Desea eliminar estos archivos y continuar?"):
+                # Eliminar archivos inválidos
+                for file in invalid_files:
+                    file_path = os.path.join(estudio_path, file)
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+            else:
+                return
+
+        # Actualizar en la base de datos
+        cursor.execute('''
+            UPDATE estudios 
+            SET nombre_estudio = ?, 
+                num_sujetos = ?, 
+                tipos_prueba = ?,
+                periodos_prueba = ?,
+                cantidad_intentos_prueba = ?
+            WHERE id_estudio = ?
+        ''', (
+            self.var_nombre.get(),
+            num_sujetos,
+            ','.join(tipos_prueba),
+            ','.join(periodos_prueba),
+            cantidad_intentos,
+            id_estudio
+        ))
+
+        # Renombrar carpeta si el nombre del estudio cambió
+        if nombre_estudio_original != self.var_nombre.get():
+            old_path = os.path.join("estudios", nombre_estudio_original)
+            new_path = os.path.join("estudios", self.var_nombre.get())
+            
+            if os.path.exists(old_path):
+                os.rename(old_path, new_path)
+            else:
+                os.makedirs(new_path)
+
+        conn.commit()
+        conn.close()
+        
+        messagebox.showinfo("Éxito", "Estudio actualizado correctamente")
+        self.ventana_editar.destroy()
+        self.mostrar_main_page()
+
+    def validate_filename_format(self, filename, tipos_prueba, periodos_prueba):
+        """
+        Validate filename format based on study criteria.
+        Returns True if valid, False otherwise.
+        """
+        # Remove extension and split by spaces or underscores
+        name = os.path.splitext(filename)[0]
+        parts = name.replace('_', ' ').split()
+        
+        # Case 1: No tipos or periodos defined - expect only 2 parts (Pte01 01)
+        if not tipos_prueba and not periodos_prueba:
+            return len(parts) == 2
+            
+        # Case 2: Only tipos or only periodos defined - expect 3 parts (Pte01 CMJ 01)
+        if bool(tipos_prueba) != bool(periodos_prueba):  # XOR - one is defined but not both
+            if len(parts) != 3:
+                return False
+            middle_part = parts[1]
+            if tipos_prueba:
+                return middle_part in tipos_prueba
+            else:
+                return middle_part in periodos_prueba
+                
+        # Case 3: Both tipos and periodos defined - expect 4 parts (Pte01 CMJ PRE 01)
+        if len(parts) != 4:
+            return False
+        return (parts[1] in tipos_prueba and parts[2] in periodos_prueba) or \
+               (parts[1] in periodos_prueba and parts[2] in tipos_prueba)
 
     def validate_file_criteria(self, filename, id_estudio):
         """Validate if file meets the study criteria"""
@@ -491,20 +619,37 @@ class KineVizApp:
         tipos_prueba = [t.strip() for t in tipos_prueba_str.split(',')] if tipos_prueba_str else []
         periodos_prueba = [p.strip() for p in periodos_prueba_str.split(',')] if periodos_prueba_str else []
 
-        tipo_prueba, periodo_prueba = self.extract_test_info(filename, tipos_prueba, periodos_prueba)
+        # Remove extension and split
+        name = os.path.splitext(filename)[0]
+        parts = name.replace('_', ' ').split()
 
-        # Validate against study criteria
-        tipo_valid = not tipos_prueba or (tipo_prueba in tipos_prueba)
-        periodo_valid = not periodos_prueba or (periodo_prueba in periodos_prueba)
+        # Validate based on study criteria
+        if not tipos_prueba and not periodos_prueba:
+            if len(parts) != 2:
+                return False, f"El archivo debe tener formato 'PteXX NN' pero tiene {len(parts)} partes: {name}"
+            return True, None
 
-        if not tipo_valid or not periodo_valid:
-            error_msg = []
-            if not tipo_valid:
-                error_msg.append(f"Tipo de prueba '{tipo_prueba}' no coincide con los criterios del estudio: {', '.join(tipos_prueba)}")
-            if not periodo_valid:
-                error_msg.append(f"Periodo de prueba '{periodo_prueba}' no coincide con los criterios del estudio: {', '.join(periodos_prueba)}")
-            return False, "\n".join(error_msg)
+        if bool(tipos_prueba) != bool(periodos_prueba):  # One is defined but not both
+            if len(parts) != 3:
+                return False, f"El archivo debe tener formato 'PteXX VALOR NN' pero tiene {len(parts)} partes: {name}"
+            middle_part = parts[1]
+            if tipos_prueba and middle_part not in tipos_prueba:
+                return False, f"El tipo de prueba '{middle_part}' no coincide con los criterios del estudio: {', '.join(tipos_prueba)}"
+            if periodos_prueba and middle_part not in periodos_prueba:
+                return False, f"El periodo de prueba '{middle_part}' no coincide con los criterios del estudio: {', '.join(periodos_prueba)}"
+            return True, None
 
+        # Both tipos and periodos defined
+        if len(parts) != 4:
+            return False, f"El archivo debe tener formato 'PteXX TIPO PERIODO NN' pero tiene {len(parts)} partes: {name}"
+        
+        # Check both possible orders (tipo-periodo and periodo-tipo)
+        valid_order1 = parts[1] in tipos_prueba and parts[2] in periodos_prueba
+        valid_order2 = parts[1] in periodos_prueba and parts[2] in tipos_prueba
+        
+        if not (valid_order1 or valid_order2):
+            return False, f"Los valores '{parts[1]}' y '{parts[2]}' no coinciden con los tipos de prueba ({', '.join(tipos_prueba)}) y periodos de prueba ({', '.join(periodos_prueba)})"
+        
         return True, None
 
     def agregar_archivos(self, estudio_path, nombre_estudio):
