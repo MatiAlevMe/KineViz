@@ -833,6 +833,76 @@ class KineVizApp:
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
 
+    def actualizar_listas_parametros(self, id_estudio):
+        """Actualiza las listas de parámetros basado en la frecuencia seleccionada"""
+        # Obtener el nombre del estudio y criterios
+        conn = sqlite3.connect('kineviz.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT nombre_estudio, tipos_prueba, periodos_prueba FROM estudios WHERE id_estudio = ?', (id_estudio,))
+        nombre_estudio, tipos_prueba, periodos_prueba = cursor.fetchone()
+        conn.close()
+
+        # Ruta del estudio
+        estudio_path = os.path.join("estudios", nombre_estudio)
+        frecuencia = self.freq_var.get()
+
+        # Limpiar listboxes
+        for categoria in ["pacientes", "frecuencia_medicion", "tipo_prueba", "periodo_prueba"]:
+            listbox = getattr(self, f"{categoria}_listbox")
+            listbox.delete(0, tk.END)
+
+        # Obtener y mostrar datos
+        pacientes = set()
+        frecuencias = set()
+        tipos_prueba_set = set()
+        periodos_prueba_set = set()
+
+        if os.path.exists(estudio_path):
+            for root, _, files in os.walk(estudio_path):
+                for file in files:
+                    if file.endswith('.txt'):
+                        file_path = os.path.join(root, file)
+                        
+                        # Solo procesar archivos que coincidan con la frecuencia seleccionada
+                        if frecuencia == "Todos" or frecuencia in file_path:
+                            # Extraer información del path y nombre de archivo
+                            rel_path = os.path.relpath(file_path, estudio_path)
+                            parts = rel_path.split(os.sep)
+                            
+                            if len(parts) >= 2:
+                                pacientes.add(parts[0])  # Primer nivel es el paciente
+                                
+                                # Determinar frecuencia del archivo
+                                if "Cinemática" in file_path:
+                                    frecuencias.add("Cinemática")
+                                elif "Cinética" in file_path:
+                                    frecuencias.add("Cinética")
+                                elif "Electromiográfica" in file_path:
+                                    frecuencias.add("Electromiográfica")
+                                
+                                # Extraer y validar tipo y periodo de prueba
+                                tipo_prueba, periodo_prueba = self.extract_test_info(file, 
+                                                                                   tipos_prueba.split(',') if tipos_prueba else [], 
+                                                                                   periodos_prueba.split(',') if periodos_prueba else [])
+                                
+                                if tipo_prueba:
+                                    tipos_prueba_set.add(tipo_prueba)
+                                if periodo_prueba:
+                                    periodos_prueba_set.add(periodo_prueba)
+
+        # Actualizar listboxes
+        for paciente in sorted(pacientes):
+            self.pacientes_listbox.insert(tk.END, paciente)
+        
+        for freq in sorted(frecuencias):
+            self.frecuencia_medicion_listbox.insert(tk.END, freq)
+        
+        for tipo in sorted(tipos_prueba_set):
+            self.tipo_prueba_listbox.insert(tk.END, tipo)
+        
+        for periodo in sorted(periodos_prueba_set):
+            self.periodo_prueba_listbox.insert(tk.END, periodo)
+
     def mostrar_analisis_estudio(self, id_estudio):
         """Muestra la ventana de análisis de estudio"""
         # Validar que haya al menos dos pacientes antes de abrir la ventana
@@ -857,7 +927,6 @@ class KineVizApp:
         self.freq_var = tk.StringVar(value=freq_options[0])
         
         def on_freq_change(*args):
-            # Actualizar las listas basadas en la nueva frecuencia
             self.actualizar_listas_parametros(id_estudio)
         
         self.freq_var.trace_add("write", on_freq_change)
@@ -901,6 +970,12 @@ class KineVizApp:
         calc_frame.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
         calc_options = ["Todos", "Máximo", "Mínimo", "Rango"]
         self.calc_var = tk.StringVar(value=calc_options[0])
+        
+        def on_calc_change(*args):
+            if self.calc_var.get() != "Todos" and self.calc_var.get() not in self.calc_listbox.get(0, tk.END):
+                self.calc_listbox.insert(tk.END, self.calc_var.get())
+        
+        self.calc_var.trace_add("write", on_calc_change)
         calc_menu = ttk.OptionMenu(calc_frame, self.calc_var, calc_options[0], *calc_options)
         calc_menu.pack(side=tk.LEFT, pady=5)
         
@@ -914,30 +989,184 @@ class KineVizApp:
         self.calc_listbox = tk.Listbox(calc_list_frame, height=4)
         self.calc_listbox.pack(fill=tk.X, pady=5)
 
+        # Botón para eliminar cálculo
+        ttk.Button(calc_list_frame, text="Eliminar", 
+                  command=self.remove_selected_calculation).pack(side=tk.LEFT)
+
         # Frame para botones de acción
         action_frame = ttk.Frame(main_frame)
         action_frame.pack(fill=tk.X, pady=10)
 
         # Botones de acción
-        ttk.Button(action_frame, text="Crear Reporte PDF").pack(side=tk.LEFT, padx=5)
-        ttk.Button(action_frame, text="Ver PDF").pack(side=tk.LEFT, padx=5)
-        ttk.Button(action_frame, text="Eliminar PDF").pack(side=tk.LEFT, padx=5)
-        ttk.Button(action_frame, text="Nuevo Análisis").pack(side=tk.LEFT, padx=5)
+        ttk.Button(action_frame, text="Crear Reporte PDF", 
+                  command=lambda: self.crear_reporte_pdf(id_estudio)).pack(side=tk.LEFT, padx=5)
+        ttk.Button(action_frame, text="Ver PDF", 
+                  command=self.ver_pdf).pack(side=tk.LEFT, padx=5)
+        ttk.Button(action_frame, text="Eliminar PDF", 
+                  command=self.eliminar_pdf).pack(side=tk.LEFT, padx=5)
+        ttk.Button(action_frame, text="Nuevo Análisis", 
+                  command=self.nuevo_analisis).pack(side=tk.LEFT, padx=5)
 
         # Frame para búsqueda y paginación
         search_frame = ttk.Frame(main_frame)
         search_frame.pack(fill=tk.X, pady=10)
-        ttk.Entry(search_frame).pack(side=tk.LEFT, padx=5)
-        ttk.Button(search_frame, text="Buscar").pack(side=tk.LEFT)
+        self.search_var = tk.StringVar()
+        ttk.Entry(search_frame, textvariable=self.search_var).pack(side=tk.LEFT, padx=5)
+        ttk.Button(search_frame, text="Buscar", 
+                  command=self.buscar_pdf).pack(side=tk.LEFT)
 
         # Paginación
-        pagination_frame = ttk.Frame(main_frame)
-        pagination_frame.pack(fill=tk.X)
-        for i in range(1, 6):
-            ttk.Button(pagination_frame, text=str(i)).pack(side=tk.LEFT, padx=2)
+        self.pagination_frame = ttk.Frame(main_frame)
+        self.pagination_frame.pack(fill=tk.X)
+        self.update_pdf_pagination()
 
         # Cargar datos iniciales
         self.actualizar_listas_parametros(id_estudio)
+
+    def remove_selected_calculation(self):
+        """Elimina el cálculo seleccionado de la lista"""
+        selection = self.calc_listbox.curselection()
+        if selection:
+            self.calc_listbox.delete(selection)
+
+    def crear_reporte_pdf(self, id_estudio):
+        """Crea un reporte PDF con los análisis seleccionados"""
+        # Verificar que haya selecciones
+        if not self.pacientes_analysis_listbox.get(0, tk.END):
+            messagebox.showerror("Error", "Debe seleccionar al menos un paciente")
+            return
+            
+        if not self.frecuencia_medicion_analysis_listbox.get(0, tk.END):
+            messagebox.showerror("Error", "Debe seleccionar al menos una frecuencia de medición")
+            return
+            
+        if not self.tipo_prueba_analysis_listbox.get(0, tk.END):
+            messagebox.showerror("Error", "Debe seleccionar al menos un tipo de prueba")
+            return
+            
+        if not self.periodo_prueba_analysis_listbox.get(0, tk.END):
+            messagebox.showerror("Error", "Debe seleccionar al menos un periodo de prueba")
+            return
+            
+        if not self.calc_listbox.get(0, tk.END):
+            messagebox.showerror("Error", "Debe seleccionar al menos un cálculo")
+            return
+
+        # Obtener datos seleccionados
+        pacientes = list(self.pacientes_analysis_listbox.get(0, tk.END))
+        frecuencias = list(self.frecuencia_medicion_analysis_listbox.get(0, tk.END))
+        tipos = list(self.tipo_prueba_analysis_listbox.get(0, tk.END))
+        periodos = list(self.periodo_prueba_analysis_listbox.get(0, tk.END))
+        calculos = list(self.calc_listbox.get(0, tk.END))
+
+        # Obtener nombre del estudio
+        conn = sqlite3.connect('kineviz.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT nombre_estudio FROM estudios WHERE id_estudio = ?', (id_estudio,))
+        nombre_estudio = cursor.fetchone()[0]
+        conn.close()
+
+        # Crear directorio para PDFs si no existe
+        pdf_dir = os.path.join("estudios", nombre_estudio, "reportes")
+        if not os.path.exists(pdf_dir):
+            os.makedirs(pdf_dir)
+
+        # Generar nombre descriptivo para el PDF
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        pdf_name = f"reporte_{timestamp}.pdf"
+        pdf_path = os.path.join(pdf_dir, pdf_name)
+
+        try:
+            # Crear PDF
+            self.generar_pdf(pdf_path, nombre_estudio, pacientes, frecuencias, tipos, periodos, calculos)
+            messagebox.showinfo("Éxito", "Reporte PDF generado correctamente")
+            
+            # Abrir el PDF
+            if messagebox.askyesno("Ver PDF", "¿Desea abrir el PDF generado?"):
+                self.abrir_archivo(pdf_path)
+                
+        except Exception as e:
+            messagebox.showerror("Error", f"Error al generar PDF: {str(e)}")
+
+    def generar_pdf(self, pdf_path, nombre_estudio, pacientes, frecuencias, tipos, periodos, calculos):
+        """Genera el PDF con los análisis seleccionados"""
+        doc = SimpleDocTemplate(pdf_path, pagesize=letter)
+        elements = []
+        
+        # Estilos
+        styles = getSampleStyleSheet()
+        title_style = styles['Title']
+        heading_style = styles['Heading1']
+        normal_style = styles['Normal']
+        
+        # Título
+        elements.append(Paragraph(f"Reporte de Análisis - {nombre_estudio}", title_style))
+        elements.append(Spacer(1, 12))
+        
+        # Fecha
+        elements.append(Paragraph(f"Fecha: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}", normal_style))
+        elements.append(Spacer(1, 12))
+        
+        # Parámetros seleccionados
+        elements.append(Paragraph("Parámetros Seleccionados:", heading_style))
+        elements.append(Paragraph(f"Pacientes: {', '.join(pacientes)}", normal_style))
+        elements.append(Paragraph(f"Frecuencias: {', '.join(frecuencias)}", normal_style))
+        elements.append(Paragraph(f"Tipos de Prueba: {', '.join(tipos)}", normal_style))
+        elements.append(Paragraph(f"Periodos de Prueba: {', '.join(periodos)}", normal_style))
+        elements.append(Paragraph(f"Cálculos: {', '.join(calculos)}", normal_style))
+        elements.append(Spacer(1, 12))
+        
+        # Procesar datos y generar gráficos
+        for frecuencia in frecuencias:
+            elements.append(Paragraph(f"Análisis para {frecuencia}:", heading_style))
+            elements.append(Spacer(1, 12))
+            
+            # Generar gráfico
+            plt.figure(figsize=(8, 6))
+            # TODO: Implementar lógica de gráficos
+            plt.close()
+            
+            # Agregar resultados
+            for calculo in calculos:
+                elements.append(Paragraph(f"Resultados para {calculo}:", normal_style))
+                # TODO: Implementar cálculos estadísticos
+                elements.append(Spacer(1, 12))
+        
+        # Generar PDF
+        doc.build(elements)
+
+    def ver_pdf(self):
+        """Abre el PDF seleccionado"""
+        # TODO: Implement PDF viewing
+        pass
+
+    def eliminar_pdf(self):
+        """Elimina el PDF seleccionado"""
+        # TODO: Implement PDF deletion
+        pass
+
+    def nuevo_analisis(self):
+        """Limpia todas las selecciones para un nuevo análisis"""
+        # Limpiar listas de análisis
+        self.pacientes_analysis_listbox.delete(0, tk.END)
+        self.frecuencia_medicion_analysis_listbox.delete(0, tk.END)
+        self.tipo_prueba_analysis_listbox.delete(0, tk.END)
+        self.periodo_prueba_analysis_listbox.delete(0, tk.END)
+        self.calc_listbox.delete(0, tk.END)
+        
+        # Resetear filtros
+        self.freq_var.set("Todos")
+        self.calc_var.set("Todos")
+
+    def buscar_pdf(self):
+        """Busca PDFs basado en el término de búsqueda"""
+        # TODO: Implement PDF search
+        pass
+
+    def update_pdf_pagination(self):
+        """Actualiza la paginación de PDFs"""
+        # TODO: Implement PDF pagination
+        pass
 
     def crear_tabla_archivos(self, parent_frame, columns):
         self.archivos_tree = ttk.Treeview(parent_frame, columns=columns, show='headings')
