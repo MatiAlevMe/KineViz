@@ -406,6 +406,15 @@ class KineVizApp:
         except ValueError:
             messagebox.showerror("Error", "La cantidad de intentos debe ser un número positivo")
             return
+
+        # Validar que no haya valores duplicados entre tipos y periodos de prueba
+        tipos_prueba = [x.strip() for x in self.var_tipos_prueba.get().split(',') if x.strip()]
+        periodos_prueba = [x.strip() for x in self.var_periodos_prueba.get().split(',') if x.strip()]
+        
+        duplicates = set(tipos_prueba) & set(periodos_prueba)
+        if duplicates:
+            messagebox.showerror("Error", f"Los siguientes valores están duplicados en Tipos y Periodos de prueba: {', '.join(duplicates)}")
+            return
         
         # Guardar en la base de datos
         conn = sqlite3.connect('kineviz.db')
@@ -419,8 +428,8 @@ class KineVizApp:
         ''', (
             self.var_nombre.get(),
             num_sujetos,
-            ','.join([x.strip() for x in self.var_tipos_prueba.get().split(',') if x.strip()]) if self.var_tipos_prueba.get() else None, 
-            ','.join([x.strip() for x in self.var_periodos_prueba.get().split(',') if x.strip()]) if self.var_periodos_prueba.get() else None,
+            ','.join(tipos_prueba),
+            ','.join(periodos_prueba),
             cantidad_intentos,
         ))
         
@@ -436,6 +445,114 @@ class KineVizApp:
         messagebox.showinfo("Éxito", "Estudio creado correctamente")
         self.ventana_crear.destroy()
         self.mostrar_main_page()
+
+    def extract_test_info(self, filename, tipos_prueba, periodos_prueba):
+        """
+        Extract Tipo de Prueba and Periodo de Prueba from filename.
+        Handles different formats and validates against study criteria.
+        """
+        # Remove extension and split
+        name = os.path.splitext(filename)[0]
+        parts = name.split()
+        
+        tipo_prueba = None
+        periodo_prueba = None
+        
+        # Convert to sets for easier lookup
+        tipos_set = set(tipos_prueba) if tipos_prueba else set()
+        periodos_set = set(periodos_prueba) if periodos_prueba else set()
+        
+        if len(parts) >= 4:  # Format: "Pte01 POST CMJ 01"
+            # Check if second part is in periodos and third in tipos
+            if parts[1] in periodos_set and parts[2] in tipos_set:
+                periodo_prueba = parts[1]
+                tipo_prueba = parts[2]
+            # Check if second part is in tipos and third in periodos
+            elif parts[1] in tipos_set and parts[2] in periodos_set:
+                tipo_prueba = parts[1]
+                periodo_prueba = parts[2]
+        elif len(parts) == 3:  # Format: "Pte01 CMJ 01" or "Pte01 POST 01"
+            # Check if middle part is in tipos or periodos
+            if parts[1] in tipos_set:
+                tipo_prueba = parts[1]
+            elif parts[1] in periodos_set:
+                periodo_prueba = parts[1]
+        
+        return tipo_prueba, periodo_prueba
+
+    def validate_file_criteria(self, filename, id_estudio):
+        """Validate if file meets the study criteria"""
+        conn = sqlite3.connect('kineviz.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT tipos_prueba, periodos_prueba FROM estudios WHERE id_estudio = ?', (id_estudio,))
+        tipos_prueba_str, periodos_prueba_str = cursor.fetchone()
+        conn.close()
+
+        tipos_prueba = [t.strip() for t in tipos_prueba_str.split(',')] if tipos_prueba_str else []
+        periodos_prueba = [p.strip() for p in periodos_prueba_str.split(',')] if periodos_prueba_str else []
+
+        tipo_prueba, periodo_prueba = self.extract_test_info(filename, tipos_prueba, periodos_prueba)
+
+        # Validate against study criteria
+        tipo_valid = not tipos_prueba or (tipo_prueba in tipos_prueba)
+        periodo_valid = not periodos_prueba or (periodo_prueba in periodos_prueba)
+
+        if not tipo_valid or not periodo_valid:
+            error_msg = []
+            if not tipo_valid:
+                error_msg.append(f"Tipo de prueba '{tipo_prueba}' no coincide con los criterios del estudio: {', '.join(tipos_prueba)}")
+            if not periodo_valid:
+                error_msg.append(f"Periodo de prueba '{periodo_prueba}' no coincide con los criterios del estudio: {', '.join(periodos_prueba)}")
+            return False, "\n".join(error_msg)
+
+        return True, None
+
+    def agregar_archivos(self, estudio_path, nombre_estudio):
+        archivo = filedialog.askopenfilename(
+            title="Seleccionar archivo",
+            filetypes=[("Archivos de texto", "*.txt"), ("Archivos CSV", "*.csv")]
+        )
+        if archivo:
+            # Get study ID
+            conn = sqlite3.connect('kineviz.db')
+            cursor = conn.cursor()
+            cursor.execute('SELECT id_estudio FROM estudios WHERE nombre_estudio = ?', (nombre_estudio,))
+            id_estudio = cursor.fetchone()[0]
+            conn.close()
+
+            # Validate file
+            is_valid, error_msg = self.validate_file_criteria(os.path.basename(archivo), id_estudio)
+            
+            if not is_valid:
+                messagebox.showerror("Error de Validación", error_msg)
+                return
+
+            try:
+                leer_archivo_csv_o_txt(archivo, nombre_estudio)
+                messagebox.showinfo("Éxito", "Archivo agregado correctamente")
+                # Actualizar vista de archivos
+                self.cargar_archivos(estudio_path, nombre_estudio)
+            except Exception as e:
+                messagebox.showerror("Error", f"Error al agregar archivo: {str(e)}")
+
+    def add_to_analysis(self, category, item):
+        """Agrega un elemento a la lista de análisis"""
+        if item:
+            analysis_listbox = getattr(self, f"{category.lower().replace(' ', '_').replace('ó', 'o')}_analysis_listbox")
+            if item not in analysis_listbox.get(0, tk.END):
+                analysis_listbox.insert(tk.END, item)
+
+    def remove_from_analysis(self, category, item):
+        """Elimina un elemento de la lista de análisis"""
+        if item:
+            analysis_listbox = getattr(self, f"{category.lower().replace(' ', '_').replace('ó', 'o')}_analysis_listbox")
+            selection = analysis_listbox.curselection()
+            if selection:
+                analysis_listbox.delete(selection)
+
+    def reset_filter(self, var, default_value):
+        """Resetea un filtro a su valor por defecto"""
+        var.set(default_value)
 
     def ver_estudio(self, id_estudio):
         ver_window = Toplevel(self.root)
@@ -529,63 +646,6 @@ class KineVizApp:
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
 
-    def setup_parameter_selection(self, parent, title):
-        """Configura una sección de selección de parámetros"""
-        frame = ttk.LabelFrame(parent, text=title)
-        frame.pack(fill=tk.X, pady=5)
-        
-        # Listbox para opciones disponibles
-        listbox = tk.Listbox(frame, height=5)
-        listbox.pack(side=tk.LEFT, fill=tk.X, expand=True)
-        
-        # Scrollbar para el listbox
-        scrollbar = ttk.Scrollbar(frame, orient="vertical", command=listbox.yview)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        listbox.configure(yscrollcommand=scrollbar.set)
-        
-        # Botón para agregar
-        ttk.Button(frame, text="Agregar", 
-                  command=lambda: self.add_to_analysis(title, listbox.get(tk.ACTIVE))).pack(side=tk.LEFT)
-        
-        # Guardar referencia al listbox
-        setattr(self, f"{title.lower().replace(' ', '_')}_listbox", listbox)
-
-    def setup_analysis_list(self, parent, title):
-        """Configura una sección de lista de análisis"""
-        frame = ttk.LabelFrame(parent, text=title)
-        frame.pack(fill=tk.X, pady=5)
-        
-        # Listbox para elementos seleccionados
-        listbox = tk.Listbox(frame, height=5)
-        listbox.pack(side=tk.LEFT, fill=tk.X, expand=True)
-        
-        # Scrollbar para el listbox
-        scrollbar = ttk.Scrollbar(frame, orient="vertical", command=listbox.yview)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        listbox.configure(yscrollcommand=scrollbar.set)
-        
-        # Botón para eliminar
-        ttk.Button(frame, text="X", 
-                  command=lambda: self.remove_from_analysis(title, listbox.get(tk.ACTIVE))).pack(side=tk.LEFT)
-        
-        # Guardar referencia al listbox
-        setattr(self, f"{title.lower().replace(' ', '_')}_analysis_listbox", listbox)
-
-    def add_to_analysis(self, category, item):
-        """Agrega un elemento a la lista de análisis"""
-        if item:
-            analysis_listbox = getattr(self, f"{category.lower().replace(' ', '_')}_analysis_listbox")
-            if item not in analysis_listbox.get(0, tk.END):
-                analysis_listbox.insert(tk.END, item)
-
-    def remove_from_analysis(self, category, item):
-        """Elimina un elemento de la lista de análisis"""
-        if item:
-            analysis_listbox = getattr(self, f"{category.lower().replace(' ', '_')}_analysis_listbox")
-            selection = analysis_listbox.curselection()
-            if selection:
-                analysis_listbox.delete(selection)
-
     def mostrar_analisis_estudio(self, id_estudio):
         """Muestra la ventana de análisis de estudio"""
         # Validar que haya al menos dos pacientes antes de abrir la ventana
@@ -606,7 +666,7 @@ class KineVizApp:
         # Filtro de Frecuencia
         freq_frame = ttk.LabelFrame(main_frame, text="Frecuencia")
         freq_frame.pack(fill=tk.X, pady=(0, 10))
-        freq_options = ["Cinemática", "Cinética", "Electromiográfica"]
+        freq_options = ["Todos", "Cinemática", "Cinética", "Electromiográfica"]
         self.freq_var = tk.StringVar(value=freq_options[0])
         
         def on_freq_change(*args):
@@ -614,8 +674,12 @@ class KineVizApp:
             self.actualizar_listas_parametros(id_estudio)
         
         self.freq_var.trace_add("write", on_freq_change)
-        freq_menu = ttk.OptionMenu(freq_frame, self.freq_var, *freq_options)
-        freq_menu.pack(pady=5)
+        freq_menu = ttk.OptionMenu(freq_frame, self.freq_var, freq_options[0], *freq_options)
+        freq_menu.pack(side=tk.LEFT, pady=5)
+        
+        # Botón para resetear frecuencia
+        ttk.Button(freq_frame, text="Resetear", 
+                  command=lambda: self.reset_filter(self.freq_var, freq_options[0])).pack(side=tk.LEFT, padx=5)
 
         # Frame para selección de parámetros y lista de análisis
         params_frame = ttk.Frame(main_frame)
@@ -626,18 +690,20 @@ class KineVizApp:
         left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 10))
 
         # Listboxes y botones para selección
-        self.setup_parameter_selection(left_frame, "Pacientes")
-        self.setup_parameter_selection(left_frame, "Tipo de Prueba")
-        self.setup_parameter_selection(left_frame, "Periodo de Prueba")
+        self.pacientes_listbox = self.setup_parameter_selection(left_frame, "Pacientes")
+        self.frecuencia_medicion_listbox = self.setup_parameter_selection(left_frame, "Frecuencia de Medición")
+        self.tipo_prueba_listbox = self.setup_parameter_selection(left_frame, "Tipo de Prueba")
+        self.periodo_prueba_listbox = self.setup_parameter_selection(left_frame, "Periodo de Prueba")
 
         # Frame derecho - Lista de análisis
         right_frame = ttk.LabelFrame(params_frame, text="Lista de Análisis")
         right_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         # Listboxes para elementos seleccionados
-        self.setup_analysis_list(right_frame, "Pacientes")
-        self.setup_analysis_list(right_frame, "Tipo de Prueba")
-        self.setup_analysis_list(right_frame, "Periodo de Prueba")
+        self.pacientes_analysis_listbox = self.setup_analysis_list(right_frame, "Pacientes")
+        self.frecuencia_medicion_analysis_listbox = self.setup_analysis_list(right_frame, "Frecuencia de Medición")
+        self.tipo_prueba_analysis_listbox = self.setup_analysis_list(right_frame, "Tipo de Prueba")
+        self.periodo_prueba_analysis_listbox = self.setup_analysis_list(right_frame, "Periodo de Prueba")
 
         # Frame inferior - Cálculos y acciones
         bottom_frame = ttk.Frame(main_frame)
@@ -646,10 +712,14 @@ class KineVizApp:
         # Selección de cálculo
         calc_frame = ttk.LabelFrame(bottom_frame, text="Cálculo")
         calc_frame.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
-        calc_options = ["Máximo", "Mínimo", "Rango"]
+        calc_options = ["Todos", "Máximo", "Mínimo", "Rango"]
         self.calc_var = tk.StringVar(value=calc_options[0])
-        calc_menu = ttk.OptionMenu(calc_frame, self.calc_var, *calc_options)
-        calc_menu.pack(pady=5)
+        calc_menu = ttk.OptionMenu(calc_frame, self.calc_var, calc_options[0], *calc_options)
+        calc_menu.pack(side=tk.LEFT, pady=5)
+        
+        # Botón para resetear cálculo
+        ttk.Button(calc_frame, text="Resetear", 
+                  command=lambda: self.reset_filter(self.calc_var, calc_options[0])).pack(side=tk.LEFT, padx=5)
 
         # Lista de cálculos
         calc_list_frame = ttk.LabelFrame(bottom_frame, text="Lista de Cálculos")
@@ -681,56 +751,6 @@ class KineVizApp:
 
         # Cargar datos iniciales
         self.actualizar_listas_parametros(id_estudio)
-
-    def actualizar_listas_parametros(self, id_estudio):
-        """Actualiza las listas de parámetros basado en la frecuencia seleccionada"""
-        # Obtener el nombre del estudio
-        conn = sqlite3.connect('kineviz.db')
-        cursor = conn.cursor()
-        cursor.execute('SELECT nombre_estudio FROM estudios WHERE id_estudio = ?', (id_estudio,))
-        nombre_estudio = cursor.fetchone()[0]
-        conn.close()
-
-        # Ruta del estudio
-        estudio_path = os.path.join("estudios", nombre_estudio)
-        frecuencia = self.freq_var.get()
-
-        # Limpiar listboxes
-        for categoria in ["pacientes", "tipo_de_prueba", "periodo_de_prueba"]:
-            listbox = getattr(self, f"{categoria}_listbox")
-            listbox.delete(0, tk.END)
-
-        # Obtener y mostrar datos
-        pacientes = set()
-        tipos_prueba = set()
-        periodos_prueba = set()
-
-        if os.path.exists(estudio_path):
-            for root, _, files in os.walk(estudio_path):
-                for file in files:
-                    if file.endswith('.txt'):
-                        file_path = os.path.join(root, file)
-                        if frecuencia in file_path:
-                            # Extraer información del path
-                            rel_path = os.path.relpath(file_path, estudio_path)
-                            parts = rel_path.split(os.sep)
-                            
-                            if len(parts) >= 2:
-                                pacientes.add(parts[0])  # Primer nivel es el paciente
-                                if len(parts) >= 3:
-                                    tipos_prueba.add(parts[1])  # Segundo nivel es el tipo de prueba
-                                    if len(parts) >= 4:
-                                        periodos_prueba.add(parts[2])  # Tercer nivel es el periodo
-
-        # Actualizar listboxes
-        for paciente in sorted(pacientes):
-            self.pacientes_listbox.insert(tk.END, paciente)
-        
-        for tipo in sorted(tipos_prueba):
-            self.tipo_de_prueba_listbox.insert(tk.END, tipo)
-        
-        for periodo in sorted(periodos_prueba):
-            self.periodo_de_prueba_listbox.insert(tk.END, periodo)
 
     def crear_tabla_archivos(self, parent_frame, columns):
         self.archivos_tree = ttk.Treeview(parent_frame, columns=columns, show='headings')
@@ -999,20 +1019,6 @@ class KineVizApp:
                     self.cargar_archivos(estudio_path, os.path.basename(estudio_path))
             except Exception as e:
                 messagebox.showerror("Error", f"Error al eliminar archivo: {str(e)}")
-
-    def agregar_archivos(self, estudio_path, nombre_estudio):
-        archivo = filedialog.askopenfilename(
-            title="Seleccionar archivo",
-            filetypes=[("Archivos de texto", "*.txt"), ("Archivos CSV", "*.csv")]
-        )
-        if archivo:
-            try:
-                leer_archivo_csv_o_txt(archivo, nombre_estudio)
-                messagebox.showinfo("Éxito", "Archivo agregado correctamente")
-                # Actualizar vista de archivos
-                self.cargar_archivos(estudio_path, nombre_estudio)
-            except Exception as e:
-                messagebox.showerror("Error", f"Error al agregar archivo: {str(e)}")
 
     def abrir_carpeta_estudio(self, estudio_path):
         if os.path.exists(estudio_path):
