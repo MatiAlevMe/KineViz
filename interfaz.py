@@ -1226,6 +1226,69 @@ class KineVizApp:
         if selection:
             self.calc_listbox.delete(selection)
 
+    def procesar_datos(self, estudio_path, paciente, frecuencia, tipo, periodo):
+        """Procesa los datos de un archivo específico"""
+        # Construir la ruta del archivo
+        archivo_path = os.path.join(estudio_path, paciente, frecuencia, f"{paciente} {tipo} {periodo}.txt")
+        
+        if not os.path.exists(archivo_path):
+            # Intentar con orden inverso (periodo, tipo)
+            archivo_path = os.path.join(estudio_path, paciente, frecuencia, f"{paciente} {periodo} {tipo}.txt")
+            if not os.path.exists(archivo_path):
+                # Intentar con número al final
+                for i in range(1, 101):  # Buscar archivos con números del 1 al 100
+                    archivo_path = os.path.join(estudio_path, paciente, frecuencia, f"{paciente} {tipo} {periodo} {i}.txt")
+                    if os.path.exists(archivo_path):
+                        break
+                    archivo_path = os.path.join(estudio_path, paciente, frecuencia, f"{paciente} {periodo} {tipo} {i}.txt")
+                    if os.path.exists(archivo_path):
+                        break
+                else:
+                    return None
+        
+        try:
+            with open(archivo_path, 'r') as f:
+                # Leer los valores numéricos del archivo
+                valores = []
+                for line in f:
+                    try:
+                        valor = float(line.strip())
+                        valores.append(valor)
+                    except ValueError:
+                        continue
+                return valores
+        except:
+            return None
+
+    def generar_nombre_pdf(self, reporte_id, calculos, frecuencias):
+        """Genera el nombre del PDF según el formato especificado"""
+        # Fecha actual en formato YYYYMMDD
+        date_str = datetime.now().strftime("%Y%m%d")
+        
+        # Formatear cálculos (ej: "max-min-rango")
+        calc_map = {"Máximo": "max", "Mínimo": "min", "Rango": "rango"}
+        calc_str = "-".join(calc_map[c] for c in calculos)
+        
+        # Formatear frecuencias
+        freq_str = "-".join(frecuencias)
+        
+        return f"reporte-{reporte_id}_{date_str}_{calc_str}_{freq_str}.pdf"
+
+    def obtener_siguiente_reporte_id(self, reportes_dir):
+        """Obtiene el siguiente ID de reporte disponible"""
+        if not os.path.exists(reportes_dir):
+            return 1
+            
+        max_id = 0
+        for filename in os.listdir(reportes_dir):
+            if filename.startswith("reporte-") and filename.endswith(".pdf"):
+                try:
+                    reporte_id = int(filename.split("_")[0].split("-")[1])
+                    max_id = max(max_id, reporte_id)
+                except:
+                    continue
+        return max_id + 1
+
     def crear_reporte_pdf(self, id_estudio):
         """Crea un reporte PDF con los análisis seleccionados"""
         # Verificar que haya al menos dos pacientes seleccionados
@@ -1268,14 +1331,103 @@ class KineVizApp:
         if not os.path.exists(pdf_dir):
             os.makedirs(pdf_dir)
 
-        # Generar nombre descriptivo para el PDF
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        pdf_name = f"reporte_{timestamp}.pdf"
+        # Obtener siguiente ID de reporte y generar nombre del PDF
+        reporte_id = self.obtener_siguiente_reporte_id(pdf_dir)
+        pdf_name = self.generar_nombre_pdf(reporte_id, calculos, frecuencias)
         pdf_path = os.path.join(pdf_dir, pdf_name)
 
         try:
             # Crear PDF
-            self.generar_pdf(pdf_path, nombre_estudio, pacientes, frecuencias, tipos, periodos, calculos)
+            doc = SimpleDocTemplate(pdf_path, pagesize=letter)
+            elements = []
+            
+            # Estilos
+            styles = getSampleStyleSheet()
+            title_style = styles['Title']
+            heading_style = styles['Heading1']
+            heading2_style = styles['Heading2']
+            normal_style = styles['Normal']
+            
+            # Título
+            elements.append(Paragraph(f"Reporte de Análisis - {nombre_estudio}", title_style))
+            elements.append(Spacer(1, 12))
+            
+            # Fecha
+            elements.append(Paragraph(f"Fecha: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}", normal_style))
+            elements.append(Spacer(1, 12))
+            
+            # Parámetros seleccionados
+            elements.append(Paragraph("Parámetros Seleccionados:", heading_style))
+            elements.append(Paragraph(f"Pacientes: {', '.join(pacientes)}", normal_style))
+            elements.append(Paragraph(f"Frecuencias: {', '.join(frecuencias)}", normal_style))
+            elements.append(Paragraph(f"Tipos de Prueba: {', '.join(tipos)}", normal_style))
+            elements.append(Paragraph(f"Periodos de Prueba: {', '.join(periodos)}", normal_style))
+            elements.append(Paragraph(f"Cálculos: {', '.join(calculos)}", normal_style))
+            elements.append(Spacer(1, 12))
+            
+            # Ruta del estudio
+            estudio_path = os.path.join("estudios", nombre_estudio)
+            
+            # Procesar datos y generar gráficos para cada frecuencia
+            for frecuencia in frecuencias:
+                elements.append(Paragraph(f"Análisis para {frecuencia}:", heading_style))
+                elements.append(Spacer(1, 12))
+                
+                # Para cada tipo y periodo
+                for tipo in tipos:
+                    for periodo in periodos:
+                        elements.append(Paragraph(f"{tipo} - {periodo}", heading2_style))
+                        elements.append(Spacer(1, 6))
+                        
+                        # Recopilar datos para el gráfico
+                        datos_pacientes = {}
+                        for paciente in pacientes:
+                            valores = self.procesar_datos(estudio_path, paciente, frecuencia, tipo, periodo)
+                            if valores:
+                                datos_pacientes[paciente] = valores
+                        
+                        if datos_pacientes:
+                            # Crear gráfico de caja (boxplot)
+                            plt.figure(figsize=(8, 6))
+                            plt.boxplot([datos_pacientes[p] for p in datos_pacientes.keys()],
+                                      labels=list(datos_pacientes.keys()))
+                            plt.title(f"{tipo} - {periodo}")
+                            plt.ylabel("Valores")
+                            plt.xticks(rotation=45)
+                            
+                            # Guardar gráfico temporalmente
+                            temp_plot = f"temp_plot_{frecuencia}_{tipo}_{periodo}.png"
+                            plt.savefig(temp_plot, bbox_inches='tight')
+                            plt.close()
+                            
+                            # Agregar gráfico al PDF
+                            elements.append(Image(temp_plot, width=400, height=300))
+                            elements.append(Spacer(1, 12))
+                            
+                            # Eliminar archivo temporal
+                            os.remove(temp_plot)
+                            
+                            # Agregar resultados estadísticos
+                            for calculo in calculos:
+                                elements.append(Paragraph(f"Resultados para {calculo}:", normal_style))
+                                
+                                # Tabla de resultados
+                                resultados = []
+                                for paciente in datos_pacientes:
+                                    valor = self.calcular_estadisticas(datos_pacientes[paciente], calculo)
+                                    if valor is not None:
+                                        resultados.append(f"{paciente}: {valor:.2f}")
+                                
+                                if resultados:
+                                    elements.append(Paragraph("<br/>".join(resultados), normal_style))
+                                elements.append(Spacer(1, 6))
+                        else:
+                            elements.append(Paragraph("No hay datos disponibles para esta combinación", normal_style))
+                        
+                        elements.append(Spacer(1, 12))
+            
+            # Generar PDF
+            doc.build(elements)
             messagebox.showinfo("Éxito", "Reporte PDF generado correctamente")
             
             # Abrir el PDF
@@ -1285,24 +1437,147 @@ class KineVizApp:
         except Exception as e:
             messagebox.showerror("Error", f"Error al generar PDF: {str(e)}")
 
-    def procesar_datos(self, estudio_path, paciente, frecuencia, tipo, periodo):
-        """Procesa los datos de un archivo específico"""
-        # Construir la ruta del archivo
-        archivo_path = os.path.join(estudio_path, paciente, frecuencia, f"{paciente} {tipo} {periodo}.txt")
+    def ver_pdf(self):
+        """Abre el PDF seleccionado"""
+        # Obtener el estudio actual
+        current_window = self.root.focus_get().winfo_toplevel()
+        study_name = current_window.title().replace('Análisis de Estudio - ', '')
         
-        if not os.path.exists(archivo_path):
-            # Intentar con orden inverso (periodo, tipo)
-            archivo_path = os.path.join(estudio_path, paciente, frecuencia, f"{paciente} {periodo} {tipo}.txt")
-            if not os.path.exists(archivo_path):
-                return None
+        # Directorio de reportes
+        reportes_dir = os.path.join("estudios", study_name, "reportes")
+        if not os.path.exists(reportes_dir):
+            messagebox.showerror("Error", "No hay reportes disponibles")
+            return
+            
+        # Listar PDFs disponibles
+        pdfs = [f for f in os.listdir(reportes_dir) if f.endswith('.pdf')]
+        if not pdfs:
+            messagebox.showerror("Error", "No hay reportes disponibles")
+            return
+            
+        # Crear ventana de selección
+        select_window = Toplevel(self.root)
+        select_window.title('Seleccionar PDF')
+        select_window.geometry('800x600')
         
-        try:
-            with open(archivo_path, 'r') as f:
-                # Leer los valores numéricos del archivo
-                valores = [float(line.strip()) for line in f if line.strip()]
-                return valores
-        except:
-            return None
+        # Frame principal
+        main_frame = ttk.Frame(select_window)
+        main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+        
+        # Frame de búsqueda
+        search_frame = ttk.Frame(main_frame)
+        search_frame.pack(fill=tk.X, pady=(0, 10))
+        ttk.Label(search_frame, text="Buscar:").pack(side=tk.LEFT)
+        search_var = tk.StringVar()
+        search_entry = ttk.Entry(search_frame, textvariable=search_var)
+        search_entry.pack(side=tk.LEFT, padx=5)
+        
+        # Frame para la tabla
+        table_frame = ttk.Frame(main_frame)
+        table_frame.pack(fill=tk.BOTH, expand=True)
+        
+        # Crear tabla
+        columns = ('ID', 'Fecha', 'Cálculos', 'Frecuencias', 'Ver')
+        tree = ttk.Treeview(table_frame, columns=columns, show='headings')
+        
+        # Configurar columnas
+        for col in columns:
+            tree.heading(col, text=col)
+            tree.column(col, width=100)
+        
+        # Scrollbar
+        scrollbar = ttk.Scrollbar(table_frame, orient=tk.VERTICAL, command=tree.yview)
+        tree.configure(yscrollcommand=scrollbar.set)
+        
+        # Empaquetar tabla y scrollbar
+        tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        
+        def cargar_pdfs(search_term=''):
+            # Limpiar tabla
+            for item in tree.get_children():
+                tree.delete(item)
+                
+            # Cargar PDFs
+            for pdf in pdfs:
+                if search_term.lower() in pdf.lower():
+                    try:
+                        # Extraer información del nombre del archivo
+                        parts = pdf.replace('.pdf', '').split('_')
+                        reporte_id = parts[0].split('-')[1]
+                        fecha = parts[1]
+                        calculos = parts[2].replace('-', ', ')
+                        frecuencias = parts[3].replace('-', ', ')
+                        
+                        tree.insert('', tk.END, values=(
+                            reporte_id,
+                            f"{fecha[:4]}/{fecha[4:6]}/{fecha[6:]}",
+                            calculos,
+                            frecuencias,
+                            'Ver'
+                        ), tags=(pdf,))
+                    except:
+                        continue
+        
+        def on_search(*args):
+            cargar_pdfs(search_var.get())
+            
+        search_var.trace_add('write', on_search)
+        
+        def on_tree_click(event):
+            region = tree.identify("region", event.x, event.y)
+            if region == "cell":
+                column = tree.identify_column(event.x)
+                if column == "#5":  # Ver
+                    item = tree.selection()[0]
+                    pdf_name = tree.item(item, "tags")[0]
+                    pdf_path = os.path.join(reportes_dir, pdf_name)
+                    self.abrir_archivo(pdf_path)
+                    select_window.destroy()
+        
+        tree.bind('<ButtonRelease-1>', on_tree_click)
+        
+        # Cargar PDFs inicialmente
+        cargar_pdfs()
+        
+        # Frame de paginación
+        pagination_frame = ttk.Frame(main_frame)
+        pagination_frame.pack(fill=tk.X, pady=(10, 0))
+        
+        # Obtener configuración de paginación
+        items_per_page = int(self.config['SETTINGS']['files_per_page'])
+        total_pages = (len(pdfs) // items_per_page) + (1 if len(pdfs) % items_per_page else 0)
+        current_page = tk.IntVar(value=1)
+        
+        def update_pagination():
+            # Limpiar botones existentes
+            for widget in pagination_frame.winfo_children():
+                widget.destroy()
+                
+            if total_pages > 1:
+                ttk.Button(pagination_frame, text="<<", 
+                          command=lambda: current_page.set(1)).pack(side=tk.LEFT)
+                ttk.Button(pagination_frame, text="<", 
+                          command=lambda: current_page.set(max(1, current_page.get() - 1))).pack(side=tk.LEFT)
+                
+                for page in range(1, total_pages + 1):
+                    ttk.Button(pagination_frame, text=str(page),
+                             command=lambda p=page: current_page.set(p)).pack(side=tk.LEFT)
+                             
+                ttk.Button(pagination_frame, text=">",
+                          command=lambda: current_page.set(min(total_pages, current_page.get() + 1))).pack(side=tk.LEFT)
+                ttk.Button(pagination_frame, text=">>",
+                          command=lambda: current_page.set(total_pages)).pack(side=tk.LEFT)
+        
+        def on_page_change(*args):
+            start_idx = (current_page.get() - 1) * items_per_page
+            end_idx = start_idx + items_per_page
+            cargar_pdfs(search_var.get())
+            
+        current_page.trace_add('write', on_page_change)
+        
+        # Actualizar paginación inicial
+        update_pagination()
 
     def calcular_estadisticas(self, valores, calculo):
         """Calcula estadísticas específicas para un conjunto de valores"""
@@ -1409,49 +1684,6 @@ class KineVizApp:
         
         # Generar PDF
         doc.build(elements)
-
-    def ver_pdf(self):
-        """Abre el PDF seleccionado"""
-        # Obtener el estudio actual
-        current_window = self.root.focus_get().winfo_toplevel()
-        study_name = current_window.title().replace('Análisis de Estudio - ', '')
-        
-        # Directorio de reportes
-        reportes_dir = os.path.join("estudios", study_name, "reportes")
-        if not os.path.exists(reportes_dir):
-            messagebox.showerror("Error", "No hay reportes disponibles")
-            return
-            
-        # Listar PDFs disponibles
-        pdfs = [f for f in os.listdir(reportes_dir) if f.endswith('.pdf')]
-        if not pdfs:
-            messagebox.showerror("Error", "No hay reportes disponibles")
-            return
-            
-        # Crear ventana de selección
-        select_window = Toplevel(self.root)
-        select_window.title('Seleccionar PDF')
-        select_window.geometry('400x300')
-        
-        # Lista de PDFs
-        listbox = tk.Listbox(select_window)
-        listbox.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
-        
-        # Ordenar PDFs por fecha (más reciente primero)
-        pdfs.sort(reverse=True)
-        
-        for pdf in pdfs:
-            listbox.insert(tk.END, pdf)
-            
-        def abrir_pdf_seleccionado():
-            selection = listbox.curselection()
-            if selection:
-                pdf_name = listbox.get(selection[0])
-                pdf_path = os.path.join(reportes_dir, pdf_name)
-                self.abrir_archivo(pdf_path)
-                select_window.destroy()
-                
-        ttk.Button(select_window, text="Abrir", command=abrir_pdf_seleccionado).pack(pady=10)
 
     def eliminar_pdf(self):
         """Elimina el PDF seleccionado"""
