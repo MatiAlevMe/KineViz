@@ -1004,7 +1004,6 @@ class KineVizApp:
         left_frame = ttk.LabelFrame(params_frame, text="Selección de Parámetros")
         left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 10))
 
-        # Listboxes y botones para selección
         # Pacientes
         pacientes_frame = ttk.LabelFrame(left_frame, text="Pacientes")
         pacientes_frame.pack(fill=tk.X, pady=5)
@@ -1053,11 +1052,25 @@ class KineVizApp:
         ttk.Button(periodo_prueba_frame, text="Agregar Todo", 
                   command=lambda: self.add_all_to_analysis("Periodo de Prueba", self.periodo_prueba_listbox)).pack(side=tk.LEFT, padx=5)
 
+        # Cálculos
+        calculo_frame = ttk.LabelFrame(left_frame, text="Cálculos")
+        calculo_frame.pack(fill=tk.X, pady=5)
+        self.calculo_listbox = tk.Listbox(calculo_frame, height=4, selectmode=tk.SINGLE)
+        self.calculo_listbox.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        # Add default calculation options
+        for calc in ["Máximo", "Mínimo", "Rango"]:
+            self.calculo_listbox.insert(tk.END, calc)
+        ttk.Button(calculo_frame, text="Agregar", 
+                  command=lambda: self.add_to_analysis("Cálculos",
+                  self.calculo_listbox.get(self.calculo_listbox.curselection()) if self.calculo_listbox.curselection() else None
+                  )).pack(side=tk.LEFT, padx=5)
+        ttk.Button(calculo_frame, text="Agregar Todo", 
+                  command=lambda: self.add_all_to_analysis("Cálculos", self.calculo_listbox)).pack(side=tk.LEFT, padx=5)
+
         # Frame derecho - Lista de análisis
         right_frame = ttk.LabelFrame(params_frame, text="Lista de Análisis")
         right_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        # Listboxes para elementos seleccionados
         # Pacientes Analysis
         pacientes_analysis_frame = ttk.LabelFrame(right_frame, text="Pacientes")
         pacientes_analysis_frame.pack(fill=tk.X, pady=5)
@@ -1106,41 +1119,17 @@ class KineVizApp:
         ttk.Button(periodo_prueba_analysis_frame, text="Eliminar Todo", 
                   command=lambda: self.remove_all_from_analysis("Periodo de Prueba")).pack(side=tk.LEFT, padx=5)
 
-        # Frame inferior - Cálculos y acciones
-        bottom_frame = ttk.Frame(main_frame)
-        bottom_frame.pack(fill=tk.X, pady=10)
-
-        # Selección de cálculo
-        calc_frame = ttk.LabelFrame(bottom_frame, text="Cálculo")
-        calc_frame.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
-        calc_options = ["Todos", "Máximo", "Mínimo", "Rango"]
-        self.calc_var = tk.StringVar(value=calc_options[0])
-        
-        def on_calc_change(*args):
-            if self.calc_var.get() != "Todos" and self.calc_var.get() not in self.calc_listbox.get(0, tk.END):
-                self.calc_listbox.insert(tk.END, self.calc_var.get())
-        
-        self.calc_var.trace_add("write", on_calc_change)
-        calc_menu = ttk.OptionMenu(calc_frame, self.calc_var, calc_options[0], *calc_options)
-        calc_menu.pack(side=tk.LEFT, pady=5)
-        
-        # Botón para resetear cálculo
-        ttk.Button(calc_frame, text="Resetear", 
-                  command=lambda: self.reset_filter(self.calc_var, calc_options[0])).pack(side=tk.LEFT, padx=5)
-
-        # Lista de cálculos
-        calc_list_frame = ttk.LabelFrame(bottom_frame, text="Lista de Cálculos")
-        calc_list_frame.pack(side=tk.LEFT, fill=tk.X, expand=True)
-        self.calc_listbox = tk.Listbox(calc_list_frame, height=4)
-        self.calc_listbox.pack(fill=tk.X, pady=5)
-
-        # Botones para cálculos
-        calc_buttons_frame = ttk.Frame(calc_list_frame)
-        calc_buttons_frame.pack(fill=tk.X)
-        ttk.Button(calc_buttons_frame, text="Eliminar", 
-                  command=self.remove_selected_calculation).pack(side=tk.LEFT)
-        ttk.Button(calc_buttons_frame, text="Eliminar Todo", 
-                  command=lambda: self.calc_listbox.delete(0, tk.END)).pack(side=tk.LEFT, padx=5)
+        # Cálculos Analysis
+        calculo_analysis_frame = ttk.LabelFrame(right_frame, text="Cálculos")
+        calculo_analysis_frame.pack(fill=tk.X, pady=5)
+        self.calculo_analysis_listbox = tk.Listbox(calculo_analysis_frame, height=4)
+        self.calculo_analysis_listbox.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        ttk.Button(calculo_analysis_frame, text="Eliminar", 
+                  command=lambda: self.remove_from_analysis("Cálculos",
+                  self.calculo_analysis_listbox.get(self.calculo_analysis_listbox.curselection()) if self.calculo_analysis_listbox.curselection() else None
+                  )).pack(side=tk.LEFT, padx=5)
+        ttk.Button(calculo_analysis_frame, text="Eliminar Todo", 
+                  command=lambda: self.remove_all_from_analysis("Cálculos")).pack(side=tk.LEFT, padx=5)
 
         # Frame para botones de acción
         action_frame = ttk.Frame(main_frame)
@@ -1172,17 +1161,62 @@ class KineVizApp:
         # Cargar datos iniciales
         self.actualizar_listas_parametros(id_estudio)
 
-    def add_all_to_analysis(self, category, source_listbox):
-        """Agrega todos los elementos de un listbox a la lista de análisis"""
-        analysis_listbox = getattr(self, f"{category.lower().replace(' ', '_').replace('ó', 'o')}_analysis_listbox")
-        items = source_listbox.get(0, tk.END)
-        for item in items:
+    def add_to_analysis(self, category, item):
+        """Agrega un elemento a la lista de análisis"""
+        if item:
+            # Map category names to attribute names
+            category_map = {
+                "Frecuencia de Medición": "frecuencia_medicion",
+                "Tipo de Prueba": "tipo_prueba",
+                "Periodo de Prueba": "periodo_prueba",
+                "Pacientes": "pacientes",
+                "Cálculos": "calculo"
+            }
+            
+            attr_name = f"{category_map.get(category, category.lower())}_analysis_listbox"
+            analysis_listbox = getattr(self, attr_name)
+            
             if item not in analysis_listbox.get(0, tk.END):
                 analysis_listbox.insert(tk.END, item)
 
+    def add_all_to_analysis(self, category, source_listbox):
+        """Agrega todos los elementos de un listbox a la lista de análisis"""
+        items = source_listbox.get(0, tk.END)
+        for item in items:
+            self.add_to_analysis(category, item)
+
+    def remove_from_analysis(self, category, item):
+        """Elimina un elemento de la lista de análisis"""
+        if item:
+            # Map category names to attribute names
+            category_map = {
+                "Frecuencia de Medición": "frecuencia_medicion",
+                "Tipo de Prueba": "tipo_prueba",
+                "Periodo de Prueba": "periodo_prueba",
+                "Pacientes": "pacientes",
+                "Cálculos": "calculo"
+            }
+            
+            attr_name = f"{category_map.get(category, category.lower())}_analysis_listbox"
+            analysis_listbox = getattr(self, attr_name)
+            
+            selection = analysis_listbox.curselection()
+            if selection:
+                analysis_listbox.delete(selection)
+
     def remove_all_from_analysis(self, category):
         """Elimina todos los elementos de una lista de análisis"""
-        analysis_listbox = getattr(self, f"{category.lower().replace(' ', '_').replace('ó', 'o')}_analysis_listbox")
+        # Map category names to attribute names
+        category_map = {
+            "Frecuencia de Medición": "frecuencia_medicion",
+            "Tipo de Prueba": "tipo_prueba",
+            "Periodo de Prueba": "periodo_prueba",
+            "Pacientes": "pacientes",
+            "Cálculos": "calculo"
+        }
+        
+        attr_name = f"{category_map.get(category, category.lower())}_analysis_listbox"
+        analysis_listbox = getattr(self, attr_name)
         analysis_listbox.delete(0, tk.END)
 
     def remove_selected_calculation(self):
