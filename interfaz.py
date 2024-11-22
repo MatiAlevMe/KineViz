@@ -54,11 +54,13 @@ class KineVizApp:
             self.config.read('config.ini')
             self.estudios_por_pagina = int(self.config['SETTINGS']['estudios_por_pagina'])
             self.files_per_page = int(self.config['SETTINGS']['files_per_page'])  # Load files_per_page
+            self.pdfs_per_page = int(self.config['SETTINGS'].get('pdfs_per_page', 10))  # Load pdfs_per_page, default 10
         except Exception as e:
             # Handle errors (e.g., file not found, invalid values)
             messagebox.showerror("Error", f"Error loading configuration: {str(e)}")
-            self.estudios_por_pagina = 10 # Default value
+            self.estudios_por_pagina = 10  # Default value
             self.files_per_page = 10  # Default value for files_per_page
+            self.pdfs_per_page = 10  # Default value for pdfs_per_page
 
     def setup_database(self):
         conn = sqlite3.connect('kineviz.db')
@@ -729,13 +731,6 @@ class KineVizApp:
             except Exception as e:
                 messagebox.showerror("Error", f"Error al agregar archivo: {str(e)}")
 
-    def add_to_analysis(self, category, item):
-        """Agrega un elemento a la lista de análisis"""
-        if item:
-            analysis_listbox = getattr(self, f"{category.lower().replace(' ', '_').replace('ó', 'o')}_analysis_listbox")
-            if item not in analysis_listbox.get(0, tk.END):
-                analysis_listbox.insert(tk.END, item)
-
     def remove_from_analysis(self, category, item):
         """Elimina un elemento de la lista de análisis"""
         if item:
@@ -797,6 +792,10 @@ class KineVizApp:
                                     
             ttk.Button(scroll_frame, text="Abrir Carpeta del Estudio", 
                       command=lambda: self.abrir_carpeta_estudio(estudio_path)).pack(pady=10)
+                    # Botón para abrir carpeta de PDFs
+            
+            ttk.Button(scroll_frame, text="Abrir Carpeta de Reportes",
+                      command=lambda: self.abrir_carpeta(os.path.join(estudio_path, "reportes"))).pack(pady=10)
 
             # Botón para abrir ventana de análisis
             ttk.Button(scroll_frame, text="Análisis de Estudio",
@@ -961,6 +960,41 @@ class KineVizApp:
         
         for periodo in sorted(periodos_prueba_set):
             self.periodo_prueba_listbox.insert(tk.END, periodo)
+
+    def generar_grafico_barras(self, pacientes, calculo):
+        """Genera un gráfico de barras con la media del cálculo para cada paciente."""
+        if not pacientes or not calculo:
+            messagebox.showerror("Error", "Debe seleccionar al menos dos pacientes y un cálculo.")
+            return
+
+        # Obtener nombre del estudio
+        current_window = self.root.focus_get().winfo_toplevel()
+        study_name = current_window.title().replace('Análisis de Estudio - ', '')
+        estudio_path = os.path.join("estudios", study_name)
+
+        medias = []
+        for paciente in pacientes:
+            valores_totales = []
+            # Recorrer todas las carpetas de frecuencia
+            for frecuencia in ["Cinemática", "Cinética", "Electromiográfica"]:
+                # Recorrer todos los tipos de prueba
+                for tipo in self.tipo_prueba_analysis_listbox.get(0, tk.END):
+                    # Recorrer todos los periodos de prueba
+                    for periodo in self.periodo_prueba_analysis_listbox.get(0, tk.END):
+                        valores = self.procesar_datos(estudio_path, paciente, frecuencia, tipo, periodo)
+                        if valores:
+                            valores_totales.extend(valores)
+            
+            media = self.calcular_estadisticas(valores_totales, calculo) if valores_totales else 0
+            medias.append(media)
+
+        # Crear el gráfico de barras
+        plt.figure(figsize=(8, 6))
+        plt.bar(pacientes, medias)
+        plt.title(f"Media de {calculo} por Paciente")
+        plt.xlabel("Pacientes")
+        plt.ylabel(f"Media de {calculo}")
+        plt.show()
 
     def mostrar_analisis_estudio(self, id_estudio):
         """Muestra la ventana de análisis de estudio"""
