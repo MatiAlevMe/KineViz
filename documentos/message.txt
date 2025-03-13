@@ -1,0 +1,661 @@
+Notas 04/12/2024
+
+Siempre hay tiempo íntegros, y que sean los datos adecuados, ¿no?
+
+Entonces, ahora Oscar te dice que son esos pre y post, pero puede ser que alguien lo use, no cierto, y ponga cualquier otra cuestión y queda algo que tú no estás manejando.
+
+Entonces, ¿qué es lo que te recomiendo yo después, no ahora, pero para este campo, para que sea correcto desde el punto de vista de el manejo de la información, es que es un selector de los tipos, no cierto, que tú conoces, y que dentro de ese selector haya otro que diga otro, ¿no cierto?
+
+Y que al hábito hay un campo de texto que se active cuando aparece otro, y le pides al usuario que te ingrese el nombre cuando es otro, ¿sí?
+
+Ya.
+
+¿Te entiendas?
+
+Ya, ahí lo guarda como la base de datos del...
+
+Claro, necesitas esos elementos que son, no es cierto, que tú vas a ir como agregando cosas, ¿sabes?
+
+Que son como seleccionas, agregas, seleccionas, agregas, y cuando pone otro, no es cierto, que se active un campo donde uno puede escribir directamente que es ese otro.
+
+Ya, ya siempre.
+
+Eso lo podemos ver después, pero ahora no es tan importante, pero después, para el manejo de la información, sí es importante.
+
+Ahí se guarda, bueno, está en la otra página, ahí se guarda esto, y así porque queríamos estar eso de que, por ejemplo, si es que después yo le agregaré un archivo, y por ejemplo no tuviera uno de esos tipos de pruebas, escucha que en este caso sí los tienes, pre, post, voy a editar lo mejor, para que no me deje agregarlo.
+
+¿Por ejemplo, acá tengo pre, entonces no me va a aceptar el post, no me va a aceptar agregar el post, porque no tiene tipo post.
+
+Porque el formato no es el adecuado.
+
+Sí, ahí está.
+
+Tengo las validaciones, las validaciones igual, perdí a todo el tiempo, y claro, y después, sí, sí, sí me decía a los carqueras importantes, entonces, sí, entonces, igual no me acuesto de todas las validaciones que tenía, pero eran varias.
+
+Igual lo terminé de hacer rato el código, y ya no sé, entonces agregamos esto, después digamos que tenemos el paciente, tenemos eso, y tenemos, ah bueno, si por acá se agregan, por ejemplo, todas las frecuencias que está, acá está el archivo que tiene, o sea, se crean los archivos, o sea, se crean los archivos de las frecuencias, porque luego… ¿Estás creando tú abajo en el sistema que vas a guardar?
+
+Sí, se guardan acá, pero básicamente se crea el nuevo archivo con los datos brillabrocesado, donde se calculan los… se calculan el máximo, mínimo y el rango, pero bueno, esos cálculos después van a ser un poco más, porque hay que también calcular el… la velocidad en lo que era cinética o cinemática, no me acuerdo, pero había que agregar unos campos más, pero me decía… ¿Te suben el archivo, tú detectas esos secciones automáticamente y las agregas ahí… Sí, es que eso era lo que, eso era, o sea, el proceso metodal era el que había explicado en la presentación pasada.
+
+Sí, más bueno.
+
+Sí, pues, entonces, claro, lo subdivida como la frecuencia, la busca como el campo donde está la frecuencia.
+
+¿Y se pueden, por ejemplo, ver los datos o todavía no tienen una lista para ahí?
+
+Sí, acá está, o sea… ah, claro, pero sí, pues, o sea, idealmente después yo voy a hacer que se vea dentro del mismo programa para que sea más bonito, pero no era como necesaria ahora, sí que está acá.
+
+Sí, está bien, pero la idea es que después se vea como en una tabla… Claro, que se vea en una tabla, sí, pero igual como aquí a Oscar Ibuel me dice que, por ejemplo, ellos no necesitaban como que fuera tan bonito, entonces no… No, me imagino que hay algún problema, por ejemplo, imagínate que alguien hizo una medición y sospecha que hay un problema en el licensor.
+
+Sí, pues… Puede suceder, entonces, alguien va a decir ya, miremos el archivo, a ver qué pasa en la columna, no se aguanta, entonces, que en ese formato que tienes ahora, mirar la columna, no se aguanta, es súper pelvo, porque no están alineadas, porque se vea entonces la alineación va con la fila, no va por columna.
+
+No, porque no es una tabla, sí, entonces imagínate que hay que intentar mirar la columna a siete, no sé.
+
+Ah, sí, en realidad lo dejé con este formato, o sea, igual después lo voy a hacer en una tabla que sea bonita, pero igual lo dejé en este formato, al menos, como el resultado, porque así era como Oscar tenía el archivo de resultado… No sé, me decía que así lo creas.
+
+Eventualmente se van a hacer preguntas de los archivos, ¿no es cierto?
+
+Entonces, si es que ellas pueden hacer todo desde tu sistema, que es mucho mejor, pero no tienen que estar saliendo de la cuestión, abriendo la cosa en Excel, viendo las tal, entonces, si tú le entregas después, más adelante, no sé, sin interfaz para ver los datos de manera ordenada, sin que sea una cosa así… No es muy sofística, sino que sea una cosa que te permita ver las columnas bien, probablemente les va a hacer la vida más fácil en algunos casos, ¿sí?
+
+Sí.
+
+Eso solamente, y ahí entonces cuando… si agregas otro paciente, por ejemplo, ¿por qué estás solo paciente uno?
+
+Sí, ahí agregué archivos, o sea, pos y pre, y después, sí.
+
+Y acá, bueno, también tengo filtros para la frecuencia, y también acá también se pueden buscar por algún valor x.
+
+Ya, por todos los valores?
+
+Sí, por todos los valores como del archivo.
+
+Ya.
+
+Una que se puede abrir, que me quería mostrar, que se me ha olvidado.
+
+Ah, sí, lo que sí me decía que era importante es que ellos, como veían los problemas, eran raedas como geográficos.
+
+Me decía, por ejemplo, que el máximo y el mini como que concordaban con lo que ellos pensaban.
+
+O sea, como que… ¿Con algo proyectado?
+
+Claro, porque era más fácil de ver que dentro de los mismos datos, o sea, como dentro del… pero eso igual también, hay que refinarlo después más adelante.
+
+Eso como resumen de los datos.
+
+Claro, resumen de los datos que después ellos quieren, y acá a ver si agrego otro paciente, porque ahora no se puede hacer, no le hiciste estudios, porque tiene que tener dos pacientes al mes.
+
+Ah, sí, pero quería mostrar otras cosas, que ahí tengo breakers, entonces, yo acá quiero editar, y le dejo en pleno más.
+
+¿Algo va a decir que tienes que quitarlo?
+
+Claro, sí, pues eso.
+
+O sea, al menos la variación está, pues obviamente después hay que refinarlo, para que quede más bonito, pero lo más importante era como esto.
+
+¿Puedes hacer cosas al usuario?
+
+Claro, ahí después podemos hacer eso que me dijo de… ¿Qué era lo que me dijeron?
+
+Hay varias formas de hacer, en general, cuando uno trabaja con datos, la eliminación física de los datos es súper complicada, en términos de seguridad de los datos.
+
+Como informático, tenéis que siempre… de nuevo te vuelvo a decir, tu preocupación es que los datos están seguros.
+
+Aunque uno piense que el usuario es súper inteligente y sabe siempre lo que está haciendo, en realidad, al usuario apretan cosas aleatoriamente de repente.
+
+Entonces, el usuario puede por algún motivo quitarle el post como acá y después, no sé, se confunde, está curado, vino el perro, el niño le habló y apretó yes.
+
+Y desaparecieron los datos.
+
+Sí.
+
+Y el usuario no sabe qué hacer, ¿no?
+
+Sí.
+
+Porque eso es una catástrofe, lo que se hace es que se hace de eliminación es lógica.
+
+Entonces, se mandan esos datos o esos archivos a carpetas temporales, ¿no es cierto?
+
+Se ponen con otros nombres y se eliminan después con el tiempo, por ejemplo, ¿sí?
+
+Pero no se eliminan así como de inmediato, porque si no, es como… es peligroso en términos de, de verdad, datos que pudieran ser importantes.
+
+Pero y eso como tiene que… estoy pensando como un poco más.
+
+O sea, la práctica tú podrías hacer como una carpeta de una papelera, básicamente, donde tú tomas ese archivo que querías borrar.
+
+¿Sí?
+
+Y en vez de borrarle, y borrarle, le cambias el nombre y lo ponen en esa carpeta, ¿no?
+
+Sí, sí, pero después para restrablecerlo sí como quizá un historial o… Y tú tienes que… yo lo quería para este sistema, como este no es un sistema de tanto click, click, sino que gente que debería saber lo que está haciendo.
+
+En tu manual va a decir, bueno, la carpeta X, quedan guardados en los archivos, ¿no es cierto?
+
+Que se eliminan de los estudios, usted vaya, sáquelo y vuelve a borrarlo.
+
+Es que… ¿sí?
+
+Entonces, tú cuando cambias a la carpeta, ¿qué es lo que haces?
+
+Le dejas el mismo nombre.
+
+Pero lo agregas al final, por ejemplo, en la fecha.
+
+La carpeta con la hora.
+
+Entonces, ¿sabes?
+
+¿No es cierto?
+
+¿En qué momento ese archivo fue enviado a la papelera?
+
+Y por eso, es suficiente.
+
+Ah, sí, claro, que lo haga de forma manual, entonces.
+
+Sí, sí.
+
+Después, por ejemplo, imagínate, después, ¿qué Oscar te dice hoy en realidad?
+
+Creo que necesito esta funcionalidad de recuperación, porque por ahora esa funcionalidad no está listada en tus funcionalidades.
+
+Sí, igual era un riesgo que hay que ver, pero no era tan prioritario.
+
+Para hacer la recuperación después no es difícil.
+
+Lo que tú tienes que hacer es guardar un lock de las eliminaciones.
+
+Entonces, ahora, además de que eliminas los archivos lógicamente, hay una lista de las acciones que ha hecho el usuario eliminando archivos.
+
+Eso es lo que se hace, por ejemplo, en las base de datos grandes cuando estás trabajando en base de datos de los bancos, por ejemplo, y hay cambios, ningún cambio en la base de datos se hace sin respaldo de ese cambio.
+
+No.
+
+Entonces, tú te puedes devolver a cualquier punto.
+
+Sí.
+
+Y la razón de eso es porque están mega seguros de esos datos.
+
+De esos datos tienen que estar súper seguros porque es plata, o sea.
+
+Sí.
+
+Entonces, después, si tú quieres agregarle la recuperación, se puede hacer.
+
+O sea, tú ahora, por ahora, vas a tener el nivel de subida cero, que es porque los archivos no se pierden, pero usted se tiene que hacer responsable de recuperarlos cuando sea necesario.
+
+Claro, sí.
+
+Por delante, tú puedes agregar las funcionalidades que el sistema mismo se encargue de esa recuperación si es que es necesario.
+
+Pero yo creo que no es necesario.
+
+Sí.
+
+O sea, como una versión así final, lo ideal es que se vea todo dentro del mismo programa.
+
+Sí, pero yo creo que no es necesario.
+
+No.
+
+Yo creo que es suficiente con que no eliminen los archivos para que nadie comete un error terrible de borrar un estudio que quizás no está respaldado en otro lado, entonces se borró, no más.
+
+Imagínate, eso sería lo peor.
+
+Claro.
+
+¿No es cierto?
+
+Si no que queden por ahí y tienen que ir a una carpeta y sacarle, no pasa nada.
+
+Sí.
+
+Sí.
+
+Ya.
+
+Ya.
+
+Vamos, estamos agregando pasiones.
+
+Sí.
+
+Y acá es el análisis de estudio.
+
+Perdón, no he agregado el otro paciente.
+
+Y acá podemos agregar otro paciente.
+
+Lo que decir, estos archivos no lo modifiquen.
+
+Entonces, para hacer las pruebas antes, para los gráficos, yo modifiqué los pacientes para que la gráfica obviamente me pareciera indistinto.
+
+O sea, modifiqué los archivos, pero creo que estos son iguales.
+
+¿Están los mismos pacientes?
+
+O sea, es que les cambié los nombres, pues, pero porque no tenía más archivo de pruebas.
+
+Y no sé dónde quedaron la verdad.
+
+Pero claro, yo, sí, pues, que tengo más, pero el tema es que...
+
+Ya, búcalos porque buscarte a decirlo y yo te pasé más archivo.
+
+No, que este, el único que le paso, pues, yo los tengo que trabajar.
+
+Ya.
+
+Entonces, si no te pasó más, también, pues, pero si él te pasó nada...
+
+No, sí, pero por ejemplo acá le metí, creo que hay uno que tiene elxtromiográfico.
+
+Sí, porque yo le metí un elxtromiográfico.
+
+Ya.
+
+Ya, está bien.
+
+Pero sí, pues, que el tema es que los datos son iguales.
+
+Entonces, el análisis no es muy bueno, pero ya más hay pocos pacientes, pero...
+
+Pero ahora tendrán que pasar más datos.
+
+Sí, pues sí, no sé.
+
+Al menos los gráficos están funcionando, pero solamente lo que hace, los gráficos, era que los divide, por ejemplo, por cinemáticas, cinéticas y elxtromiográficas.
+
+De esas fregüencias se como las comparaciones de, por ejemplo, los tipos de brea con el periodo de brea.
+
+Se me juega con post.
+
+Y dependiendo de los pacientes.
+
+O sea, para el paciente 1, con el paciente 4, el paciente 7.
+
+Y uno con el paciente 1, el paciente 4, el paciente 1, el paciente 7, y así.
+
+Entonces, tiene todas las opciones, al menos que el usuario no quiera todo eso.
+
+¿Las puedes ir entonces eliminando?
+
+Sí, ahí las puedes eliminar, todo agregar, todo.
+
+Allí el tiene control sobre eso.
+
+Aceptar la combinación que quiera.
+
+Sí.
+
+Y esto podría ser un selector, pero no le necesidad para esta parte.
+
+O sea, a mí me parece...
+
+O sea, hay que preguntar a la Oscar, porque a nosotros nos puede parecer lo que queramos, pero al final, la Oscar tiene que decir si esto le parece razonable, y si lo entiende.
+
+Entonces, una vez salte va así, no prefiero otra cosa así.
+
+Al igual con Oscar hablamos para que revise como el software, porque iba a haberla revisado como algo, pero no como todo esto, para que revisara el software así como antes de la presentación.
+
+Ya.
+
+Y acá está el archivo general.
+
+Sí, pues ahí, claro, ahí está, por ejemplo, acá estamos en el análisis para la cinemática, y acá tenemos lo que sería el máximo entre el CMJ y el POSV, el paciente 1 y el paciente 7.
+
+En este caso, pero son lo mismo valores, entonces son iguales.
+
+Ya.
+
+Creo que acá había algunos que eran distintos, pero...
+
+Ahí, por ejemplo, acá, acá que, por ejemplo, tenemos que el paciente 7 tiene un máximo, un promedio, porque el promedio, como de todos los valores, pues, de todos los archivos, que es un archivo grande, es de 31.298, acá, por ejemplo, y el otro es que son iguales.
+
+Pero, claro, cuando es un universo más grande, se puede ver un poco más cosas, pero...
+
+Y alcería que después, y próximo semestre, trabajáramos en una interfaz que te mostrará esto acá.
+
+Eh, sí, sí, sí, sí.
+
+No, sí se podía hacer, pero no sé por qué me metí tanto como en el PDF.
+
+No, o sea, pero probablemente el PDF les va a servir también para compartir los resultados.
+
+Ah, sí, pues no, es verdad que sí, pues no.
+
+Oscar quería, lo quería en PDF, pero claro, también había mesa, van a hacerlo en el...
+
+Es por la... porque en las tareas de investigación, normalmente tú estás explorando mucho los datos.
+
+No sé, probablemente quieren ver cosas así como rápidamente, para después comparar otra cosa.
+
+Entonces, cuando sucede eso, una lata tendrá que estar habiendo un PDF y haciendo scroll.
+
+Entonces, hay que definir después, como una interfaz de resumen, de las cosas que a Oscar le parezca más relevantes, revisar para saber que está todo bien, digamos.
+
+Y después las cosas complicadas las puedes poner en un PDF, como él quiera, o en otra pantalla.
+
+Sí, sí, de hecho, eso está pensando como que antes de, antes de exportarlo como sí, te llevará como un resumen, donde te muestra lo mismo que, que muestra este PDF, porque es todo, porque ahí están todas las combinaciones posibles, pues porque claro acá, acá para ese ejemplo se selecciona todo.
+
+De hecho, no se tendría que seleccionar todo, se podría seleccionar esto, por ejemplo.
+
+Claro, pero claro.
+
+Y por ejemplo acá, de hecho también, esto por ejemplo no funcionaría, sé que ahí solo vento un paciente, porque...
+
+Y por ahora, ¿puedes crear solo un reporte?
+
+No, todos los que quieran, o sea gastar los que generan.
+
+Ah, ya, por ahora se guardan como archivos, ¿no?
+
+Sí.
+
+¿No hay como un listado de reportes?
+
+Ah, no, no, o sea, si yo que no lo vi, necesidad un poco mejor, como estaba acá.
+
+No sé si será importante para Alpa, y que Verde puede decir que le interesa a mí.
+
+No, claro, es que acá yo estaba enfocándome con la funcionalidad, y claro, como que se pudiera hacer todo, pero obviamente está feo, o sea, yo lo ve ahí tampoco, me gusta mucho, pero tiene como...
+
+No, pero igual estaba relativamente claro, yo creo Matías lo quiere.
+
+El problema es que lo que creamos yo y tú no es relevante, porque tiene que darle claro a Óscar, que va a su estudiante, sobre todo, que supongo que van a ser los que más van a ocupar tus óscar.
+
+Entonces, lo que vamos a tener que hacer desde que termines ahora el seminario, es trabajar la interfaz para que en el próximo semestre tengas el tiempo suficiente para hacer pruebas.
+
+Sí, yo creo que lo tendría que terminar en los primeros dos meses.
+
+Yo diría que sí, debería dejar por lo menos un mes, para que un día, no cierto, Óscar, te haga el favor de apartarte un poquito de tiempo, para que él lo pueda aprobar, y además que busque alguno de sus estudiantes, que te ve algunos comentarios acerca del software y tú puedes hacer una prueba más o menos controlada de uso.
+
+Sí.
+
+Sí, y para eso tiene que haber un manual, las instrucciones de uso, etcétera, para que la persona pueda usarlo.
+
+Sí.
+
+Entonces, ¿eso es lo que tienes por ahora?
+
+Sí, varias paliaciones, pero no me acuerdo de todas.
+
+Pero no sé, por ejemplo, en agregar estudios, en crear un estudio, no sé.
+
+Obviamente sé que acá en número sujeto pongo esto, no me dejan.
+
+¿A otro estudio?
+
+Pero se pueden tener dos estudios con el mismo número.
+
+No, no sé, voy a hacer 11.
+
+No sé si todas las variaciones básicas están como puestas.
+
+Lo otro que sería bueno después, cuando le pones como...
+
+Y lo otro es que también se elimina cuando...
+
+O que salga el estudio, sería bueno que le pongas un campo de comentarios.
+
+Ah, sí, sí, sí, eso está dentro de las funcionales.
+
+Sí, eso es importante porque en mi experiencia trabajando con gente que trabaje con datos, y con datos agrupados, que son datos que no son datos soltos, ¿no es cierto?
+
+Normalmente hay comentarios que quieren dejar asociados a estos datos.
+
+Claro.
+
+Como por ejemplo, no sé, pacientes, no sé.
+
+Vino después de una sesión de natación.
+
+No sé cuántos hay, hay una, hay una, una, una... una performance diferente, no sé qué es, si viniera de recién levantarse, no sé.
+
+Sí, porque si de hecho eso, de hecho ya está pensado, porque ya está como dentro de la baseada, es solamente que no lo he implementado.
+
+Ya.
+
+Está como la lógica, pero no la quise implementar porque...
+
+Entonces, para...
+
+Se va a morir el código.
+
+Para mañana, como va a estar Oscar ahí, es importante de que tú planees, eso, eso es, tus compañeros del programa de ejecución, que esto hace una instancia que se llama la revisión de software, ¿sí?
+
+Si, cuando tú haces la revisión de software, lo que tú haces es un demo, ¿sí?
+
+Y un demo es algo estructurado.
+
+O sea, que quiere decir que tú muestras, no es cierto, haces como, como que llevas al usuario a caminar por el programa mostrándole que es lo que hace tu programa.
+
+Y es importante, entonces, que los datos que tú estés mostrando, no es cierto, sean datos que tengan sentido para el usuario, ¿sí?
+
+Entonces, ¿qué es lo que te recomiendo yo?
+
+Que tú ahora arregles tu interfaz con los datos que tienes adentro para que hayan datos que parecieran que fueran reales, ¿sí?
+
+Para que Oscar, cuando lo vea, diga, ah, bueno, así debería estar funcionando esta cosa.
+
+Un conjunto de, no, estudi 1, 2, 3, 4, 5, si no quieres.
+
+O sea, por ejemplo, el mecánica 3, este, con CMJ.
+
+Puedes poner cualquier nombre, 3, 4, 5.
+
+Editemos, la verdad, el nombre es tuyo.
+
+Te encanta tu una cuestión, ¿ya?
+
+Sí.
+
+Le puedes poner el nombre que tú quieras, ¿sí?
+
+El asunto es que parezca que fuera algo que es razonable, ¿no?
+
+Entonces, de esa manera, no es cierto, él se puede imaginar, hoy esto va a funcionar así, y yo podría tener mis pruebas, o sea, mis experimentos así, ordenados, ¿no es cierto?
+
+Con, por nombre, ¿no es cierto?
+
+Y los puedo buscar, ¿sí?
+
+Porque es diferente, ¿no es cierto?
+
+Sí.
+
+Eso, entonces, y planea cuál va a ser esa experiencia que le vas a dar a Oscar mostrándole el software.
+
+Entonces, primero, tú le tienes que mostrar la pantalla de nicio y le vas a decir, bueno, aquí está la pantalla de nicio y normalmente uno quiere ir, ¿no es cierto?
+
+A utilizar el software a partir de un punto de caso.
+
+Entonces, vamos a ver aquí los estudios, ¿no?
+
+Y esta es la interfaz del estudio, ¿no es cierto?
+
+Donde podemos crear el estudio, podemos abrir la carpeta, etcétera, y tú explicas, ¿no?
+
+Pero tú tienes que guiar ese recorrido, ¿sí?
+
+Es un recorrido que tiene que ser un recorrido que intenta mostrarle a la persona cómo va a ser cuando él utilice el software, ¿sí?
+
+Sí.
+
+Entonces, igual, como se llama, igual se lo voy a mostrar, si le tenía planeado mostrárselo antes, por lo que habíamos hablado.
+
+Pero antes de la presentación, el principio es mañana.
+
+Pero igual puedo hacer un demo, pero...
+
+Pero la presentación, entonces, lo puedes hacer más curtido.
+
+Sí, por esa idea.
+
+Y lo voy a ver yo ya y lo voy a ver él también, entonces estamos más o menos claros, pero no sé cuántos los decentes saben por primera vez, así como te digo.
+
+Ya, ya.
+
+Entonces, pero no muestro la imagen, entonces por lo menos lo llevo el tiro o el demo mejor.
+
+Si tú crees que es mejor, yo creo que es mejor el demo, finalmente.
+
+Ya.
+
+A esta altura, después quizás la presentación final ya no va a tener tiempo para mostrar el demo, porque tienes que explicar más cosas.
+
+Ahí lo podemos ver el próximo semestre.
+
+Sí, igual, la idea es que después el programa tenga un auto asistente que te haga como la bienvenida.
+
+Sí, probablemente hay tantas cosas, te falta todo lo de la análisis.
+
+Me falta la análisis grupal.
+
+Claro, te falta todo eso.
+
+Esa lógica me falta acá, porque si eran demasiado datos.
+
+Sí, creo que ahora hay que trabajarlo.
+
+Pues la idea del trabajo ahora del seminario era tener el mínimo producto que era el cargado de los archivos, que estén baleados, que estén manejados, pero no es cierto que pudieras mostrar datos agregados sencillos.
+
+Sí, igual ya se podría, igual la lógica ya para implementar después el análisis grupal no sería tan complicado, porque ya tenemos el estudio acá.
+
+Habría así, habría que hacer como el mismo selector de antes, o sea, parecido, mejorado, pero claro.
+
+Ahí tendrán que ver dependiendo de los análisis que Óscar, porque ahora Óscar va a ver que esta cuestión está funcionando y que calcula datos.
+
+No lo ve en total funcionamiento, pero ahora ya estamos en posición para que él empiece a pedir.
+
+Oye, me gustaría que hubiera este gráfico, me gustaría que se calcule esta fórmula, me gustaría que no se viera esto al lado de esto o otro, entonces todas esas cosas hay que tomar nota para ver cómo se diseña la interfaz de manera de que las cosas que él le interesa no estén todas en un lugar.
+
+Entonces, esa va a ser la pegada ahora.
+
+Ya.
+
+El demo tiene que estar considerado durante cuántos minutos para presentar.
+
+Se supone que son 20-25 minutos, pero, Óscar, que puedes demorar hasta media hora, diré yo, sin problema.
+
+Si es que vas a presentar el demo, y sobre todo porque como estamos empezando, porque está el seminario, no pasa nada si te demora un poquito más.
+
+A mí me interesa que ahora lo que hagas es mostrar bien lo que está haciendo, porque primero tenemos que valorar, entonces, estarla, es como la base técnica de tu proyecto, entonces tiene que quedar bien evaluado, y Óscar tiene que ver bien lo que le vas a mostrar para que él pueda decidir si está cumpliendo su expectativa o no.
+
+Ya.
+
+Entonces, ahora nos podemos tomar un poquito más de ti.
+
+Sí.
+
+Sí, sí, al menos estar a la parte más difícil, diría yo, a la otra...
+
+A la otra parte, la más latera.
+
+Siempre es la parte más latera.
+
+Sí.
+
+Pues ya debería ser más...
+
+Ahora va a trabajar a Artón Interfa.
+
+Sí, es el que nos gusta mucho.
+
+Bueno, pero es que es lo que hace que los usuarios usen las cosas.
+
+Sí.
+
+Es como la historia entre Windows y Linux.
+
+Sí, por ejemplo...
+
+Linux es el mejor, pero tiene una pésima interfaz, entonces los usuarios no lo usan.
+
+Sí, es verdad.
+
+Sí.
+
+Yo creo que le voy a dejar que me ayude a alguien de diseño, diseño gráfico.
+
+No, pero sabéis que no es tan difícil, sino es que... no tiene que ser bonito.
+
+Tiene que ser práctico.
+
+Sí, y eso, la practicidad requiere de que tú hagas un diseño iterativo junto con tu cliente.
+
+Sí, y que le vayas preguntando.
+
+Entonces, eso... podemos pedirle consejo también a la profe Daniela, por ejemplo, que ella trabaja en... no sé, la experiencia.
+
+Claro, en News and Experience, y nos puede dar algunos tips de cómo podemos diseñar algo, ¿sí?
+
+Yo, igual, tengo idea de diseño de interfaces.
+
+Yo he tomado cursos de diseño de interfaces, igual que puedo ayudar un poco.
+
+Hay ciertas redlas que no puedes seguir que hacen que una interfaz sea tragable, ¿sí?
+
+Y eso, a veces, es suficiente, porque si esta interfaz también es para alguien que...
+
+Sí, en todo caso, que dice como que... que no le importa tanto eso, una otra palabra.
+
+Claro, pero tiene que ser práctica, porque si la interfaz está complicada, no la va a usar.
+
+Claro, tiene ser práctica.
+
+O sea, yo creo que difícil igual que le lata, porque igual le va... si es que hace lo que tienen que hacer, igual se supone que ellos se moran cinco días en hacer algo aquí en el programa, y ya se moran mucho menos.
+
+Entonces, yo creo que igual lo va a usar, pero obviamente le da... tanto y me puede que quizá que me diga que le arregle algo, no se.
+
+Ya, ya, Matías, entonces mañana a las tres dijimos, ¿no?
+
+A las tres, sí.
+
+Ya, ensayo bien tu presparte, tu presentación, que queda todo súper bien, y mañana, entonces, vamos a definir cómo seguimos trabajando, ¿ya?
+
+El próximo semestre ya no queda tiempo como para... para hacer pruebas de nada, ¿ya?
+
+Entonces, vamos a tener que empezar a trabajar bien exigido, porque se hace súper corto el semestre.
+
+Honestamente, se hace increíblemente corto, y yo, todos los estudiantes que empiezan proyecto de título, no se dan cuenta y ya, de repente, están en la... al final, ¿ya?
+
+Es importante que te planifiques tú súper bien, y...
+
+Me voy a dar a hacerme una carta acá en el comienzo.
+
+Sí, pero además te propongo que tú definas reuniones regulares, que definamos, por ejemplo, si no quieres conozcas, ahí puedes ver tú, pero al menos entre los dos que tengamos reuniones regulares, por ejemplo, cada dos semanas, ¿no es cierto?
+
+Porque tus avances deberían ser regulares ahora de ahora en adelante, porque ya no tienes que programar así como un kilo de cosas antes de que tengas algo que funcione, ¿sí?
+
+Entonces, como los y los incrementos van a ser, ¿no es cierto?
+
+Ya más cortitos, deberíamos ir revisando, ¿no es cierto?
+
+Paso, paso para que no te pierdas dentro del proyecto, ¿ya?
+
+Y además eso te ayuda a ponerte como una autoexigencia de ir avanzando regularmente.
+
+Sí, ahí pueden fijar una fecha.
+
+Sí, el próximo semestre podemos, o si que, si vas a trabajar ahora, por ejemplo, en enero, todavía nos podemos contar si quieres alguna otra vez más.
+
+Si vas a empezar en marzo, entonces en marzo definimos, ¿no es cierto, la regularidad, ¿ya?
+
+Sí.
+
+Así que ahí decide tú, más o menos, como te gustaría trabajar, pero yo sí te propongo que hagamos reuniones regular, ya porque es lo que en mi opinión funciona mejor ahora en proyecto de títulos, ¿sí?
+
+Ya.
+
+Super, entonces te dejo ahí para que termine de arreglar tu demo y nos vemos mañana.
+
+Ya.
+
+Ya.
+
+Buenas noches.
+
+#KineViz
