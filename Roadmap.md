@@ -73,3 +73,7 @@
 - [ ] Internacionalización (soporte para múltiples idiomas).
 - [ ] Funcionalidad de recuperación de archivos eliminados (si es necesario, con un log de eliminaciones).
 - [ ] Auto-asistente de bienvenida.
+
+### Planificación Detallada
+
+Para una planificación detallada de las tareas, incluyendo el cronograma semanal para ClickUp, consulta el archivo [Planificar.md](Planificar.md).
