@@ -6,6 +6,6 @@ __pycache__/
 estudios/
 recursos/
 .*
-*.docx
-*.pdf
-kineviz.db
+
+.env
+.aider*
