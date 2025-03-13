@@ -1,0 +1,2112 @@
+Notas Log
+
+# Notas Log DUMP
+
+---------------------------------
+
+Give me only the solution and truncate the rest of the code.
+
+Without writing code, I want a plan of action.
+
+---------------------------------
+
+1) I keep getting "No hay datos disponibles para esta combinación" in the output file when generating the pdf file so no graph is shown.
+2) I still need you to implement the PDF table frame like the one implemented in ver_estudio.
+3) The pagination fullly implemented yet with the same logic used for the other paginations
+
+---------------------------------
+
+Check my code, and I want your help for some things:
+
+
+
+1) Check for any repeated functions (if any, list them with the name only)
+
+
+
+2) I want to implement this config for pagination for PDF files
+
+
+
+def load_config(self):
+
+ self.config = configparser.ConfigParser()
+
+try:
+
+self.config.read('config.ini')
+
+self.estudios_por_pagina = int(self.config['SETTINGS']['estudios_por_pagina'])
+
+self.files_per_page = int(self.config['SETTINGS']['files_per_page']) # Load files_per_page
+
+except Exception as e:
+
+# Handle errors (e.g., file not found, invalid values)
+
+messagebox.showerror("Error", f"Error loading configuration: {str(e)}")
+
+self.estudios_por_pagina = 10 # Default value
+
+self.files_per_page = 10 # Default value for files_per_page
+
+
+
+3) Why are the PDF files not showing in the window? Should I create a new window to show PDF files?
+
+
+
+4) Add a button to "Abrir Carpeta de Archivos PDF".
+
+
+
+5) Implement a simple graph that consider the patients selected by the user (always is at least two) and any "Cálculo" selected with these two calculate the mean of Cálculo for each of these patients in all their files (except the original file obviously) Consider for example patient 1 that could have let's say 10 files asociated as one entity in the graph same with the other patients selected, and each one of these patients have a mean of cáclulos for example the mean of "Max" for patient 1 could be 10 considering all their files and for patient 2 could be 20, you could give me a bar graph to represent that in my code.
+
+Give me only the solution and/or answers and truncate the rest of the code.
+
+---------------------------------
+
+1) Crear Reporte PDF is not generating Graphs, this is the output file I am obtaining:
+
+Reporte de Análisis - 1
+Fecha: 22/11/2024 01:06:39
+Parámetros Seleccionados:
+Pacientes: Pte1, Pte12, Pte14
+Frecuencias: Cinemática, Cinética, Electromiográfica
+Tipos de Prueba: CMJ
+Periodos de Prueba: POST
+Cálculos: Máximo, Mínimo, Rango
+Análisis para Cinemática:
+CMJ - POST
+No hay datos disponibles para esta combinación
+Análisis para Cinética:
+CMJ - POST
+No hay datos disponibles para esta combinación
+Análisis para Electromiográfica:
+CMJ - POST
+No hay datos disponibles para esta combinación
+
+2) There's not a frame to see the pdf files nor the config.ini logic implemented into the pagination for reportes pdf.
+
+3) For the naming convention, use "reporte-{reporte_id}_{date with format YYYYMMDD}_{calculos but for example "max-min" if the file got both Maximo and Minimo}_{frequency for example "Cinemática-Electromiográfica" if the file got both frequencies}.pdf
+
+---------------------------------
+
+1) There's a Validation missing, that is before being able to "Crear Reporte PDF" the user needs to select at least two patients, right now it's only validating for it to have one, when it should be two minimun.
+
+    def crear_reporte_pdf(self, id_estudio):
+        """Crea un reporte PDF con los análisis seleccionados"""
+        # Verificar que haya selecciones
+        if not self.pacientes_analysis_listbox.get(0, tk.END):
+            messagebox.showerror("Error", "Debe seleccionar al menos un paciente")
+            return
+
+2) I get this error when trying to "Crear Reporte PDF" with selectable parameters:
+
+Exception in Tkinter callback
+Traceback (most recent call last):
+  File "/Users/arakito/.pyenv/versions/3.13.0/lib/python3.13/tkinter/__init__.py", line 2068, in __call__
+    return self.func(*args)
+           ~~~~~~~~~^^^^^^^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 1140, in <lambda>
+    command=lambda: self.crear_reporte_pdf(id_estudio)).pack(side=tk.LEFT, padx=5)
+                    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 1247, in crear_reporte_pdf
+    if not self.calc_listbox.get(0, tk.END):
+           ^^^^^^^^^^^^^^^^^
+AttributeError: 'KineVizApp' object has no attribute 'calc_listbox'. Did you mean: 'calculo_listbox'?
+
+3) When I click on "Nuevo Análisis" is not deleting the Cálculo values in the Lista de Análisis box, and giving me this error:
+
+Exception in Tkinter callback
+Traceback (most recent call last):
+  File "/Users/arakito/.pyenv/versions/3.13.0/lib/python3.13/tkinter/__init__.py", line 2068, in __call__
+    return self.func(*args)
+           ~~~~~~~~~^^^^^^^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 1612, in nuevo_analisis
+    self.calc_listbox.delete(0, tk.END)
+    ^^^^^^^^^^^^^^^^^
+AttributeError: 'KineVizApp' object has no attribute 'calc_listbox'. Did you mean: 'calculo_listbox'?
+
+---------------------------------
+
+1) When opening "Análisis de Estudio" I still get this error:
+
+Exception in Tkinter callback
+Traceback (most recent call last):
+  File "/Users/arakito/.pyenv/versions/3.13.0/lib/python3.13/tkinter/__init__.py", line 2068, in __call__
+    return self.func(*args)
+           ~~~~~~~~~^^^^^^^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 989, in on_freq_change
+    self.actualizar_listas_parametros(id_estudio)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 910, in actualizar_listas_parametros
+    listbox = getattr(self, f"{categoria}_listbox")
+AttributeError: 'KineVizApp' object has no attribute 'pacientes_listbox'
+
+2) Cálculos is still not integrated within the "Selección de Parámetros" frame, 
+
+I want to implement a similar logic to the other frames like:
+
+        # Periodo de Prueba Analysis
+        periodo_prueba_analysis_frame = ttk.LabelFrame(right_frame, text="Periodo de Prueba")
+        periodo_prueba_analysis_frame.pack(fill=tk.X, pady=5)
+        self.periodo_prueba_analysis_listbox = tk.Listbox(periodo_prueba_analysis_frame, height=4)
+        self.periodo_prueba_analysis_listbox.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        ttk.Button(periodo_prueba_analysis_frame, text="Eliminar", 
+                  command=lambda: self.remove_from_analysis("Periodo de Prueba",
+                  self.periodo_prueba_analysis_listbox.get(self.periodo_prueba_analysis_listbox.curselection()) if self.periodo_prueba_analysis_listbox.curselection() else None
+                  )).pack(side=tk.LEFT, padx=5)
+        ttk.Button(periodo_prueba_analysis_frame, text="Eliminar Todo", 
+                  command=lambda: self.remove_all_from_analysis("Periodo de Prueba")).pack(side=tk.LEFT, padx=5)
+
+3) Tipo de prueba, frecuencia de medición and Periodo de prueba is still presenting errors whenever i try to add it to the Lista de Análisis, can you please check for this error, this is one example of the error:
+
+Exception in Tkinter callback
+Traceback (most recent call last):
+  File "/Users/arakito/.pyenv/versions/3.13.0/lib/python3.13/tkinter/__init__.py", line 2068, in __call__
+    return self.func(*args)
+           ~~~~~~~~~^^^^^^^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 1030, in <lambda>
+    command=lambda: self.add_all_to_analysis("Frecuencia de Medición", self.frecuencia_medicion_listbox)).pack(side=tk.LEFT, padx=5)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 1177, in add_all_to_analysis
+    analysis_listbox = getattr(self, f"{category.lower().replace(' ', '_').replace('ó', 'o')}_analysis_listbox")
+                       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'KineVizApp' object has no attribute 'frecuencia_de_medicion_analysis_listbox'. Did you mean: 'frecuencia_medicion_analysis_listbox'?
+
+---------------------------------
+
+"Análisis de Estudio" Feature Implementation
+
+**Context:**
+
+I'm developing a new feature called "Análisis de Estudio" for my application which analyzes patient data from loaded studies. I've made some progress, but I'm encountering errors and need help with implementing remaining functionality.
+
+**Current Status:**
+
+* **Initial Validation (Complete):** Ensures at least two patients are present in the study before opening the "Análisis de Estudio" window.
+* **Design and Layout (Partially Complete):** The basic UI elements are in place, but need refinement and fixes. This includes:
+    * Main Frame
+    * Frequency Filter with reset
+    * Parameter Selection Area (Pacientes, Tipo de Prueba, Periodo de Prueba, Cálculo)
+    * Analysis List Area
+    * Action Buttons
+    * Search and Pagination 
+* **Functionality (Incomplete):**  The following features are not yet implemented:
+    * Parameter selection and removal (including "Agregar Todo" and "Eliminar Todo" functionality)
+    * PDF report generation (including calculations: Máximo, Mínimo, Rango)
+    * PDF list management (viewing, deleting, filtering, pagination)
+
+**Specific Issues:**
+
+I'm encountering `AttributeError` exceptions when interacting with certain UI elements (listboxes) related to adding parameters and calculations to the analysis list. 
+
+**Error Examples:**
+
+* `AttributeError: 'KineVizApp' object has no attribute 'pacientes_listbox'`
+* `AttributeError: 'KineVizApp' object has no attribute 'periodo_de_prueba_analysis_listbox'`
+
+**Enhancements:**
+
+1. Add "Agregar Todo" and "Eliminar Todo" buttons to the "Selección de Parámetros" and "Lista de Análisis" areas, respectively.
+2. Integrate the "Cálculo" options (Máximo, Mínimo, Rango) into the "Selección de Parámetros" frame with similar labels and functionality as other parameter options.
+
+**Expected Outcome:**
+
+A fully functional "Análisis de Estudio" feature that allows users to select parameters and calculations, generate PDF reports with relevant data and graphs, and manage the generated reports effectively.
+
+These are some of the actual errors:
+
+When Opening The "Análisis de Estudio" screen:
+
+Exception in Tkinter callback
+Traceback (most recent call last):
+  File "/Users/arakito/.pyenv/versions/3.13.0/lib/python3.13/tkinter/__init__.py", line 2068, in __call__
+    return self.func(*args)
+           ~~~~~~~~~^^^^^^^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 1034, in on_freq_change
+    self.actualizar_listas_parametros(id_estudio)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 955, in actualizar_listas_parametros
+    listbox = getattr(self, f"{categoria}_listbox")
+AttributeError: 'KineVizApp' object has no attribute 'pacientes_listbox'
+
+When Adding the "Periodo de Prueba" to "Lista de Análisis" box:
+
+Exception in Tkinter callback
+Traceback (most recent call last):
+  File "/Users/arakito/.pyenv/versions/3.13.0/lib/python3.13/tkinter/__init__.py", line 2068, in __call__
+    return self.func(*args)
+           ~~~~~~~~~^^^^^^^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 906, in <lambda>
+    command=lambda: self.add_to_analysis(
+                    ~~~~~~~~~~~~~~~~~~~~^
+        title,
+        ^^^^^^
+        listbox.get(listbox.curselection()) if listbox.curselection() else None
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 780, in add_to_analysis
+    analysis_listbox = getattr(self, f"{category.lower().replace(' ', '_').replace('ó', 'o')}_analysis_listbox")
+                       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'KineVizApp' object has no attribute 'periodo_de_prueba_analysis_listbox'. Did you mean: 'periodo_prueba_analysis_listbox'?
+
+When Adding the "Periodo de Prueba" to "Lista de Análisis" box:
+
+Exception in Tkinter callback
+Traceback (most recent call last):
+  File "/Users/arakito/.pyenv/versions/3.13.0/lib/python3.13/tkinter/__init__.py", line 2068, in __call__
+    return self.func(*args)
+           ~~~~~~~~~^^^^^^^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 906, in <lambda>
+    command=lambda: self.add_to_analysis(
+                    ~~~~~~~~~~~~~~~~~~~~^
+        title,
+        ^^^^^^
+        listbox.get(listbox.curselection()) if listbox.curselection() else None
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 780, in add_to_analysis
+    analysis_listbox = getattr(self, f"{category.lower().replace(' ', '_').replace('ó', 'o')}_analysis_listbox")
+                       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'KineVizApp' object has no attribute 'tipo_de_prueba_analysis_listbox'. Did you mean: 'tipo_prueba_analysis_listbox'?
+
+When Adding the "Frecuencia de Medición" to "Lista de Análisis" box:
+
+Exception in Tkinter callback
+Traceback (most recent call last):
+  File "/Users/arakito/.pyenv/versions/3.13.0/lib/python3.13/tkinter/__init__.py", line 2068, in __call__
+    return self.func(*args)
+           ~~~~~~~~~^^^^^^^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 906, in <lambda>
+    command=lambda: self.add_to_analysis(
+                    ~~~~~~~~~~~~~~~~~~~~^
+        title,
+        ^^^^^^
+        listbox.get(listbox.curselection()) if listbox.curselection() else None
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 780, in add_to_analysis
+    analysis_listbox = getattr(self, f"{category.lower().replace(' ', '_').replace('ó', 'o')}_analysis_listbox")
+                       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'KineVizApp' object has no attribute 'frecuencia_de_medicion_analysis_listbox'. Did you mean: 'frecuencia_medicion_analysis_listbox'?
+
+---------------------------------
+
+**Request:**
+
+I need assistance with:
+
+1. **Debugging the `AttributeError` exceptions:** Help me understand why these errors are occurring and how to resolve them.
+2. **Implementing the missing functionality:** Provide guidance and suggestions for implementing the outstanding features, including PDF generation, calculation handling, and list management.
+3. **Implementing the enhancements:** Guide me on how to add the "Agregar Todo" and "Eliminar Todo" buttons and integrate the "Cálculo" options into the "Selección de Parámetros" frame.
+
+**Expected Outcome:**
+
+A fully functional "Análisis de Estudio" feature that allows users to select parameters and calculations, generate PDF reports with relevant data and graphs, and manage the generated reports effectively.
+
+**Note:** I'm not asking for complete code solutions, but rather guidance, suggestions, and explanations to help me overcome the challenges I'm facing.  I'm familiar with the basic concepts of Tkinter and Python, but I need help with specific implementation details and debugging strategies. 
+
+---------------------------------
+
+I am building a new feature to my code "Análisis de Estudio" with your help, can you keep helping me? and letting me know how are we doing in the feature implementation, this is what's implemented/still needs to be fixed:
+
+Initial Validation (already implemented)
+Check for at least two patients before opening window
+Design and Layout (partially implemented, needs fixing)
+Main Frame
+Frequency Filter with reset
+Parameter Selection Area (Pacientes, Tipo de Prueba, Periodo de Prueba)
+Analysis List Area
+Calculation Selection
+Calculation List
+Action Buttons
+Search and Pagination
+Functionality (needs implementation)
+Parameter selection and removal
+Calculation selection and removal
+PDF report generation
+PDF list management
+Search functionality
+Pagination
+
+These are some of the actual errors:
+
+When Opening The "Análisis de Estudio" screen:
+
+Exception in Tkinter callback
+Traceback (most recent call last):
+  File "/Users/arakito/.pyenv/versions/3.13.0/lib/python3.13/tkinter/__init__.py", line 2068, in __call__
+    return self.func(*args)
+           ~~~~~~~~~^^^^^^^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 1034, in on_freq_change
+    self.actualizar_listas_parametros(id_estudio)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 955, in actualizar_listas_parametros
+    listbox = getattr(self, f"{categoria}_listbox")
+AttributeError: 'KineVizApp' object has no attribute 'pacientes_listbox'
+
+When Adding the "Periodo de Prueba" to "Lista de Análisis" box:
+
+Exception in Tkinter callback
+Traceback (most recent call last):
+  File "/Users/arakito/.pyenv/versions/3.13.0/lib/python3.13/tkinter/__init__.py", line 2068, in __call__
+    return self.func(*args)
+           ~~~~~~~~~^^^^^^^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 906, in <lambda>
+    command=lambda: self.add_to_analysis(
+                    ~~~~~~~~~~~~~~~~~~~~^
+        title,
+        ^^^^^^
+        listbox.get(listbox.curselection()) if listbox.curselection() else None
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 780, in add_to_analysis
+    analysis_listbox = getattr(self, f"{category.lower().replace(' ', '_').replace('ó', 'o')}_analysis_listbox")
+                       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'KineVizApp' object has no attribute 'periodo_de_prueba_analysis_listbox'. Did you mean: 'periodo_prueba_analysis_listbox'?
+
+When Adding the "Periodo de Prueba" to "Lista de Análisis" box:
+
+Exception in Tkinter callback
+Traceback (most recent call last):
+  File "/Users/arakito/.pyenv/versions/3.13.0/lib/python3.13/tkinter/__init__.py", line 2068, in __call__
+    return self.func(*args)
+           ~~~~~~~~~^^^^^^^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 906, in <lambda>
+    command=lambda: self.add_to_analysis(
+                    ~~~~~~~~~~~~~~~~~~~~^
+        title,
+        ^^^^^^
+        listbox.get(listbox.curselection()) if listbox.curselection() else None
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 780, in add_to_analysis
+    analysis_listbox = getattr(self, f"{category.lower().replace(' ', '_').replace('ó', 'o')}_analysis_listbox")
+                       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'KineVizApp' object has no attribute 'tipo_de_prueba_analysis_listbox'. Did you mean: 'tipo_prueba_analysis_listbox'?
+
+When Adding the "Frecuencia de Medición" to "Lista de Análisis" box:
+
+Exception in Tkinter callback
+Traceback (most recent call last):
+  File "/Users/arakito/.pyenv/versions/3.13.0/lib/python3.13/tkinter/__init__.py", line 2068, in __call__
+    return self.func(*args)
+           ~~~~~~~~~^^^^^^^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 906, in <lambda>
+    command=lambda: self.add_to_analysis(
+                    ~~~~~~~~~~~~~~~~~~~~^
+        title,
+        ^^^^^^
+        listbox.get(listbox.curselection()) if listbox.curselection() else None
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 780, in add_to_analysis
+    analysis_listbox = getattr(self, f"{category.lower().replace(' ', '_').replace('ó', 'o')}_analysis_listbox")
+                       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'KineVizApp' object has no attribute 'frecuencia_de_medicion_analysis_listbox'. Did you mean: 'frecuencia_medicion_analysis_listbox'?
+
+This was my old plan of action for this new feature:
+
+0. Initial Validation 
+
+0.1) Before "Análisis de Estudio" Window Opens: 
+- Fetch the list of patients from the database for the currently loaded study.
+- Check if the study has at least two distinct patients.
+- If not, display a warning message to the user indicating that they need to add more files from different patients to the study.
+- If there are at least two patients, proceed to open the "Análisis de Estudio" window.
+
+I. Design the "Análisis de Estudio" Window
+
+1) Layout:
+
+1.1) Main Frame: ttk.Frame or Toplevel window.
+1.2) Frequency Filter: ttk.OptionMenu (Cinemática, Cinética, Electromiográfica).
+1.3) Parameter Selection Area:
+1.4) Analysis List Area:
+1.7) Action Buttons:
+1.8) Search: ttk.Entry for search input and ttk.Button for search.
+1.9) Pagination: ttk.Frame for pagination controls (buttons).
+
+II. Implement Functionality
+
+1) Frequency Filtering:
+
+1.1) cargar_archivos (Modified):
+- Add frecuencia as an argument.
+- Filter files based on the selected frecuencia.
+- Save the filtered data (or file paths) to the database.
+1.2) On "Análisis de Estudio" Button Click:
+- Fetch the selected frecuencia from the dropdown.
+- Call cargar_archivos with the selected frecuencia to refresh the analysis data.
+
+2) Populate Parameter Selection:
+
+2.1) On "Análisis de Estudio" Button Click:
+- Fetch distinct "Pacientes," "Tipo de Prueba," and "Periodo de Prueba" values from the database (for the study and selected frequency) or from the currently loaded files.
+- Populate the corresponding listboxes in the "Parameter Selection Area."
+
+3) Parameter Selection and Removal:
+
+3.1) "Add" Button Click: Move the selected item from the parameter selection listbox to the analysis listbox.
+3.2) "(x)" Button Click: Remove the corresponding item from the analysis listbox.
+3.3) Validation (Before PDF Creation):
+- Ensure that at least two patients are selected in the analysis list.
+- Display a warning message if not.
+
+4) Calculation Selection and Removal:
+
+4.1) Dropdown Selection: Add the selected calculation to the "Calculation List."
+4.2) "(x)" Button Click: Remove calculations from the "Calculation List."
+
+5) PDF Report Generation:
+
+5.1) On "Crear Reporte PDF" Click:
+- Retrieve all selected analysis parameters (patients, tipo de prueba, periodo de prueba, calculations, frequency).
+- Fetch the corresponding data from the database (or process it from files if not saved).
+- Calculate the mean values for the selected calculations (Máximo, Mínimo, Rango) for each relevant attribute (tipo de prueba, periodo de prueba).
+- Generate the PDF report:
+-- Use ReportLab for PDF creation.
+-- Use Matplotlib to create the graphs.
+-- Embed the graphs into the PDF.
+- Save the PDF with a descriptive filename.
+
+6) PDF List Management:
+
+6.1) Display PDF List: Use a listbox (or similar) to show the generated PDFs.
+6.2) "Ver" Button: Open the selected PDF.
+6.3) "Eliminar" Button: Delete the PDF from the program and file system.
+6.4) "Nuevo Análisis" Button: Clear the analysis selections.
+6.5) "Buscar" Button: Filter the PDF list based on the search term.
+6.6) Pagination: Implement pagination for the PDF list.
+
+III. Enhancements
+
+1) Loading Indicator: Show while data is being processed.
+2) Error Handling: Implement robust error handling for file operations, database, and PDF generation.
+
+Also I want your help with these new functions:
+
+1) In the "Selección de Parámetros" besides the option "Agregar" there also needs to be an option for "Agregar Todo" and for the "Lista de Análisis" an extra option for "Eliminar Todo" 
+2) Add the "Cálculo" options into the "Selección de Parámetros" frame and use the same labels as the other "Selección de Parámetros" options.
+
+---------------------------------
+
+0. Initial Validation 
+
+0.1) Before "Análisis de Estudio" Window Opens: 
+- Fetch the list of patients from the database for the currently loaded study.
+- Check if the study has at least two distinct patients.
+- If not, display a warning message to the user indicating that they need to add more files from different patients to the study.
+- If there are at least two patients, proceed to open the "Análisis de Estudio" window.
+
+I. Design the "Análisis de Estudio" Window
+
+1) Layout:
+
+1.1) Main Frame: ttk.Frame or Toplevel window.
+1.2) Frequency Filter: ttk.OptionMenu (Cinemática, Cinética, Electromiográfica).
+1.3) Parameter Selection Area:
+- ttk.LabelFrame with labels and widgets for "Pacientes," "Tipo de Prueba," and "Periodo de Prueba."
+- Three tk.Listbox widgets to display available options.
+- Three "Add" buttons (ttk.Button) for each listbox.
+1.4) Analysis List Area:
+- ttk.LabelFrame with labels and widgets for the selected analysis parameters.
+- Three tk.Listbox widgets for "Pacientes," "Tipo de Prueba," and "Periodo de Prueba."
+- "(x)" buttons (ttk.Button) next to each selected item for removal.
+1.5) Calculation Selection: ttk.OptionMenu (Máximo, Mínimo, Rango).
+1.6) Calculation List:
+- tk.Listbox or similar to display the selected calculations.
+- "(x)" buttons (ttk.Button) for removal.
+1.7) Action Buttons:
+- ttk.Button for "Crear Reporte PDF"
+- ttk.Button for "Ver PDF"
+- ttk.Button for "Eliminar PDF"
+- ttk.Button for "Nuevo Análisis"
+1.8) Search: ttk.Entry for search input and ttk.Button for search.
+1.9) Pagination: ttk.Frame for pagination controls (buttons).
+
+II. Implement Functionality
+
+1) Frequency Filtering:
+
+1.1) cargar_archivos (Modified):
+- Add frecuencia as an argument.
+- Filter files based on the selected frecuencia.
+- Save the filtered data (or file paths) to the database.
+1.2) On "Análisis de Estudio" Button Click:
+- Fetch the selected frecuencia from the dropdown.
+- Call cargar_archivos with the selected frecuencia to refresh the analysis data.
+
+2) Populate Parameter Selection:
+
+2.1) On "Análisis de Estudio" Button Click:
+- Fetch distinct "Pacientes," "Tipo de Prueba," and "Periodo de Prueba" values from the database (for the study and selected frequency) or from the currently loaded files.
+- Populate the corresponding listboxes in the "Parameter Selection Area."
+
+3) Parameter Selection and Removal:
+
+3.1) "Add" Button Click: Move the selected item from the parameter selection listbox to the analysis listbox.
+3.2) "(x)" Button Click: Remove the corresponding item from the analysis listbox.
+3.3) Validation (Before PDF Creation):
+- Ensure that at least two patients are selected in the analysis list.
+- Display a warning message if not.
+
+4) Calculation Selection and Removal:
+
+4.1) Dropdown Selection: Add the selected calculation to the "Calculation List."
+4.2) "(x)" Button Click: Remove calculations from the "Calculation List."
+
+5) PDF Report Generation:
+
+5.1) On "Crear Reporte PDF" Click:
+- Retrieve all selected analysis parameters (patients, tipo de prueba, periodo de prueba, calculations, frequency).
+- Fetch the corresponding data from the database (or process it from files if not saved).
+- Calculate the mean values for the selected calculations (Máximo, Mínimo, Rango) for each relevant attribute (tipo de prueba, periodo de prueba).
+- Generate the PDF report:
+-- Use ReportLab for PDF creation.
+-- Use Matplotlib to create the graphs.
+-- Embed the graphs into the PDF.
+- Save the PDF with a descriptive filename.
+
+6) PDF List Management:
+
+6.1) Display PDF List: Use a listbox (or similar) to show the generated PDFs.
+6.2) "Ver" Button: Open the selected PDF.
+6.3) "Eliminar" Button: Delete the PDF from the program and file system.
+6.4) "Nuevo Análisis" Button: Clear the analysis selections.
+6.5) "Buscar" Button: Filter the PDF list based on the search term.
+6.6) Pagination: Implement pagination for the PDF list.
+
+III. Enhancements
+
+1) Loading Indicator: Show while data is being processed.
+2) Error Handling: Implement robust error handling for file operations, database, and PDF generation.
+
+---------------------------------
+
+check_existing_files
+validate_filename
+
+Before proceeding I need to fix a few problems:
+
+1) Even with the new functions is not validating properly for tipo/periodo de prueba when editing a file from the main view.
+2) Is not implementing the validation when editing the study from the main view and change the parameters for tipo/periodo de prueba for example let's say these values were blank and I alreade added a file something like "01 22.txt" which fills the criteria of no Periodo/tipo de prueba but then I edit the study criteria using the "Editar" button from the main view in the same study and modify for example periodo de prueba to have the values POST and PRE but now the files that are inside the study "01 22.txt" doesn't fulfil the new criteria of having either POST and PRE in their filename nor having three parts. The only case where it should be fine to edit the study criteria for tipo/periodo de prueba would be in case there's no files whatsoever inside the study yet in which case there's no need to validate the tipo/periodo de prueba.
+3) Continue implementing the main features for "Análisis de Estudio"
+
+---------------------------------
+
+Before proceeding I need to fix a few problems:
+
+1) The validation for checking if tipo de prueba is equal to periodo de prueba is not implemented when editing the study.
+2) The validation for "Agregar Arhchivo" is not validating anything if I load files in a study that doesn't have tipo or periodo de prueba, but it should as that means that the file shouldn't have more than two parts.
+3) For fixing the previous step I thought of a more simple way to implement the validation for "Agregar Archivos" and periodos/tipos de prueba, and that is checking wether the study created or edited have a value in Periodo/tipo de prueba, in case it doesn't the filename added to the study needs to have only two values for example "Pte10 01.txt" or "Pte10_01.txt" in case it doesn't and have more or less for this case give the corresponding warning, in case the study sets only one value for prueba/tipo de prueba then assume the file will have three values which can be either something like "Pte CMJ 01.txt" or "Pte PRE 01.txt" both of which are correct but the ones you need to assign for the datase as the periodo/tipo de prueba for the study would depend on wether the user set a periodo or tipo de prueba, if the user set the tipo de prueba "CMJ" and no periodo de prueba then the filename would need to be "Pte01 CMJ 01.txt" or "Pte23_CMJ_11.txt" otherwise it'll send a warning and ask to try again, because the middle part needs to be the corresponding tipo de prueba set by the user in this case "CMJ". Now if the user inputs both periodo de prueba and tipo de prueba with something like periodo de prueba POST,PRE and tipo de prueba CMJ,SALTO the file would need to have 4 parts and for example correct file names would be something like "Pte01 CMJ PRE 01.txt" or "Pte01 SALTO POST.txt" this is any combination that have the periodo/tipo de prueba set by the user in case is something like "Pte01 CMJ 01.txt" it won0t work because it have 3 parts or "Pte01 CORRER NOW 01.txt" it won't either because CORRER and NOW wasn't set by the user as periodo/tipo de prueba when they created/edited the study.
+4) I get this error when I try to agregar an archivo and it doesn't fill the criteria:
+
+Tipo de prueba 'None' no coincide con los criterios del estudio: 7
+Periodo de prueba 'None' no coincide con los criterios del estudio: 7
+
+All is fine except the 'None' part as we do know the name of the file part for the periodo/tipo de prueba in the file we just need to reference it correctly.
+
+5) I want another validation when the user edit the study that is if the study already got some files inside and the user changes some parameters inside tipo/periodo de prueba I want to check wether the newly set parameters fill the criteria for the already existing files in case it doesn't ask the user if they want to delete these files because if not done it won't be able to save as the original file don't fill the newly set criteria by the user.
+
+6) Continue implementing the main features for "Análisis de Estudio"
+
+---------------------------------
+
+Before proceeding I need to fix a few problems for "Análisis de Estudio:
+
+1) Is not updating the filters for frequency nor calculations as when I click on any frequency for example the all option won't come back in the selction list.
+2) Validation is not properly implemented as when I do "Agregar Archivo" I get no error whatsoever when I open a file that doesn't have a tipo de prueba that matches with what I put in the "Periodo de Prueba" or "Tipo de Prueba" when I created/edited a study. For example I left the value for both of them blank and I opened this file "Pte10 CMJ 01.txt" which doesn't have the matching periodo or tipo de prueba, same with when I tested this file "Pte14 CMJ POST 12.txt" nothing it let's me load the file.
+3) Also I noticed that this line:
+
+        if len(parts) >= 4:  # Expecting format like "Pte01 CMJ POST 01"
+            tipo_prueba = parts[1]
+            periodo_prueba = parts[2]
+It also needs to check when len(parts) == 3 because the file can also be something like "Pte01 CMJ 01.txt" or "Pte01 POST 01.txt" in which case it would need to check wether the value in the middle "parts[1]" is for tipo de prueba or periodo de prueba, for this it needs to check the actual list obtained when creating/editing the study as it holds the user input. 
+
+4) Also for avoiding conflicts like the periodo de prueba being the same as tipo de prueba we need to also add another validation for create a new study or editing one where it checks wether the tipo de prueba or periodo de prueba has the same values, as it shouldn't have.
+
+5) When I try to add a file to the right box I get this error:
+
+Exception in Tkinter callback
+Traceback (most recent call last):
+  File "/Users/arakito/.pyenv/versions/3.13.0/lib/python3.13/tkinter/__init__.py", line 2068, in __call__
+    return self.func(*args)
+           ~~~~~~~~~^^^^^^^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 302, in <lambda>
+    command=lambda: self.add_to_analysis(title, listbox.get(tk.ACTIVE))).pack(side=tk.LEFT)
+                    ^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'KineVizApp' object has no attribute 'add_to_analysis'
+
+6) When I open the "Análisis de Estudio" I get:
+
+Exception in Tkinter callback
+Traceback (most recent call last):
+  File "/Users/arakito/.pyenv/versions/3.13.0/lib/python3.13/tkinter/__init__.py", line 2068, in __call__
+    return self.func(*args)
+           ~~~~~~~~~^^^^^^^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 652, in on_freq_change
+    self.actualizar_listas_parametros(id_estudio)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 740, in actualizar_listas_parametros
+    listbox = getattr(self, f"{categoria}_listbox")
+AttributeError: 'KineVizApp' object has no attribute 'pacientes_listbox'
+
+7) Continue implementing the main features.
+
+---------------------------------
+
+Before proceeding I need to fix a few problems for "Análisis de Estudio:
+
+1) I want to apply this line of code or a similar logic (line 788) for making the initial filter to appear (because if you use another filter it won't show the first option anymore) to the filters inside this view, which would be for the frequency and the calculos filter "self.filter_type_var.set("Todos")"
+2) For the frequency filter I want to add the "Todos" option to show all the patients in the study and their parameters. I also want to swap the names for "Tipo de Prueba" to "Frecuencia de Medición" (because Tipos de prueba is getting the data from frequency instead of "tipo de prueba) and add a new box for "Tipo de Prueba" and next to "frecuencia de medición" then the box for "Periodo de Prueba". 
+3) Now for getting the data for Periodo de Prueba and Tipo de Prueba, check if the "Periodo de Prueba" and "Tipo de Prueba" that the user input when creating or editing a study matches the ones inside the file name (the file is something like "Pte01 POST CMJ 01" (where the first value corresponds to the , implement a validation logic like this:
+
+    def extract_test_info(self, filename):
+        """
+        Extract Tipo de Prueba and Periodo de Prueba from filename.
+        Handles cases where these values are null (not in the filename).
+        """
+        parts = filename.split("_")
+        tipo_prueba = parts[1 if len(parts) > 1 else None 
+        periodo_prueba = parts[2] if len(parts) > 2 else None
+        return tipo_prueba, periodo_prueba
+
+4) And in case the file the user load doesn't match the given criteria (established in the study when you edit/create one) give a warning that the "Tipo de Prueba" or "Periodo de Prueba" doesn't match the criteria.
+5) Now with this validation save it into the database this will contain the Periodo de Prueba/Tipo de Prueba that the study does contain accordingly to the files inside the study.
+6) Finally fecth that data into the box for Periodo de Prueba and Tipo de Prueba.
+7) Fix this error I get when opening "Analisis de Estudio" although it still functions:
+
+Exception in Tkinter callback
+Traceback (most recent call last):
+  File "/Users/arakito/.pyenv/versions/3.13.0/lib/python3.13/tkinter/__init__.py", line 2068, in __call__
+    return self.func(*args)
+           ~~~~~~~~~^^^^^^^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 614, in on_freq_change
+    self.actualizar_listas_parametros(id_estudio)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Proyectos/KineViz/interfaz.py", line 700, in actualizar_listas_parametros
+    listbox = getattr(self, f"{categoria}_listbox")
+AttributeError: 'KineVizApp' object has no attribute 'pacientes_listbox'
+
+8) Continue implementing the main features.
+
+---------------------------------
+
+- "Todos" filer for "calulos"
+
+---------------------------------
+
+0. Initial Validation 
+
+0.1) Before "Análisis de Estudio" Window Opens: 
+- Fetch the list of patients from the database for the currently loaded study.
+- Check if the study has at least two distinct patients.
+- If not, display a warning message to the user indicating that they need to add more files from different patients to the study.
+- If there are at least two patients, proceed to open the "Análisis de Estudio" window.
+
+I. Design the "Análisis de Estudio" Window
+
+1) Layout:
+
+1.1) Main Frame: ttk.Frame or Toplevel window.
+1.2) Frequency Filter: ttk.OptionMenu (Cinemática, Cinética, Electromiográfica).
+1.3) Parameter Selection Area:
+- ttk.LabelFrame with labels and widgets for "Pacientes," "Tipo de Prueba," and "Periodo de Prueba."
+- Three tk.Listbox widgets to display available options.
+- Three "Add" buttons (ttk.Button) for each listbox.
+1.4) Analysis List Area:
+- ttk.LabelFrame with labels and widgets for the selected analysis parameters.
+- Three tk.Listbox widgets for "Pacientes," "Tipo de Prueba," and "Periodo de Prueba."
+- "(x)" buttons (ttk.Button) next to each selected item for removal.
+1.5) Calculation Selection: ttk.OptionMenu (Máximo, Mínimo, Rango).
+1.6) Calculation List:
+- tk.Listbox or similar to display the selected calculations.
+- "(x)" buttons (ttk.Button) for removal.
+1.7) Action Buttons:
+- ttk.Button for "Crear Reporte PDF"
+- ttk.Button for "Ver PDF"
+- ttk.Button for "Eliminar PDF"
+- ttk.Button for "Nuevo Análisis"
+1.8) Search: ttk.Entry for search input and ttk.Button for search.
+1.9) Pagination: ttk.Frame for pagination controls (buttons).
+
+II. Implement Functionality
+
+1) Frequency Filtering:
+
+1.1) cargar_archivos (Modified):
+- Add frecuencia as an argument.
+- Filter files based on the selected frecuencia.
+- Save the filtered data (or file paths) to the database.
+1.2) On "Análisis de Estudio" Button Click:
+- Fetch the selected frecuencia from the dropdown.
+- Call cargar_archivos with the selected frecuencia to refresh the analysis data.
+
+2) Populate Parameter Selection:
+
+2.1) On "Análisis de Estudio" Button Click:
+- Fetch distinct "Pacientes," "Tipo de Prueba," and "Periodo de Prueba" values from the database (for the study and selected frequency) or from the currently loaded files.
+- Populate the corresponding listboxes in the "Parameter Selection Area."
+
+3) Parameter Selection and Removal:
+
+3.1) "Add" Button Click: Move the selected item from the parameter selection listbox to the analysis listbox.
+3.2) "(x)" Button Click: Remove the corresponding item from the analysis listbox.
+3.3) Validation (Before PDF Creation):
+- Ensure that at least two patients are selected in the analysis list.
+- Display a warning message if not.
+
+4) Calculation Selection and Removal:
+
+4.1) Dropdown Selection: Add the selected calculation to the "Calculation List."
+4.2) "(x)" Button Click: Remove calculations from the "Calculation List."
+
+5) PDF Report Generation:
+
+5.1) On "Crear Reporte PDF" Click:
+- Retrieve all selected analysis parameters (patients, tipo de prueba, periodo de prueba, calculations, frequency).
+- Fetch the corresponding data from the database (or process it from files if not saved).
+- Calculate the mean values for the selected calculations (Máximo, Mínimo, Rango) for each relevant attribute (tipo de prueba, periodo de prueba).
+- Generate the PDF report:
+-- Use ReportLab for PDF creation.
+-- Use Matplotlib to create the graphs.
+-- Embed the graphs into the PDF.
+- Save the PDF with a descriptive filename.
+
+6) PDF List Management:
+
+6.1) Display PDF List: Use a listbox (or similar) to show the generated PDFs.
+6.2) "Ver" Button: Open the selected PDF.
+6.3) "Eliminar" Button: Delete the PDF from the program and file system.
+6.4) "Nuevo Análisis" Button: Clear the analysis selections.
+6.5) "Buscar" Button: Filter the PDF list based on the search term.
+6.6) Pagination: Implement pagination for the PDF list.
+
+III. Enhancements
+
+1) Loading Indicator: Show while data is being processed.
+2) Error Handling: Implement robust error handling for file operations, database, and PDF generation.
+
+---------------------------------
+
+- Advanced Filtering: Consider adding more advanced filtering options.
+
+IV. Validation
+
+1) leer_archivo_csv_o_txt (Modified):
+1.1) Extract Test Info: Extract "Tipo de Prueba" and "Periodo de Prueba" from the filename (or handle cases where these are null).
+1.2) Database Query: Fetch "Tipos de Prueba" and "Periodos de Prueba" for the study.
+1.3) Validation:
+- Check if the extracted "Tipo de Prueba" and "Periodo de Prueba" match the study data.
+- If the validation fails, raise a ValueError with a warning message, preventing the file from being saved.
+1.4) Store in Database: If the validation passes, store the "Tipo de Prueba" and "Periodo de Prueba" along with the file information in the database.
+
+---------------------------------
+
+0. Validate
+
+To start an "Análisis de Estudio" the study in question first need to have at least two or more patients (doesn't matter the amount of files of the same one patient, it needs to be at least two different patients)
+
+I. Design the "Análisis de Estudio" Window
+
+Layout:
+Main Frame: Use a ttk.Frame or a Toplevel window to contain all analysis elements.
+Frequency Filter: A dropdown menu (ttk.OptionMenu) to select the frequency (Cinemática, Cinética, Electromiográfica).
+Parameter Selection Area: A labeled frame with:
+Three separate listboxes (tk.Listbox) or similar widgets to display available options for "Pacientes," "Tipo de Prueba," and "Periodo de Prueba."
+Three corresponding "Add" buttons to add selected items to the analysis list.
+Analysis List Area: A labeled frame with:
+Three separate listboxes (or similar) to display the selected "Pacientes," "Tipo de Prueba," and "Periodo de Prueba" for the analysis.
+Buttons with an "(x)" next to each selected item to remove them from the analysis list.
+Calculation Selection: A dropdown menu (ttk.OptionMenu) to select calculations (Máximo, Mínimo, Rango).
+Calculation List: A listbox (or similar) to display the selected calculations. Buttons with "(x)" for removal.
+Action Buttons: "Crear Reporte PDF," "Ver PDF," "Eliminar PDF," "Nuevo Análisis."
+
+II. Implement Functionality
+
+Frequency Filtering (Step 2):
+cargar_archivos (Modified): Modify your existing cargar_archivos function to take an additional frecuencia argument.
+Filtering Logic: Add filtering logic to cargar_archivos to filter files based on the selected frecuencia.
+Save to Database: After filtering, save the filtered data (or file paths) to the database for efficient retrieval in future analyses.
+
+Populate Parameter Selection (Step 3):
+On "Análisis de Estudio" Button Click:
+Fetch all distinct "Pacientes," "Tipo de Prueba," and "Periodo de Prueba" values from the currently loaded files in the "Ver Estudio" window (or from the database if you have saved the filtered data).
+Populate the corresponding listboxes in the "Parameter Selection Area."
+
+Parameter Selection and Removal (Steps 4-6):
+"Add" Button Click: Move the selected item from the parameter selection listbox to the analysis listbox.
+"(x)" Button Click: Remove the corresponding item from the analysis listbox.
+Validation: Before proceeding to PDF creation, ensure that at least two patients are selected. Display a warning message if not.
+
+Calculation Selection and Removal (Step 7):
+Dropdown Selection: Add selected calculations to the "Calculation List."
+"(x)" Button Click: Remove calculations from the "Calculation List."
+
+PDF Report Generation (Step 8):
+On "Crear Reporte PDF" Click:
+Retrieve the selected analysis parameters (patients, tipo de prueba, periodo de prueba, calculations, frequency).
+Fetch the corresponding data from the database (or process it from files if not saved).
+Calculate the mean values for the selected calculations (Máximo, Mínimo, Rango) for each relevant attribute (tipo de prueba, periodo de prueba).
+
+Bar Charts: Excellent for comparing mean values of "Máximo," "Mínimo," and "Rango" across different patients, "Tipo de Prueba," or "Periodo de Prueba."
+Example: A bar chart showing the mean "Máximo" value for each "Tipo de Prueba" for selected patients.
+
+Scatter Plots: Can help identify relationships between different measurement variables.
+Example: A scatter plot showing the relationship between two different measurement variables for a selected patient and test condition. To compare some unique values from "Cinematica" in the x-axis for example and some unique from the y-axis in "Cinetica"
+
+Example 1: Relationship between Peak Force and Jump Height in a Countermovement Jump (CMJ)
+
+Variables:
+X-axis: Peak Force (from Cinética data)
+Y-axis: Jump Height (from Cinemática data)
+Selected Parameters:
+Patient: "P01"
+Tipo de Prueba: "CMJ"
+Periodo de Prueba: "PRE"
+Purpose: To see if there is a correlation between the amount of force a patient generates during a CMJ and the height they are able to jump.
+Possible Interpretation: A positive correlation (points generally going upwards from left to right) would suggest that patients who generate more force tend to jump higher.
+
+Generate the PDF report using the libraries of ReportLab and matplotlib, incorporating the calculated means and selected parameters for a customized report.
+Save the generated PDF with a descriptive filename based on the selected parameters.
+
+PDF List Management (Step 9):
+Display PDF List: Use a listbox or similar to display the generated PDFs, including their filenames.
+"Ver" Button: Open the selected PDF in the default PDF viewer.
+"Eliminar" Button: Delete the selected PDF from both the program and the local file system.
+"Nuevo Análisis" Button: Clear the current analysis selections and allow the user to start a new analysis.
+
+"Buscar" Button in the top left side: Search for files within the list management.
+"Pagination" System at the bottom of the frame: Implementing the old system applying it here as well updating the main value with config.ini.
+
+III. Enhancements:
+
+Loading Indicator: Display a loading indicator while data is being processed and the PDF report is being generated.
+
+Error Handling: Implement robust error handling for file operations, database interactions, and PDF generation.
+Advanced Filtering: Consider adding more advanced filtering options, such as date ranges or specific data values.
+
+User Feedback: Provide clear messages to the user about the status of the analysis process, any errors encountered, and successful report generation.
+
+Data Visualization: Explore different chart types and customization options for the PDF reports to make them more visually informative and engaging.
+
+---------------------------------
+
+- First, I need to fix the "Ver" and "Eliminar" buttons in "Archivos Resultantes"
+
+# Validaciones
+
+## Agregar Archivos 
+- Before the "Archivo Resultante" saves, validates that the "Periodo y Tipo de prueba" follows the structure definied in the study that is to contain the Periodo de Prueba u Tipo de Prueba in the file name, if it doesn't sned a warning that it can't save because it doesn't follow the structure needed:
+- After it saves correctly store the Periodo de Prueba y Tipo de Prueba which will be used when we need to reference the patients and their tests for the "Study Anlysis".
+- The name of the file can be like "P01 CMJ PRE 01.txt" or "P01_SALTO_02.txt" in any case it should be able to recognize that the first value P01 is the patient and it will always be on the first part of the file and the test tries on the final part, followed by the type of test and the time of test but these could be null.
+
+---------------------------------
+
+## Study Analysis Feature
+1) Add "Análisis de Estudio" option in the "Ver Estudio" window bellow "Agregar Archivos"
+1.1) Al ver Estudio necesito que haya una nueva opción debajo de "Agregar Archivos" quiero agregar la opción "Análisis de Estudio" en donde se abra una nueva ventana (sin cerrar la anterior) en donde (solo si hay al menos dos pacientes distintos cargados, en caso contrario se entrega una advertencia de que es necesario tener mas archivos en el estudio) se seleccionan opciones para la generacion de graficas como por ejemplo que pacientes del estudio se quieren comparar, con que tipos de prueba u con que periodos de prueba (aunque tiene que validar si es que es posible hacer esa comparación ya que es posible que no tenga periodos de prueba etc para esto es necesario que se cargen todos los parametros que se pueden utilizar al seleccionar la opción de crear PDF la primera vez que se use esta opción si son muchos archivos se puede agregar un pop-up para cargar los parametros y al cargarlos por primera vez ya se pueden cargar mas rapido al ya haberse cargado en la base de datos) luego de decidir esos parametros (siempre se tiene que seleccionar los pacientes) los pacientes, tipo de prueba y periodo de prueba se seleccionan a partir de una lista desplegable en donde se van agregando al seleccionarse y se pueden quitar al hacer click en un boton (x) al lado del parametro seleccionado. Bueno después de seleccionar con quienes se quiere hacer el análisis es importante que se pregunte si se quiere comparar para una frecuencia en particular por ejemplo Cinetica, Cinematica u Electromiográfica u las tres, etc dependiendo de que opciones se tenga en los archivos cargados. Ademas de esto es necesario otras opciones esto es que calculos se quieren comparar con la misma lista desplegable anterior que al seleccionar un calculo se agrega a la lista visual y se pueden agregar más opciones de calculos u quitar con un (x) al lado de la opción por el momento son tres atributos principales "Maximo", "Minimo" y "Rango". Luego de seleccionar todos los parametros necesarios se puede hacer click en "Crear Reporte PDF" en donde se genera un PDF personalizado acorde a los parametros del usuario. Este PDF se agrega a una lista con su nombre en esta ventana, el nombre sera una combinación del nombre del estudio y los parametros seleccionados y el numero de analisis, en donde tienes la opción de ver el PDF u eliminar. En cuanto a como se crean los graficos estos graficos utilizaran el parametro principal que sera por ejemplo el tipo de prueba y/o el periodo de prueba y se promediaran los maximos, minimos o rangos según lo seleccionado por el usuario de cada paciente y se generara un grafico con la media de cada parametro seleccionado. Por ejemplo si hay 2 tipos de prueba "Saltos" y "Correr" se compara cada tipo de prueba con la media del calculo seleccionado. Lo importante es que los reportes resultado se generan a partir de un atributo de todo el universo de sujetos dentro de los parametros de tipo de prueba, periodo de prueba u frecuencia para comparar con los calculos obtenidos. 
+1.2) Study analysis process: Filtering by frequency -> Save -> If correct -> Load new data with the filer and save this in the database for posterior use -> Multiple parameter selection -> Save -> If correct -> Save data in database -> Filter calculations -> Save -> Save data in database -> Added new file to the list -> Generate pdf graphs with the data obtained and the corresponding filters. -> You can open or delete those files anytime. (All of this is in one screen).
+2) Add filtering by frequency ("Cinética", "Cinemática", "Electromiográfica")
+2.1) Filtering by frequency -> Save -> If correct -> Load new data with the file and save this in the database for posterior use -> Multiple parameter selection -> Save -> If correct -> Save data in database -> Filter calculations -> Save -> Save data in database -> Added new file to the list -> Generate pdf graphs with the data obtained and the corresponding filters. -> You can open or delete those files anytime. (All of this is in one screen).
+3) Implement multiple parameter selection ("Pacientes", "Tipo de Prueba", "Periodo de Prueba")
+3.1) It should get all the data from that one study, this is all Patients that are inside this study and the Periodo de Prueba and Tipo de Prueba list.
+4) The generated boxes with this data should allow only the removal of values not to write anything. 
+5) From there the user can remove (not add) in a box with the values separated by comma which patient or test they want to keep and use.
+6) It should have at least two patients selected in this box when you save, otherwise it will send a notification that it needs at least two.
+7) Filter Calcultation options ("Máximo", "Mínimo", "Rango")
+8) Generate customized PDF graphs
+9) Implement Customized PDF list with options "Ver" and "Eliminar", Ver will show the file directly, eliminar will delete the file from the program and the local files. Also another option for "New Analysis" in the bottom.
+
+# Validaciones
+
+## Agregar Archivos 
+- Before the "Archivo Resultante" saves, validates that the "Periodo y Tipo de prueba" follows the structure definied in the study that is to contain the Periodo de Prueba u Tipo de Prueba in the file name, if it doesn't sned a warning that it can't save because it doesn't follow the structure needed:
+- After it saves correctly store the Periodo de Prueba y Tipo de Prueba which will be used when we need to reference the patients and their tests for the "Study Anlysis".
+- The name of the file can be like "P01 CMJ PRE 01.txt" or "P01_SALTO_02.txt" in any case it should be able to recognize that the first value P01 is the patient and it will always be on the first part of the file and the test tries on the final part, followed by the type of test and the time of test but these could be null.
+
+---------------------------------
+
+# Old
+
+- Add "Abrir Carpeta de Estudios" button in Main Screen
+- Add "Refrescar" button in "Archivos Resultantes"
+- Fix the "Mostrar_main_page" function to properly handle deleted study folders
+
+- Button "Ver" and "Eliminar" not working properly from "Archivos Resultantes"
+- Add a refrescar button in the "Archivos Resultantes"
+- And there's an error with the function "Mostrar_main_page" the files from my program don't dissapear when I delete the study folder from my local files when I click "Refrescar" I need to restart the program for the study to disapear.
+- New button for "Abrir Carpeta de Estudios"
+
+2) I also need to fix the logic for the frame table in @/interfaz.py in ver_estudio function as is using the previous table when I use the "agregar_archivos" function instead i need to hold the data for
+
+'Paciente', : Pacient name
+'Nombre', : Filename
+'Tipo', : Type of file for example the ones inside the folder "Cinemática", "Cinética" or "Electromiográfica" are of the type "New", while the ones on "OG" folder would be type "OG" all others would be left blank.
+'Frecuencia', It would be the file frecuency in case it have, for example the OG gile would be a none, a file inside the "Cinemática" would be a "Cinemática" frequency, all the rest would be left blank.
+'Ver', Direct link to the file
+'Eliminar', delete file directly from system and local files, reference would also dissapear from the program list if the file were to be removed locally.
+
+3) I want to implement a name search function for the "Archivos Resultantes" and a filter to only show "Cinemática" "Cinética" or "Electromiográfica" or "OG" also re-use the implementation for pagination that uses config.ini to establish the files per page but implement it for the Archivos "Resultantes"
+
+## Ver Estudio Page
+- Add the button for a new page of "Ver Archivos Resultantes" which will have a table initially empty with the columns "FileName", "Frequency", "Ver Archivo" and "Eliminar Archivo".
+- Add the button for a new page of "Ver Archivos Originales" which will have a table initially empty with the columns "FileName", "Ver Archivo" and "Eliminar Archivo".
+
+- When you click on "Agregar Archivos" and after is loaded correctly, the program will then create a new folder to store the files and update the database this would be in the following folder structure estudios/{nombre_estudio}/{nombre_paciente}/{frecuencia(s)}. After saving correctly the program will send you to another view which will be called "Ver Archivo" and will now store all the archivos loaded.
+
+- For finding the nombre_paciente the program needs to look a the first value of the original file name when is proceeded. 
+
+- After loading the file sucessfully the data will also be stored in "Ver Archivos Originales" but this one will keep the original file as it was without any modifications and in "Ver Archivos Resultantes" will store the output files.
+
+- Fix the problem when removing the block "Archivos del estudio" folders "Error al eliminar archivo: [Errno 1] Operation not permitted: 'estudios/3/Cinemática'"
+
+## Ver Archivos Resultantes Page
+- This screen will show a table with all output archives, separated with these columns "FileName", "Frequency", "Ver Archivo" and "Eliminar Archivo", "Ver Archivo" will open the file directly and eliminar will delete the file form the program and the local files.
+- Implement archives's name search functionality
+- Implement archive's filter by frequency
+- Add pagination for archives (10 archives per page)
+
+## Ver Archivos Originales Page
+- Implement archives's name search functionality
+- Add pagination for archives (10 archives per page) 
+
+- Add an button option bellow for "Ver Archivos" in where it will redirect you to a new tab where 
+- Wen you click on view it will open the file directly.
+- When you click on "Agregar Archivos" and after is loaded correctly the porogram will need to create a new folder to store the output files
+
+## Study Analysis Feature
+- Add "Análisis de Estudio" option in the "Ver Estudio" window at the top right part of the screen
+- Add filtering by frequency ("Cinética", "Cinemática", "Electromiográfica")
+- Implement multiple parameter selection ("Pacientes", "Tipo de Prueba", "Periodo de Prueba")
+- Filter Calcultation options ("Máximo", "Mínimo", "Rango")
+- Generate customized PDF graphs
+- Implement Customized PDF list with options "Ver" and "Eliminar", Ver will show the file directly, eliminar will delete the file from the program and the local files. Also another option for "New Analysis" in the bottom.
+
+# Validaciones
+
+## Agregar Archivos 
+- Before the "Archivo Resultante" saves, validates that the "Periodo y Tipo de prueba" follows the structure definied in the study that is to contain the Periodo de Prueba u Tipo de Prueba in the file name, if it doesn't sned a warning that it can't save because it doesn't follow the structure needed:
+- After it saves correctly store the Periodo de Prueba y Tipo de Prueba which will be used when we need to reference the patients and their tests for the "Study Anlysis".
+- The name of the file can be like "P01 CMJ PRE 01.txt" or "P01_SALTO_02.txt" in any case it should be able to recognize that the first value P01 is the patient and it will always be on the first part of the file and the test tries on the final part, followed by the type of test and the time of test but these could be null.
+
+# More Details
+
+## Study analysis process
+- Filtering by frequency -> Save -> If correct -> Load new data with the filer and save this in the database for posterior use -> Multiple parameter selection -> Save -> If correct -> Save data in database -> Filter calculations -> Save -> Save data in database -> Added new file to the list -> Generate pdf graphs with the data obtained and the corresponding filters. -> You can open or delete those files anytime. (All of this is in one screen).
+
+## Add filtering by frequency ("Cinética", "Cinemática", "Electromiográfica")
+- For this function the program will obtain the data from the files within the study and filter the data further in the study accordingly and the user can filter by any one of them, but if for example there's one frequency there's no archives of, then it won't save and send a pop-up instead, but if there's it will use this filter for the next step also we should not that for this function we also need at least two archives of the selected frequency for it to work, otherwise i would give a warning pop-up and won't save.
+
+## Implement multiple parameter selection ("Pacientes", "Tipo de Prueba", "Periodo de Prueba")
+- It should get all the data from that one study, this is all Patients that are inside this study and the Periodo de Prueba and Tipo de Prueba list.
+- The generated boxes with this data should allow only the removal of values not to write anything. 
+- From there the user can remove (not add) in a box with the values separated by comma which patient or test they want to keep and use.
+- It should have at least two patients selected in this box when you save, otherwise it will send a notification that it needs at least two.
+
+---------------------------------
+
+## Add "Configuración" view in the upper side of the screen
+- Implement "Restablecer Valores por Defecto" functionality in where you delete database.db and delete all the files inside Estudios.
+
+## Main Page Improvements
+- Implement study's name search functionality
+- Add pagination for studies (10 studies per page)
+
+## Manual of User
+- Improve the format of the manual to make it more visually appealing
+- Consider alternative formats beyond plain text (e.g., HTML, PDF)
+- Improve redaction of the manual.
+
+---------------------------------
+
+Separar por comas (ie. CMJ,Saltos), en caso de que no exista, dejar vacio
+Separar por comas (ie. POST), en caso de que no exista, dejar vacio
+
+I want refrescar next to crear nuevo estudio not below
+
+The placeholder text is replacing the text if is not selected or when you edit it, that should not happen, for example
+if the value of Periodo de Prueba and Tipo de Prueba is left blank it shouldn't put the placeholder in i'ts place, what's causing this beahaviour?
+
+error loading the file
+
+name of study should be obligated
+
+---------------------------------
+
+I want to implement this logic for periodo y tipo de prueba:
+        # Prepare tipos_prueba and periodos_prueba for storage
+        tipos_prueba_str = ','.join(tipos_prueba) if tipos_prueba and any(tipos_prueba) else None
+        periodos_prueba_str = ','.join(periodos_prueba) if periodos_prueba and any(periodos_prueba) else None
+
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO estudios (
+                nombre_estudio, 
+                num_sujetos, 
+                tipos_prueba, 
+                periodos_prueba, 
+                cantidad_intentos
+            ) VALUES (?, ?, ?, ?, ?)
+        ''', (
+
+
+        # Variables para campos
+        var_nombre = tk.StringVar(value=estudio['nombre_estudio'])
+        var_num_sujetos = tk.StringVar(value=str(estudio['num_sujetos']))
+        var_cantidad_intentos = tk.StringVar(value=str(estudio['cantidad_intentos']))
+        var_tipos_prueba = tk.StringVar(value=', '.join(estudio['tipos_prueba']) if estudio['tipos_prueba'] else '')
+        var_periodos_prueba = tk.StringVar(value=', '.join(estudio['periodos_prueba']) if estudio['periodos_prueba'] else '')
+
+
+---------------------------------
+
+
+I need your help with the following:
+
+1) Delete "Formato Sujetos" and "Formato de Intentos" from the code logic.
+
+2) Change the "Periodo de Prueba" y "Tipo de Prueba" logic: Take out the checkbox and instead use a normal text box where the user can add "Periodos" or "Tipos de prueba" by values separated by comma, in case this box is blank it will just assume it doesn't have a "periodo or tipo de prueba", in which case the app needs to allow null values for these two.
+
+3) I want to implement placeholders for the create new study and the edit study function: placeholder text with the entry widget for examples for each box, for example in "Nombre del Estudio" you can leave "ie. KineViz", for Número de Sujeto you can leave "ie. 10" for Cantidad de Intentos you can leave "ie. 1" for "Tipos de Prueba" you can leave "Separar por comas (ie. CMJ,Saltos), en caso de que no exista dejar vacio" and for "Periodos de Prueba" you can leave "Separar por comas (ie. POST), en caso de que no exista dejar vacio" this placeholder needs to be a different colout like gray almost transparent so the user doesn't confuse it with an actual value.
+
+4) I want to add a "Refrescar" button for the main screen next to "Crear Nuevo Estudio".
+
+5) I want the program to validate if the when creating a new study or editing one and after pressing save if the name of the study already exists in the database, in which case it won't allow to create said study.
+
+6) I want to create a new folder after creating any study or after renaming any study with another available name. The folder should be in "Estudios/{nombre_estudio}" with {nombre_estudio} being the name of the study that the user gave/rename in the create/edit study view.
+
+7) I want an option for "Abrir Carpeta de Estudio" in with button after "Agregar Archivos" in the "Ver Estudio" view.
+
+Only give me the changes you made in the new solution, truncate the rest of the code.
+
+---------------------------------
+
+ need your help to fix some issues:
+
+1) For some reason the placeholders are not working as expected I need this:
+-- I want each box for "Crear" o "Editar" study to have a placeholder text with the entry widget for examples for each box, for example in "Nombre del Estudio" you can leave "ie. KineViz", for Número de Sujeto you can leave "ie. 10" for Cantidad de Intentos you can leave "ie. 1" (I want to remove the value 1 here as it shouldn't be a value 1 per default but just a placeholder text instead) for "Tipos de Prueba" you can leave "Separar por comas (ie. CMJ,Saltos) , en caso de que no exista dejar vacio" and for "Periodos de Prueba" you can leave "Separar por comas (ie. POST) , en caso de que no exista dejar vacio"
+
+2) When I edit a study and change the name it deletes said folder.
+
+3) The program is not properly validating if there's a duplicated name in the studies when creating or editing a new study.
+
+4) For the "Editar" and "Crear" nuevo estudio view, leave the Tipos de Prueba and Periodos de Prueba in separated boxes like the other boxes and pemove the insctructions
+
+5) Function editar and crear estudio should be the same except from where you call it and it shouldn't give a problem when we rename the study.
+
+---------------------------------
+
+1) Al iniciar una sesión sin archivo de KineViz.db no esta ingresando al landing page pero la paguina principal
+
+1) For the "Editar" and "Crear" nuevo estudio view, leave the Tipos de Prueba and Periodos de Prueba in separated boxes like the other boxes. Remove the insctructions add a simple explanation into @/manual_usuario.txt. And I want to leave all boxes blank, remember that "Periodo de Prueba" and "Tipo de Prueba" allow null values. 
+
+2) I want each box for "Crear" o "Editar" study to have a placeholder text with the entry widget for examples for each box, for example in "Nombre del Estudio" you can leave "ie. KineViz", for Número de Sujeto you can leave "ie. 10" for Cantidad de Intentos you can leave "ie. 1" (I want to remove the value 1 here as it shouldn't be a value 1 per default but just a placeholder text instead) for "Tipos de Prueba" you can leave "Separar por comas (ie. CMJ,Saltos) , en caso de que no exista dejar vacio" and for "Periodos de Prueba" you can leave "Separar por comas (ie. POST) , en caso de que no exista dejar vacio"
+
+3) The program is not properly validating if there's a duplicated name  in the studies when creating a new study.
+
+---------------------------------
+
+The file has been successfully saved, but there are still several key requirements from the user's feedback that have not been fully addressed:
+
+Configuration Options
+The configuration window needs to be fully implemented
+Need to add functionality to modify parameters dynamically
+Implement "Restablecer Valores por Defecto" functionality
+Manual of User
+Improve the format of the manual to make it more visually appealing
+Consider alternative formats beyond plain text (e.g., HTML, PDF)
+Main Page Improvements
+Implement study search functionality
+Add pagination for studies (10 studies per page)
+Study Analysis Feature
+Add "Análisis de Estudio" option in the "Ver Estudio" window
+Validate minimum two patients
+Implement multiple parameter selection
+Add filtering by frequency
+Create calculation options
+Generate customized PDF
+
+---------------------------------
+
+# Requisitos Principales
+## 1. Creación de Estudio
+- Modificar formulario de creación:
+  * Eliminar campos de formato de sujetos y formato de intentos
+  * Mantener solo: número de sujetos, cantidad de intentos, nombre(s) de tipos de prueba y periodo de prueba
+  * Implementar sistema dinámico para periodos y tipos de prueba
+  * Agregar validación de campos vacíos
+  * Lista desplegable para periodos (PPE, POST por defecto)
+  * Lista desplegable para tipos (CMJ, Salto por defecto)
+  * Botón (x) para eliminar elementos seleccionados
+## 2. Gestión de Estudio
+- Agregar botón para abrir carpeta de estudio
+- Implementar "Análisis de Estudio":
+  * Validar mínimo dos pacientes
+  * Selección múltiple de parámetros (pacientes, tipos, periodos)
+  * Filtros por frecuencia (Cinética, Cinemática, Electromiográfica)
+  * Opciones de cálculo (Máximo, Mínimo, Rango)
+  * Generación de PDF personalizado
+  * Lista de reportes generados con opciones ver/eliminar
+
+## 3. Lectura y Procesamiento
+- Validación de formato de archivos:
+  * Estructura: [Código_Paciente] [Tipo_Prueba] [Periodo_Prueba] [Intento]
+  * Verificación contra parámetros del estudio
+  * Sistema de configuración para nuevos parámetros
+- Gestión de archivos:
+  * Paginación (10 por página)
+  * Búsqueda por nombre
+  * Opciones: Exportar, Ver, Eliminar
+  * Estructura de carpeta generada al exportar archivo: estudios/{nombre_paciente}/{frecuencia}
+
+## 4. Interfaz
+- Implementar búsqueda de estudios
+- Paginación (10 estudios por página)
+- Manual de usuario en formato mejorado
+- Ventana de configuración para parámetros del sistema
+
+## 5. Validaciones
+- Verificación de formatos
+- Alertas de errores
+- Confirmaciones de acciones
+- Gestión de casos especiales
+
+## 6. Estructura de Datos
+- Base de datos local
+- Archivos de configuración
+- Sistema de caché para parámetros
+- Gestión de reportes generados
+
+---------------------------------
+
+# Update 'interfaz.py'
+- Landing page working
+- Crear estudio (WIP)
+- Agregar archivo (WIP)
+- Manual de usuario.
+- Ventanas.
+
+# Crear Estudio
+- Problema con "Tiene tipo de prueba" y "tiene periodo de prueba" se abre la opción para cantidad pero no se puede agregar el campo. Ademas si el campo se deja vacio no me entrega una alerta para ingresar un valor correcto. 
+- Estaba pensando en vez de poner la cantidad de periodos de prueba y tipos de prueba, el usuario puede agregar tantos campos como desee (pero mantengamos un limite si es necesario) y en esos campos nuevo agregar el nombre de cada periodo o tipo de prueba.
+- En el formulario no preguntes por el formato de sujetos ni el formato de intentos de prueba solo el numero de sujetos y la cantidad de intentos de prueba y los nombres de los periodos de prueba e tipos de prueba en caso de haber.
+- En el formulario para periodo de prueba entrega una lista desplegable con las opciones "PPE" y "POST" que se agrega a la lista del box de periodo de prueba en donde se puede elegir más de una opción y a continuación del nombre del periodo hay una opción "x" para quitar de la lista. También para periodo de prueba quiero que sus valores por defecto sean "CMJ" y "Salto".
+
+# Gestión de Estudio
+- Falta opción para abrir carpeta de estudio en la parte superior de la ventana de Ver de Estudio.
+- Al ver Estudio necesito que haya una nueva opción debajo de "Agregar Archivos" quiero agregar la opción "Análisis de Estudio" en donde se abra una nueva ventana (sin cerrar la anterior) en donde (solo si hay al menos dos pacientes distintos cargados, en caso contrario se entrega una advertencia de que es necesario tener mas archivos en el estudio) se seleccionan opciones para la generacion de graficas como por ejemplo que pacientes del estudio se quieren comparar, con que tipos de prueba u con que periodos de prueba (aunque tiene que validar si es que es posible hacer esa comparación ya que es posible que no tenga periodos de prueba etc para esto es necesario que se cargen todos los parametros que se pueden utilizar al seleccionar la opción de crear PDF la primera vez que se use esta opción si son muchos archivos se puede agregar un pop-up para cargar los parametros y al cargarlos por primera vez ya se pueden cargar mas rapido al ya haberse cargado en la base de datos) luego de decidir esos parametros (siempre se tiene que seleccionar los pacientes) los pacientes, tipo de prueba y periodo de prueba se seleccionan a partir de una lista desplegable en donde se van agregando al seleccionarse y se pueden quitar al hacer click en un boton (x) al lado del parametro seleccionado. Bueno después de seleccionar con quienes se quiere hacer el análisis es importante que se pregunte si se quiere comparar para una frecuencia en particular por ejemplo Cinetica, Cinematica u Electromiográfica u las tres, etc dependiendo de que opciones se tenga en los archivos cargados. Ademas de esto es necesario otras opciones esto es que calculos se quieren comparar con la misma lista desplegable anterior que al seleccionar un calculo se agrega a la lista visual y se pueden agregar más opciones de calculos u quitar con un (x) al lado de la opción por el momento son tres atributos principales "Maximo", "Minimo" y "Rango". Luego de seleccionar todos los parametros necesarios se puede hacer click en "Crear Reporte PDF" en donde se genera un PDF personalizado acorde a los parametros del usuario. Este PDF se agrega a una lista con su nombre en esta ventana, el nombre sera una combinación del nombre del estudio y los parametros seleccionados y el numero de analisis, en donde tienes la opción de ver el PDF u eliminar. En cuanto a como se crean los graficos estos graficos utilizaran el parametro principal que sera por ejemplo el tipo de prueba y/o el periodo de prueba y se promediaran los maximos, minimos o rangos según lo seleccionado por el usuario de cada paciente y se generara un grafico con la media de cada parametro seleccionado. Por ejemplo si hay 2 tipos de prueba "Saltos" y "Correr" se compara cada tipo de prueba con la media del calculo seleccionado. Lo importante es que los reportes resultado se generan a partir de un atributo de todo el universo de sujetos dentro de los parametros de tipo de prueba, periodo de prueba u frecuencia para comparar con los calculos obtenidos. 
+
+# Configuración
+- Necesito que estas variables se puedan modificar dentro del programa en la pantalla principal necesito una opción de configuración donde haya una opción para modificar parametros en donde se pueden agregar parametros nuevos para tipo de prueba u periodo de prueba (es decir agregar mas periodos de prueba u tipos de prueba directamente dentro del programa y que estas opciones nuevas de periodo de prueba se agreguen a la base de datos). Es importante que los nombre de periodo de prueba y tipo de prueba no sean iguales. Dentro de esta configuración también se pueden eliminar los parametros nuevos ya que se agregara a una lista en un archivo txt que se puede modificar, algo como "Periodo de Prueba = ACT, TUE" y "Tipo de Prueba = Corr, YUS" agregar estos nuevos parametros al archivo txt modificara los parametros que se mostraran al editar estudio, ya que ahora en la lista desplegable se mostraran estas nuevas opciones ademas de las opciones por defecto. Ademas de esta opción en la ventana de configuración quiero una opción para "Restablecer Valores por Defecto" que basicamente eliminaria esos valores nuevos agregados al sistema.
+
+# Manual de Usuario WIP
+- Me gustaría que esto tenga un mejor formato que sea mas agradable a la vista para el usuario, quizas otro formato que no sea txt de ser posible.
+
+# Pantalla principal WIP
+- Quiero implementar la opción de busqueda de estudios.
+- Quiero implementar las paguinas esto es que se visualizen unos 10 estudios por paguina.
+
+# Lectura.py Agregar archivo 
+- Error 'Error al eliminar archivos de frecuencia archivo: [Errno 1] Operation not permitted: 'estudios/A/Cinética''
+- Luego de cargar los archivos de prueba no quiero que se genere la carpeta y los archivos resultantes inmediatamente pero quiero:
+-- Valida que el formato del archivo siga el formato establecido por el usuario esto es:
+--- 1) Tipo de Prueba: Asegurate que el archivo tenga alguno de los tipos de prueba agregados al estudio en caso de tener.
+--- 2) Periodo de Prueba: Asegurate que el archivo tenga alguno de los tipos de prueba agregados al estudio en caso de tener.
+--- 3) Por ejemplo si el archivo se llama "P01 CMJ PRE 01.txt" u "P01_CMJ_PRE_01" (recuerda que el primer valor es el codigo del paciente, el segundo el tipo de prueba, el tercero el periodo de prueba y el cuarto el intento de prueba, pero puede no haber intento de prueba u periodo de prueba u no haber ninguno) y se selecciona que si hay tipo de prueba y los tipos de prueba que se seleccionan son "A" y "B" pero en el archivo el tipo de prueba es "CMJ" necesito que se muestre una ventana que diga que no se puede cargar el archivo al tener el formato incorrecto. En caso de que el estudio si tenga un tipo de prueba llamado "CMJ" el archivo se agrega a la lista de archivos. En caso de que por ejemplo el archivo se llame "P01 SALTO 02.txt" u "P01_SALTO_02.txt" y se tenga que para ese estudio no hay tipo de prueba pero si hay periodo de prueba y se llama "SALTO". Igual el programa tira problema al saber que "SALTO" no esta dentro de las opciones para periodods de prueba que por el momento es solo "PRE" y "POST".
+-- Carga el nombre del archivo y agregalo a la lista de archivos.
+-- Muestra el nombre del archivo al cargar cada archivo por ejemplo "P01 CMJ 02.txt" y a continuación del nombre muestra las opciónes de "Exportar", "Ver" y "Eliminar".
+-- Muestra solo 10 archivos por paguina agrega botones para pasar a la paguina siguiente, agrega una función para buscar archivos por nombre.
+-- Con la opción de "Ver" solo muestra el archivo original.
+-- Al exportar haz lo siguiente:
+--- Abre una nueva ventana (sin cerrar la anterior automaticamente) que se llame como se llama el archivo y muestra opciones de exportar como que archivos resultado quieres, por ejemplo al leer el archivo ya se sabe si es que tiene poor ejemplo cinematica y cinetica entonces se puede seleccionar si se quiere cinematica y cinetica u solo cinematica u solo cinetica u ambas en un archivo (aunque es necesario siempre escoger al menos una opción). No aparecera la opción de electromiografica en este ejemplo ya que el archivo en si no tiene esa opción. Despues habrá mas opciones en este caso de calculos, los actuales son de maximo, minimo y rango, se puede seleccionar cuales calculos se quieren en el archivo objetivo. El archivo siempre se genera con la columna tiempo eso si. Finalmente al seleccionar todas las opciones que se quiere se selecciona "Exportar" y se generara un archivo nuevo con las opciones seleccionadas y el nuevo nombre. Este aparecera en una nueva lista con los archivos generados y su nuevo nombre en donde se puede Ver u Eliminar. Al seleccionar Ver se mostrara el archivo txt resultante.
+-- Al guardar el archivo quiero que lo guardes en "Estudios/{nombre_paciente}/{frecuencia}"
+Donde nombre_paciente es el nombre que se encuentra en el archivo por ejemplo el archivo "P01 CMJ 01.txt" sería el paciente "P01" el archivo "P1_CM_PRE_01.txt" sería el paciente "P1". La frecuencia es lo de siempre cinematica, electrofiografica u cinetica correspondiente al contenido de cada archivo.
+
+---------------------------------
+
+I tested it, is not working properly yet. But it fixed the previous problem. Right now I am facing these problems:
+
+1.- After I tick "Hay periodo de prueba" or "Hay tipo prueba" it doesn't open new boxes to fill information about them like it should.
+2.- After I saved the study I go to the next page where the only option is "Eliminar" and that option is not working.
+3.- There should be more options for each study like "Editar", "Ver" and a botton on the top right "+" that is for creating new studies.
+4.- Because the delete function is bugged after I open the program again it shows the study again but I can't do anything else.
+5.- I want the landing page to load everytime but after there is at least one study loaded in the program add the option for "Ver Estudios"
+6.- Name of the program should be "KineViz"
+7.- I want the studies to be saved in the folder "estudios/{study_name}/{patient_number}/{patient_try-number}/{test_type}/{test_time}{frequency}/{files_that_fill_the_previous_criteria}, is important to consider that is possible that a file doesn'tn have any special test_time or test_type in which case the folder created would be named "Sin especificar" and lectura.py also need to be fixed to properly reflect this output folder change also I want files in this folder to be loaded automatically in the program and for that I want it to also save a config file so if I delete these files it won't appear in my program but if I import them from somewhere else I can load them too 
+
+---------------------------------
+
+I need your help to develop the following also need help to fix interfaz.py as is currently not working as intended when doing the "Crea Tu Primer Estudio" after filling the first boxes:
+
+# Project: KineViz Interface and Functionality Development
+
+## Objective: Create a user-friendly interface for the KineViz application utilizing Python, in Spanish. The project involves interface design, database setup, and implementing core functionalities for study management.
+
+## Key Features to Implement:
+
+### Landing Page:
+
+Display the project name "KineViz" prominently.
+Add buttons: "Empieza Aquí" for a quick text intro followed by "Crea Tu Primer Estudio" for initiating studies.
+
+### Study Creation Workflow:
+
+Collect study details through a structured form:
+"Nombre del Estudio"
+"Numero de Sujetos de Prueba"
+"Formato de los Sujeto(s) de Prueba"
+Flexible input fields for test types ("Tipo de Prueba") and periods ("Periodo de Prueba").
+Ensure data validation before enabling the "Guardar" function.
+
+### Main Page for Study Management:
+
+List studies in a table with pagination (10 studies per page) and a search feature.
+Add buttons for each study: "Ver", "Editar", and "Eliminar".
+Implement file handling: display, add (inside add), edit, and delete files.
+
+### Export and Visualization Features:
+
+"Exportar" function to output data as TXT or PDF.
+Generate visual graphs for PDF exports with a selected calculation focus.
+
+### Local Database Management:
+
+Store study data locally within the project directory.
+Ensure persistent data availability across sessions.
+Bypass the landing page if studies exist on start-up.
+
+### Interface and Usability Enhancements:
+
+Allow opening study details ("Ver") in new tabs.
+Ensure user-directed error handling for data validation.
+Design a clear, interface with Spanish default language.
+
+### Best Practices:
+
+Keep code modular with small, focused files.
+I want code properly separated by functionalities and optimized.
+I want to check code functionality via proper code debugging every time is needed to validate is properly implemented.
+Separate large constants and strings into external files to maintain readability.
+Document code thoroughly, emphasizing both user and technical documentation.
+Ensure code adaptability for future functionality expansions or language adjustments.
+
+### Additional Context:
+
+Utilize the provided relational model to structure the database effectively, ensuring efficient data querying and user experience optimization. Follow the outlined functional and non-functional requirements to maintain performance, security, and usability standards.
+
+### What's already implemented:
+
+Archivos: interfaz.py y lectura.py
+
+Leer archivos CSV o TXT: El programa puede seleccionar y leer archivos CSV o TXT utilizando la función leer_archivo_csv_o_txt.
+
+Procesar y organizar datos en carpetas correspondientes según la frecuencia de medición: Los archivos son leídos y divididos en secciones según el tipo de datos (Cinemática, Cinética, Electromiográfica), y cada sección se almacena en una carpeta específica.
+
+Calcular y exportar estadísticas (Tiempo, Máximo, Mínimo, Rango): Se realizan cálculos estadísticos sobre los datos numéricos y se exportan al archivo de salida.
+
+@@ Informe del Proyecto
+@/informe_del_proyecto.docx 
+
+@@ Archivos de codigo
+@/lectura.py 
+@/interfaz.py 
+
+@@ Archivo de Paciente 10 de un Estudio X de la prueba CMJ y el intento de prueba 1, considera que este es solo un archivo de prueba, el archivo normal, esta separado por espacios no por "_", es decir es "Pte10 CMJ 01.txt"
+@/recursos/Pte10_CMJ_01.txt 
+
+---------------------------------
+
+¿Considering what I have here, which feature is already implemented?
+
+@@ features/interfaz_usuario/interfaz.py
+
+import tkinter as tk
+from tkinter import filedialog, messagebox
+from features.lectura_archivos.lectura import leer_archivo_csv_o_txt
+
+def crear_estudio():
+    nombre_estudio = entrada_nombre.get()
+    if not nombre_estudio:
+        messagebox.showerror("Error", "El nombre del estudio no puede estar vacío")
+        return
+    
+    archivo_seleccionado = filedialog.askopenfilename(title="Seleccionar archivo CSV o TXT", 
+                                                      filetypes=[("Archivos CSV", "*.csv"), ("Archivos TXT", "*.txt")])
+    if archivo_seleccionado:
+        # Leer y procesar el archivo con el nombre del estudio
+        leer_archivo_csv_o_txt(archivo_seleccionado, nombre_estudio)
+        messagebox.showinfo("Éxito", f"Archivo {archivo_seleccionado} cargado correctamente")
+    else:
+        messagebox.showerror("Error", "No se seleccionó ningún archivo")
+        
+def abrir_interfaz():
+    ventana = tk.Tk()
+    ventana.title('Creación de Estudios Kinesiológicos')
+    
+    # Nombre del estudio
+    tk.Label(ventana, text="Nombre del estudio:").pack()
+    global entrada_nombre
+    entrada_nombre = tk.Entry(ventana)
+    entrada_nombre.pack()
+    
+    # Botón para crear estudio
+    btn_crear_estudio = tk.Button(ventana, text='Crear Estudio', command=crear_estudio)
+    btn_crear_estudio.pack()
+    
+    ventana.mainloop()
+
+if __name__ == "__main__":
+    abrir_interfaz()
+
+@@ 
+
+@@ features/lectura_archivos/lectura.py
+
+"""
+Funciones para leer y formatear archivos de texto.
+"""
+import os
+import pandas as pd
+import numpy as np
+
+def formato_personalizado(valor):
+    """
+    Formatea un valor de medición para ser exportado a un archivo de texto.
+    Si el valor es un número, lo formatea con 6 decimales.
+    Si el valor es una cadena, lo formatea como una cadena.
+    """
+    if isinstance(valor, float):
+        if valor == 0:
+            return "0"
+        else:
+            return f"{valor:.6f}".rstrip('0').rstrip('.')
+    return str(valor)
+
+def agregar_columnas(fila, nuevas_columnas, posicion):
+    """
+    Agrega columnas a una fila de mediciones.
+    """
+    for nueva_columna in nuevas_columnas:
+        fila.insert(posicion, nueva_columna)
+    return fila
+
+def ajustar_fila(lista):
+    """
+    Ajusta una fila de mediciones para que contenga el mismo número de columnas.
+    Si una columna está vacía, la agrega con un valor vacío.
+    """
+    fila_final = []
+    for item in lista:
+        if item.strip():
+            fila_final.append(item)
+        else:
+            fila_final.append('')
+    return ";".join(fila_final)
+
+def leer_seccion(file, num_frames, ruta_archivo):
+    """
+    Lee una sección del archivo desde los atributos hasta los valores de medición,
+    exportando el resultado a la ruta especificada.
+    """
+    # Leer atributos, columnas, unidades
+    atributos = file.readline().rstrip("\n").split("\t")
+    columnas = file.readline().rstrip("\n").split("\t")
+    unidades = file.readline().rstrip("\n").split("\t")
+
+    # Agregar la columna "Tiempo"
+    nuevas_columnas = ["Tiempo"]
+    atributos = agregar_columnas(atributos, [""] * len(nuevas_columnas), 2)
+    columnas = agregar_columnas(columnas, nuevas_columnas, 2)
+    unidades = agregar_columnas(unidades, [""] * len(nuevas_columnas), 2)
+
+    # Ajustar filas
+    atributos_str = ajustar_fila(atributos)
+    columnas_str = ajustar_fila(columnas)
+    unidades_str = ajustar_fila(unidades)
+
+    # Leer las mediciones
+    mediciones = []
+    tiempo_anterior = 0
+
+    for i, line in enumerate(file):
+        if line.rstrip("\n"):  # Conserva las tabulaciones pero elimina el salto de línea
+            # Dividir correctamente por tabulaciones
+            columnas_medicion = line.rstrip("\n").split("\t")
+            # Añadir la columna de tiempo en el lugar correcto
+            if i == 0:
+                tiempo_actual = 0
+            else:
+                tiempo_actual = tiempo_anterior + (1 / num_frames)
+            columnas_medicion.insert(2, f"{tiempo_actual:.6f}")
+            tiempo_anterior = tiempo_actual
+
+            # Convertir los valores en flotantes si no están vacíos, de lo contrario, usar NaN
+            mediciones.append([float(val) if val.strip() !=
+                               '' else np.nan for val in columnas_medicion])
+
+        else:
+            break  # Si hay una línea vacía, salir del bucle
+    # Escribir la sección al archivo
+    with open(ruta_archivo, 'w',encoding= 'utf-8') as output_file:
+        output_file.write(f"{num_frames}\n{atributos_str}\n{columnas_str}\n{unidades_str}\n")
+        for medicion in mediciones:
+            output_file.write(";".join(formato_personalizado(x) for x in medicion) + "\n")
+    return mediciones, columnas
+
+def calcular_max_min_rango(df, columnas):
+    """
+    Calcula máximos, mínimos y rangos de mediciones en una DataFrame.
+    Ignora NaN.
+    """
+    # No es necesario rellenar NaN, Pandas maneja NaN en cálculos
+    # Calcular máximos, mínimos y rangos, ignorando los NaN
+    maximos = [''] * 2 + [df[col].max(skipna=True) for col in columnas[3:]]
+    minimos = [''] * 2 + [df[col].min(skipna=True) for col in columnas[3:]]
+    rangos = [''] * 2 + [(df[col].max(skipna=True) - df[col].min(skipna=True))
+                         for col in columnas[3:]]
+    return maximos, minimos, rangos
+
+def exportar_calculos(output_file, maximos, minimos, rangos):
+    """
+    Exporta cálculos de Maximo, Minimo y Rango a un archivo de texto.
+    """
+    output_file.write(f";;MAXIMO;{';'.join(map(str, maximos[2:]))}\n")
+    output_file.write(f";;MINIMO;{';'.join(map(str, minimos[2:]))}\n")
+    output_file.write(f";;RANGO;{';'.join(map(str, rangos[2:]))}\n")
+
+def leer_archivo_csv_o_txt(ruta_archivo, nombre_estudio):
+    """
+    Lee el archivo completo, detectando todas las secciones y exportando cada una en su
+    carpeta correspondiente según la frecuencia de medición.
+    """
+    try:
+        ruta_estudio = os.path.join("estudios", nombre_estudio)
+        os.makedirs(ruta_estudio, exist_ok=True)
+
+        with open(ruta_archivo, 'r',encoding= 'utf-8') as file:
+            while True:
+                primera_fila = file.readline().rstrip()
+                if not primera_fila:  # EOF
+                    break
+
+                segunda_fila = file.readline().rstrip()
+                if not segunda_fila.isdigit():
+                    break
+                num_frames = int(segunda_fila)
+
+                if 100 <= num_frames <= 200:
+                    tipo_frecuencia = "Cinemática"
+                elif num_frames == 1000:
+                    tipo_frecuencia = "Cinética"
+                elif num_frames == 2000:
+                    tipo_frecuencia = "Electromiográfica"
+                else:
+                    tipo_frecuencia = "Desconocida"
+
+                carpeta_frecuencia = os.path.join(ruta_estudio, tipo_frecuencia)
+                os.makedirs(carpeta_frecuencia, exist_ok=True)
+
+                nombre_archivo = os.path.basename(ruta_archivo).replace(".txt",
+                                                                        f"_{tipo_frecuencia}.txt")
+                ruta_archivo_seccion = os.path.join(carpeta_frecuencia, nombre_archivo)
+
+                # Leer y exportar la sección
+                mediciones, columnas = leer_seccion(file, num_frames, ruta_archivo_seccion)
+
+                # Convertir mediciones a DataFrame para calcular max/min/rango
+                df = pd.DataFrame(mediciones, columns=columnas)
+                df.columns = [f'{col}_{i}' if df.columns.duplicated()[i]
+                              else col for i, col in enumerate(df.columns)]
+
+                maximos, minimos, rangos = calcular_max_min_rango(df, columnas)
+
+                # Exportar cálculos de Maximo, Minimo y Rango al archivo
+                with open(ruta_archivo_seccion, 'a',encoding= 'utf-8') as output_file:
+                    exportar_calculos(output_file, maximos, minimos, rangos)
+
+    except FileNotFoundError:
+        print("Error: El archivo no se encontró.")
+    except IOError as e:
+        print(f"Error de entrada/salida al leer el archivo: {e}")
+    except ValueError as e:
+        print(f"Error: Formato de datos inválido en el archivo: {e}")
+    except Exception as e:
+        print(f"Error inesperado: {e}")
+
+@@
+
+---------------------------------
+
+Don't solve the problem that I will present you, instead I need your help to formulate my problem like a prompt correctly so is understable for you and I can properly build my code, I will give you some context, to identify it I will use the symbols @@ at start and end of each context section. I need something like this:
+
+@@ 
+"The task involves creating a landing page with a draft for a user manual, and a main page for managing studies with a local database. The landing page should include buttons for a quick introduction, accessing the user manual, and creating a new study. The creation of a new study involves collecting specific parameters from the user. The main page should display a list of studies with options to view, edit, and delete each study. Additionally, the system should support file management, data export, and a local database to store study information.
+
+Given the project's requirements and the provided relational model, the first step is to create the landing page and the draft for the user manual. The landing page will serve as the entry point for the application, and the user manual will provide initial guidance to the users.
+
+The file structure provided in environment_details will help in determining where to place the new files. Since the project is in Spanish, all text should be in Spanish. Adittionally most code should be done with Python.
+
+The next steps will be:
+
+1) Create the landing page.
+2) Set up a local database to store study information.
+3) Implement the main page for managing studies.
+4) Add functionality for creating, viewing, editing, and deleting studies.
+5) Implement file management and data export features.
+6) Create the user Manual 
+@@
+
+I also want you to follow best practices like:
+
+@@ 
+Best Practices
+
+Keep your files relatively small and modular.
+Consider moving large constants (e.g. big strings) into separate files. 
+@@
+
+I will now give you my draft prompt of the proyect I am building and what I am still working on.
+
+@@
+
+Consider that my proyect is in Spanish and I want to build it mostly with Python. I already finished the part of reading the individual files and giving a basic output with MIN, MAX, RANGE and TIME. I need to improve my interface, I need first a landing page with a draft for a user manual that I can easily edit later, I am thinking of a simple text manual, in the landing page I want the name of the proyect in big letters "KineViz" then a "Empieza Aquí" button for a quick introduction followed by a button that can send you to the user manual and another button that says "Crea Tu Primer Estudio" in here I want to first let the user input the following information:
+
+"4.2.3.1 Componentes Claves del Modelo de Datos
+Sujetos de Estudio: Representa a cada participante o individuo en el estudio. Cada sujeto es una entidad única dentro de un estudio y está vinculado a archivos que contienen sus respectivas pruebas y mediciones. Estos sujetos son únicos solo dentro de un estudio, pero pueden existir con el mismo identificador en estudios diferentes (por ejemplo, P01 podría existir tanto en "Estudio A" como en "Estudio B").
+Tabla Sujeto: Almacena los detalles específicos de cada sujeto, como un identificador único dentro del estudio (e.g., P01, Pte01), y las pruebas asociadas.
+Cantidad: En un estudio pueden haber múltiples sujetos, cada uno asociado con uno o varios tipos de prueba, periodos de prueba, intentos de prueba y frecuencias de medición, lo que varía de un estudio a otro.
+Estudios: Un estudio es un conjunto de pruebas y mediciones realizadas en múltiples sujetos. Cada estudio puede involucrar a diferentes sujetos, con pruebas realizadas en diferentes periodos de tiempo y con diferentes intentos.
+Tabla Estudio: Contiene los atributos relacionados con cada estudio, como el nombre del estudio y los tipos de pruebas que se realizan dentro de él.
+Pruebas: Cada prueba representa una serie de mediciones realizadas bajo condiciones específicas (e.g., saltos, carrera) y asociadas a un sujeto.
+Tabla Prueba: Almacena la información de cada prueba, incluyendo el tipo (e.g., salto, carrera), el periodo de prueba (e.g., POST, PRE), el número de intentos, y la relación entre el sujeto y las pruebas.
+Tipo de Prueba: Los sujetos pueden tener una o varias pruebas asociadas, o en algunos casos, ninguna.
+Periodo de Prueba: Cada sujeto puede no tener un periodo de prueba asociado o tener múltiples periodos (e.g., POST, PRE).
+Intentos de Prueba: Cada sujeto contará al menos con un intento de prueba, pero puede realizar muchos más dependiendo de la prueba y las condiciones del estudio.
+Mediciones: Cada prueba tiene asociadas varias mediciones que se capturan a lo largo del tiempo, registrando aspectos como fuerza, movimiento y posición.
+Tabla Medición: Aquí se almacenan las mediciones específicas, como fuerza, posición y tiempo. Cada medición tiene un timestamp que la vincula a un momento específico, y está relacionada con un sujeto y una prueba determinada.
+Frecuencias de Medición: Las mediciones se capturan a diferentes frecuencias, dependiendo del tipo de dato recolectado (e.g., cinemática, cinética, electromiografía). Las frecuencias varían comúnmente entre 100 Hz, 1000 Hz, y 2000 Hz.
+Tabla Frecuencia: Define las frecuencias de captura utilizadas para cada tipo de medición.
+Cálculos: Los cálculos son el resultado de los análisis realizados en los datos recolectados (e.g., máximos, mínimos, rango, velocidad).
+Tabla Cálculo: Almacena los resultados de los cálculos, vinculando estos con las mediciones específicas procesadas, así como con los atributos seleccionados por el usuario.
+Archivos de Estudio: Cada medición o conjunto de mediciones de un estudio puede estar vinculada a uno o varios archivos que contienen los datos originales.
+Tabla Archivo: Contiene referencias a los archivos cargados, con metadatos relevantes como el formato del archivo y su fecha de creación.
+Formato de Archivo Ejemplo: Un archivo podría tener un formato como "P01 CMJ PRE 04.txt", donde se detalla el sujeto (P01), tipo de prueba (CMJ), periodo de prueba (PRE) e intento de prueba (04).
+Este modelo de datos proporciona la estructura necesaria para gestionar grandes volúmenes de información biomecánica y asegurar que todos los aspectos del estudio, desde la captura hasta el análisis, están perfectamente organizados y accesibles."
+
+With that information I need to collect the following information from the user in my interface from different questions and boxes that the user would fill and ask it in my interface that is "Nombre del Estudio", "Numero de Sujetos de Prueba", "Especificar el Formato de los Sujeto(s) de Prueba", ¿Tiene Tipo de Prueba?" if it have, then there's need boxes to fill "Cantidad de Tipos de Prueba" then according to that number new boxes of question would appear for "Nombre de Tipo de Prueba X" that the user would need to fill. After that we have "¿Tiene Periodo de Prueba?" and if it has we ask "Cantidad de Periodos de Prueba" and "Nombre de Periodo de Prueba X" finally we ask in more boxed "Cantidad de Intentos de Prueba" and "Especificar el Formato de los Intento(s) de Prueba" after filling all boxes correctly there is a final button that is for "Guardar". in case everything is filled correctly it will be saved otherwise it will ask to try again. After saving the first Estudio you will be sent to the main page of KineViz where we have All our saved "Estudios" and some buttons on the upper right for the different functionalities that my program will have. Well for the Estudios main screen I want it to show the name of the estudio, followed by a 3 buttons that will the options of "Ver", "Editar" and "Eliminar". I want to show the name of the study and the 3 buttons in a table format, with a limited view of like 10 studies per page, I want it to have a search bar to look for Estudios by name and different pages in case there is more than 10 estudios. When you see the "Ver" option I want it to only show the files for now, in case there's no files in here it needs to show "No hay archivos que mostrar" remember that each estudio have files which correspond to the different pacients and their tries or test that do the studies also there needs to be a button option for "Agregar Archivos" which would add different files to this estudio, but these files need to be in the corract format specified before on the estudio parameters, in case is not the correct format it would send a warning to try again. In Editar I want it to give the option to edit the parameters done before, this can fix problems with human errors when assigning the parameters before. And finally the "Eliminar" would completly delete the estudio. Also in "Ver" we will have a full list of all files of a study that the user can add, in here we will have more button options for like "Exportar" and "Eliminar" when you click on "Eliminar" you will have the option to delete it or not. For when you click Exportar you will see the HEAD of the first rows of the file separated by "cinemática", "cinetica" and "electromiográfica" according if the file got these or not. And bellow you will have two options, export to TXT and export to PDF, for the TXT option you will have a new output file (you can select the folder where it would be saved) like the one that we get from the "lectura.py" file inside the folder "lectura_archivos". For the PDF one we will need to add a new feature for creating graphs and exporting in a PDF. When you click on the PDF export. You can select one main calculation and then select which other calculations you would like to see on the PDF and then export to your machine (you can select the folder where it would be saved). You will get a new screen which will show you a preview of one previously selected calculation and the pdf file will be generated, this file will have the main calculation and all the other calculations selected. After that you can return to the file screen or the estudios.
+
+Adittionally I would like the option to either open a new page like "Ver" from Estudios in a new tab.
+
+I also want to store a local database inside my proyect folder which would store the different Estudios locally and where if you delete it from your local folder it would be deleted from the program, and if not it would show each time you run the program. If there's an already created estudio when you start the app again you won't land in the landing page but on the main screen of estudios instead.
+
+For this you can use for context my relational model:
+
+"4.2.4 Modelo Relacional
+Se puede representar este modelo de datos con un enfoque relacional, utilizando bases de datos SQL. Las tablas están relacionadas entre sí, permitiendo un fácil acceso y consulta de los datos por parte del sistema.
+4.2.4.1 Importancia:
+El modelo de datos es crítico para asegurar que:
+Los datos sean almacenados de manera organizada y puedan ser consultados eficientemente.
+Se puede realizar un seguimiento histórico de todas las pruebas y sujetos.
+Los cálculos y visualizaciones se generan en tiempo real sin problemas de rendimiento.
+Este modelo de datos asegura que los resultados de los análisis, gráficos, y reportes sean precisos y se generen de manera eficiente, lo que facilita la experiencia del usuario en el manejo de grandes volúmenes de datos biomecánicos.
+4.2.4.2 Modelo Relacional de KineViz 
+Tabla Estudio:
+Atributos:
+id_estudio: Identificador único del estudio.
+nombre_estudio: Nombre del estudio.
+descripcion: Descripción/comentario del estudio.
+Relaciones:
+Un estudio tiene uno o muchos archivos.
+Un estudio tiene uno o muchos sujetos.
+Un estudio tiene una o muchas pruebas.
+Tabla Archivo:
+Atributos:
+id_archivo: Identificador único del archivo.
+nombre_archivo: Nombre del archivo (e.g., P01_Salto_PRE_01.txt).
+formato_archivo: Formato del archivo (CSV, TXT).
+id_estudio: Relación foránea que vincula el archivo con un estudio.
+Tabla Sujeto:
+Atributos:
+id_sujeto: Identificador único del sujeto dentro de un estudio.
+nombre_sujeto: Identificador o código del sujeto (e.g., P01).
+id_estudio: Relación foránea que vincula el sujeto a un estudio.
+Tabla Prueba:
+Atributos:
+id_prueba: Identificador único de la prueba.
+tipo_prueba: Tipo de prueba (e.g., salto, carrera).
+periodo_prueba: Periodo en el que se realiza la prueba (e.g., POST, PRE).
+intento_prueba: Número de intento de la prueba.
+id_sujeto: Relación foránea que vincula la prueba a un sujeto.
+Relaciones:
+Una prueba tiene muchas mediciones.
+Tabla Medición:
+Atributos:
+id_medicion: Identificador único de la medición.
+atributo_medicion: Atributo ubicado en el archivo que encapsula grupos de columnas de medición (e.g, Imported Bertec Force Plate #1 - Force).
+columna_medicion: Nombre de la columna en el archivo de medición (e.g., Frame).
+unidad_medicion: Unidad de medida relativa a la columna de medición ubicada en el archivo (e.g, N).
+posicion_medicion: Posición de la fila en el archivo de medición relativa a la columna de medición  (e.g., 2).
+id_prueba: Relación foránea que vincula la medición con una prueba.
+Relaciones:
+Una medición tiene uno o muchos cálculos.
+Una medición tiene una o muchas frecuencias.
+Tabla Cálculo:
+Atributos:
+id_calculo: Identificador único del cálculo.
+tipo_calculo: Tipo de cálculo (e.g., máximo, mínimo, rango).
+id_medicion: Relación foránea que vincula el cálculo con una medición.
+Tabla Frecuencia:
+Atributos:
+id_frecuencia: Identificador único de la frecuencia.
+valor_frecuencia: Valor de la frecuencia en Hz (e.g., 100 Hz, 1000 Hz, 2000 Hz).
+tipo_frecuencia: Tipo de frecuencia (e.g., cinemática, cinética, electromiográfica).
+cantidad_frecuencia: Cantidad de frecuencias en un archivo de medición (e.g., 1).
+id_prueba: Relación foránea que vincula la frecuencia con una prueba."
+
+For extra reference I would also give you the requerimients of this proyect
+
+"4.3 Descripción de la Funcionalidad
+
+KineViz ofrece las siguientes funcionalidades principales:
+Carga de Archivos de Estudio: El sistema permite cargar archivos en formato CSV o TXT, interpretando los datos cinemáticos, cinéticos y electromiográficos.
+Análisis Individual y Grupal: El sistema permite realizar análisis individuales para cada sujeto, así como análisis grupales, comparando datos de varios sujetos a la vez.
+Generación de Gráficas: La plataforma genera gráficos visuales (barras, líneas o dispersión) que permiten validar los resultados de forma visual.
+
+4.3.1 Requerimientos Funcionales
+Código
+Nombre
+Descripción
+RF-001
+Lectura de Archivos de Estudio
+El sistema debe leer archivos de estudio en formato CSV o TXT, interpretando correctamente las columnas y filas para cada tipo de medición (cinemática, cinética, electromiográfica).
+RF-002
+Creación de Estudios
+El sistema debe permitir a los usuarios crear estudios nuevos, configurando los atributos básicos como el nombre, tipo de prueba, periodo de prueba y número de sujetos.
+RF-003
+Edición de Estudios
+El sistema debe permitir a los usuarios editar estudios previamente cargados, permitiendo la actualización de archivos, edición de notas, agregación de comentarios, y modificación de cálculos.
+RF-004
+Eliminación de Estudios
+El sistema debe permitir la eliminación segura y definitiva de estudios, con confirmaciones previas para evitar pérdidas accidentales de datos.
+RF-005
+Cargar Archivos de Estudios
+El sistema debe permitir cargar archivos de estudio nuevos, agregándolos a estudios existentes o creando nuevos estudios, asegurando que los datos se integren correctamente.
+RF-006
+Validación de Datos
+El sistema debe validar los archivos antes de procesarlos para garantizar su integridad y evitar errores en el análisis.
+RF-007
+Análisis de Datos Individual
+El sistema debe permitir seleccionar un paciente en un estudio, seleccionar los frames, los cálculos y atributos, visualizar gráficos del análisis realizado y exportar resultados. Esta funcionalidad es específica para análisis individual.
+RF-008
+Análisis de Datos Grupal
+El sistema debe permitir seleccionar múltiples sujetos dentro de un estudio, seleccionar los cálculos y atributos, visualizar gráficos del análisis realizado y exportar los resultados, pero a nivel grupal.
+RF-009
+Selección de Frames
+El sistema debe permitir la selección de un rango de frames para cada paciente dentro de un análisis individual. Esta funcionalidad no está disponible para análisis grupal en esta fase.
+RF-010
+Cálculos Seccionados
+El sistema debe permitir realizar cálculos específicos (max, min, rango) en todas las columnas excepto “frames”, “subframe” y “tiempo”.
+RF-011
+Normalización de Cálculos
+Al seleccionar un cálculo, el sistema debe ofrecer una opción de normalización de los valores (e.g., utilizando la fórmula Cálculo Nuevo/(70*9,81)), permitiendo al usuario aplicar esta normalización a cálculos específicos.
+RF-012
+Selección de Atributos
+El sistema debe permitir la selección de atributos específicos para análisis, como tipo de prueba, periodo de prueba, intentos, entre otros, con el fin de realizar análisis más personalizados.
+RF-013
+Filtro por Frecuencias de Medición
+El sistema debe permitir seleccionar las frecuencias (cinética, cinemática, electromiográfica) disponibles en los archivos de estudio, y filtrar las opciones de análisis en función de estas frecuencias.
+RF-014
+Creación de Columna Tiempo
+El sistema debe crear una columna nueva llamada “tiempo” en todos los archivos de estudio al calcular el tiempo basado en la fórmula (1/Hz) para cada sección de datos en el archivo.
+RF-015
+Generación de Gráficas Visuales
+El sistema debe permitir la generación de gráficos visuales (ej. gráficos de barras, líneas o dispersión) basados en los análisis individuales o grupales, permitiendo al usuario validar de manera gráfica sus resultados.
+RF-016
+Exportación de Resultados Gráficos en PDF
+El sistema debe permitir la exportación de los gráficos generados en formato PDF para los análisis seleccionados, ya sea a nivel individual o grupal.
+RF-017
+Exportación de Resultados de Datos en CSV o TXT
+El sistema debe permitir exportar los resultados de los análisis en formatos como TXT (separados por espacios) o CSV (separados por "," o ";"), facilitando el almacenamiento externo de los datos procesados.
+RF-018
+Guardado de Estudios Localmente
+El sistema debe permitir guardar los estudios y sus archivos de manera local en una carpeta del programa, permitiendo que estos se carguen fluidamente sin necesidad de recargar los estudios previamente guardados.
+RF-019
+Pantalla Principal con Lista de Estudios
+En la pantalla principal del sistema, se debe mostrar una lista de estudios almacenados localmente con un resumen del último estudio abierto, incluyendo gráficos y cálculos seleccionados. Además, debe haber un buscador para localizar estudios rápidamente.
+RF-020
+Modo de Prueba
+El sistema debe incluir un modo de prueba para permitir a los usuarios simular diferentes escenarios de análisis sin afectar los datos reales.
+RF-021
+Agregar Notas y Comentarios en Estudios
+El sistema debe permitir agregar notas y comentarios a los estudios y archivos de prueba, permitiendo a los usuarios agregar anotaciones relevantes para cada estudio.
+RF-022
+Importación de Configuraciones
+El sistema debe permitir la importación de configuraciones predefinidas de estudios para facilitar la configuración rápida de nuevos estudios con atributos y configuraciones recurrentes.
+RF-023
+Asistente de Configuración
+El sistema debe proporcionar un asistente paso a paso que guíe al usuario durante la configuración inicial de un estudio, asegurando que todos los datos necesarios estén presentes antes de su creación.
+RF-024
+Registro de Actividades del Usuario
+El sistema debe registrar todas las actividades del usuario, como la creación, edición, eliminación de estudios, para facilitar auditorías o mejoras futuras.
+RF-025
+Notificaciones y Alertas
+El sistema debe notificar al usuario sobre cualquier error en el procesamiento de los archivos, datos faltantes o resultados anómalos.
+
+4.3.2 Requerimientos No Funcionales
+Código
+Nombre
+Descripción
+RNF-001
+Rendimiento
+El sistema debe ser capaz de cargar y procesar hasta 600 archivos por estudio sin ralentizaciones significativas.
+RNF-002
+Seguridad de Datos
+El sistema debe garantizar la privacidad y seguridad de los datos recolectados, cumpliendo con normativas de privacidad vigentes.
+RNF-003
+Usabilidad
+El sistema debe ser fácil de usar, minimizando la necesidad de capacitación para los usuarios finales. La interfaz debe ser clara.
+RNF-004
+Compatibilidad
+El sistema debe ser compatible con Windows 10 y estar optimizado para equipos estándar.
+RNF-005
+Mantenimiento
+El sistema debe ser fácil de mantener y actualizar, permitiendo la incorporación de nuevas funcionalidades sin afectar la base.
+RNF-006
+Escalabilidad
+El sistema debe ser escalable para soportar más estudios y archivos, permitiendo la adición de módulos sin afectar el rendimiento.
+RNF-007
+Tolerancia a Fallos
+El sistema debe ser robusto y capaz de manejar fallos de manera segura, asegurando que los datos no se pierdan.
+RNF-008
+Personalización
+El sistema debe permitir la personalización de la interfaz y configuraciones de análisis según las preferencias del usuario.
+RNF-009
+Documentación del Usuario
+El sistema debe incluir documentación completa, explicando claramente el uso de las funcionalidades.
+RNF-010
+Adaptabilidad
+El sistema debe ser adaptable a diferentes tipos de estudios, permitiendo futuras expansiones sin necesidad de rediseñar la base.
+RNF-011
+Soporte para Nuevas Funcionalidades y Gráficos
+El sistema debe estar diseñado de manera modular para permitir la adición de nuevas funcionalidades y gráficos sin afectar la estabilidad.
+RNF-012
+Integración Multiusuario (Versión Futuro)
+El sistema debe tener la capacidad de integrarse con un sistema de usuarios, permitiendo acceso multiusuario en futuras versiones.
+RNF-013
+Atributos del Estudio
+El sistema debe permitir la configuración de los atributos específicos que se utilizarán en cada estudio, seleccionando los más relevantes para su análisis.
+RNF-014
+Datos por Defecto
+El sistema debe ofrecer la opción de establecer valores por defecto para facilitar la configuración rápida de nuevos estudios.
+RNF-015
+Personalización de Gráficos
+El sistema debe permitir la personalización de los gráficos generados, incluyendo opciones para ajustar los colores, tipos de gráficos y presentación visual.
+RNF-016
+Manual de Usuario
+El sistema debe incluir un manual de usuario accesible desde la interfaz, explicando cómo utilizar cada funcionalidad y resolver problemas comunes.
+RNF-017
+Documentación Técnica
+El sistema debe proporcionar documentación técnica para desarrolladores y administradores del sistema, detallando su funcionamiento y la integración de nuevas funcionalidades.
+RNF-018
+Tema de la Interfaz
+El sistema debe ofrecer opciones para personalizar el tema de la interfaz, incluyendo temas claros y oscuros, para mejorar la experiencia del usuario.
+RNF-019
+Idioma de la Aplicación
+El sistema debe ser capaz de funcionar en diferentes idiomas, permitiendo a los usuarios seleccionar su idioma preferido.
+RNF-020
+Ajustes de Seguridad y Privacidad
+El sistema debe incluir opciones para configurar la seguridad y privacidad de los datos, permitiendo definir permisos de acceso y encriptación de archivos sensibles.
+
+@@
+
+---------------------------------
+
+Best Practices
+
+To mitigate this issue:
+
+Keep your files relatively small and modular.
+Consider moving large constants (e.g. big strings) into separate files.
+
+---------------------------------
+
+Consider that my proyect is in Spanish. I need to improve my interface, I need first a landing page with a draft for a user manual that I can easily edit later, I am thinking of a simple text manual, in the landing page I want the name of the proyect in big letters "KineViz" then a "Empieza Aquí" button for a quick introduction followed by a button that can send you to the user manual and another button that says "Crea Tu Primer Estudio" in here I want to first let the user input the following information:
+
+"4.2.3.1 Componentes Claves del Modelo de Datos
+Sujetos de Estudio: Representa a cada participante o individuo en el estudio. Cada sujeto es una entidad única dentro de un estudio y está vinculado a archivos que contienen sus respectivas pruebas y mediciones. Estos sujetos son únicos solo dentro de un estudio, pero pueden existir con el mismo identificador en estudios diferentes (por ejemplo, P01 podría existir tanto en "Estudio A" como en "Estudio B").
+Tabla Sujeto: Almacena los detalles específicos de cada sujeto, como un identificador único dentro del estudio (e.g., P01, Pte01), y las pruebas asociadas.
+Cantidad: En un estudio pueden haber múltiples sujetos, cada uno asociado con uno o varios tipos de prueba, periodos de prueba, intentos de prueba y frecuencias de medición, lo que varía de un estudio a otro.
+Estudios: Un estudio es un conjunto de pruebas y mediciones realizadas en múltiples sujetos. Cada estudio puede involucrar a diferentes sujetos, con pruebas realizadas en diferentes periodos de tiempo y con diferentes intentos.
+Tabla Estudio: Contiene los atributos relacionados con cada estudio, como el nombre del estudio y los tipos de pruebas que se realizan dentro de él.
+Pruebas: Cada prueba representa una serie de mediciones realizadas bajo condiciones específicas (e.g., saltos, carrera) y asociadas a un sujeto.
+Tabla Prueba: Almacena la información de cada prueba, incluyendo el tipo (e.g., salto, carrera), el periodo de prueba (e.g., POST, PRE), el número de intentos, y la relación entre el sujeto y las pruebas.
+Tipo de Prueba: Los sujetos pueden tener una o varias pruebas asociadas, o en algunos casos, ninguna.
+Periodo de Prueba: Cada sujeto puede no tener un periodo de prueba asociado o tener múltiples periodos (e.g., POST, PRE).
+Intentos de Prueba: Cada sujeto contará al menos con un intento de prueba, pero puede realizar muchos más dependiendo de la prueba y las condiciones del estudio.
+Mediciones: Cada prueba tiene asociadas varias mediciones que se capturan a lo largo del tiempo, registrando aspectos como fuerza, movimiento y posición.
+Tabla Medición: Aquí se almacenan las mediciones específicas, como fuerza, posición y tiempo. Cada medición tiene un timestamp que la vincula a un momento específico, y está relacionada con un sujeto y una prueba determinada.
+Frecuencias de Medición: Las mediciones se capturan a diferentes frecuencias, dependiendo del tipo de dato recolectado (e.g., cinemática, cinética, electromiografía). Las frecuencias varían comúnmente entre 100 Hz, 1000 Hz, y 2000 Hz.
+Tabla Frecuencia: Define las frecuencias de captura utilizadas para cada tipo de medición.
+Cálculos: Los cálculos son el resultado de los análisis realizados en los datos recolectados (e.g., máximos, mínimos, rango, velocidad).
+Tabla Cálculo: Almacena los resultados de los cálculos, vinculando estos con las mediciones específicas procesadas, así como con los atributos seleccionados por el usuario.
+Archivos de Estudio: Cada medición o conjunto de mediciones de un estudio puede estar vinculada a uno o varios archivos que contienen los datos originales.
+Tabla Archivo: Contiene referencias a los archivos cargados, con metadatos relevantes como el formato del archivo y su fecha de creación.
+Formato de Archivo Ejemplo: Un archivo podría tener un formato como "P01 CMJ PRE 04.txt", donde se detalla el sujeto (P01), tipo de prueba (CMJ), periodo de prueba (PRE) e intento de prueba (04).
+Este modelo de datos proporciona la estructura necesaria para gestionar grandes volúmenes de información biomecánica y asegurar que todos los aspectos del estudio, desde la captura hasta el análisis, están perfectamente organizados y accesibles."
+
+With that information I need to collect the following information from the user in my interface from different questions and boxes that the user would fill and ask it in my interface that is "Nombre del Estudio", "Numero de Sujetos de Prueba", "Especificar el Formato de los Sujeto(s) de Prueba", ¿Tiene Tipo de Prueba?" if it have, then there's need boxes to fill "Cantidad de Tipos de Prueba" then according to that number new boxes of question would appear for "Nombre de Tipo de Prueba X" that the user would need to fill. After that we have "¿Tiene Periodo de Prueba?" and if it has we ask "Cantidad de Periodos de Prueba" and "Nombre de Periodo de Prueba X" finally we ask in more boxed "Cantidad de Intentos de Prueba" and "Especificar el Formato de los Intento(s) de Prueba" after filling all boxes correctly there is a final button that is for "Guardar". in case everything is filled correctly it will be saved otherwise it will ask to try again. After saving the first Estudio you will be sent to the main page of KineViz where we have All our saved "Estudios" and some buttons on the upper right for the different functionalities that my program will have. Well for the Estudios main screen I want it to show the name of the estudio, followed by a 3 buttons that will the options of "Ver", "Editar" and "Eliminar". I want to show the name of the study and the 3 buttons in a table format, with a limited view of like 10 studies per page, I want it to have a search bar to look for Estudios by name and different pages in case there is more than 10 estudios. When you see the "Ver" option I want it to only show the files for now, in case there's no files in here it needs to show "No hay archivos que mostrar" remember that each estudio have files which correspond to the different pacients and their tries or test that do the studies also there needs to be a button option for "Agregar Archivos" which would add different files to this estudio, but these files need to be in the corract format specified before on the estudio parameters, in case is not the correct format it would send a warning to try again. In Editar I want it to give the option to edit the parameters done before, this can fix problems with human errors when assigning the parameters before. And finally the "Eliminar" would completly delete the estudio. Also in "Ver" we will have a full list of all files of a study that the user can add, in here we will have more button options for like "Exportar" and "Eliminar" when you click on "Eliminar" you will have the option to delete it or not. For when you click Exportar you will see the HEAD of the first rows of the file separated by "cinemática", "cinetica" and "electromiográfica" according if the file got these or not. And bellow you will have two options, export to TXT and export to PDF, for the TXT option you will have a new output file (you can select the folder where it would be saved) like the one that we get from the "lectura.py" file inside the folder "lectura_archivos". For the PDF one we will need to add a new feature for creating graphs and exporting in a PDF. When you click on the PDF export. You can select one main calculation and then select which other calculations you would like to see on the PDF and then export to your machine (you can select the folder where it would be saved). You will get a new screen which will show you a preview of one previously selected calculation and the pdf file will be generated, this file will have the main calculation and all the other calculations selected. After that you can return to the file screen or the estudios.
+
+Adittionally I would like the option to either open a new page like "Ver" from Estudios in a new tab.
+
+I also want to store a local database inside my proyect folder which would store the different Estudios locally and where if you delete it from your local folder it would be deleted from the program, and if not it would show each time you run the program. If there's an already created estudio when you start the app again you won't land in the landing page but on the main screen of estudios instead.
+
+For this you can use for context my relational model:
+
+"4.2.4 Modelo Relacional
+Se puede representar este modelo de datos con un enfoque relacional, utilizando bases de datos SQL. Las tablas están relacionadas entre sí, permitiendo un fácil acceso y consulta de los datos por parte del sistema.
+4.2.4.1 Importancia:
+El modelo de datos es crítico para asegurar que:
+Los datos sean almacenados de manera organizada y puedan ser consultados eficientemente.
+Se puede realizar un seguimiento histórico de todas las pruebas y sujetos.
+Los cálculos y visualizaciones se generan en tiempo real sin problemas de rendimiento.
+Este modelo de datos asegura que los resultados de los análisis, gráficos, y reportes sean precisos y se generen de manera eficiente, lo que facilita la experiencia del usuario en el manejo de grandes volúmenes de datos biomecánicos.
+4.2.4.2 Modelo Relacional de KineViz 
+Tabla Estudio:
+Atributos:
+id_estudio: Identificador único del estudio.
+nombre_estudio: Nombre del estudio.
+descripcion: Descripción/comentario del estudio.
+Relaciones:
+Un estudio tiene uno o muchos archivos.
+Un estudio tiene uno o muchos sujetos.
+Un estudio tiene una o muchas pruebas.
+Tabla Archivo:
+Atributos:
+id_archivo: Identificador único del archivo.
+nombre_archivo: Nombre del archivo (e.g., P01_Salto_PRE_01.txt).
+formato_archivo: Formato del archivo (CSV, TXT).
+id_estudio: Relación foránea que vincula el archivo con un estudio.
+Tabla Sujeto:
+Atributos:
+id_sujeto: Identificador único del sujeto dentro de un estudio.
+nombre_sujeto: Identificador o código del sujeto (e.g., P01).
+id_estudio: Relación foránea que vincula el sujeto a un estudio.
+Tabla Prueba:
+Atributos:
+id_prueba: Identificador único de la prueba.
+tipo_prueba: Tipo de prueba (e.g., salto, carrera).
+periodo_prueba: Periodo en el que se realiza la prueba (e.g., POST, PRE).
+intento_prueba: Número de intento de la prueba.
+id_sujeto: Relación foránea que vincula la prueba a un sujeto.
+Relaciones:
+Una prueba tiene muchas mediciones.
+Tabla Medición:
+Atributos:
+id_medicion: Identificador único de la medición.
+atributo_medicion: Atributo ubicado en el archivo que encapsula grupos de columnas de medición (e.g, Imported Bertec Force Plate #1 - Force).
+columna_medicion: Nombre de la columna en el archivo de medición (e.g., Frame).
+unidad_medicion: Unidad de medida relativa a la columna de medición ubicada en el archivo (e.g, N).
+posicion_medicion: Posición de la fila en el archivo de medición relativa a la columna de medición  (e.g., 2).
+id_prueba: Relación foránea que vincula la medición con una prueba.
+Relaciones:
+Una medición tiene uno o muchos cálculos.
+Una medición tiene una o muchas frecuencias.
+Tabla Cálculo:
+Atributos:
+id_calculo: Identificador único del cálculo.
+tipo_calculo: Tipo de cálculo (e.g., máximo, mínimo, rango).
+id_medicion: Relación foránea que vincula el cálculo con una medición.
+Tabla Frecuencia:
+Atributos:
+id_frecuencia: Identificador único de la frecuencia.
+valor_frecuencia: Valor de la frecuencia en Hz (e.g., 100 Hz, 1000 Hz, 2000 Hz).
+tipo_frecuencia: Tipo de frecuencia (e.g., cinemática, cinética, electromiográfica).
+cantidad_frecuencia: Cantidad de frecuencias en un archivo de medición (e.g., 1).
+id_prueba: Relación foránea que vincula la frecuencia con una prueba."
+
+For extra reference I would also give you the requerimients of this proyect
+
+"4.3 Descripción de la Funcionalidad
+KineViz ofrece las siguientes funcionalidades principales:
+Carga de Archivos de Estudio: El sistema permite cargar archivos en formato CSV o TXT, interpretando los datos cinemáticos, cinéticos y electromiográficos.
+Análisis Individual y Grupal: El sistema permite realizar análisis individuales para cada sujeto, así como análisis grupales, comparando datos de varios sujetos a la vez.
+Generación de Gráficas: La plataforma genera gráficos visuales (barras, líneas o dispersión) que permiten validar los resultados de forma visual.
+4.3.1 Requerimientos Funcionales
+Los requerimientos funcionales de KineViz se centran en las funcionalidades clave que el sistema debe proporcionar para cumplir con sus objetivos principales de análisis y visualización de datos biomecánicos. Estos incluyen:
+Código
+Nombre
+Descripción
+RF-001
+Lectura de Archivos de Estudio
+El sistema debe leer archivos de estudio en formato CSV o TXT, interpretando correctamente las columnas y filas para cada tipo de medición (cinemática, cinética, electromiográfica).
+RF-002
+Creación de Estudios
+El sistema debe permitir a los usuarios crear estudios nuevos, configurando los atributos básicos como el nombre, tipo de prueba, periodo de prueba y número de sujetos.
+RF-003
+Edición de Estudios
+El sistema debe permitir a los usuarios editar estudios previamente cargados, permitiendo la actualización de archivos, edición de notas, agregación de comentarios, y modificación de cálculos.
+RF-004
+Eliminación de Estudios
+El sistema debe permitir la eliminación segura y definitiva de estudios, con confirmaciones previas para evitar pérdidas accidentales de datos.
+RF-005
+Cargar Archivos de Estudios
+El sistema debe permitir cargar archivos de estudio nuevos, agregándolos a estudios existentes o creando nuevos estudios, asegurando que los datos se integren correctamente.
+RF-006
+Validación de Datos
+El sistema debe validar los archivos antes de procesarlos para garantizar su integridad y evitar errores en el análisis.
+RF-007
+Análisis de Datos Individual
+El sistema debe permitir seleccionar un paciente en un estudio, seleccionar los frames, los cálculos y atributos, visualizar gráficos del análisis realizado y exportar resultados. Esta funcionalidad es específica para análisis individual.
+RF-008
+Análisis de Datos Grupal
+El sistema debe permitir seleccionar múltiples sujetos dentro de un estudio, seleccionar los cálculos y atributos, visualizar gráficos del análisis realizado y exportar los resultados, pero a nivel grupal.
+RF-009
+Selección de Frames
+El sistema debe permitir la selección de un rango de frames para cada paciente dentro de un análisis individual. Esta funcionalidad no está disponible para análisis grupal en esta fase.
+RF-010
+Cálculos Seccionados
+El sistema debe permitir realizar cálculos específicos (max, min, rango) en todas las columnas excepto “frames”, “subframe” y “tiempo”.
+RF-011
+Normalización de Cálculos
+Al seleccionar un cálculo, el sistema debe ofrecer una opción de normalización de los valores (e.g., utilizando la fórmula Cálculo Nuevo/(70*9,81)), permitiendo al usuario aplicar esta normalización a cálculos específicos.
+RF-012
+Selección de Atributos
+El sistema debe permitir la selección de atributos específicos para análisis, como tipo de prueba, periodo de prueba, intentos, entre otros, con el fin de realizar análisis más personalizados.
+RF-013
+Filtro por Frecuencias de Medición
+El sistema debe permitir seleccionar las frecuencias (cinética, cinemática, electromiográfica) disponibles en los archivos de estudio, y filtrar las opciones de análisis en función de estas frecuencias.
+RF-014
+Creación de Columna Tiempo
+El sistema debe crear una columna nueva llamada “tiempo” en todos los archivos de estudio al calcular el tiempo basado en la fórmula (1/Hz) para cada sección de datos en el archivo.
+RF-015
+Generación de Gráficas Visuales
+El sistema debe permitir la generación de gráficos visuales (ej. gráficos de barras, líneas o dispersión) basados en los análisis individuales o grupales, permitiendo al usuario validar de manera gráfica sus resultados.
+RF-016
+Exportación de Resultados Gráficos en PDF
+El sistema debe permitir la exportación de los gráficos generados en formato PDF para los análisis seleccionados, ya sea a nivel individual o grupal.
+RF-017
+Exportación de Resultados de Datos en CSV o TXT
+El sistema debe permitir exportar los resultados de los análisis en formatos como TXT (separados por espacios) o CSV (separados por "," o ";"), facilitando el almacenamiento externo de los datos procesados.
+RF-018
+Guardado de Estudios Localmente
+El sistema debe permitir guardar los estudios y sus archivos de manera local en una carpeta del programa, permitiendo que estos se carguen fluidamente sin necesidad de recargar los estudios previamente guardados.
+RF-019
+Pantalla Principal con Lista de Estudios
+En la pantalla principal del sistema, se debe mostrar una lista de estudios almacenados localmente con un resumen del último estudio abierto, incluyendo gráficos y cálculos seleccionados. Además, debe haber un buscador para localizar estudios rápidamente.
+RF-020
+Modo de Prueba
+El sistema debe incluir un modo de prueba para permitir a los usuarios simular diferentes escenarios de análisis sin afectar los datos reales.
+RF-021
+Agregar Notas y Comentarios en Estudios
+El sistema debe permitir agregar notas y comentarios a los estudios y archivos de prueba, permitiendo a los usuarios agregar anotaciones relevantes para cada estudio.
+RF-022
+Importación de Configuraciones
+El sistema debe permitir la importación de configuraciones predefinidas de estudios para facilitar la configuración rápida de nuevos estudios con atributos y configuraciones recurrentes.
+RF-023
+Asistente de Configuración
+El sistema debe proporcionar un asistente paso a paso que guíe al usuario durante la configuración inicial de un estudio, asegurando que todos los datos necesarios estén presentes antes de su creación.
+RF-024
+Registro de Actividades del Usuario
+El sistema debe registrar todas las actividades del usuario, como la creación, edición, eliminación de estudios, para facilitar auditorías o mejoras futuras.
+RF-025
+Notificaciones y Alertas
+El sistema debe notificar al usuario sobre cualquier error en el procesamiento de los archivos, datos faltantes o resultados anómalos.
+
+Estos requerimientos están diseñados para asegurar que KineViz sea una herramienta robusta y adaptable a las necesidades de análisis de datos biomecánicos tanto a nivel individual como grupal.
+4.3.2 Requerimientos No Funcionales
+Los requerimientos no funcionales de KineViz garantizan que el sistema sea robusto, escalable y fácil de usar. Los más destacados incluyen:
+Código
+Nombre
+Descripción
+RNF-001
+Rendimiento
+El sistema debe ser capaz de cargar y procesar hasta 600 archivos por estudio sin ralentizaciones significativas.
+RNF-002
+Seguridad de Datos
+El sistema debe garantizar la privacidad y seguridad de los datos recolectados, cumpliendo con normativas de privacidad vigentes.
+RNF-003
+Usabilidad
+El sistema debe ser fácil de usar, minimizando la necesidad de capacitación para los usuarios finales. La interfaz debe ser clara.
+RNF-004
+Compatibilidad
+El sistema debe ser compatible con Windows 10 y estar optimizado para equipos estándar.
+RNF-005
+Mantenimiento
+El sistema debe ser fácil de mantener y actualizar, permitiendo la incorporación de nuevas funcionalidades sin afectar la base.
+RNF-006
+Escalabilidad
+El sistema debe ser escalable para soportar más estudios y archivos, permitiendo la adición de módulos sin afectar el rendimiento.
+RNF-007
+Tolerancia a Fallos
+El sistema debe ser robusto y capaz de manejar fallos de manera segura, asegurando que los datos no se pierdan.
+RNF-008
+Personalización
+El sistema debe permitir la personalización de la interfaz y configuraciones de análisis según las preferencias del usuario.
+RNF-009
+Documentación del Usuario
+El sistema debe incluir documentación completa, explicando claramente el uso de las funcionalidades.
+RNF-010
+Adaptabilidad
+El sistema debe ser adaptable a diferentes tipos de estudios, permitiendo futuras expansiones sin necesidad de rediseñar la base.
+RNF-011
+Soporte para Nuevas Funcionalidades y Gráficos
+El sistema debe estar diseñado de manera modular para permitir la adición de nuevas funcionalidades y gráficos sin afectar la estabilidad.
+RNF-012
+Integración Multiusuario (Versión Futuro)
+El sistema debe tener la capacidad de integrarse con un sistema de usuarios, permitiendo acceso multiusuario en futuras versiones.
+RNF-013
+Atributos del Estudio
+El sistema debe permitir la configuración de los atributos específicos que se utilizarán en cada estudio, seleccionando los más relevantes para su análisis.
+RNF-014
+Datos por Defecto
+El sistema debe ofrecer la opción de establecer valores por defecto para facilitar la configuración rápida de nuevos estudios.
+RNF-015
+Personalización de Gráficos
+El sistema debe permitir la personalización de los gráficos generados, incluyendo opciones para ajustar los colores, tipos de gráficos y presentación visual.
+RNF-016
+Manual de Usuario
+El sistema debe incluir un manual de usuario accesible desde la interfaz, explicando cómo utilizar cada funcionalidad y resolver problemas comunes.
+RNF-017
+Documentación Técnica
+El sistema debe proporcionar documentación técnica para desarrolladores y administradores del sistema, detallando su funcionamiento y la integración de nuevas funcionalidades.
+RNF-018
+Tema de la Interfaz
+El sistema debe ofrecer opciones para personalizar el tema de la interfaz, incluyendo temas claros y oscuros, para mejorar la experiencia del usuario.
+RNF-019
+Idioma de la Aplicación
+El sistema debe ser capaz de funcionar en diferentes idiomas, permitiendo a los usuarios seleccionar su idioma preferido.
+RNF-020
+Ajustes de Seguridad y Privacidad
+El sistema debe incluir opciones para configurar la seguridad y privacidad de los datos, permitiendo definir permisos de acceso y encriptación de archivos sensibles."
+
+---------------------------------
+
+# Get the current working directory
+current_working_directory = os.getcwd()
+
+# Get the absolute path of the current file
+current_file_path = os.path.abspath(__file__)
+
+# Get the parent directory of the current directory
+current_parent_file_path = os.path.dirname(os.path.dirname(current_file_path))
+
+# Calculate the relative path from the current working directory to current parent directory
+relative_current_file_path = os.path.relpath(current_parent_file_path, current_working_directory)
+
+import_statement = f"from {relative_current_file_path}.lectura_archivos.lectura import leer_archivo_csv_o_txt"
+exec(import_statement)
+
+---------------------------------
+
+#KineViz
