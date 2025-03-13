@@ -22,6 +22,18 @@ El programa depende de las siguientes librerías:
     plotly (para gráficos interactivos)
     tkinter (para la interfaz gráfica de usuario)
 
+Estructura del Proyecto
+
+El proyecto KineViz está organizado en los siguientes módulos:
+
+- `kineviz/ui/main_window.py`: Ventana principal de la aplicación y lógica central de la interfaz de usuario
+- `kineviz/ui/landing_page.py`: Página de inicio de la aplicación
+- `kineviz/ui/study_management.py`: Gestión de estudios (creación, edición y eliminación)
+- `kineviz/ui/file_management.py`: Manejo de archivos
+- `kineviz/ui/analysis.py`: Funcionalidades de análisis e informes
+- `kineviz/ui/pagination.py`: Lógica de paginación
+- `kineviz/ui/utils.py`: Funciones de utilidad
+
 Puedes instalar todas las librerías necesarias ejecutando el siguiente comando:
 
 bash
