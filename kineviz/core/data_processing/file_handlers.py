@@ -1,12 +1,10 @@
-from genericpath import isfile
 import os
-import shutil
 import pandas as pd
 import numpy as np
 from tkinter import messagebox
 
-from core.data_processing import processors                              
-from core.data_processing.directory_manager import crear_estructura_directorios
+from core.data_processing import processors 
+from core.data_processing import directory_manager
 
 def leer_seccion(file, num_frames, ruta_archivo):
     """
@@ -71,8 +69,7 @@ def leer_archivo_csv_o_txt(ruta_archivo, nombre_estudio, nombre_paciente=None):
             nombre_paciente = obtener_nombre_paciente(os.path.basename(ruta_archivo))
 
         # Crear la estructura de directorios correcta
-        ruta_estudio = os.path.join("estudios", nombre_estudio)
-        os.makedirs(ruta_estudio, exist_ok=True)
+        ruta_estudio = directory_manager.crear_estructura_estudio(nombre_estudio)
 
         ruta_paciente = os.path.join(ruta_estudio, nombre_paciente)
         os.makedirs(ruta_paciente, exist_ok=True)
@@ -84,7 +81,7 @@ def leer_archivo_csv_o_txt(ruta_archivo, nombre_estudio, nombre_paciente=None):
         # Copiar el archivo original a la carpeta OG
         nombre_archivo_og = os.path.basename(ruta_archivo)
         ruta_archivo_og = os.path.join(ruta_og, nombre_archivo_og)
-        shutil.copy2(ruta_archivo, ruta_archivo_og)
+        directory_manager.copiar_archivo_origen(ruta_archivo, ruta_archivo_og)  
 
         with open(ruta_archivo, 'r') as file:
             while True:
