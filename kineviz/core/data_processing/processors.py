@@ -1,3 +1,6 @@
+from typing import List, Tuple
+from pandas import DataFrame as pd
+
 def formato_personalizado(valor):
     """
     Formatea un valor de medición para ser exportado a un archivo de texto.
@@ -11,7 +14,7 @@ def formato_personalizado(valor):
             return f"{valor:.6f}".rstrip('0').rstrip('.')
     return str(valor)                                                                                                                               
                                                                                                                                                                
-def calcular_max_min_rango(df, columnas):
+def calcular_max_min_rango(df: pd.DataFrame, columnas: List[str]) -> Tuple[List, List, List]:
     """
     Calcula maximos, minimos y rangos de mediciones en una DataFrame.
     Ignora NaN.
