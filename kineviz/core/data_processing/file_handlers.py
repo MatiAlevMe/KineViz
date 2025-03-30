@@ -1,10 +1,16 @@
 import os
 import pandas as pd
 import numpy as np
+from pathlib import Path
 from tkinter import messagebox
-
-from core.data_processing import processors 
-from core.data_processing import directory_manager
+ 
+from core.data_processing import directory_manager, processors
+from core.exceptions import (                                                                                                                                  
+    FileHandlerError,                                                                                                                                          
+    FileNotFoundError,                                                                                                                                         
+    InvalidFileFormatError,                                                                                                                                    
+    IOError                                                                                                                                                    
+) 
 
 def leer_seccion(file, num_frames, ruta_archivo):
     """
@@ -59,77 +65,70 @@ def leer_seccion(file, num_frames, ruta_archivo):
 def obtener_nombre_paciente(nombre_archivo):
     return nombre_archivo.split(" ")[0]
 
-def leer_archivo_csv_o_txt(ruta_archivo, nombre_estudio, nombre_paciente=None):
+def leer_archivo_csv_o_txt(ruta_archivo: Path, nombre_estudio: str, nombre_paciente: str = None) -> str:
     """
     Lee el archivo completo, detectando todas las secciones y exportando cada una en su
     carpeta correspondiente según la frecuencia de medición.
     """
     try:
+        if not ruta_archivo.exists():                                                                                                                          
+            raise FileNotFoundError(ruta_archivo) 
+        
+        # Obtener nombre del paciente  
         if nombre_paciente is None:
-            nombre_paciente = obtener_nombre_paciente(os.path.basename(ruta_archivo))
+            nombre_paciente = obtener_nombre_paciente(ruta_archivo.name)
 
-        # Crear la estructura de directorios correcta
+        # 1. Crear estructura de directorios usando directory_manager   
         ruta_estudio = directory_manager.crear_estructura_estudio(nombre_estudio)
+        ruta_paciente = directory_manager.crear_estructura_paciente(ruta_estudio, nombre_paciente)    
 
-        ruta_paciente = os.path.join(ruta_estudio, nombre_paciente)
-        os.makedirs(ruta_paciente, exist_ok=True)
+        # 2. Copiar archivo original a OG                                                                                                                      
+        ruta_og = ruta_paciente / "OG"                                                                                                                         
+        archivo_og = ruta_og / ruta_archivo.name                                                                                                               
+        directory_manager.copiar_archivo_origen(ruta_archivo, archivo_og) 
 
-        # Crear la carpeta OG
-        ruta_og = os.path.join(ruta_paciente, "OG")
-        os.makedirs(ruta_og, exist_ok=True)
-
-        # Copiar el archivo original a la carpeta OG
-        nombre_archivo_og = os.path.basename(ruta_archivo)
-        ruta_archivo_og = os.path.join(ruta_og, nombre_archivo_og)
-        directory_manager.copiar_archivo_origen(ruta_archivo, ruta_archivo_og)  
-
+        # 3. Procesar archivo
         with open(ruta_archivo, 'r') as file:
             while True:
+                # Validar formato básico
                 primera_fila = file.readline().rstrip()
                 if not primera_fila:  # EOF
                     break
-
+                
+                # Leer número de frames
                 segunda_fila = file.readline().rstrip()
                 if not segunda_fila.isdigit():
-                    break
+                    raise InvalidFileFormatError("Falta número de frames válido")
                 num_frames = int(segunda_fila)
 
-                if 100 <= num_frames <= 200:
-                    tipo_frecuencia = "Cinematica"
-                elif num_frames == 1000:
-                    tipo_frecuencia = "Cinetica"
-                elif num_frames == 2000:
-                    tipo_frecuencia = "Electromiografica"
-                else:
-                    tipo_frecuencia = "Desconocida"
+                tipo_frecuencia = directory_manager.determinar_tipo_frecuencia(num_frames)
 
-                carpeta_frecuencia = os.path.join(ruta_paciente, tipo_frecuencia)
-                os.makedirs(carpeta_frecuencia, exist_ok=True)
+                carpeta_frecuencia = directory_manager.crear_carpeta_frecuencia(ruta_paciente, tipo_frecuencia)
 
-                nombre_archivo = os.path.basename(ruta_archivo).replace(".txt",
-                                                                        f"_{tipo_frecuencia}.txt")
-                ruta_archivo_seccion = os.path.join(carpeta_frecuencia, nombre_archivo)
+                # Generar nombre de archivo procesado 
+                nombre_archivo = ruta_archivo.name.replace(".txt", f"_{tipo_frecuencia}.txt")                                                                                  
+                ruta_archivo_seccion = carpeta_frecuencia / nombre_archivo 
 
-                # Leer y exportar la sección
+                # Procesar sección
                 mediciones, columnas = leer_seccion(file, num_frames, ruta_archivo_seccion)
 
-                # Convertir mediciones a DataFrame para calcular max/min/rango
+                # Cálculos estadísticos
                 df = pd.DataFrame(mediciones, columns=columnas)
                 df.columns = [f'{col}_{i}' if df.columns.duplicated()[i]
                               else col for i, col in enumerate(df.columns)]
 
                 maximos, minimos, rangos = processors.calcular_max_min_rango(df, columnas)
 
-                # Exportar calculos de Maximo, Minimo y Rango al archivo
+                # Exportar resultados
                 with open(ruta_archivo_seccion, 'a') as output_file:
                     processors.exportar_calculos(output_file, maximos, minimos, rangos)
+        return nombre_paciente
 
-    except FileNotFoundError:
-        messagebox.showerror("Error", f"Error: El archivo {ruta_archivo} no se encontró.")
-    except IOError as e:
-        messagebox.showerror("Error", f"Error de entrada/salida al leer el archivo: {e}")
-    except ValueError as e:
-        messagebox.showerror("Error", f"Error: Formato de datos invalido en el archivo: {e}")
-    except Exception as e:
-        messagebox.showerror("Error", f"Error inesperado: {e}")
-    return nombre_paciente
+    except FileNotFoundError as e:                                                                                                                             
+        raise                                                                                                                                                  
+    except IOError as e:                                                                                                                                       
+        raise IOError(f"Error leyendo {ruta_archivo}") from e                                                                                                  
+    except ValueError as e:                                                                                                                                    
+        raise InvalidFileFormatError(str(e)) from e                                                                                                            
+    except Exception as e:                                                                                                                                     
+        raise FileHandlerError(f"Error inesperado: {str(e)}") from e    
