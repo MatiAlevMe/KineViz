@@ -1,31 +1,50 @@
-"""
-KineViz: Sistema de Gestión de Estudios Kinesiológicos
-
-Este sistema permite gestionar estudios kinesiológicos, incluyendo:
-- Creación de nuevos estudios
-- Visualización de estudios existentes
-- Edición de estudios
-- Eliminación de estudios
-- Gestión de sujetos y pruebas
-"""
-import subprocess
-import sys
-import tkinter as tk
-from tkinter import filedialog, messagebox, Toplevel, Text, Scrollbar, ttk
-from lectura import leer_archivo_csv_o_txt
-import os
+from tkinter import ttk, messagebox, Tk, Toplevel, Text, Scrollbar, filedialog
+from .ui.main_window import MainWindow
+from .database.operations import get_db_connection
 import sqlite3
-import shutil
+import os
 import configparser
 from datetime import datetime
 import matplotlib.pyplot as plt
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
 from reportlab.lib.styles import getSampleStyleSheet
-import numpy as np
-import glob
 
 class KineVizApp:
+    def __init__(self, root):
+        self.root = root
+        self.study_service = StudyService()
+        self.analysis_service = AnalysisService()
+        self.current_view = None
+        
+        self.configure_styles()
+        self.show_landing_page()
+
+    def configure_styles(self):
+        # Configurar estilos de la aplicación
+        style = ttk.Style()
+        style.configure('TButton', font=('Helvetica', 10))
+        style.configure('TLabel', font=('Helvetica', 12))
+
+    def show_landing_page(self):
+        # Mostrar página de inicio
+        if self.current_view:
+            self.current_view.destroy()
+        
+        self.current_view = LandingPage(self.root, self)
+        self.current_view.pack(fill=tk.BOTH, expand=True)
+
+    def show_study_view(self, study_id=None):
+        # Mostrar vista de estudio
+        if self.current_view:
+            self.current_view.destroy()
+        
+        self.current_view = StudyView(self.root, self, study_id)
+        self.current_view.pack(fill=tk.BOTH, expand=True)
+
+    def open_analysis_dialog(self, study_id):
+        # Abrir diálogo de análisis
+        AnalysisDialog(self.root, self.analysis_service, study_id)
     def __init__(self, root):
         self.root = root
         self.root.title('KineViz')
