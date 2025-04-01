@@ -1,6 +1,6 @@
 from tkinter import ttk
-from ..widgets.paginated_table import PaginatedTable
-from ..widgets.file_browser import FileBrowser
+from kineviz.ui.widgets.paginated_table import PaginatedTable
+from kineviz.ui.widgets.file_browser import FileBrowser
 
 class StudyView:
     def __init__(self, parent, main_window, study_id):
