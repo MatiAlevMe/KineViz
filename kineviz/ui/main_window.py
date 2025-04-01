@@ -1,16 +1,8 @@
-from tkinter import ttk, messagebox
-from kineviz.ui.views.landing_page import LandingPage
-from kineviz.ui.views.study_view import StudyView
-from kineviz.ui.dialogs.study_dialog import StudyDialog
-from .dialogs.analysis_dialog import AnalysisDialog
-from kineviz.core.services.study_service import StudyService
-from core.services.analysis_service import AnalysisService
-
 from tkinter import ttk
 from kineviz.ui.views.landing_page import LandingPage
 from kineviz.ui.views.study_view import StudyView
 from kineviz.ui.dialogs.study_dialog import StudyDialog
-from .dialogs.analysis_dialog import AnalysisDialog
+from kineviz.ui.dialogs.analysis_dialog import AnalysisDialog
 from kineviz.core.services.study_service import StudyService
 from kineviz.core.services.analysis_service import AnalysisService
 
