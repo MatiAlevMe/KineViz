@@ -8,17 +8,29 @@ import configparser
 from pathlib import Path
 
 # Asumiendo que estos módulos serán creados/adaptados
+import tkinter as tk # Asegurar importación base
+from tkinter import ttk, messagebox, Toplevel, Text, Scrollbar
+import os
+import sys
+import subprocess
+import shutil
+import configparser
+from pathlib import Path
+
+# Vistas y Diálogos UI
 from kineviz.ui.views.landing_page import LandingPage
 from kineviz.ui.views.study_view import StudyView
-from kineviz.ui.views.main_view import MainView # Importar la nueva vista
+from kineviz.ui.views.main_view import MainView
 from kineviz.ui.dialogs.study_dialog import StudyDialog
-# from kineviz.ui.dialogs.analysis_dialog import AnalysisDialog # Necesitará ser creada/adaptada
-# from kineviz.ui.dialogs.config_dialog import ConfigDialog # Necesitará ser creada
+from kineviz.ui.dialogs.analysis_dialog import AnalysisDialog # Importar el nuevo diálogo
+# from kineviz.ui.dialogs.config_dialog import ConfigDialog # (Futuro)
+# Servicios Core
 from kineviz.core.services.study_service import StudyService
-# from kineviz.core.services.analysis_service import AnalysisService # Necesitará ser creada/adaptada
-# from kineviz.config.settings import AppSettings # Necesitará ser creada
+from kineviz.core.services.file_service import FileService # Importar FileService
+from kineviz.core.services.analysis_service import AnalysisService # Importar AnalysisService
+# from kineviz.config.settings import AppSettings # (Futuro)
 
-# Importaciones temporales hasta que se refactorice completamente
+# Ya no se necesitan importaciones temporales del repositorio
 # from kineviz.database.repositories import StudyRepository # Usar StudyService en su lugar
 
 class MainWindow:
@@ -61,9 +73,10 @@ class MainWindow:
             # Usar valores por defecto ya establecidos
 
         # --- Instanciación de Servicios ---
-        self.study_service = StudyService()
-        # self.analysis_service = AnalysisService() # Descomentar cuando exista
-        # self.file_service = FileService() # Descomentar cuando exista
+        self.study_service = StudyService() # Servicio para operaciones de estudios (DB, carpetas base)
+        # Pasar study_service a FileService para que pueda obtener nombres/rutas de estudios
+        self.file_service = FileService(self.study_service) # Servicio para operaciones de archivos dentro de estudios
+        self.analysis_service = AnalysisService() # Servicio para lógica de análisis y reportes
 
         self.current_view = None
         self.style = ttk.Style()
@@ -130,12 +143,12 @@ class MainWindow:
         # El empaquetado/grid se maneja dentro de MainView.__init__
 
 
-    def show_study_view(self, study_id):
+    def show_study_view(self, study_id: int):
         """Muestra la vista detallada de un estudio específico."""
         self.clear_window()
-        # StudyView necesita ser adaptada para recibir MainWindow y study_id
-        self.current_view = StudyView(self.root, self, study_id)
-        # El pack/grid debe hacerse dentro de StudyView
+        # Pasar la instancia de file_service a StudyView
+        self.current_view = StudyView(self.root, self, study_id, self.file_service)
+        # El pack/grid se maneja dentro de StudyView
 
     def show_create_study_dialog(self, study_to_edit=None):
         """
@@ -147,11 +160,12 @@ class MainWindow:
         # Pasar el callback como argumento nombrado
         StudyDialog(self.root, self.study_service, study_to_edit=study_to_edit, on_save_callback=self.refresh_main_view)
 
-    def show_analysis_dialog(self, study_id):
+    def show_analysis_dialog(self, study_id: int):
         """Muestra el diálogo para realizar análisis en un estudio."""
-        # AnalysisDialog necesita ser creada/adaptada
-        # AnalysisDialog(self.root, self.analysis_service, study_id)
-        messagebox.showinfo("Información", f"Mostrar diálogo de análisis para estudio ID: {study_id} (Por implementar)")
+        # Instanciar y mostrar el AnalysisDialog real
+        # Pasarle el servicio de análisis y el ID del estudio
+        AnalysisDialog(self.root, self.analysis_service, study_id)
+        # Ya no se necesita el messagebox de placeholder
 
 
     def show_config_dialog(self):
