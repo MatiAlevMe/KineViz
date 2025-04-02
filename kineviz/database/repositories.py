@@ -1,5 +1,6 @@
 import sqlite3
 import os
+from pathlib import Path # Importar Path
 
 class StudyRepository:
     def __init__(self, db_path='kineviz.db'):
