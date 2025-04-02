@@ -1,5 +1,5 @@
 import tkinter as tk # Importar tk para fill/expand
-from tkinter import ttk
+from tkinter import ttk, messagebox # Importar messagebox
 # Ya no se necesita PaginatedTable aquí
 from kineviz.ui.widgets.file_browser import FileBrowser
 # Importar FileService para type hinting (opcional pero bueno)

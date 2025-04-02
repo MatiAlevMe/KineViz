@@ -1,5 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, Toplevel, messagebox
+import os
+import sys
+import subprocess
 
 class AnalysisDialog(Toplevel):
     def __init__(self, parent, analysis_service, study_id):
