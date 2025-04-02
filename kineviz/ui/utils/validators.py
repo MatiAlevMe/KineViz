@@ -45,13 +45,16 @@ def validate_study_data(data):
     except ValueError:
         return False, "La cantidad de intentos debe ser un número entero."
 
-    # Validar que no haya valores duplicados entre tipos y periodos de prueba si ambos existen
+    # Validar que no haya valores duplicados entre tipos y periodos de prueba (después de limpiar)
     tipos_prueba_str = data.get('test_types', '')
     periodos_prueba_str = data.get('test_periods', '')
 
-    if tipos_prueba_str and periodos_prueba_str: # Solo validar si ambos campos tienen contenido
-        tipos_prueba = {x.strip() for x in tipos_prueba_str.split(',') if x.strip()}
-        periodos_prueba = {x.strip() for x in periodos_prueba_str.split(',') if x.strip()}
+    # Limpiar y filtrar valores vacíos antes de la validación de duplicados
+    tipos_prueba = {t.strip() for t in tipos_prueba_str.split(',') if t.strip()}
+    periodos_prueba = {p.strip() for p in periodos_prueba_str.split(',') if p.strip()}
+
+    # Solo realizar la comprobación de duplicados si ambos conjuntos tienen elementos después de limpiar
+    if tipos_prueba and periodos_prueba:
         duplicates = tipos_prueba.intersection(periodos_prueba)
         if duplicates:
             return False, f"Los siguientes valores están duplicados entre Tipos y Periodos de prueba: {', '.join(duplicates)}"

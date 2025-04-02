@@ -141,16 +141,20 @@ class StudyDialog(Toplevel):
         scrollbar.pack(side="right", fill="y")
     
     def save(self):
-        # Preparar datos del estudio
+        # Preparar datos del estudio, limpiando tipos y periodos
+        # Dividir por comas, quitar espacios y filtrar vacíos
+        cleaned_types = [t.strip() for t in self.var_tipos_prueba.get().split(',') if t.strip()]
+        cleaned_periods = [p.strip() for p in self.var_periodos_prueba.get().split(',') if p.strip()]
+
         study_data = {
-            'name': self.var_nombre.get(),
-            'num_subjects': self.var_num_sujetos.get(),
-            'test_types': self.var_tipos_prueba.get(),
-            'test_periods': self.var_periodos_prueba.get(),
-            'attempts_count': self.var_cantidad_intentos.get()
+            'name': self.var_nombre.get().strip(), # También quitar espacios del nombre
+            'num_subjects': self.var_num_sujetos.get().strip(),
+            'test_types': ','.join(cleaned_types), # Unir los valores limpios
+            'test_periods': ','.join(cleaned_periods), # Unir los valores limpios
+            'attempts_count': self.var_cantidad_intentos.get().strip()
         }
-        
-        # Validar datos (usar el validador importado)
+
+        # Validar datos (usar el validador importado, que también debe limpiar)
         is_valid, error_message = validate_study_data(study_data) # Asumiendo que devuelve (bool, str)
         if not is_valid:
             messagebox.showerror("Datos Inválidos", error_message, parent=self) # Mostrar error en el diálogo
