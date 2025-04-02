@@ -19,17 +19,19 @@
     *   [x] Paginación de estudios.
     *   [x] Botones de acción (Ver, Editar, Eliminar) en la tabla.
     *   [x] Botones de cabecera (Manual, Config, Ayuda, Abrir Carpeta).
-*   [ ] Implementar la funcionalidad completa de **Editar Estudio** en `StudyDialog` y `StudyService`/`StudyRepository`.
+*   [x] Implementar la funcionalidad completa de **Editar Estudio** en `StudyDialog` y `StudyService`/`StudyRepository`.
     *   [x] Cargar datos existentes en el diálogo.
     *   [x] Validar datos modificados.
     *   [x] Actualizar datos en la base de datos (`StudyService.update_study`).
     *   [x] Renombrar carpeta del estudio si el nombre cambia (`StudyRepository.rename_study_folder`).
-    *   [ ] Manejar la validación/eliminación de archivos existentes si los criterios (tipos/periodos) cambian.
+    *   [ ] Manejar la validación/eliminación de archivos existentes si los criterios (tipos/periodos) cambian. (Pendiente)
 *   [x] Implementar la funcionalidad de **Eliminar Estudio** en `MainView` y `StudyService`/`StudyRepository`.
-*   [ ] Implementar la funcionalidad de **Ver Estudio** (`StudyView`).
+*   [x] Implementar la funcionalidad de **Ver Estudio** (`StudyView`).
     *   [x] Mostrar detalles básicos del estudio.
-    *   [ ] Integrar `FileBrowser` para mostrar archivos del estudio (estructura básica).
-    *   [ ] Implementar carga real de archivos en `FileBrowser` desde `FileService`.
+    *   [x] Integrar `FileBrowser` para mostrar archivos del estudio.
+    *   [x] Implementar carga real de archivos en `FileBrowser` desde `FileService`.
+    *   [x] Funcionalidad "Ver Archivo".
+    *   [x] Funcionalidad "Eliminar Archivo".
 
 ## Fase 3: Gestión de Archivos y Análisis
 
@@ -56,6 +58,15 @@
 *   [ ] Completar documentación (`docs/`).
 *   [ ] Limpiar código remanente de `interfaz.py` y `lectura.py`.
 *   [ ] Revisión final de estilos y UX.
+
+---
+
+## Known Issues / Bugs
+
+*   **Edición de Estudio - Cambio de Criterios**: Al editar un estudio y cambiar los `Tipos de Prueba` o `Periodos de Prueba`, no se validan ni eliminan automáticamente los archivos existentes que ya no cumplen con los nuevos criterios. (Ver Fase 2 - Editar Estudio).
+*   **Agregar Archivos**: La funcionalidad para agregar nuevos archivos a un estudio existente desde `StudyView` aún no está implementada. (Ver Fase 3).
+*   **Análisis y Reportes**: Toda la funcionalidad de análisis y generación de reportes (`AnalysisDialog`, `AnalysisService`, gráficos, PDF) está pendiente. (Ver Fase 3).
+*   **Configuración**: El diálogo de configuración (`ConfigDialog`) y el manejo centralizado de ajustes (`AppSettings`) están pendientes. (Ver Fase 4).
 
 ---
 *Este archivo se actualizará a medida que avance el desarrollo.*
