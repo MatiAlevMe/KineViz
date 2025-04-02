@@ -143,3 +143,109 @@ class StudyRepository:
             print(f"Error al contar estudios en '{self.db_path}': {e}")
             # Considerar lanzar una excepción personalizada o devolver 0/None
             return 0
+
+    def get_studies_paginated(self, limit: int, offset: int, search_term: str = None):
+        """
+        Obtiene una lista paginada de estudios, opcionalmente filtrada por nombre.
+
+        :param limit: Número máximo de estudios a devolver.
+        :param offset: Número de estudios a omitir (para paginación).
+        :param search_term: Término de búsqueda para filtrar por nombre (case-insensitive).
+        :return: Lista de diccionarios de estudios.
+        """
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                query = 'SELECT id_estudio, nombre_estudio FROM estudios'
+                params = []
+                if search_term:
+                    query += ' WHERE nombre_estudio LIKE ?'
+                    params.append(f'%{search_term}%')
+                query += ' ORDER BY nombre_estudio COLLATE NOCASE ASC LIMIT ? OFFSET ?'
+                params.extend([limit, offset])
+
+                cursor.execute(query, params)
+                return [{'id': row[0], 'name': row[1]} for row in cursor.fetchall()]
+        except sqlite3.Error as e:
+            print(f"Error al obtener estudios paginados: {e}")
+            return []
+
+    def get_total_studies_count(self, search_term: str = None):
+        """
+        Cuenta el número total de estudios, opcionalmente filtrado por nombre.
+
+        :param search_term: Término de búsqueda para filtrar por nombre (case-insensitive).
+        :return: Número total de estudios que coinciden.
+        """
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                query = 'SELECT COUNT(*) FROM estudios'
+                params = []
+                if search_term:
+                    query += ' WHERE nombre_estudio LIKE ?'
+                    params.append(f'%{search_term}%')
+
+                cursor.execute(query, params)
+                count = cursor.fetchone()[0]
+                return count
+        except sqlite3.Error as e:
+            print(f"Error al contar estudios filtrados: {e}")
+            return 0
+
+    def update_study(self, study_id: int, study_data: dict):
+        """
+        Actualiza los datos de un estudio en la base de datos.
+
+        :param study_id: ID del estudio a actualizar.
+        :param study_data: Diccionario con los nuevos datos.
+        """
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    UPDATE estudios
+                    SET nombre_estudio = ?,
+                        num_sujetos = ?,
+                        tipos_prueba = ?,
+                        periodos_prueba = ?,
+                        cantidad_intentos_prueba = ?
+                    WHERE id_estudio = ?
+                ''', (
+                    study_data['name'],
+                    int(study_data['num_subjects']),
+                    study_data['test_types'],
+                    study_data['test_periods'],
+                    int(study_data['attempts_count']),
+                    study_id
+                ))
+                conn.commit()
+                if cursor.rowcount == 0:
+                    raise ValueError(f"No se encontró estudio con ID {study_id} para actualizar.")
+        except sqlite3.Error as e:
+            print(f"Error al actualizar estudio ID {study_id}: {e}")
+            # Considerar relanzar una excepción personalizada
+            raise
+
+    def rename_study_folder(self, old_name: str, new_name: str):
+        """
+        Renombra la carpeta de un estudio.
+
+        :param old_name: Nombre original de la carpeta del estudio.
+        :param new_name: Nuevo nombre para la carpeta del estudio.
+        """
+        project_root_dir = Path(__file__).resolve().parent.parent.parent
+        old_path = project_root_dir / 'estudios' / old_name
+        new_path = project_root_dir / 'estudios' / new_name
+
+        if old_path.exists() and old_path.is_dir():
+            try:
+                os.rename(old_path, new_path)
+                print(f"Carpeta renombrada de '{old_name}' a '{new_name}'")
+            except OSError as e:
+                print(f"Error al renombrar carpeta de '{old_name}' a '{new_name}': {e}")
+                # Considerar mostrar un error al usuario o loggear
+        elif not old_path.exists():
+             print(f"Advertencia: Carpeta original '{old_name}' no encontrada para renombrar.")
+             # Crear la nueva carpeta si no existe la original? Depende del flujo deseado.
+             # new_path.mkdir(parents=True, exist_ok=True)
