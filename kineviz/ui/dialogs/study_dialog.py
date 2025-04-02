@@ -158,13 +158,9 @@ class StudyDialog(Toplevel):
 
         try:
             if self.study_to_edit:
-                # Llamar a un método de actualización en el servicio (necesita ser creado)
-                # Pasando el ID y los nuevos datos
-                # self.study_service.update_study(self.study_to_edit['id'], study_data)
+                # Llamar al método de actualización real en el servicio
+                self.study_service.update_study(self.study_to_edit['id'], study_data)
                 messagebox.showinfo("Éxito", "Estudio actualizado correctamente", parent=self)
-                # --- Placeholder para update ---
-                print(f"DEBUG: Actualizar estudio ID {self.study_to_edit['id']} con datos: {study_data}")
-                # --- Fin Placeholder ---
             else:
                 # Crear nuevo estudio
                 self.study_service.create_study(study_data)
