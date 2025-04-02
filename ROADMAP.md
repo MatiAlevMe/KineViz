@@ -19,11 +19,17 @@
     *   [x] Paginación de estudios.
     *   [x] Botones de acción (Ver, Editar, Eliminar) en la tabla.
     *   [x] Botones de cabecera (Manual, Config, Ayuda, Abrir Carpeta).
-*   [ ] Implementar la funcionalidad completa de **Editar Estudio** en `StudyDialog` y `StudyService`/`StudyRepository`. (Parcialmente hecho, falta manejo de archivos)
+*   [ ] Implementar la funcionalidad completa de **Editar Estudio** en `StudyDialog` y `StudyService`/`StudyRepository`.
+    *   [x] Cargar datos existentes en el diálogo.
+    *   [x] Validar datos modificados.
+    *   [x] Actualizar datos en la base de datos (`StudyService.update_study`).
+    *   [x] Renombrar carpeta del estudio si el nombre cambia (`StudyRepository.rename_study_folder`).
+    *   [ ] Manejar la validación/eliminación de archivos existentes si los criterios (tipos/periodos) cambian.
 *   [x] Implementar la funcionalidad de **Eliminar Estudio** en `MainView` y `StudyService`/`StudyRepository`.
 *   [ ] Implementar la funcionalidad de **Ver Estudio** (`StudyView`).
-    *   [ ] Mostrar detalles básicos del estudio.
-    *   [ ] Integrar `FileBrowser` para mostrar archivos del estudio.
+    *   [x] Mostrar detalles básicos del estudio.
+    *   [ ] Integrar `FileBrowser` para mostrar archivos del estudio (estructura básica).
+    *   [ ] Implementar carga real de archivos en `FileBrowser` desde `FileService`.
 
 ## Fase 3: Gestión de Archivos y Análisis
 

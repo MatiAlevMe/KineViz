@@ -1,3 +1,4 @@
+import tkinter as tk # Importar tkinter
 from tkinter import ttk, messagebox
 import os
 
@@ -15,10 +16,11 @@ class FileBrowser(ttk.Frame):
         
         for col in columns:
             self.tree.heading(col, text=col)
-            self.tree.column(col, width=100)
-        
-        self.tree.pack(fill=ttk.BOTH, expand=True)
-        
+            self.tree.column(col, width=100) # Ajustar ancho si es necesario
+
+        # Usar tk.BOTH en lugar de ttk.BOTH
+        self.tree.pack(fill=tk.BOTH, expand=True)
+
         # Configurar eventos
         self.tree.bind('<ButtonRelease-1>', self.on_tree_click)
         
