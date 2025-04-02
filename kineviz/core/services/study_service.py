@@ -45,3 +45,12 @@ class StudyService:
         :param study_id: ID del estudio a eliminar
         """
         self.repo.delete_study(study_id)
+
+    def has_studies(self):
+        """
+        Verifica si existe al menos un estudio en la base de datos.
+
+        :return: True si hay estudios, False en caso contrario.
+        """
+        # Delega la llamada al repositorio
+        return self.repo.count_studies() > 0

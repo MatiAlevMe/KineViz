@@ -108,5 +108,38 @@ class StudyRepository:
                 
                 # Eliminar directorio del estudio
                 study_dir = os.path.join('estudios', study_name[0])
-                import shutil
-                shutil.rmtree(study_dir, ignore_errors=True)
+                # Eliminar directorio del estudio si existe
+                # Asegurarse de que la ruta base sea correcta (asumiendo que 'estudios' está en la raíz del proyecto)
+                # La ruta de la DB puede ser relativa o absoluta, necesitamos la raíz del proyecto
+                from pathlib import Path
+                project_root_dir = Path(__file__).resolve().parent.parent.parent # Ajustar si la estructura es diferente
+                study_dir = project_root_dir / 'estudios' / study_name[0]
+                if study_dir.exists() and study_dir.is_dir():
+                    import shutil
+                    print(f"Eliminando directorio: {study_dir}") # Log
+                    shutil.rmtree(study_dir, ignore_errors=True)
+                else:
+                    print(f"Directorio no encontrado o no es un directorio: {study_dir}") # Log
+            else:
+                 print(f"No se encontró estudio con ID {study_id} para eliminar directorio.") # Log
+
+            conn.commit() # Asegurar commit después de la operación
+
+    def count_studies(self):
+        """
+        Cuenta el número total de estudios en la base de datos.
+
+        :return: Número de estudios.
+        """
+        try:
+            # Asegurarse de que la tabla exista antes de contar
+            self._create_tables()
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute('SELECT COUNT(*) FROM estudios')
+                count = cursor.fetchone()[0]
+                return count
+        except sqlite3.Error as e:
+            print(f"Error al contar estudios en '{self.db_path}': {e}")
+            # Considerar lanzar una excepción personalizada o devolver 0/None
+            return 0
