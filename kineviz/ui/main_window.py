@@ -10,7 +10,7 @@ from pathlib import Path
 # Asumiendo que estos módulos serán creados/adaptados
 from kineviz.ui.views.landing_page import LandingPage
 from kineviz.ui.views.study_view import StudyView
-# from kineviz.ui.views.main_view import MainView # Necesitará ser creada o integrada
+from kineviz.ui.views.main_view import MainView # Importar la nueva vista
 from kineviz.ui.dialogs.study_dialog import StudyDialog
 # from kineviz.ui.dialogs.analysis_dialog import AnalysisDialog # Necesitará ser creada/adaptada
 # from kineviz.ui.dialogs.config_dialog import ConfigDialog # Necesitará ser creada
@@ -125,19 +125,9 @@ class MainWindow:
     def show_main_view(self):
         """Muestra la vista principal con la lista de estudios."""
         self.clear_window()
-        # Necesita una clase MainView que contenga la lista/tabla de estudios, búsqueda, etc.
-        # self.current_view = MainView(self.root, self)
-        # self.current_view.pack(fill=tk.BOTH, expand=True) # Ejemplo
-        # --- Código temporal para indicar que falta MainView ---
-        # Usar el frame de la vista actual para evitar conflictos
-        self.current_view = ttk.Frame(self.root, padding="20")
-        # Asegurar que current_view tenga un método destroy para clear_window
-        self.current_view.destroy = self.current_view.destroy # Asignar el método destroy existente
-        self.current_view.pack(fill=tk.BOTH, expand=True)
-        ttk.Label(self.current_view, text="Vista Principal (MainView) - Por implementar", font=('Helvetica', 16)).pack(pady=20)
-        ttk.Button(self.current_view, text="Crear Nuevo Estudio", command=self.show_create_study_dialog).pack(pady=10)
-        ttk.Button(self.current_view, text="Ir a Landing Page (Test)", command=self.show_landing_page).pack(pady=10)
-        # --- Fin Código temporal ---
+        # Instanciar y mostrar la MainView real
+        self.current_view = MainView(self.root, self)
+        # El empaquetado/grid se maneja dentro de MainView.__init__
 
 
     def show_study_view(self, study_id):
