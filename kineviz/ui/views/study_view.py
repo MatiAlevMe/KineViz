@@ -1,5 +1,5 @@
 from tkinter import ttk
-from kineviz.ui.widgets.paginated_table import PaginatedTable
+# from kineviz.ui.widgets.paginated_table import PaginatedTable # Comentado o eliminado ya que no se usa y el archivo está vacío
 from kineviz.ui.widgets.file_browser import FileBrowser
 
 class StudyView:
