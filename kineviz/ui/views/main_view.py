@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import os # Necesario para verificar existencia de carpetas
+from pathlib import Path # Importar Path
 
 class MainView:
     """Vista principal que muestra la lista de estudios."""
