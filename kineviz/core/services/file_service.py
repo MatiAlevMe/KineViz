@@ -115,27 +115,57 @@ class FileService:
              raise ValueError(f"La ruta no es un archivo: {file_path}")
 
         try:
-            file_path.unlink() # Eliminar el archivo
+            file_path.unlink()  # Eliminar el archivo
             print(f"Archivo eliminado: {file_path}")
 
-            # Intentar eliminar directorios padres si están vacíos
+            # Intentar eliminar directorios padres si están vacíos, hasta la carpeta del estudio
             parent_dir = file_path.parent
-            # Detenerse antes de eliminar la carpeta base de estudios
-            while parent_dir != self.studies_base_dir and parent_dir != self.project_root:
-                try:
-                    # Verificar si el directorio está vacío
-                    if not any(parent_dir.iterdir()):
-                        parent_dir.rmdir()
-                        print(f"Directorio vacío eliminado: {parent_dir}")
-                        parent_dir = parent_dir.parent # Moverse al siguiente nivel superior
-                    else:
-                        break # Detener si el directorio no está vacío
-                except OSError as e:
-                    print(f"No se pudo eliminar el directorio {parent_dir}: {e}")
-                    break # Detener si hay un error (ej. permisos)
+            study_path = self._get_study_path(self.study_id_from_path(file_path)) # Necesitamos obtener el study_path base
+
+            # Asegurarse de que study_path no sea None antes de comparar
+            if study_path:
+                while parent_dir.exists() and parent_dir != study_path and parent_dir != self.studies_base_dir and parent_dir != self.project_root:
+                    try:
+                        # Verificar si el directorio está vacío (solo contiene directorios vacíos o ningún archivo)
+                        is_empty = not any(item for item in parent_dir.iterdir() if item.is_file() or (item.is_dir() and any(item.iterdir())))
+                        # O una forma más simple: verificar si está vacío después de eliminar el archivo
+                        is_empty_simple = not any(parent_dir.iterdir())
+
+                        if is_empty_simple:
+                            parent_dir.rmdir()
+                            print(f"Directorio vacío eliminado: {parent_dir}")
+                            parent_dir = parent_dir.parent # Moverse al siguiente nivel superior
+                        else:
+                            print(f"Directorio no vacío, deteniendo limpieza: {parent_dir}")
+                            break # Detener si el directorio no está vacío
+                    except OSError as e:
+                        print(f"No se pudo eliminar o verificar el directorio {parent_dir}: {e}")
+                        break # Detener si hay un error (ej. permisos, directorio no vacío)
+            else:
+                 print(f"Advertencia: No se pudo determinar la ruta del estudio para la limpieza de directorios de {file_path}")
+
         except OSError as e:
             print(f"Error al eliminar el archivo {file_path}: {e}")
             raise # Relanzar la excepción
+
+    def study_id_from_path(self, file_path: Path) -> int | None:
+        """Intenta determinar el ID del estudio basado en la ruta de un archivo dentro de él."""
+        try:
+            # Asume estructura: studies_base_dir / study_name / ... / file
+            relative_path = file_path.relative_to(self.studies_base_dir)
+            study_name = relative_path.parts[0]
+            # Buscar el ID del estudio por nombre (puede ser ineficiente si hay muchos estudios)
+            # Idealmente, el ID del estudio debería pasarse a delete_file
+            study_details = self.study_service.find_study_by_name(study_name) # Necesitaríamos este método en StudyService/Repo
+            if study_details:
+                return study_details['id']
+            else:
+                 # Fallback: si no podemos obtener el ID, no podemos obtener la ruta base segura
+                 print(f"Advertencia: No se encontró el ID del estudio para el nombre '{study_name}' derivado de la ruta.")
+                 return None
+        except (ValueError, IndexError, Exception) as e:
+            print(f"Error al determinar el ID del estudio desde la ruta {file_path}: {e}")
+            return None
 
     def _process_and_copy_file(self, study_path: Path, source_file_path: Path):
         """

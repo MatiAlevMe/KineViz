@@ -124,10 +124,13 @@ class StudyDialog(Toplevel):
         """
         print("DEBUG: Verificando cambio de criterios...")
         try:
-            # Obtener todos los archivos procesados del estudio
+            # Obtener todos los archivos procesados del estudio (desempaquetar la tupla)
             # Usamos get_study_files que ya filtra por carpetas de frecuencia
-            all_files_info = self.file_service.get_study_files(study_id)
-            processed_files = [f for f in all_files_info if f.get('type') == 'Processed']
+            # Pedimos todos los archivos (per_page=-1 o un número muy grande) para validar todos
+            # Nota: Podríamos necesitar un método específico en FileService para obtener *todos* los archivos sin paginación.
+            # Por ahora, pedimos una página grande. Considerar refactorizar FileService si esto es ineficiente.
+            all_files_list, _ = self.file_service.get_study_files(study_id, page=1, per_page=99999) # Obtener todos los archivos
+            processed_files = [f for f in all_files_list if f.get('type') == 'Processed']
 
             if not processed_files:
                 print("DEBUG: No hay archivos procesados, no se necesita validación de criterios.")
