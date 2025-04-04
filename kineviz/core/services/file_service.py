@@ -67,7 +67,7 @@ class FileService:
                     if type_folder_path.exists() and type_folder_path.is_dir():
                         for file_path in type_folder_path.iterdir():
                             if file_path.is_file() and file_path.suffix.lower() in ['.txt', '.csv']:
-                                files_list.append({
+                                all_files.append({ # Usar all_files en lugar de files_list
                                     'patient': patient_name,
                                     'name': file_path.name,
                                     'type': props["type"],
