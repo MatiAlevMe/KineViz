@@ -6,14 +6,13 @@ from kineviz.ui.widgets.file_browser import FileBrowser
 from kineviz.core.services.file_service import FileService
 
 class StudyView:
-    # Añadir file_service al constructor
+    # Añadir file_service y aceptar config
     def __init__(self, parent, main_window, study_id: int, file_service: FileService):
         self.parent = parent
-        self.main_window = main_window
+        self.main_window = main_window # Guardar referencia a main_window para acceder a config
         self.study_id = study_id
-        self.file_service = file_service # Guardar la instancia de FileService
+        self.file_service = file_service
         self.frame = ttk.Frame(parent)
-        # Usar tk.BOTH y expand=True
         self.frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
         self.create_ui()
@@ -58,9 +57,9 @@ class StudyView:
         ttk.Label(details_frame, text=f"Intentos: {study_details.get('attempts_count', 'N/A')}").pack(anchor='w', padx=5, pady=2)
 
         # --- File browser ---
-        # Pasar la instancia de file_service
-        # Usar tk.BOTH y expand=True
-        self.file_browser = FileBrowser(self.frame, self.file_service, self.study_id)
+        # Pasar la instancia de file_service y files_per_page desde main_window
+        files_per_page = self.main_window.files_per_page # Obtener de main_window
+        self.file_browser = FileBrowser(self.frame, self.file_service, self.study_id, files_per_page)
         self.file_browser.pack(fill=tk.BOTH, expand=True, pady=(10, 0))
 
     def open_study_folder(self):

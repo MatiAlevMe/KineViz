@@ -30,20 +30,25 @@ class FileService:
             messagebox.showerror("Error Interno", f"No se pudo encontrar la ruta para el estudio ID {study_id}.")
             return None
 
-    def get_study_files(self, study_id: int) -> list:
+    def get_study_files(self, study_id: int, page: int = 1, per_page: int = 10,
+                        search_term: str = None, file_type: str = None, frequency: str = None) -> tuple[list, int]:
         """
-        Obtiene la lista de archivos procesados y originales para un estudio.
+        Obtiene una lista paginada y filtrada de archivos para un estudio.
 
         :param study_id: ID del estudio.
-        :return: Lista de diccionarios, cada uno representando un archivo.
-                 Ej: [{'patient': 'P01', 'name': 'P01_CMJ_PRE_01_Cinematica.txt',
-                       'type': 'Processed', 'frequency': 'Cinematica', 'path': PosixPath(...) }, ...]
+        :param page: Número de página (base 1).
+        :param per_page: Número de archivos por página.
+        :param search_term: Término para buscar en nombre de paciente o archivo (case-insensitive).
+        :param file_type: Filtrar por tipo ('Processed', 'Original').
+        :param frequency: Filtrar por frecuencia ('Cinematica', 'Cinetica', 'Electromiografica', 'N/A').
+        :return: Tupla (lista de archivos en la página, número total de archivos que coinciden con los filtros).
+                 Ej: ([{'patient': 'P01', ...}, ...], 53)
         """
         study_path = self._get_study_path(study_id)
         if not study_path or not study_path.exists():
-            return []
+            return [], 0
 
-        files_list = []
+        all_files = []
         # Definir las carpetas a escanear y sus propiedades
         scan_folders = {
             "Cinematica": {"type": "Processed", "frequency": "Cinematica"},
@@ -67,10 +72,31 @@ class FileService:
                                     'name': file_path.name,
                                     'type': props["type"],
                                     'frequency': props["frequency"],
-                                    'path': file_path # Guardar el objeto Path completo
+                                    'path': file_path
                                 })
 
-        return files_list
+        # --- Filtrado ---
+        filtered_files = all_files
+        if search_term:
+            search_lower = search_term.lower()
+            filtered_files = [
+                f for f in filtered_files
+                if search_lower in f['name'].lower() or search_lower in f['patient'].lower()
+            ]
+        if file_type and file_type != "Todos":
+            filtered_files = [f for f in filtered_files if f['type'] == file_type]
+        if frequency and frequency != "Todos":
+            filtered_files = [f for f in filtered_files if f['frequency'] == frequency]
+
+        # --- Paginación ---
+        total_matching_files = len(filtered_files)
+        if page < 1:
+            page = 1
+        start_index = (page - 1) * per_page
+        end_index = start_index + per_page
+        files_on_page = filtered_files[start_index:end_index]
+
+        return files_on_page, total_matching_files
 
     def delete_file(self, file_path: Path | str):
         """
