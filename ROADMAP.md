@@ -35,13 +35,13 @@
 
 ## Fase 3: Gestión de Archivos y Análisis
 
-*   [ ] Implementar `FileBrowser` (`kineviz/ui/widgets/file_browser.py`) completamente.
+*   [x] Implementar `FileBrowser` (`kineviz/ui/widgets/file_browser.py`) completamente.
     *   [x] Cargar y mostrar archivos del estudio desde `FileService`. (Hecho en Fase 2)
-    *   [ ] Paginación de archivos.
-    *   [ ] Búsqueda/filtrado de archivos.
+    *   [x] Paginación de archivos.
+    *   [x] Búsqueda/filtrado de archivos.
     *   [x] Funcionalidad "Ver Archivo". (Hecho en Fase 2)
     *   [x] Funcionalidad "Eliminar Archivo". (Hecho en Fase 2)
-*   [x] Implementar `FileService` para manejar la lógica de archivos (obtener, eliminar). (Hecho en Fase 2)
+*   [x] Implementar `FileService` para manejar la lógica de archivos (obtener, eliminar, filtrar, paginar). (Hecho en Fase 2 y 3)
 *   [ ] Implementar diálogo para **Agregar Archivos** a un estudio, incluyendo validación de formato de nombre.
 *   [ ] Implementar `AnalysisDialog` (`kineviz/ui/dialogs/analysis_dialog.py`).
     *   [ ] Selección de parámetros (pacientes, frecuencias, tipos, periodos, cálculos).
