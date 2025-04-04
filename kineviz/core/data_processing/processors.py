@@ -1,5 +1,5 @@
 from typing import List, Tuple
-from pandas import DataFrame as pd
+import pandas as pd # Importar pandas correctamente
 
 def formato_personalizado(valor):
     """

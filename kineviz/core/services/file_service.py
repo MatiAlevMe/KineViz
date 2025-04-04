@@ -211,8 +211,7 @@ class FileService:
         """
         # Importar validador aquí
         from kineviz.ui.utils.validators import validate_filename_for_study_criteria
-        # Importar pandas aquí si es necesario para _process_and_copy_file
-        import pandas as pd
+        # Ya no es necesario importar pandas aquí, se importa dentro de _process_and_copy_file
 
         results = {'success': 0, 'errors': []}
         study_path = self._get_study_path(study_id)
