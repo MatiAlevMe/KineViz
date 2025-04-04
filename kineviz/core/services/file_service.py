@@ -148,6 +148,8 @@ class FileService:
         """
         # Importar helpers necesarios aquí para evitar dependencia circular a nivel de módulo
         from kineviz.core.data_processing import directory_manager, processors, file_handlers
+        # Importar pandas aquí porque se usa para crear el DataFrame
+        import pandas as pd
 
         # 1. Obtener nombre del paciente
         # Usar el nombre del archivo original para extraer el paciente
