@@ -5,8 +5,11 @@ import sys
 import subprocess
 from tkinter import Listbox, Scrollbar, Frame # Necesario para las listas
 
+# Importar AnalysisService para type hinting
+from kineviz.core.services.analysis_service import AnalysisService
+
 class AnalysisDialog(Toplevel):
-    def __init__(self, parent, analysis_service, study_id):
+    def __init__(self, parent, analysis_service: AnalysisService, study_id: int):
         """
         Inicializa el diálogo de análisis.
 
@@ -17,9 +20,10 @@ class AnalysisDialog(Toplevel):
         super().__init__(parent)
         self.analysis_service = analysis_service
         self.study_id = study_id
+        self.available_params = {} # Para almacenar los parámetros disponibles
 
         self.title(f"Análisis - Estudio ID: {study_id}")
-        self.geometry("700x500") # Tamaño inicial
+        self.geometry("850x650") # Aumentar tamaño para acomodar listas
         self.resizable(True, True)
 
         # Cargar parámetros disponibles ANTES de crear widgets
