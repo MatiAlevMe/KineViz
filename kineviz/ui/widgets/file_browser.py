@@ -63,15 +63,10 @@ class FileBrowser(ttk.Frame):
 
         for col in columns:
             self.tree.heading(col, text=col)
-            self.tree.column(col, width=100) # Ajustar ancho si es necesario
+            # Ajustar ancho y anclaje directamente aquí
+            self.tree.column(col, width=100, anchor='center' if col in ['Ver', 'Eliminar'] else 'w')
 
-        # Usar tk.BOTH en lugar de ttk.BOTH
-        self.tree.pack(fill=tk.BOTH, expand=True)
-
-        # Configurar eventos
-            self.tree.column(col, width=100, anchor='center' if col in ['Ver', 'Eliminar'] else 'w') # Ajustar ancho y anclaje
-
-        # Scrollbar
+        # Scrollbar (Configurar antes de usar grid)
         scrollbar = ttk.Scrollbar(table_container, orient=tk.VERTICAL, command=self.tree.yview)
         self.tree.configure(yscrollcommand=scrollbar.set)
 
