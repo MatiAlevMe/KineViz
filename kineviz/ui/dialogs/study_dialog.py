@@ -1,6 +1,11 @@
-import tkinter as tk # Usar tk en lugar de solo ttk para StringVar, etc.
-from tkinter import ttk, Toplevel, messagebox, Canvas, Scrollbar, Frame # Importar explícitamente
-from kineviz.ui.utils.validators import validate_study_data # Asumiendo que este validador es adecuado
+import tkinter as tk
+from tkinter import ttk, Toplevel, messagebox, Canvas, Scrollbar, Frame
+# Importar validador de datos y nuevo validador de nombres de archivo
+from kineviz.ui.utils.validators import validate_study_data, validate_filename_for_study_criteria
+# Importar FileService para obtener archivos y Path para manejar rutas
+# Nota: FileService se importa aquí para consistencia, aunque también se usa en __init__
+from kineviz.core.services.file_service import FileService
+from pathlib import Path
 
 class StudyDialog(Toplevel):
     # Añadir study_to_edit y on_save_callback
