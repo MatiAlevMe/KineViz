@@ -29,7 +29,31 @@ class AnalysisDialog(Toplevel):
         # Cargar parámetros disponibles ANTES de crear widgets
         self.load_available_parameters()
 
-        self.create_widgets()
+        # --- Frame principal que contendrá el Canvas y Scrollbar ---
+        container_frame = ttk.Frame(self)
+        container_frame.pack(fill=tk.BOTH, expand=True)
+
+        # --- Canvas y Scrollbar ---
+        self.canvas = tk.Canvas(container_frame)
+        scrollbar = ttk.Scrollbar(container_frame, orient="vertical", command=self.canvas.yview)
+        # Este frame interior contendrá todos los widgets originales
+        self.scrollable_frame = ttk.Frame(self.canvas)
+
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: self.canvas.configure(
+                scrollregion=self.canvas.bbox("all")
+            )
+        )
+
+        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.canvas.configure(yscrollcommand=scrollbar.set)
+
+        self.canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+        # --- Crear widgets dentro del scrollable_frame ---
+        self.create_widgets(self.scrollable_frame) # Pasar el frame desplazable como padre
 
         # Centrar diálogo
         self.transient(parent)
@@ -37,10 +61,11 @@ class AnalysisDialog(Toplevel):
         # Código para centrar (opcional, similar a StudyDialog)
         # ...
 
-    def create_widgets(self):
+    def create_widgets(self, parent_frame): # Aceptar el frame padre (scrollable_frame)
         """Crea los widgets del diálogo de análisis."""
-        main_frame = ttk.Frame(self, padding="10")
-        main_frame.pack(fill=tk.BOTH, expand=True)
+        # Usar parent_frame en lugar de 'self' para los widgets principales
+        main_frame = ttk.Frame(parent_frame, padding="10")
+        main_frame.pack(fill=tk.BOTH, expand=True) # main_frame ahora está dentro del scrollable_frame
 
         # --- Selección de Parámetros ---
         params_frame = ttk.Frame(main_frame)
@@ -173,11 +198,17 @@ class AnalysisDialog(Toplevel):
         """Llama al servicio para realizar el análisis con los parámetros seleccionados."""
         selected_parameters = self._get_selected_parameters()
 
-        # Validar selecciones (ejemplo básico)
-        if not selected_parameters['patients']:
-             messagebox.showwarning("Parámetros Faltantes", "Debe seleccionar al menos un paciente.", parent=self)
+        # Validar selecciones
+        if len(selected_parameters.get('patients', [])) < 2:
+             messagebox.showwarning("Validación Fallida", "Debe seleccionar al menos dos pacientes para realizar el análisis.", parent=self)
              return
-        # Añadir más validaciones si es necesario...
+        # Añadir más validaciones si es necesario (ej. al menos una frecuencia, etc.)
+        if not selected_parameters.get('frequencies'):
+             messagebox.showwarning("Validación Fallida", "Debe seleccionar al menos una frecuencia.", parent=self)
+             return
+        if not selected_parameters.get('calculations'):
+             messagebox.showwarning("Validación Fallida", "Debe seleccionar al menos un cálculo.", parent=self)
+             return
 
         try:
             # Llamar al servicio con los parámetros recolectados
@@ -191,14 +222,23 @@ class AnalysisDialog(Toplevel):
         """Llama al servicio para generar un reporte con los parámetros seleccionados."""
         selected_parameters = self._get_selected_parameters()
 
-        # Validar selecciones (ejemplo básico)
-        if not selected_parameters['patients'] or not selected_parameters['frequencies'] or \
-           not selected_parameters['calculations']:
-             messagebox.showwarning("Parámetros Faltantes",
-                                    "Debe seleccionar al menos un paciente, una frecuencia y un cálculo para generar el reporte.",
-                                    parent=self)
+        # Validar selecciones
+        if len(selected_parameters.get('patients', [])) < 2:
+             messagebox.showwarning("Validación Fallida", "Debe seleccionar al menos dos pacientes para generar el reporte.", parent=self)
              return
-        # Añadir validaciones para tipos/periodos si son obligatorios para el reporte
+        if not selected_parameters.get('frequencies'):
+             messagebox.showwarning("Validación Fallida", "Debe seleccionar al menos una frecuencia para generar el reporte.", parent=self)
+             return
+        if not selected_parameters.get('calculations'):
+             messagebox.showwarning("Validación Fallida", "Debe seleccionar al menos un cálculo para generar el reporte.", parent=self)
+             return
+        # Añadir validaciones para tipos/periodos si son obligatorios para el reporte (opcional)
+        # if not selected_parameters.get('types'):
+        #      messagebox.showwarning("Validación Fallida", "Debe seleccionar al menos un tipo de prueba.", parent=self)
+        #      return
+        # if not selected_parameters.get('periods'):
+        #      messagebox.showwarning("Validación Fallida", "Debe seleccionar al menos un periodo de prueba.", parent=self)
+        #      return
 
         # Pedir ruta de guardado al usuario
         from tkinter import filedialog
