@@ -2,8 +2,10 @@ import tkinter as tk # Importar tk para fill/expand
 from tkinter import ttk, messagebox # Importar messagebox
 # Ya no se necesita PaginatedTable aquí
 from kineviz.ui.widgets.file_browser import FileBrowser
-# Importar FileService para type hinting (opcional pero bueno)
+# Importar FileService para type hinting
 from kineviz.core.services.file_service import FileService
+# Importar el nuevo diálogo de archivos
+from kineviz.ui.dialogs.file_dialog import FileDialog
 
 class StudyView:
     # Añadir file_service y aceptar config
@@ -73,13 +75,15 @@ class StudyView:
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo obtener la ruta del estudio: {e}", parent=self.frame)
 
-    # def add_files_dialog(self):
-    #     """Placeholder para abrir diálogo de agregar archivos."""
-    #     # Aquí se llamaría a un FileDialog específico o a una función
-    #     # que use tkinter.filedialog.askopenfilenames
-    #     messagebox.showinfo("Información", "Diálogo para agregar archivos (Por implementar)", parent=self.frame)
-    #     # La lógica de lectura y validación (leer_archivo_csv_o_txt)
-    #     # debería moverse a FileService o StudyService.
+    def add_files_dialog(self):
+        """Abre el diálogo para seleccionar y agregar archivos al estudio."""
+        # Pasar el file_service y el study_id, junto con el callback para refrescar
+        FileDialog(self.frame, self.main_window.file_service, self.study_id, self.refresh_file_list)
+
+    def refresh_file_list(self):
+        """Refresca la lista de archivos en el FileBrowser."""
+        if self.file_browser:
+            self.file_browser.load_files()
 
     def destroy(self):
         """Destruye el frame principal de esta vista."""

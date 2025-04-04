@@ -41,8 +41,8 @@
     *   [x] Búsqueda/filtrado de archivos.
     *   [x] Funcionalidad "Ver Archivo". (Hecho en Fase 2)
     *   [x] Funcionalidad "Eliminar Archivo". (Hecho en Fase 2)
-*   [x] Implementar `FileService` para manejar la lógica de archivos (obtener, eliminar, filtrar, paginar). (Hecho en Fase 2 y 3)
-*   [ ] Implementar diálogo para **Agregar Archivos** a un estudio, incluyendo validación de formato de nombre.
+*   [x] Implementar `FileService` para manejar la lógica de archivos (obtener, eliminar, filtrar, paginar, agregar). (Hecho en Fase 2 y 3)
+*   [x] Implementar diálogo para **Agregar Archivos** a un estudio, incluyendo validación de formato de nombre.
 *   [ ] Implementar `AnalysisDialog` (`kineviz/ui/dialogs/analysis_dialog.py`).
     *   [ ] Selección de parámetros (pacientes, frecuencias, tipos, periodos, cálculos).
     *   [ ] Generación de reportes PDF.
@@ -64,7 +64,6 @@
 ## Known Issues / Bugs
 
 *   **Edición de Estudio - Cambio de Criterios**: Al editar un estudio y cambiar los `Tipos de Prueba` o `Periodos de Prueba`, no se validan ni eliminan automáticamente los archivos existentes que ya no cumplen con los nuevos criterios. (Ver Fase 2 - Editar Estudio).
-*   **Agregar Archivos**: La funcionalidad para agregar nuevos archivos a un estudio existente desde `StudyView` aún no está implementada. (Ver Fase 3).
 *   **Análisis y Reportes**: Toda la funcionalidad de análisis y generación de reportes (`AnalysisDialog`, `AnalysisService`, gráficos, PDF) está pendiente. (Ver Fase 3).
 *   **Configuración**: El diálogo de configuración (`ConfigDialog`) y el manejo centralizado de ajustes (`AppSettings`) están pendientes. (Ver Fase 4).
 
