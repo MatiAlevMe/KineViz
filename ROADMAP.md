@@ -24,7 +24,7 @@
     *   [x] Validar datos modificados.
     *   [x] Actualizar datos en la base de datos (`StudyService.update_study`).
     *   [x] Renombrar carpeta del estudio si el nombre cambia (`StudyRepository.rename_study_folder`).
-    *   [ ] Manejar la validación/eliminación de archivos existentes si los criterios (tipos/periodos) cambian. (Pendiente)
+    *   [x] Manejar la validación/eliminación de archivos existentes si los criterios (tipos/periodos) cambian.
 *   [x] Implementar la funcionalidad de **Eliminar Estudio** en `MainView` y `StudyService`/`StudyRepository`.
 *   [x] Implementar la funcionalidad de **Ver Estudio** (`StudyView`).
     *   [x] Mostrar detalles básicos del estudio.
@@ -36,12 +36,12 @@
 ## Fase 3: Gestión de Archivos y Análisis
 
 *   [ ] Implementar `FileBrowser` (`kineviz/ui/widgets/file_browser.py`) completamente.
-    *   [ ] Cargar y mostrar archivos del estudio desde `FileService`.
+    *   [x] Cargar y mostrar archivos del estudio desde `FileService`. (Hecho en Fase 2)
     *   [ ] Paginación de archivos.
     *   [ ] Búsqueda/filtrado de archivos.
-    *   [ ] Funcionalidad "Ver Archivo".
-    *   [ ] Funcionalidad "Eliminar Archivo".
-*   [ ] Implementar `FileService` para manejar la lógica de archivos (obtener, eliminar).
+    *   [x] Funcionalidad "Ver Archivo". (Hecho en Fase 2)
+    *   [x] Funcionalidad "Eliminar Archivo". (Hecho en Fase 2)
+*   [x] Implementar `FileService` para manejar la lógica de archivos (obtener, eliminar). (Hecho en Fase 2)
 *   [ ] Implementar diálogo para **Agregar Archivos** a un estudio, incluyendo validación de formato de nombre.
 *   [ ] Implementar `AnalysisDialog` (`kineviz/ui/dialogs/analysis_dialog.py`).
     *   [ ] Selección de parámetros (pacientes, frecuencias, tipos, periodos, cálculos).
