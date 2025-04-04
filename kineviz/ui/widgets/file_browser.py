@@ -112,10 +112,11 @@ class FileBrowser(ttk.Frame):
 
             # Llenar tabla
             for file_info in files_on_page:
-            self.tree.insert('', 'end', values=(
-                str(file_info.get('patient', 'N/A')),
-                str(file_info.get('name', 'N/A')),
-                str(file_info.get('type', 'N/A')),
+                # Indent this line
+                self.tree.insert('', 'end', values=(
+                    str(file_info.get('patient', 'N/A')),
+                    str(file_info.get('name', 'N/A')),
+                    str(file_info.get('type', 'N/A')),
                 str(file_info.get('frequency', 'N/A')),
                 'Ver',      # Texto para botón Ver
                     'Eliminar'  # Texto para botón Eliminar
