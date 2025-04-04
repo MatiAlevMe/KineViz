@@ -62,73 +62,9 @@ def leer_seccion(file, num_frames, ruta_archivo):
             output_file.write(";".join(processors.formato_personalizado(x) for x in medicion) + "\n")
     return mediciones, columnas
 
-def obtener_nombre_paciente(nombre_archivo):
-    return nombre_archivo.split(" ")[0]
+# La lógica de leer_archivo_csv_o_txt y obtener_nombre_paciente se ha movido
+# a FileService._process_and_copy_file y FileService._get_patient_name_from_filename
+# o se infiere directamente en _process_and_copy_file.
+# Esta función ya no es necesaria aquí.
 
-def leer_archivo_csv_o_txt(ruta_archivo: Path, nombre_estudio: str, nombre_paciente: str = None) -> str:
-    """
-    Lee el archivo completo, detectando todas las secciones y exportando cada una en su
-    carpeta correspondiente según la frecuencia de medición.
-    """
-    try:
-        if not ruta_archivo.exists():                                                                                                                          
-            raise FileNotFoundError(ruta_archivo) 
-        
-        # Obtener nombre del paciente  
-        if nombre_paciente is None:
-            nombre_paciente = obtener_nombre_paciente(ruta_archivo.name)
-
-        # 1. Crear estructura de directorios usando directory_manager   
-        ruta_estudio = directory_manager.crear_estructura_estudio(nombre_estudio)
-        ruta_paciente = directory_manager.crear_estructura_paciente(ruta_estudio, nombre_paciente)    
-
-        # 2. Copiar archivo original a OG                                                                                                                      
-        ruta_og = ruta_paciente / "OG"                                                                                                                         
-        archivo_og = ruta_og / ruta_archivo.name                                                                                                               
-        directory_manager.copiar_archivo_origen(ruta_archivo, archivo_og) 
-
-        # 3. Procesar archivo
-        with open(ruta_archivo, 'r') as file:
-            while True:
-                # Validar formato básico
-                primera_fila = file.readline().rstrip()
-                if not primera_fila:  # EOF
-                    break
-                
-                # Leer número de frames
-                segunda_fila = file.readline().rstrip()
-                if not segunda_fila.isdigit():
-                    raise InvalidFileFormatError("Falta número de frames válido")
-                num_frames = int(segunda_fila)
-
-                tipo_frecuencia = directory_manager.determinar_tipo_frecuencia(num_frames)
-
-                carpeta_frecuencia = directory_manager.crear_carpeta_frecuencia(ruta_paciente, tipo_frecuencia)
-
-                # Generar nombre de archivo procesado 
-                nombre_archivo = ruta_archivo.name.replace(".txt", f"_{tipo_frecuencia}.txt")                                                                                  
-                ruta_archivo_seccion = carpeta_frecuencia / nombre_archivo 
-
-                # Procesar sección
-                mediciones, columnas = leer_seccion(file, num_frames, ruta_archivo_seccion)
-
-                # Cálculos estadísticos
-                df = pd.DataFrame(mediciones, columns=columnas)
-                df.columns = [f'{col}_{i}' if df.columns.duplicated()[i]
-                              else col for i, col in enumerate(df.columns)]
-
-                maximos, minimos, rangos = processors.calcular_max_min_rango(df, columnas)
-
-                # Exportar resultados
-                with open(ruta_archivo_seccion, 'a') as output_file:
-                    processors.exportar_calculos(output_file, maximos, minimos, rangos)
-        return nombre_paciente
-
-    except FileNotFoundError as e:                                                                                                                             
-        raise                                                                                                                                                  
-    except IOError as e:                                                                                                                                       
-        raise IOError(f"Error leyendo {ruta_archivo}") from e                                                                                                  
-    except ValueError as e:                                                                                                                                    
-        raise InvalidFileFormatError(str(e)) from e                                                                                                            
-    except Exception as e:                                                                                                                                     
-        raise FileHandlerError(f"Error inesperado: {str(e)}") from e    
+# La función obtener_nombre_paciente también se movió/integró en FileService.

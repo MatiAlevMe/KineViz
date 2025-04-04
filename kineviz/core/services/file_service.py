@@ -137,6 +137,132 @@ class FileService:
             print(f"Error al eliminar el archivo {file_path}: {e}")
             raise # Relanzar la excepción
 
+    def _process_and_copy_file(self, study_path: Path, source_file_path: Path):
+        """
+        Procesa un único archivo: copia a OG, lee secciones, calcula y guarda en carpetas de frecuencia.
+        Adaptado de lectura.leer_archivo_csv_o_txt.
+
+        :param study_path: Ruta base de la carpeta del estudio.
+        :param source_file_path: Ruta del archivo original a procesar.
+        :raises Exception: Si ocurre algún error durante el procesamiento.
+        """
+        # Importar helpers necesarios aquí para evitar dependencia circular a nivel de módulo
+        from kineviz.core.data_processing import directory_manager, processors, file_handlers
+
+        # 1. Obtener nombre del paciente
+        # Usar el nombre del archivo original para extraer el paciente
+        nombre_paciente = file_handlers.obtener_nombre_paciente(source_file_path.name)
+
+        # 2. Crear estructura de paciente si no existe (directory_manager se encarga de exist_ok)
+        paciente_path = directory_manager.crear_estructura_paciente(study_path, nombre_paciente)
+
+        # 3. Copiar archivo original a OG
+        ruta_og = paciente_path / "OG"
+        archivo_og = ruta_og / source_file_path.name
+        directory_manager.copiar_archivo_origen(source_file_path, archivo_og)
+
+        # 4. Procesar archivo sección por sección
+        with open(source_file_path, 'r') as file:
+            while True:
+                # Leer número de frames (con validación básica)
+                primera_fila = file.readline() # Leer la línea de descripción (no usada aquí)
+                if not primera_fila: break # EOF
+                segunda_fila = file.readline().rstrip()
+                if not segunda_fila: break # EOF inesperado
+                if not segunda_fila.isdigit():
+                    raise ValueError(f"Formato inválido: Se esperaba número de frames, se obtuvo '{segunda_fila}' en {source_file_path.name}")
+                num_frames = int(segunda_fila)
+
+                # Determinar tipo y crear carpeta
+                tipo_frecuencia = directory_manager.determinar_tipo_frecuencia(num_frames)
+                carpeta_frecuencia = directory_manager.crear_carpeta_frecuencia(paciente_path, tipo_frecuencia)
+
+                # Generar nombre de archivo procesado
+                nombre_archivo_procesado = source_file_path.name.replace(".txt", f"_{tipo_frecuencia}.txt").replace(".csv", f"_{tipo_frecuencia}.csv")
+                ruta_archivo_seccion = carpeta_frecuencia / nombre_archivo_procesado
+
+                # Leer sección usando file_handlers
+                # Pasar el file handle ya posicionado
+                mediciones, columnas = file_handlers.leer_seccion(file, num_frames, ruta_archivo_seccion)
+
+                # Calcular estadísticas usando processors
+                if mediciones: # Solo calcular si hay datos
+                    df = pd.DataFrame(mediciones, columns=columnas)
+                    # Renombrar columnas duplicadas si existen (aunque no debería pasar con la inserción de 'Tiempo')
+                    if df.columns.duplicated().any():
+                         df.columns = [f'{col}_{i}' if df.columns.duplicated()[i] else col for i, col in enumerate(df.columns)]
+
+                    maximos, minimos, rangos = processors.calcular_max_min_rango(df, columnas)
+
+                    # Exportar cálculos al mismo archivo
+                    with open(ruta_archivo_seccion, 'a') as output_file:
+                        processors.exportar_calculos(output_file, maximos, minimos, rangos)
+                else:
+                     print(f"Advertencia: No se encontraron mediciones en una sección de {source_file_path.name}")
+
+
+    def add_files_to_study(self, study_id: int, file_paths: list[str]) -> dict:
+        """
+        Agrega y procesa una lista de archivos para un estudio específico.
+
+        :param study_id: ID del estudio.
+        :param file_paths: Lista de rutas absolutas (como strings) de los archivos a agregar.
+        :return: Diccionario con resultados: {'success': count, 'errors': [error_messages]}
+        """
+        # Importar validador aquí
+        from kineviz.ui.utils.validators import validate_filename_for_study_criteria
+        # Importar pandas aquí si es necesario para _process_and_copy_file
+        import pandas as pd
+
+        results = {'success': 0, 'errors': []}
+        study_path = self._get_study_path(study_id)
+        if not study_path:
+            results['errors'].append(f"No se pudo encontrar la ruta para el estudio ID {study_id}.")
+            return results
+
+        # Obtener criterios del estudio para validación
+        try:
+            study_details = self.study_service.get_study_details(study_id)
+            types_str = study_details.get('test_types', '') or ''
+            periods_str = study_details.get('test_periods', '') or ''
+            valid_types = [t.strip() for t in types_str.split(',') if t.strip()]
+            valid_periods = [p.strip() for p in periods_str.split(',') if p.strip()]
+        except Exception as e:
+            results['errors'].append(f"Error al obtener criterios del estudio {study_id}: {e}")
+            return results
+
+        for file_path_str in file_paths:
+            source_file_path = Path(file_path_str)
+            file_name = source_file_path.name
+            try:
+                # 1. Validar nombre de archivo
+                if not validate_filename_for_study_criteria(file_name, valid_types, valid_periods):
+                    raise ValueError(f"Nombre de archivo '{file_name}' no cumple los criterios del estudio.")
+
+                # 2. Procesar y copiar el archivo
+                self._process_and_copy_file(study_path, source_file_path)
+                results['success'] += 1
+                print(f"Archivo '{file_name}' procesado y agregado exitosamente.")
+
+            except FileNotFoundError:
+                 error_msg = f"Archivo no encontrado: {file_name}"
+                 print(error_msg)
+                 results['errors'].append(error_msg)
+            except ValueError as ve: # Errores de formato o validación
+                 error_msg = f"{file_name}: {ve}"
+                 print(f"Error de validación/formato para {error_msg}")
+                 results['errors'].append(error_msg)
+            except Exception as e:
+                 # Capturar otros errores durante el procesamiento
+                 error_msg = f"Error procesando '{file_name}': {e}"
+                 print(error_msg)
+                 results['errors'].append(error_msg)
+                 # Para debugging más detallado:
+                 import traceback
+                 traceback.print_exc()
+
+        return results
+
 
 # Ejemplo de cómo podría usarse (requiere StudyService y estructura de carpetas)
 # if __name__ == '__main__':
