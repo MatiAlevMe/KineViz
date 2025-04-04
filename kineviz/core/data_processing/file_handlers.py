@@ -3,11 +3,11 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 from tkinter import messagebox
- 
-from core.data_processing import directory_manager, processors
-from core.exceptions import (                                                                                                                                  
-    FileHandlerError,                                                                                                                                          
-    FileNotFoundError,                                                                                                                                         
+# Usar importación relativa dentro del mismo paquete
+from . import directory_manager, processors
+from ..exceptions import ( # Importar excepciones desde el nivel superior (core)
+    FileHandlerError,
+    FileNotFoundError,
     InvalidFileFormatError,                                                                                                                                    
     IOError                                                                                                                                                    
 ) 
@@ -62,8 +62,12 @@ def leer_seccion(file, num_frames, ruta_archivo):
             output_file.write(";".join(processors.formato_personalizado(x) for x in medicion) + "\n")
     return mediciones, columnas
 
-# La lógica de leer_archivo_csv_o_txt y obtener_nombre_paciente se ha movido
-# a FileService._process_and_copy_file y FileService._get_patient_name_from_filename
+def obtener_nombre_paciente(nombre_archivo: str) -> str:
+    """Extrae el identificador del paciente del nombre del archivo."""
+    # Asume que el identificador es la primera parte antes del primer espacio
+    return nombre_archivo.split(" ")[0]
+
+# La lógica de leer_archivo_csv_o_txt se ha movido a FileService._process_and_copy_file
 # o se infiere directamente en _process_and_copy_file.
 # Esta función ya no es necesaria aquí.
 
