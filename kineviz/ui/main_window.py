@@ -76,7 +76,8 @@ class MainWindow:
         self.study_service = StudyService() # Servicio para operaciones de estudios (DB, carpetas base)
         # Pasar study_service a FileService para que pueda obtener nombres/rutas de estudios
         self.file_service = FileService(self.study_service) # Servicio para operaciones de archivos dentro de estudios
-        self.analysis_service = AnalysisService() # Servicio para lógica de análisis y reportes
+        # Pasar study_service y file_service a AnalysisService
+        self.analysis_service = AnalysisService(self.study_service, self.file_service) # Servicio para lógica de análisis y reportes
 
         self.current_view = None
         self.style = ttk.Style()
