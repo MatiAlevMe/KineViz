@@ -264,6 +264,79 @@ class FileService:
 
         return results
 
+    def get_unique_study_parameters(self, study_id: int) -> dict:
+        """
+        Obtiene conjuntos de parámetros únicos (pacientes, frecuencias, tipos, periodos)
+        basados en los archivos procesados válidos de un estudio.
+
+        :param study_id: ID del estudio.
+        :return: Diccionario {'patients': set(), 'frequencies': set(), 'types': set(), 'periods': set()}
+                 o un diccionario vacío si hay error o no hay archivos.
+        """
+        # Importar validador y función para extraer info del nombre
+        from kineviz.ui.utils.validators import validate_filename_for_study_criteria
+        from kineviz.core.data_processing.file_handlers import obtener_nombre_paciente # Necesitamos esta función
+
+        study_path = self._get_study_path(study_id)
+        if not study_path:
+            return {'patients': set(), 'frequencies': set(), 'types': set(), 'periods': set()}
+
+        # Obtener criterios del estudio para validación de nombres
+        try:
+            study_details = self.study_service.get_study_details(study_id)
+            types_str = study_details.get('test_types', '') or ''
+            periods_str = study_details.get('test_periods', '') or ''
+            valid_types_list = [t.strip() for t in types_str.split(',') if t.strip()]
+            valid_periods_list = [p.strip() for p in periods_str.split(',') if p.strip()]
+        except Exception as e:
+            print(f"Error al obtener criterios del estudio {study_id} para parámetros: {e}")
+            return {'patients': set(), 'frequencies': set(), 'types': set(), 'periods': set()}
+
+        parameters = {'patients': set(), 'frequencies': set(), 'types': set(), 'periods': set()}
+        processed_folders = ["Cinematica", "Cinetica", "Electromiografica"]
+
+        for patient_dir in study_path.iterdir():
+            if patient_dir.is_dir() and not patient_dir.name.lower() in ["reportes", "temp", "og"]:
+                patient_name = patient_dir.name
+                # Añadir paciente si tiene carpetas procesadas
+                has_processed_folder = any((patient_dir / pf).exists() for pf in processed_folders)
+                if has_processed_folder:
+                     parameters['patients'].add(patient_name)
+
+                for freq_folder_name in processed_folders:
+                    freq_folder_path = patient_dir / freq_folder_name
+                    if freq_folder_path.exists() and freq_folder_path.is_dir():
+                        for file_path in freq_folder_path.iterdir():
+                            if file_path.is_file() and file_path.suffix.lower() in ['.txt', '.csv']:
+                                filename = file_path.name
+                                # Validar nombre antes de extraer parámetros
+                                if validate_filename_for_study_criteria(filename, valid_types_list, valid_periods_list):
+                                    parameters['frequencies'].add(freq_folder_name) # Frecuencia basada en carpeta
+
+                                    # Extraer tipo y periodo del nombre (simplificado)
+                                    # Asume formato PteXX TIPO PERIODO NN_Frecuencia.ext
+                                    base_name = filename.split(f'_{freq_folder_name}')[0]
+                                    parts = base_name.replace('_', ' ').split()
+                                    if len(parts) == 4:
+                                        # Asignar basado en si está en la lista válida
+                                        if parts[1] in valid_types_list:
+                                            parameters['types'].add(parts[1])
+                                        elif parts[1] in valid_periods_list:
+                                             parameters['periods'].add(parts[1])
+
+                                        if parts[2] in valid_types_list:
+                                            parameters['types'].add(parts[2])
+                                        elif parts[2] in valid_periods_list:
+                                             parameters['periods'].add(parts[2])
+                                    elif len(parts) == 3:
+                                         if parts[1] in valid_types_list:
+                                             parameters['types'].add(parts[1])
+                                         elif parts[1] in valid_periods_list:
+                                             parameters['periods'].add(parts[1])
+                                    # Ignorar caso de 2 partes (sin tipo/periodo)
+
+        return parameters
+
 
 # Ejemplo de cómo podría usarse (requiere StudyService y estructura de carpetas)
 # if __name__ == '__main__':

@@ -44,7 +44,7 @@
 *   [x] Implementar `FileService` para manejar la lógica de archivos (obtener, eliminar, filtrar, paginar, agregar). (Hecho en Fase 2 y 3)
 *   [x] Implementar diálogo para **Agregar Archivos** a un estudio, incluyendo validación de formato de nombre.
 *   [ ] Implementar `AnalysisDialog` (`kineviz/ui/dialogs/analysis_dialog.py`).
-    *   [ ] Selección de parámetros (pacientes, frecuencias, tipos, periodos, cálculos).
+    *   [x] Selección de parámetros (pacientes, frecuencias, tipos, periodos, cálculos).
     *   [ ] Generación de reportes PDF.
     *   [ ] Visualización/eliminación de reportes generados.
 *   [ ] Implementar `AnalysisService` para la lógica de análisis y generación de reportes.
