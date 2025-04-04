@@ -36,10 +36,9 @@ class StudyView:
         ttk.Button(header_frame, text="Analizar Estudio",
                    command=lambda: self.main_window.show_analysis_dialog(self.study_id)).pack(side=tk.LEFT, padx=(0, 10))
 
-        # Botón Agregar Archivos (Movido desde interfaz.py)
-        # Necesita un método en main_window o aquí para manejar la lógica
-        # ttk.Button(header_frame, text="Agregar Archivos",
-        #            command=self.add_files_dialog).pack(side=tk.LEFT, padx=(0, 10))
+        # Botón Agregar Archivos                                                                                                               
+        ttk.Button(header_frame, text="Agregar Archivos",                                                                                      
+                   command=self.add_files_dialog).pack(side=tk.LEFT, padx=(0, 10))
 
         # Botón Abrir Carpeta Estudio (Movido desde interfaz.py)
         ttk.Button(header_frame, text="Abrir Carpeta Estudio",
