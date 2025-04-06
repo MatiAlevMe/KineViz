@@ -165,9 +165,11 @@ class StudyDialog(Toplevel):
                     print("DEBUG: Usuario confirmó eliminación.")
                     deleted_count = 0
                     errors = []
+                    study_id_to_delete_from = self.study_to_edit['id'] # Get the study ID
                     for _, absolute_path in invalid_files:
                         try:
-                            self.file_service.delete_file(absolute_path)
+                            # Pass the study_id to delete_file
+                            self.file_service.delete_file(absolute_path, study_id_to_delete_from)
                             deleted_count += 1
                         except Exception as e:
                             errors.append(f"- {absolute_path.name}: {e}")

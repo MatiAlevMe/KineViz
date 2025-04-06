@@ -250,8 +250,8 @@ class FileBrowser(ttk.Frame):
                                f"¿Está seguro de que desea eliminar el archivo:\n'{file_name}'?\n\nEsta acción es permanente.",
                                icon='warning', parent=self):
             try:
-                # Usar el file_service para eliminar
-                self.file_service.delete_file(file_path)
+                # Usar el file_service para eliminar, pasando el study_id
+                self.file_service.delete_file(file_path, self.study_id)
                 messagebox.showinfo("Éxito", f"Archivo '{file_name}' eliminado correctamente.", parent=self)
                 # Eliminar solo el item de la tabla en lugar de recargar todo
                 # self.tree.delete(item_id) # Esto puede desincronizar la paginación
