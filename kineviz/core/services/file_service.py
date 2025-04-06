@@ -98,7 +98,7 @@ class FileService:
 
         return files_on_page, total_matching_files
 
-    def delete_file(self, file_path: Path | str):
+    def delete_file(self, file_path: Path | str, study_id: int):
         """
         Elimina un archivo específico y limpia directorios vacíos si es necesario.
 
