@@ -137,20 +137,20 @@ class FileService:
                     while parent_dir.exists() and parent_dir != study_path:
                         try:
                             # Verificar si el directorio está vacío (solo contiene directorios vacíos o ningún archivo)
-                        is_empty = not any(item for item in parent_dir.iterdir() if item.is_file() or (item.is_dir() and any(item.iterdir())))
-                        # O una forma más simple: verificar si está vacío después de eliminar el archivo
-                        is_empty_simple = not any(parent_dir.iterdir())
+                            # is_empty = not any(item for item in parent_dir.iterdir() if item.is_file() or (item.is_dir() and any(item.iterdir()))) # Complex check removed
+                            # O una forma más simple: verificar si está vacío después de eliminar el archivo
+                            is_empty_simple = not any(parent_dir.iterdir())
 
-                        if is_empty_simple:
-                            parent_dir.rmdir()
-                            print(f"Directorio vacío eliminado: {parent_dir}")
-                            parent_dir = parent_dir.parent # Moverse al siguiente nivel superior
-                        else:
-                            print(f"Directorio no vacío, deteniendo limpieza: {parent_dir}")
-                            break # Detener si el directorio no está vacío
-                    except OSError as e:
-                        print(f"No se pudo eliminar o verificar el directorio {parent_dir}: {e}")
-                        break # Detener si hay un error (ej. permisos, directorio no vacío)
+                            if is_empty_simple:
+                                parent_dir.rmdir()
+                                print(f"Directorio vacío eliminado: {parent_dir}")
+                                parent_dir = parent_dir.parent # Moverse al siguiente nivel superior
+                            else:
+                                print(f"Directorio no vacío, deteniendo limpieza: {parent_dir}")
+                                break # Detener si el directorio no está vacío
+                        except OSError as e:
+                            print(f"No se pudo eliminar o verificar el directorio {parent_dir}: {e}")
+                            break # Detener si hay un error (ej. permisos, directorio no vacío)
             else:
                  print(f"Advertencia: No se pudo determinar la ruta del estudio para la limpieza de directorios de {file_path}")
 
