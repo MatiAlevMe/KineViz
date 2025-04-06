@@ -104,10 +104,20 @@ class FileService:
 
         :param file_path: Ruta completa (Path o str) del archivo a eliminar.
         :raises FileNotFoundError: Si el archivo no existe.
+        :param file_path: Ruta completa (Path o str) del archivo a eliminar.
+        :param study_id: ID del estudio al que pertenece el archivo (para obtener ruta base).
+        :raises FileNotFoundError: Si el archivo no existe.
         :raises OSError: Si ocurre un error al eliminar el archivo o directorio.
         """
         if isinstance(file_path, str):
             file_path = Path(file_path)
+
+        # Obtener la ruta base del estudio usando el ID proporcionado
+        study_path = self._get_study_path(study_id)
+        if not study_path:
+             # No lanzar error aquí, pero sí advertir. La limpieza de directorios no funcionará.
+             print(f"Advertencia: No se pudo obtener la ruta del estudio {study_id} para la limpieza de directorios de {file_path}")
+             # Permitir que la eliminación del archivo continúe si es posible
 
         if not file_path.exists():
             raise FileNotFoundError(f"El archivo no existe: {file_path}")
@@ -119,14 +129,14 @@ class FileService:
             print(f"Archivo eliminado: {file_path}")
 
             # Intentar eliminar directorios padres si están vacíos, hasta la carpeta del estudio
-            parent_dir = file_path.parent
-            study_path = self._get_study_path(self.study_id_from_path(file_path)) # Necesitamos obtener el study_path base
-
-            # Asegurarse de que study_path no sea None antes de comparar
-            if study_path:
-                while parent_dir.exists() and parent_dir != study_path and parent_dir != self.studies_base_dir and parent_dir != self.project_root:
-                    try:
-                        # Verificar si el directorio está vacío (solo contiene directorios vacíos o ningún archivo)
+            # Solo proceder si pudimos obtener study_path
+            if study_path and study_path.exists():
+                parent_dir = file_path.parent
+                # Asegurarse de que parent_dir sea subdirectorio de study_path antes de empezar
+                if parent_dir.is_relative_to(study_path):
+                    while parent_dir.exists() and parent_dir != study_path:
+                        try:
+                            # Verificar si el directorio está vacío (solo contiene directorios vacíos o ningún archivo)
                         is_empty = not any(item for item in parent_dir.iterdir() if item.is_file() or (item.is_dir() and any(item.iterdir())))
                         # O una forma más simple: verificar si está vacío después de eliminar el archivo
                         is_empty_simple = not any(parent_dir.iterdir())
@@ -148,24 +158,8 @@ class FileService:
             print(f"Error al eliminar el archivo {file_path}: {e}")
             raise # Relanzar la excepción
 
-    def study_id_from_path(self, file_path: Path) -> int | None:
-        """Intenta determinar el ID del estudio basado en la ruta de un archivo dentro de él."""
-        try:
-            # Asume estructura: studies_base_dir / study_name / ... / file
-            relative_path = file_path.relative_to(self.studies_base_dir)
-            study_name = relative_path.parts[0]
-            # Buscar el ID del estudio por nombre (puede ser ineficiente si hay muchos estudios)
-            # Idealmente, el ID del estudio debería pasarse a delete_file
-            study_details = self.study_service.find_study_by_name(study_name) # Necesitaríamos este método en StudyService/Repo
-            if study_details:
-                return study_details['id']
-            else:
-                 # Fallback: si no podemos obtener el ID, no podemos obtener la ruta base segura
-                 print(f"Advertencia: No se encontró el ID del estudio para el nombre '{study_name}' derivado de la ruta.")
-                 return None
-        except (ValueError, IndexError, Exception) as e:
-            print(f"Error al determinar el ID del estudio desde la ruta {file_path}: {e}")
-            return None
+    # Removed study_id_from_path as it's unreliable and caused errors.
+    # study_id should be passed directly to delete_file.
 
     def _process_and_copy_file(self, study_path: Path, source_file_path: Path):
         """
@@ -328,10 +322,10 @@ class FileService:
         for patient_dir in study_path.iterdir():
             if patient_dir.is_dir() and not patient_dir.name.lower() in ["reportes", "temp", "og"]:
                 patient_name = patient_dir.name
-                # Añadir paciente si tiene carpetas procesadas
-                has_processed_folder = any((patient_dir / pf).exists() for pf in processed_folders)
-                if has_processed_folder:
-                     parameters['patients'].add(patient_name)
+                # No añadir paciente aquí, hacerlo solo si se encuentra un archivo válido dentro
+                # has_processed_folder = any((patient_dir / pf).exists() for pf in processed_folders)
+                # if has_processed_folder:
+                #      parameters['patients'].add(patient_name)
 
                 for freq_folder_name in processed_folders:
                     freq_folder_path = patient_dir / freq_folder_name
@@ -340,8 +334,12 @@ class FileService:
                             if file_path.is_file() and file_path.suffix.lower() in ['.txt', '.csv']:
                                 filename = file_path.name
                                 # Validar nombre antes de extraer parámetros
+                                # Validar nombre ANTES de extraer parámetros y añadir frecuencia/paciente
+                                # Esto asegura que solo contamos parámetros de archivos válidos
                                 if validate_filename_for_study_criteria(filename, valid_types_list, valid_periods_list):
-                                    parameters['frequencies'].add(freq_folder_name) # Frecuencia basada en carpeta
+                                    # Si el archivo es válido, añadir su frecuencia y paciente (si no existe ya)
+                                    parameters['frequencies'].add(freq_folder_name)
+                                    parameters['patients'].add(patient_name) # Añadir paciente solo si tiene archivos válidos
 
                                     # Extraer tipo y periodo del nombre (simplificado)
                                     # Asume formato PteXX TIPO PERIODO NN_Frecuencia.ext

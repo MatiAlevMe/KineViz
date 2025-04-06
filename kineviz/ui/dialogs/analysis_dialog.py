@@ -199,8 +199,9 @@ class AnalysisDialog(Toplevel):
         selected_parameters = self._get_selected_parameters()
 
         # Validar selecciones
-        if len(selected_parameters.get('patients', [])) < 2:
-             messagebox.showwarning("Validación Fallida", "Debe seleccionar al menos dos pacientes para realizar el análisis.", parent=self)
+        valid_patients = selected_parameters.get('patients', [])
+        if len(valid_patients) < 2:
+             messagebox.showwarning("Validación Fallida", "Debe seleccionar al menos dos pacientes con datos procesados válidos para realizar el análisis.", parent=self)
              return
         # Añadir más validaciones si es necesario (ej. al menos una frecuencia, etc.)
         if not selected_parameters.get('frequencies'):
@@ -223,8 +224,9 @@ class AnalysisDialog(Toplevel):
         selected_parameters = self._get_selected_parameters()
 
         # Validar selecciones
-        if len(selected_parameters.get('patients', [])) < 2:
-             messagebox.showwarning("Validación Fallida", "Debe seleccionar al menos dos pacientes para generar el reporte.", parent=self)
+        valid_patients = selected_parameters.get('patients', [])
+        if len(valid_patients) < 2:
+             messagebox.showwarning("Validación Fallida", "Debe seleccionar al menos dos pacientes con datos procesados válidos para generar el reporte.", parent=self)
              return
         if not selected_parameters.get('frequencies'):
              messagebox.showwarning("Validación Fallida", "Debe seleccionar al menos una frecuencia para generar el reporte.", parent=self)
