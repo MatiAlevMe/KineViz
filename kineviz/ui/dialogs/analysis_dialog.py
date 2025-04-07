@@ -309,8 +309,109 @@ class AnalysisDialog(Toplevel):
                  except Exception as open_e:
                      messagebox.showwarning("Abrir Reporte", f"No se pudo abrir el archivo automáticamente:\n{open_e}", parent=self)
 
+            # Refrescar la lista de reportes después de generar uno nuevo
+            self.load_reports()
+
+        except ValueError as ve: # Capturar errores específicos de validación o datos
+             messagebox.showerror("Error Reporte", f"No se pudo generar el reporte:\n{ve}", parent=self)
         except Exception as e:
-            messagebox.showerror("Error Reporte", f"Ocurrió un error al generar el reporte: {e}", parent=self)
+            messagebox.showerror("Error Reporte", f"Ocurrió un error inesperado al generar el reporte:\n{e}", parent=self)
+            import traceback
+            traceback.print_exc()
+
+    # --- Métodos para Gestión de Reportes ---
+
+    def load_reports(self):
+        """Carga la lista de reportes generados en el Treeview."""
+        # Limpiar tabla
+        for item in self.report_tree.get_children():
+            self.report_tree.delete(item)
+
+        try:
+            reports = self.analysis_service.list_reports(self.study_id)
+            for report in reports:
+                report_path = Path(report['path'])
+                try:
+                    # Obtener fecha de modificación
+                    mtime = report_path.stat().st_mtime
+                    # Necesitamos importar datetime
+                    from datetime import datetime
+                    mod_date = datetime.fromtimestamp(mtime).strftime('%Y-%m-%d %H:%M:%S')
+                except Exception:
+                    mod_date = "N/A"
+
+                self.report_tree.insert('', 'end', values=(
+                    report['name'],
+                    mod_date,
+                    'Ver',
+                    'Eliminar'
+                ), tags=(report['path'],)) # Guardar ruta completa en tags
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudieron listar los reportes: {e}", parent=self)
+
+    def on_report_tree_click(self, event):
+        """Maneja los clics en la tabla de reportes."""
+        region = self.report_tree.identify("region", event.x, event.y)
+        if region != "cell":
+            return
+
+        column_id = self.report_tree.identify_column(event.x) # ej: '#3'
+        row_id = self.report_tree.identify_row(event.y) # ej: 'I001'
+
+        if not row_id: return
+
+        item_tags = self.report_tree.item(row_id, "tags")
+        if not item_tags or not item_tags[0]: return
+
+        report_path_str = item_tags[0]
+        report_path = Path(report_path_str)
+
+        column_index = int(column_id.replace('#', '')) - 1 # Índice basado en 0
+
+        if column_index == 2:  # Columna "Ver"
+            self.view_report(report_path)
+        elif column_index == 3:  # Columna "Eliminar"
+            self.delete_report(report_path, row_id)
+
+    def view_report(self, report_path: Path):
+        """Abre el archivo PDF seleccionado."""
+        if not report_path.exists():
+             messagebox.showerror("Error", f"El archivo de reporte no existe:\n{report_path}", parent=self)
+             self.load_reports() # Recargar lista si no existe
+             return
+        try:
+            if sys.platform == 'win32':
+                os.startfile(report_path)
+            elif sys.platform == 'darwin': # macOS
+                subprocess.run(['open', report_path], check=True)
+            else: # Linux, etc.
+                subprocess.run(['xdg-open', report_path], check=True)
+        except Exception as e:
+            messagebox.showerror("Error al Abrir", f"No se pudo abrir el reporte '{report_path.name}':\n{str(e)}", parent=self)
+
+    def delete_report(self, report_path: Path, item_id):
+        """Solicita confirmación y elimina el reporte seleccionado."""
+        if not report_path.exists():
+             messagebox.showerror("Error", f"El archivo de reporte ya no existe:\n{report_path}", parent=self)
+             self.load_reports()
+             return
+
+        report_name = report_path.name
+        if messagebox.askyesno("Confirmar Eliminación",
+                               f"¿Está seguro de que desea eliminar el reporte:\n'{report_name}'?",
+                               icon='warning', parent=self):
+            try:
+                self.analysis_service.delete_report(str(report_path))
+                messagebox.showinfo("Éxito", f"Reporte '{report_name}' eliminado.", parent=self)
+                self.report_tree.delete(item_id) # Eliminar de la vista directamente
+                # Opcional: recargar toda la lista con self.load_reports() si prefieres
+            except FileNotFoundError:
+                 messagebox.showerror("Error", f"El reporte no se encontró al intentar eliminarlo:\n{report_path}", parent=self)
+                 self.load_reports() # Recargar lista completa
+            except Exception as e:
+                messagebox.showerror("Error al Eliminar", f"No se pudo eliminar el reporte:\n{e}", parent=self)
+                import traceback
+                traceback.print_exc()
 
 # Para pruebas directas (si es necesario)
 if __name__ == '__main__':
