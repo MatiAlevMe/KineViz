@@ -74,9 +74,26 @@ class AnalysisService:
             data_io = StringIO("".join(data_lines))
 
             # Leer la tercera línea para obtener los nombres de columna correctos
-            col_names = lines[2].strip().split(';')
-            # Asegurar que no haya nombres vacíos que pandas pueda interpretar mal
-            col_names = [f"col_{i}" if not name else name for i, name in enumerate(col_names)]
+            raw_col_names = lines[2].strip().split(';')
+
+            # --- Sanear nombres de columna para asegurar unicidad ---
+            col_names = []
+            counts = {}
+            for i, name in enumerate(raw_col_names):
+                clean_name = name.strip()
+                # Reemplazar nombres vacíos
+                if not clean_name:
+                    clean_name = f"Unnamed_{i}"
+
+                # Añadir sufijo si el nombre está duplicado
+                if clean_name in counts:
+                    counts[clean_name] += 1
+                    unique_name = f"{clean_name}_{counts[clean_name]}"
+                else:
+                    counts[clean_name] = 0
+                    unique_name = clean_name
+                col_names.append(unique_name)
+            # --- Fin saneamiento ---
 
             df = pd.read_csv(data_io, sep=';', header=None, names=col_names, na_values=[''], keep_default_na=True)
 
