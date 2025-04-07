@@ -1,9 +1,10 @@
 import tkinter as tk
-from tkinter import ttk, Toplevel, messagebox
+from tkinter import ttk, Toplevel, messagebox, filedialog # Añadir filedialog
 import os
 import sys
 import subprocess
 from tkinter import Listbox, Scrollbar, Frame # Necesario para las listas
+from pathlib import Path # Necesario para manejar rutas de reportes
 
 # Importar AnalysisService para type hinting
 from kineviz.core.services.analysis_service import AnalysisService
@@ -82,9 +83,48 @@ class AnalysisDialog(Toplevel):
         button_frame = ttk.Frame(main_frame)
         button_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(10, 0))
 
-        ttk.Button(button_frame, text="Generar Reporte", command=self.generate_report).pack(side=tk.RIGHT, padx=5)
-        ttk.Button(button_frame, text="Realizar Análisis", command=self.perform_analysis, state=tk.DISABLED).pack(side=tk.RIGHT, padx=5) # Deshabilitado por ahora
-        ttk.Button(button_frame, text="Cancelar", command=self.destroy).pack(side=tk.RIGHT)
+        ttk.Button(button_frame, text="Generar Reporte PDF", command=self.generate_report).pack(side=tk.LEFT, padx=5)
+        # ttk.Button(button_frame, text="Realizar Análisis", command=self.perform_analysis, state=tk.DISABLED).pack(side=tk.LEFT, padx=5) # Deshabilitado por ahora
+        ttk.Button(button_frame, text="Cerrar", command=self.destroy).pack(side=tk.RIGHT)
+
+        # --- Separador ---
+        ttk.Separator(main_frame, orient='horizontal').pack(fill='x', pady=15)
+
+        # --- Gestión de Reportes Existentes ---
+        reports_frame = ttk.LabelFrame(main_frame, text="Reportes Generados")
+        reports_frame.pack(fill=tk.BOTH, expand=True, pady=(10, 0))
+
+        # Frame para la tabla de reportes
+        report_table_frame = ttk.Frame(reports_frame)
+        report_table_frame.pack(fill=tk.BOTH, expand=True, pady=5, padx=5)
+
+        report_columns = ('Nombre', 'Fecha Modificación', 'Ver', 'Eliminar')
+        self.report_tree = ttk.Treeview(report_table_frame, columns=report_columns, show='headings')
+
+        self.report_tree.heading('Nombre', text='Nombre Archivo')
+        self.report_tree.heading('Fecha Modificación', text='Fecha Modificación')
+        self.report_tree.heading('Ver', text='Ver', anchor='center')
+        self.report_tree.heading('Eliminar', text='Eliminar', anchor='center')
+
+        self.report_tree.column('Nombre', width=350, stretch=tk.YES)
+        self.report_tree.column('Fecha Modificación', width=150, anchor='center')
+        self.report_tree.column('Ver', width=60, anchor='center', stretch=tk.NO)
+        self.report_tree.column('Eliminar', width=80, anchor='center', stretch=tk.NO)
+
+        report_scrollbar = ttk.Scrollbar(report_table_frame, orient=tk.VERTICAL, command=self.report_tree.yview)
+        self.report_tree.configure(yscrollcommand=report_scrollbar.set)
+
+        report_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.report_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        self.report_tree.bind('<ButtonRelease-1>', self.on_report_tree_click)
+
+        # Botón para refrescar lista de reportes
+        refresh_button = ttk.Button(reports_frame, text="Refrescar Lista", command=self.load_reports)
+        refresh_button.pack(pady=5)
+
+        # Cargar reportes iniciales
+        self.load_reports()
 
     def load_available_parameters(self):
         """Carga los parámetros disponibles desde el servicio."""

@@ -53,7 +53,7 @@ Este ROADMAP debe ser actualizado en cada iteración hasta completar la refactor
     *   [ ] Visualización/eliminación de reportes generados.
 *   [x] Implementar `AnalysisService` para la lógica de análisis y generación de reportes. (Implementación inicial de PDF y cálculos)
 *   [x] Implementar `Charting` (`kineviz/ui/widgets/charting.py`) para visualizaciones. (Boxplot, Barchart básicos)
-*   [ ] Implementar visualización/eliminación de reportes generados en `AnalysisDialog`.
+*   [x] Implementar visualización/eliminación de reportes generados en `AnalysisDialog`.
 
 ## Fase 4: Refinamientos y Finalización
 
@@ -69,7 +69,7 @@ Este ROADMAP debe ser actualizado en cada iteración hasta completar la refactor
 ## Known Issues / Bugs
 
 *   **Edición de Estudio - Cambio de Criterios**: Al editar un estudio y cambiar los `Tipos de Prueba` o `Periodos de Prueba`, no se validan ni eliminan automáticamente los archivos existentes que ya no cumplen con los nuevos criterios. (Ver Fase 2 - Editar Estudio).
-*   **Análisis y Reportes**: La lógica de análisis y generación de PDF está implementada en `AnalysisService`. Falta integrar la visualización/eliminación de reportes en `AnalysisDialog`. (Ver Fase 3).
+*   **Análisis y Reportes**: La lógica de análisis, generación de PDF y gestión básica de reportes (listar, ver, eliminar) está implementada.
 *   **Configuración**: El diálogo de configuración (`ConfigDialog`) y el manejo centralizado de ajustes (`AppSettings`) están pendientes. (Ver Fase 4).
 *   **Limpieza de Directorios**: La limpieza de directorios vacíos (paciente, frecuencia) después de eliminar el último archivo dentro de ellos funciona, pero podría mejorarse para manejar casos borde o errores de permisos de forma más robusta.
 *   **Validación de Pacientes para Análisis**: La validación ahora se basa en los parámetros únicos extraídos de archivos procesados válidos. Si un estudio tiene archivos pero no cumplen los criterios o solo tiene archivos OG, no permitirá el análisis.
