@@ -50,11 +50,11 @@ except ImportError as e:
 # import sqlite3
 # import os
 # import configparser
-from datetime import datetime
-import matplotlib.pyplot as plt
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
-from reportlab.lib.styles import getSampleStyleSheet
+# from datetime import datetime # Already imported in try...except
+# import matplotlib.pyplot as plt # Already imported in try...except
+# from reportlab.lib.pagesizes import letter # Already imported in try...except
+# from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image # Already imported in try...except
+# from reportlab.lib.styles import getSampleStyleSheet # Already imported in try...except
 
 class KineVizApp:
     def __init__(self, root):
