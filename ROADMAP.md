@@ -2,6 +2,8 @@
 
 Este roadmap describe el proceso de refactorización de la aplicación KineViz, moviendo la lógica original de los archivos `interfaz.py` y `lectura.py` a una estructura modular basada en servicios, repositorios y componentes de UI reutilizables dentro del paquete `kineviz`. El objetivo es mejorar la mantenibilidad, escalabilidad y organización del código.
 
+Este ROADMAP debe ser actualizado en cada iteración hasta completar la refactorización y se debe dar la opción de ejecutar el programa con "python -m kineviz.app" para ir capturando errores.
+
 ## Fase 1: Integración Inicial y Estructura Base (Completada - d2caeef)
 
 *   [x] Crear estructura básica del proyecto (`kineviz` package).
