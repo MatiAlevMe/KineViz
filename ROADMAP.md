@@ -130,7 +130,7 @@ Este ROADMAP debe ser actualizado en cada iteración hasta completar la refactor
 
 ## Fase 4: Refinamientos y Finalización
 
-*   [ ] Implementar `ConfigDialog` (`kineviz/ui/dialogs/config_dialog.py`) y `AppSettings` (`kineviz/config/settings.py`).
+*   [x] Implementar `ConfigDialog` (`kineviz/ui/dialogs/config_dialog.py`) y `AppSettings` (`kineviz/config/settings.py`).
 *   [ ] Mejorar manejo de errores y logging (`kineviz/utils/logger.py`).
 *   [ ] Añadir pruebas unitarias e de integración (`tests/`).
 *   [ ] Completar documentación (`docs/`).
@@ -143,7 +143,7 @@ Este ROADMAP debe ser actualizado en cada iteración hasta completar la refactor
 
 *   **Edición de Estudio - Cambio de Criterios**: Al editar un estudio y cambiar los `Tipos de Prueba` o `Periodos de Prueba`, no se validan ni eliminan automáticamente los archivos existentes que ya no cumplen con los nuevos criterios. (Ver Fase 2 - Editar Estudio).
 *   **Análisis y Reportes**: La lógica de análisis, generación de PDF y gestión básica de reportes (listar, ver, eliminar) está implementada.
-*   **Configuración**: El diálogo de configuración (`ConfigDialog`) y el manejo centralizado de ajustes (`AppSettings`) están pendientes. (Ver Fase 4).
+*   **Configuración**: Implementada la gestión básica de configuración (`AppSettings`, `ConfigDialog`) para paginación. El botón de reseteo global está conectado.
 *   **Limpieza de Directorios**: La limpieza de directorios vacíos (paciente, frecuencia) después de eliminar el último archivo dentro de ellos funciona, pero podría mejorarse para manejar casos borde o errores de permisos de forma más robusta.
 *   **Validación de Pacientes para Análisis**: La validación ahora se basa en los parámetros únicos extraídos de archivos procesados válidos. Si un estudio tiene archivos pero no cumplen los criterios o solo tiene archivos OG, no permitirá el análisis.
 *   **Lectura de Datos Procesados**: La función `_read_processed_file_data` en `AnalysisService` asume un formato específico (';' como separador, 4 líneas de header, 3 de stats). Podría ser más robusta o configurable.

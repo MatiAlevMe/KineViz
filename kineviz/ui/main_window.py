@@ -1,13 +1,3 @@
-import tkinter as tk
-from tkinter import ttk, messagebox, Toplevel, Text, Scrollbar
-import os
-import sys
-import subprocess
-import shutil
-import configparser
-from pathlib import Path
-
-# Asumiendo que estos módulos serán creados/adaptados
 import tkinter as tk # Asegurar importación base
 from tkinter import ttk, messagebox, Toplevel, Text, Scrollbar
 import os
@@ -22,59 +12,30 @@ from kineviz.ui.views.landing_page import LandingPage
 from kineviz.ui.views.study_view import StudyView
 from kineviz.ui.views.main_view import MainView
 from kineviz.ui.dialogs.study_dialog import StudyDialog
-from kineviz.ui.dialogs.analysis_dialog import AnalysisDialog # Importar el nuevo diálogo
-# from kineviz.ui.dialogs.config_dialog import ConfigDialog # (Futuro)
+from kineviz.ui.dialogs.analysis_dialog import AnalysisDialog
+from kineviz.ui.dialogs.config_dialog import ConfigDialog # Importar ConfigDialog
 # Servicios Core
 from kineviz.core.services.study_service import StudyService
-from kineviz.core.services.file_service import FileService # Importar FileService
-from kineviz.core.services.analysis_service import AnalysisService # Importar AnalysisService
-# from kineviz.config.settings import AppSettings # (Futuro)
-
-# Ya no se necesitan importaciones temporales del repositorio
-# from kineviz.database.repositories import StudyRepository # Usar StudyService en su lugar
+from kineviz.core.services.file_service import FileService
+from kineviz.core.services.analysis_service import AnalysisService
+from kineviz.config.settings import AppSettings # Importar AppSettings
 
 class MainWindow:
     def __init__(self, root):
         self.root = root
         self.root.title('KineViz')
-        self.root.geometry('1000x600') # Tamaño por defecto de interfaz.py
+        self.root.geometry('1000x600')
 
-        # --- Carga de Configuración (Adaptado de load_config) ---
-        # self.settings = AppSettings() # Idealmente usar una clase de configuración
-        self.config = configparser.ConfigParser()
-        self.estudios_por_pagina = 10 # Valor por defecto
-        self.files_per_page = 10 # Valor por defecto
-        self.pdfs_per_page = 10 # Valor por defecto
-        try:
-            # Asume que config.ini está en el directorio raíz del proyecto
-            # Si app.py está en kineviz/, necesitamos ir un nivel arriba
-            project_root_dir = Path(__file__).resolve().parent.parent.parent
-            config_path = project_root_dir / 'config.ini'
-
-            if config_path.exists():
-                self.config.read(config_path)
-                self.estudios_por_pagina = int(self.config.get('SETTINGS', 'estudios_por_pagina', fallback=10))
-                self.files_per_page = int(self.config.get('SETTINGS', 'files_per_page', fallback=10))
-                self.pdfs_per_page = int(self.config.get('SETTINGS', 'pdfs_per_page', fallback=10))
-            else:
-                # Crear config.ini si no existe (opcional, pero útil)
-                print(f"Advertencia: No se encontró {config_path}. Creando archivo con valores por defecto.")
-                self.config['SETTINGS'] = {
-                    'estudios_por_pagina': '10',
-                    'files_per_page': '10',
-                    'pdfs_per_page': '10'
-                }
-                # Asegurarse de que el directorio config exista si es necesario
-                # config_path.parent.mkdir(exist_ok=True) # Descomentar si config.ini va en /config
-                with open(config_path, 'w') as configfile:
-                    self.config.write(configfile)
-        except Exception as e:
-            messagebox.showerror("Error de Configuración", f"No se pudo cargar 'config.ini': {str(e)}\nUsando valores por defecto.")
-            # Usar valores por defecto ya establecidos
+        # --- Carga de Configuración usando AppSettings ---
+        self.settings = AppSettings() # Instanciar AppSettings
+        # Acceder a las configuraciones a través de las propiedades de AppSettings
+        self.estudios_por_pagina = self.settings.studies_per_page
+        self.files_per_page = self.settings.files_per_page
+        self.pdfs_per_page = self.settings.pdfs_per_page
+        # Ya no necesitamos el objeto self.config ni el bloque try/except aquí
 
         # --- Instanciación de Servicios ---
-        self.study_service = StudyService() # Servicio para operaciones de estudios (DB, carpetas base)
-        # Pasar study_service a FileService para que pueda obtener nombres/rutas de estudios
+        self.study_service = StudyService()
         self.file_service = FileService(self.study_service) # Servicio para operaciones de archivos dentro de estudios
         # Pasar study_service y file_service a AnalysisService
         self.analysis_service = AnalysisService(self.study_service, self.file_service) # Servicio para lógica de análisis y reportes
@@ -171,10 +132,21 @@ class MainWindow:
 
     def show_config_dialog(self):
         """Muestra el diálogo de configuración."""
-        # ConfigDialog necesita ser creada
-        # ConfigDialog(self.root, self.settings, self.reset_to_defaults)
-        messagebox.showinfo("Información", "Mostrar diálogo de configuración (Por implementar)")
+        # Pasar la instancia de AppSettings y el método de reseteo como callback
+        ConfigDialog(self.root, self.settings, reset_callback=self.reset_to_defaults)
+        # El diálogo se encargará de guardar los settings si el usuario presiona "Guardar"
+        # Recargar settings en MainWindow después de cerrar el diálogo (por si cambiaron)
+        self.reload_settings()
 
+    def reload_settings(self):
+         """Recarga las configuraciones desde AppSettings."""
+         # No es necesario recargar el archivo, AppSettings lo maneja.
+         # Solo actualizar las variables de MainWindow si es necesario.
+         self.estudios_por_pagina = self.settings.studies_per_page
+         self.files_per_page = self.settings.files_per_page
+         self.pdfs_per_page = self.settings.pdfs_per_page
+         # Podríamos necesitar refrescar la vista actual si la paginación cambió
+         # self.refresh_main_view() # O la vista activa
 
     def refresh_main_view(self):
         """

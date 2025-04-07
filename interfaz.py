@@ -261,12 +261,12 @@ class KineVizApp:
         conn.commit()
         conn.close()
         
-    def mostrar_configuracion(self):
-        config_window = Toplevel(self.root)
-        config_window.title('Configuración')
-
-        reset_button = ttk.Button(config_window, text="Restablecer Valores por Defecto", command=self.restablecer_valores_por_defecto)
-        reset_button.pack(pady=20)
+    # Eliminar mostrar_configuracion ya que se maneja en MainWindow/ConfigDialog
+    # def mostrar_configuracion(self):
+    #     config_window = Toplevel(self.root)
+    #     config_window.title('Configuración')
+    #     reset_button = ttk.Button(config_window, text="Restablecer Valores por Defecto", command=self.restablecer_valores_por_defecto)
+    #     reset_button.pack(pady=20)
 
     def buscar_estudio(self):
         query = self.search_entry.get()
