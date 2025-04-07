@@ -9,3 +9,5 @@ recursos/
 *.docx
 *.pdf
 kineviz.db
+
+google-cloud-sdk/
