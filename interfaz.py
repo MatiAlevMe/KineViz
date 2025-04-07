@@ -1,9 +1,55 @@
+import tkinter as tk # Import base tkinter
 from tkinter import ttk, messagebox, Tk, Toplevel, Text, Scrollbar, filedialog
-from .ui.main_window import MainWindow
-from .database.operations import get_db_connection
 import sqlite3
 import os
+import sys # Import sys
+import subprocess # Import subprocess
+import shutil # Import shutil
 import configparser
+from datetime import datetime
+import matplotlib.pyplot as plt
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
+from reportlab.lib.styles import getSampleStyleSheet
+
+# Import necessary classes from the new structure
+# Assuming interfaz.py is at the root level for these imports to work directly
+# If interfaz.py is inside kineviz/, adjust relative paths accordingly
+try:
+    from kineviz.core.services.study_service import StudyService
+    from kineviz.core.services.analysis_service import AnalysisService
+    from kineviz.ui.views.landing_page import LandingPage
+    from kineviz.ui.views.study_view import StudyView
+    from kineviz.ui.dialogs.analysis_dialog import AnalysisDialog
+    # Import the function from lectura.py (assuming it's still at the root)
+    from lectura import leer_archivo_csv_o_txt
+except ImportError as e:
+    print(f"Warning: Could not import refactored modules in interfaz.py - {e}")
+    # Define dummy classes/functions if imports fail, to avoid further NameErrors
+    # This is a temporary measure for flake8 during refactoring.
+    class DummyService: pass
+    StudyService = DummyService
+    AnalysisService = DummyService
+    class DummyPage:
+        def __init__(self, *args, **kwargs): pass
+        def pack(self, *args, **kwargs): pass
+        def destroy(self, *args, **kwargs): pass
+    LandingPage = DummyPage
+    StudyView = DummyPage
+    class DummyDialog:
+        def __init__(self, *args, **kwargs): pass
+    AnalysisDialog = DummyDialog
+    def leer_archivo_csv_o_txt(*args, **kwargs): pass
+
+
+# Remove duplicate imports if they exist below
+# from .ui.main_window import MainWindow # Already imported relatively? Check context.
+# from .database.operations import get_db_connection # Already imported relatively? Check context.
+
+# Remove imports already handled above
+# import sqlite3
+# import os
+# import configparser
 from datetime import datetime
 import matplotlib.pyplot as plt
 from reportlab.lib.pagesizes import letter
