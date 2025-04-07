@@ -4,6 +4,79 @@ Este roadmap describe el proceso de refactorización de la aplicación KineViz, 
 
 Este ROADMAP debe ser actualizado en cada iteración hasta completar la refactorización y se debe dar la opción de ejecutar el programa con "python -m kineviz.app" para ir capturando errores.
 
+## Estrctura de carpetas de refactorización
+
+├── __init__.py
+├── app.py           # Punto de entrada principal
+│
+├── core/                 # Lógica de negocio y dominio
+│   ├── __init__.py
+│   ├── exceptions.py  
+│   ├── data_processing/  # Procesamiento de datos
+│   │   ├── processors.py  # (formatos, cálculos)
+│   │   ├── file_handlers.py  # Manejo específico de archivos
+│   │   └── directory_manager.py  # Gestión de estructura de directorios
+│   │
+│   ├── models/           # Modelos de datos y DTOs
+│   │   ├── study.py
+│   │   ├── measurement.py
+│   │   └── report.py
+│   │
+│   └── services/         # Lógica de negocio
+│       ├── study_service.py
+│       ├── file_service.py
+│       └── analysis_service.py
+│
+├── ui/                   # Capa de presentación
+│   ├── __init__.py
+│   ├── main_window.py    # Ventana principal
+│   │
+│   ├── views/            # Vistas complejas
+│   │   ├── landing_page.py
+│   │   ├── study_view.py
+│   │   └── analysis_view.py
+│   │
+│   ├── dialogs/          # Diálogos modales
+│   │   ├── analysis_dialog.py
+│   │   ├── study_dialog.py
+│   │   ├── file_dialog.py
+│   │   └── report_dialog.py
+│   │
+│   ├── widgets/          # Componentes reutilizables
+│   │   ├── pagination.py
+│   │   ├── paginated_table.py
+│   │   ├── file_tree.py
+│   │   ├── file_browser.py
+│   │   └── charting.py
+│   │
+│   └── utils/            # Helpers de UI
+│       ├── validators.py
+│       ├── file_ops.py
+│       └── style.py      # Temas y estilos
+│
+├── database/             # Persistencia de datos
+│   ├── __init__.py
+│   ├── operations.py     # CRUD básico
+│   ├── repositories.py   # Patrón repositorio
+│   └── models.py         # Modelos de DB
+│
+├── config/               # Configuración
+│   ├── __init__.py
+│   ├── settings.py
+│   └── environment.py    # Gestión de entornos
+│
+├── utils/                # Utilidades generales
+│   ├── __init__.py
+│   ├── logger.py
+│   └── security.py       # Encriptación, etc.
+│
+├── tests/                # Pruebas automatizadas
+│   ├── unit/
+│   └── integration/
+│
+├── docs/                 # Documentación
+└── examples/             # Ejemplos de uso
+
 ## Fase 1: Integración Inicial y Estructura Base (Completada - d2caeef)
 
 *   [x] Crear estructura básica del proyecto (`kineviz` package).
