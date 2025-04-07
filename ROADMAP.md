@@ -47,8 +47,9 @@
     *   [x] Selección de parámetros (pacientes, frecuencias, tipos, periodos, cálculos).
     *   [ ] Generación de reportes PDF.
     *   [ ] Visualización/eliminación de reportes generados.
-*   [ ] Implementar `AnalysisService` para la lógica de análisis y generación de reportes.
-*   [ ] Implementar `Charting` (`kineviz/ui/widgets/charting.py`) para visualizaciones.
+*   [x] Implementar `AnalysisService` para la lógica de análisis y generación de reportes. (Implementación inicial de PDF y cálculos)
+*   [x] Implementar `Charting` (`kineviz/ui/widgets/charting.py`) para visualizaciones. (Boxplot, Barchart básicos)
+*   [ ] Implementar visualización/eliminación de reportes generados en `AnalysisDialog`.
 
 ## Fase 4: Refinamientos y Finalización
 
@@ -64,10 +65,11 @@
 ## Known Issues / Bugs
 
 *   **Edición de Estudio - Cambio de Criterios**: Al editar un estudio y cambiar los `Tipos de Prueba` o `Periodos de Prueba`, no se validan ni eliminan automáticamente los archivos existentes que ya no cumplen con los nuevos criterios. (Ver Fase 2 - Editar Estudio).
-*   **Análisis y Reportes**: La lógica principal de análisis y la generación de gráficos/PDF en `AnalysisService` y `AnalysisDialog` está pendiente. La selección de parámetros y la estructura básica del diálogo están implementadas. (Ver Fase 3).
+*   **Análisis y Reportes**: La lógica de análisis y generación de PDF está implementada en `AnalysisService`. Falta integrar la visualización/eliminación de reportes en `AnalysisDialog`. (Ver Fase 3).
 *   **Configuración**: El diálogo de configuración (`ConfigDialog`) y el manejo centralizado de ajustes (`AppSettings`) están pendientes. (Ver Fase 4).
 *   **Limpieza de Directorios**: La limpieza de directorios vacíos (paciente, frecuencia) después de eliminar el último archivo dentro de ellos funciona, pero podría mejorarse para manejar casos borde o errores de permisos de forma más robusta.
 *   **Validación de Pacientes para Análisis**: La validación ahora se basa en los parámetros únicos extraídos de archivos procesados válidos. Si un estudio tiene archivos pero no cumplen los criterios o solo tiene archivos OG, no permitirá el análisis.
+*   **Lectura de Datos Procesados**: La función `_read_processed_file_data` en `AnalysisService` asume un formato específico (';' como separador, 4 líneas de header, 3 de stats). Podría ser más robusta o configurable.
 
 ---
 *Este archivo se actualizará a medida que avance el desarrollo.*
