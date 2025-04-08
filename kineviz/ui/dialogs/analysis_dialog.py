@@ -3,11 +3,14 @@ from tkinter import ttk, Toplevel, messagebox, filedialog # Añadir filedialog
 import os
 import sys
 import subprocess
+import logging # Importar logging
 from tkinter import Listbox, Scrollbar, Frame # Necesario para las listas
 from pathlib import Path # Necesario para manejar rutas de reportes
 
 # Importar AnalysisService para type hinting
 from kineviz.core.services.analysis_service import AnalysisService
+
+logger = logging.getLogger(__name__) # Logger para este módulo
 
 class AnalysisDialog(Toplevel):
     def __init__(self, parent, analysis_service: AnalysisService, study_id: int):
@@ -131,6 +134,7 @@ class AnalysisDialog(Toplevel):
         try:
             self.available_params = self.analysis_service.get_analysis_parameters(self.study_id)
         except Exception as e:
+            logger.error(f"No se pudieron cargar los parámetros de análisis para estudio {self.study_id}: {e}", exc_info=True)
             messagebox.showerror("Error", f"No se pudieron cargar los parámetros de análisis: {e}", parent=self)
             self.available_params = {} # Asegurar que sea un diccionario vacío
 
@@ -255,8 +259,10 @@ class AnalysisDialog(Toplevel):
             # Llamar al servicio con los parámetros recolectados
             results = self.analysis_service.perform_analysis(self.study_id, selected_parameters)
             # Mostrar resultados (en una nueva ventana, en este diálogo, etc.)
+            logger.info(f"Análisis realizado para estudio {self.study_id}. Resultados: {results}") # Loggear resultados (puede ser largo)
             messagebox.showinfo("Resultado Análisis (Placeholder)", f"{results}", parent=self)
         except Exception as e:
+            logger.error(f"Error al realizar análisis para estudio {self.study_id}: {e}", exc_info=True)
             messagebox.showerror("Error Análisis", f"Ocurrió un error: {e}", parent=self)
 
     def generate_report(self):
@@ -347,6 +353,7 @@ class AnalysisDialog(Toplevel):
                     'Eliminar'
                 ), tags=(report['path'],)) # Guardar ruta completa en tags
         except Exception as e:
+            logger.error(f"Error al listar reportes para estudio {self.study_id}: {e}", exc_info=True)
             messagebox.showerror("Error", f"No se pudieron listar los reportes: {e}", parent=self)
 
     def on_report_tree_click(self, event):
@@ -387,6 +394,7 @@ class AnalysisDialog(Toplevel):
             else: # Linux, etc.
                 subprocess.run(['xdg-open', report_path], check=True)
         except Exception as e:
+            logger.error(f"Error al abrir reporte {report_path}: {e}", exc_info=True)
             messagebox.showerror("Error al Abrir", f"No se pudo abrir el reporte '{report_path.name}':\n{str(e)}", parent=self)
 
     def delete_report(self, report_path: Path, item_id):
@@ -409,9 +417,10 @@ class AnalysisDialog(Toplevel):
                  messagebox.showerror("Error", f"El reporte no se encontró al intentar eliminarlo:\n{report_path}", parent=self)
                  self.load_reports() # Recargar lista completa
             except Exception as e:
+                logger.error(f"Error al eliminar reporte {report_path}: {e}", exc_info=True)
                 messagebox.showerror("Error al Eliminar", f"No se pudo eliminar el reporte:\n{e}", parent=self)
-                import traceback
-                traceback.print_exc()
+                # import traceback # Ya no es necesario
+                # traceback.print_exc() # Reemplazado por logger
 
 # Para pruebas directas (si es necesario)
 if __name__ == '__main__':
@@ -420,10 +429,19 @@ if __name__ == '__main__':
 
     # Crear instancias dummy/reales de los servicios necesarios
     class DummyAnalysisService:
+        def get_analysis_parameters(self, study_id): # Añadir método dummy
+            print(f"DummyAnalysisService: get_analysis_parameters({study_id})")
+            return {'patients': {'P01', 'P02', 'P03'}, 'frequencies': {'Cinematica'}, 'types': {'CMJ'}, 'periods': {'PRE'}, 'calculations': {'Maximo', 'Minimo'}}
+        def list_reports(self, study_id): # Añadir método dummy
+            print(f"DummyAnalysisService: list_reports({study_id})")
+            return [{'name': 'dummy_report.pdf', 'path': '/tmp/dummy_report.pdf'}]
+        def delete_report(self, report_path): # Añadir método dummy
+            print(f"DummyAnalysisService: delete_report({report_path})")
         def perform_analysis(self, study_id, parameters):
+            print(f"DummyAnalysisService: perform_analysis({study_id}, {parameters})")
             return f"Análisis simulado para {study_id} con {parameters}"
         def generate_report(self, study_id, parameters, output_path):
-            print(f"Simulando generación de reporte para {study_id} en {output_path}")
+            print(f"DummyAnalysisService: generate_report({study_id}, {parameters}, {output_path})")
             # Crear un archivo dummy para probar la apertura
             try:
                 with open(output_path, 'w') as f:

@@ -4,8 +4,11 @@ import os # Necesario para os.startfile
 import sys # Necesario para sys.platform
 import subprocess # Necesario para open/xdg-open
 from pathlib import Path # Para manejar rutas de archivo
+import logging # Importar logging
 # Importar FileService para type hinting
 from kineviz.core.services.file_service import FileService
+
+logger = logging.getLogger(__name__) # Logger para este módulo
 
 class FileBrowser(ttk.Frame):
     def __init__(self, parent, file_service: FileService, study_id: int, files_per_page: int = 10):
@@ -125,12 +128,13 @@ class FileBrowser(ttk.Frame):
             self.update_pagination_controls()
 
         except Exception as e:
+            logger.error(f"Error al cargar archivos para estudio {self.study_id}: {e}", exc_info=True)
             messagebox.showerror("Error al Cargar Archivos", f"No se pudieron cargar los archivos del estudio:\n{e}", parent=self)
             self.total_files = 0
             self.total_pages = 1
             self.update_pagination_controls() # Actualizar controles incluso en error
-            import traceback
-            traceback.print_exc()
+            # import traceback # Ya no es necesario
+            # traceback.print_exc() # Reemplazado por logger
 
     def apply_filters(self):
         """Aplica los filtros y búsqueda, reseteando a la página 1."""
@@ -187,7 +191,7 @@ class FileBrowser(ttk.Frame):
             self.current_page = page_number
             self.load_files()
         else:
-            print(f"Advertencia: Intento de ir a página inválida {page_number}")
+            logger.warning(f"Intento de ir a página inválida {page_number} (Total: {self.total_pages})")
 
 
     def on_tree_click(self, event):
@@ -236,6 +240,7 @@ class FileBrowser(ttk.Frame):
         except subprocess.CalledProcessError as e:
              messagebox.showerror("Error", f"El comando para abrir el archivo falló:\n{e}", parent=self)
         except Exception as e:
+            logger.error(f"Error al intentar abrir archivo {file_path}: {e}", exc_info=True)
             messagebox.showerror("Error", f"No se pudo abrir el archivo '{file_path.name}':\n{str(e)}", parent=self)
 
     def delete_file(self, file_path: Path, item_id):
@@ -261,6 +266,7 @@ class FileBrowser(ttk.Frame):
                  messagebox.showerror("Error", f"El archivo no se encontró al intentar eliminarlo:\n{file_path}", parent=self)
                  self.load_files() # Recargar lista completa
             except Exception as e:
+                logger.error(f"Error al eliminar archivo {file_path} para estudio {self.study_id}: {e}", exc_info=True)
                 messagebox.showerror("Error al Eliminar", f"No se pudo eliminar el archivo:\n{e}", parent=self)
-                import traceback
-                traceback.print_exc() # Para debugging en consola
+                # import traceback # Ya no es necesario
+                # traceback.print_exc() # Reemplazado por logger

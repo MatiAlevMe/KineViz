@@ -131,7 +131,7 @@ Este ROADMAP debe ser actualizado en cada iteración hasta completar la refactor
 ## Fase 4: Refinamientos y Finalización
 
 *   [x] Implementar `ConfigDialog` (`kineviz/ui/dialogs/config_dialog.py`) y `AppSettings` (`kineviz/config/settings.py`).
-*   [x] Mejorar manejo de errores y logging (`kineviz/utils/logger.py`). (Implementación inicial)
+*   [x] Mejorar manejo de errores y logging (`kineviz/utils/logger.py`). (Integrado en la mayoría de módulos)
 *   [ ] Añadir pruebas unitarias e de integración (`tests/`).
 *   [ ] Completar documentación (`docs/`).
 *   [x] Limpiar código remanente de `interfaz.py` y `lectura.py`.
@@ -147,6 +147,7 @@ Este ROADMAP debe ser actualizado en cada iteración hasta completar la refactor
 *   **Limpieza de Directorios**: La limpieza de directorios vacíos (paciente, frecuencia) después de eliminar el último archivo dentro de ellos funciona, pero podría mejorarse para manejar casos borde o errores de permisos de forma más robusta.
 *   **Validación de Pacientes para Análisis**: La validación ahora se basa en los parámetros únicos extraídos de archivos procesados válidos. Si un estudio tiene archivos pero no cumplen los criterios o solo tiene archivos OG, no permitirá el análisis.
 *   **Lectura de Datos Procesados**: La función `_read_processed_file_data` en `AnalysisService` asume un formato específico (';' como separador, 4 líneas de header, 3 de stats). Podría ser más robusta o configurable.
+*   **Logging**: El logging está implementado en la mayoría de los módulos. Se podrían añadir más mensajes de `DEBUG` o refinar los niveles existentes.
 
 ---
 *Este archivo se actualizará a medida que avance el desarrollo.*
