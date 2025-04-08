@@ -157,7 +157,7 @@ class StudyDialog(Toplevel):
                              invalid_files.append((Path(filename), file_path)) # Fallback al nombre de archivo
 
             if invalid_files:
-                print(f"DEBUG: Archivos inválidos encontrados: {[str(f[0]) for f in invalid_files]}")
+                logger.info(f"Archivos inválidos encontrados al cambiar criterios para estudio {study_id}: {[str(f[0]) for f in invalid_files]}")
                 # Mostrar mensaje al usuario
                 message = "Los siguientes archivos ya no cumplen con los nuevos criterios de Tipos/Periodos de Prueba:\n\n"
                 message += "\n".join([f"- {str(f[0])}" for f in invalid_files[:10]]) # Mostrar hasta 10 archivos

@@ -130,7 +130,7 @@ class AppSettings:
 
     def reset_to_defaults(self):
          """Restablece las configuraciones en memoria a los valores por defecto."""
-         print("Restableciendo configuraciones a valores por defecto...")
+         logger.info("Restableciendo configuraciones a valores por defecto...")
          self.config = configparser.ConfigParser()
          self.config.read_dict(self.DEFAULT_SETTINGS)
          # Guardar inmediatamente los valores por defecto en el archivo

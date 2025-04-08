@@ -265,13 +265,13 @@ class AnalysisService:
                  frecuencia -> tipo_periodo -> calculo -> paciente -> Serie de resultados.
                  Ej: {'Cinematica': {'CMJ_PRE': {'Maximo': {'P01': pd.Series, 'P02': pd.Series}}}}
         """
-        print(f"Realizando análisis para estudio {study_id} con parámetros: {parameters}")
+        logger.info(f"Realizando análisis para estudio {study_id} con parámetros: {parameters}")
         structured_data = self._get_data_for_parameters(study_id, parameters)
         analysis_results = {}
         selected_calculations = parameters.get('calculations', [])
 
         if not structured_data:
-            print("No se encontraron datos para los parámetros seleccionados.")
+            logger.warning(f"No se encontraron datos para los parámetros de análisis seleccionados en estudio {study_id}.")
             return {}
 
         for freq, type_period_data in structured_data.items():
