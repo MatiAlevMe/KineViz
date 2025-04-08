@@ -2,10 +2,13 @@ import tkinter as tk
 from tkinter import ttk, Toplevel, messagebox, Canvas, Scrollbar, Frame
 # Importar validador de datos y nuevo validador de nombres de archivo
 from kineviz.ui.utils.validators import validate_study_data, validate_filename_for_study_criteria
+import logging # Importar logging
 # Importar FileService para obtener archivos y Path para manejar rutas
 # Nota: FileService se importa aquí para consistencia, aunque también se usa en __init__
 from kineviz.core.services.file_service import FileService
 from pathlib import Path
+
+logger = logging.getLogger(__name__) # Logger para este módulo
 
 class StudyDialog(Toplevel):
     # Añadir study_to_edit y on_save_callback
@@ -70,6 +73,7 @@ class StudyDialog(Toplevel):
             self.original_test_periods = [p.strip() for p in original_periods_str.split(',') if p.strip()]
 
         except Exception as e:
+            logger.error(f"No se pudieron cargar los datos del estudio {self.study_to_edit.get('id', 'N/A')} para edición: {e}", exc_info=True)
             messagebox.showerror("Error al Cargar", f"No se pudieron cargar los datos del estudio:\n{e}", parent=self)
             self.destroy() # Cerrar diálogo si no se pueden cargar datos
 
@@ -122,7 +126,7 @@ class StudyDialog(Toplevel):
         :param new_periods: Nueva lista de periodos de prueba.
         :return: True si se puede proceder con el guardado, False si el usuario canceló la eliminación.
         """
-        print("DEBUG: Verificando cambio de criterios...")
+        logger.debug(f"Verificando cambio de criterios para estudio {study_id}...")
         try:
             # Obtener todos los archivos procesados del estudio (desempaquetar la tupla)
             # Usamos get_study_files que ya filtra por carpetas de frecuencia
@@ -173,9 +177,10 @@ class StudyDialog(Toplevel):
                             deleted_count += 1
                         except Exception as e:
                             errors.append(f"- {absolute_path.name}: {e}")
-                            print(f"Error eliminando archivo {absolute_path}: {e}")
+                            logger.error(f"Error eliminando archivo inválido {absolute_path} para estudio {study_id}: {e}", exc_info=True)
 
                     if errors:
+                        logger.error(f"Errores al eliminar archivos inválidos para estudio {study_id}: {errors}")
                         messagebox.showerror("Error al Eliminar Archivos",
                                              f"Se eliminaron {deleted_count} archivos, pero ocurrieron errores al eliminar otros:\n" + "\n".join(errors),
                                              parent=self)
@@ -185,16 +190,17 @@ class StudyDialog(Toplevel):
                          messagebox.showinfo("Archivos Eliminados", f"Se eliminaron {deleted_count} archivos inválidos.", parent=self)
                     return True # Proceder con el guardado
                 else:
-                    print("DEBUG: Usuario canceló eliminación.")
+                    logger.info(f"Usuario canceló eliminación de archivos inválidos para estudio {study_id}.")
                     return False # Usuario canceló, no guardar
             else:
-                print("DEBUG: Todos los archivos existentes cumplen los nuevos criterios.")
+                logger.debug(f"Todos los archivos existentes cumplen los nuevos criterios para estudio {study_id}.")
                 return True # No hay archivos inválidos
 
         except Exception as e:
+            logger.error(f"Error al validar archivos existentes para estudio {study_id}: {e}", exc_info=True)
             messagebox.showerror("Error al Validar Archivos", f"Ocurrió un error al verificar los archivos existentes:\n{e}", parent=self)
-            import traceback
-            traceback.print_exc()
+            # import traceback # Ya no es necesario
+            # traceback.print_exc() # Reemplazado por logger
             return False # No proceder si hubo un error en la validación
 
     def save(self):
@@ -235,11 +241,11 @@ class StudyDialog(Toplevel):
                     cleaned_periods
                 )
             else:
-                print("DEBUG: Criterios (tipos/periodos) no han cambiado.")
+                logger.debug(f"Criterios (tipos/periodos) no han cambiado para estudio {self.study_to_edit['id']}.")
 
         # --- Proceder con el guardado si todo está bien ---
         if not proceed_with_save:
-            print("DEBUG: Guardado abortado debido a cancelación de eliminación de archivos.")
+            logger.warning(f"Guardado de estudio {self.study_to_edit['id']} abortado debido a cancelación de eliminación de archivos.")
             return # No guardar si el usuario canceló la eliminación
 
         try:
@@ -258,10 +264,12 @@ class StudyDialog(Toplevel):
 
             self.destroy() # Cerrar el diálogo
 
-        except ValueError as ve: # Capturar errores específicos si es posible
+        except ValueError as ve: # Capturar errores específicos de validación (ej. nombre duplicado si se implementa)
+             logger.warning(f"Error de validación al guardar estudio: {ve}")
              messagebox.showerror("Error de Validación", str(ve), parent=self)
         except Exception as e: # Capturar errores generales del servicio o DB
-            # Imprimir traceback para debugging
-            import traceback
-            traceback.print_exc()
+            study_id_log = self.study_to_edit['id'] if self.study_to_edit else "nuevo"
+            logger.error(f"Error inesperado al guardar estudio {study_id_log}: {e}", exc_info=True)
+            # import traceback # Ya no es necesario
+            # traceback.print_exc() # Reemplazado por logger
             messagebox.showerror("Error al Guardar", f"Ocurrió un error inesperado:\n{str(e)}", parent=self)

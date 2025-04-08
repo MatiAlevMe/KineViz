@@ -2,10 +2,13 @@ import tkinter as tk
 from tkinter import ttk, Toplevel, messagebox, filedialog, Listbox, Scrollbar
 from pathlib import Path
 import os # Para os.path.basename
+import logging # Importar logging
 
 # Importar FileService para type hinting y validación
 from kineviz.core.services.file_service import FileService
 from kineviz.ui.utils.validators import validate_filename_for_study_criteria
+
+logger = logging.getLogger(__name__) # Logger para este módulo
 
 class FileDialog(Toplevel):
     """Diálogo para seleccionar y agregar archivos a un estudio."""
@@ -28,6 +31,7 @@ class FileDialog(Toplevel):
             self.valid_types = [t.strip() for t in types_str.split(',') if t.strip()]
             self.valid_periods = [p.strip() for p in periods_str.split(',') if p.strip()]
         except Exception as e:
+            logger.error(f"No se pudieron cargar los detalles del estudio {self.study_id} en FileDialog: {e}", exc_info=True)
             messagebox.showerror("Error", f"No se pudieron cargar los detalles del estudio: {e}", parent=parent)
             self.destroy()
             return
@@ -199,12 +203,13 @@ class FileDialog(Toplevel):
             self.destroy() # Cerrar diálogo después de mostrar mensaje
 
         except Exception as e:
+            logger.critical(f"Error inesperado durante el procesamiento de archivos para estudio {self.study_id}: {e}", exc_info=True)
             messagebox.showerror("Error Crítico", f"Ocurrió un error inesperado durante el procesamiento:\n{e}", parent=self)
             # Habilitar botón de nuevo en caso de error crítico
             self.process_button.config(state=tk.NORMAL if self.selected_files else tk.DISABLED)
             self.grab_release()
-            import traceback
-            traceback.print_exc()
+            # import traceback # Ya no es necesario
+            # traceback.print_exc() # Reemplazado por logger
         finally:
              # Asegurarse de liberar el grab si aún está activo
              try:
@@ -228,6 +233,7 @@ if __name__ == '__main__':
     # --- Clases y Servicios Dummy ---
     class DummyStudyService:
         def get_study_details(self, study_id):
+            # Usar print aquí está bien para un dummy __main__
             print(f"DummyStudyService: get_study_details({study_id})")
             # Simular criterios para prueba
             return {
@@ -243,6 +249,7 @@ if __name__ == '__main__':
             self.study_service = study_service
 
         def add_files_to_study(self, study_id, file_paths):
+            # Usar print aquí está bien para un dummy __main__
             print(f"DummyFileService: add_files_to_study({study_id}, {file_paths})")
             # Simular procesamiento
             results = {'success': 0, 'errors': []}
@@ -262,6 +269,7 @@ if __name__ == '__main__':
     dummy_file_service = DummyFileService(dummy_study_service)
 
     def my_callback():
+        # Usar print aquí está bien para un dummy __main__
         print("Callback llamado después de agregar archivos!")
 
     dialog = FileDialog(root, dummy_file_service, 1, my_callback)

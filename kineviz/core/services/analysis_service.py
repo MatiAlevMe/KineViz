@@ -1,6 +1,7 @@
 import os
 import tempfile
 import shutil
+import logging # Importar logging
 from pathlib import Path
 from datetime import datetime
 import numpy as np
@@ -18,6 +19,8 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.lib.units import inch # Para tamaños
+
+logger = logging.getLogger(__name__) # Logger para este módulo
 
 class AnalysisService:
     def __init__(self, study_service: StudyService, file_service: FileService):
@@ -46,7 +49,7 @@ class AnalysisService:
             params['calculations'] = {'Maximo', 'Minimo', 'Rango'}
             return params
         except Exception as e:
-            print(f"Error obteniendo parámetros de análisis para estudio {study_id}: {e}")
+            logger.error(f"Error obteniendo parámetros de análisis para estudio {study_id}: {e}", exc_info=True)
             # Devolver vacío en caso de error para que la UI no falle
             return {'patients': set(), 'frequencies': set(), 'types': set(), 'periods': set(), 'calculations': set()}
 
@@ -62,7 +65,7 @@ class AnalysisService:
                 lines = f.readlines()
 
             if len(lines) <= 7: # 4 header + 3 stats = 7. Necesita al menos 1 fila de datos.
-                print(f"Advertencia: Archivo {file_path.name} no contiene suficientes líneas para extraer datos.")
+                logger.warning(f"Archivo {file_path.name} no contiene suficientes líneas para extraer datos.")
                 return None
 
             # Omitir encabezado y estadísticas
@@ -113,12 +116,12 @@ class AnalysisService:
             return df[numeric_cols]
 
         except FileNotFoundError:
-            print(f"Error: Archivo no encontrado al leer datos: {file_path}")
+            logger.error(f"Archivo no encontrado al leer datos: {file_path}")
             return None
         except Exception as e:
-            print(f"Error leyendo datos de {file_path.name}: {e}")
-            import traceback
-            traceback.print_exc()
+            logger.error(f"Error leyendo datos de {file_path.name}: {e}", exc_info=True)
+            # import traceback # Ya no es necesario
+            # traceback.print_exc() # Reemplazado por exc_info=True
             return None
 
     def _get_data_for_parameters(self, study_id: int, parameters: dict) -> dict:
@@ -155,7 +158,7 @@ class AnalysisService:
             types_list = [t.strip() for t in (study_details.get('test_types') or '').split(',') if t.strip()]
             periods_list = [p.strip() for p in (study_details.get('test_periods') or '').split(',') if p.strip()]
         except Exception as e:
-            print(f"Error obteniendo detalles del estudio {study_id} para buscar datos: {e}")
+            logger.error(f"Error obteniendo detalles del estudio {study_id} para buscar datos: {e}", exc_info=True)
             return {}
 
 
@@ -248,7 +251,7 @@ class AnalysisService:
         elif calculation == "Rango":
             return numeric_df.max(skipna=True) - numeric_df.min(skipna=True)
         else:
-            print(f"Advertencia: Cálculo no soportado '{calculation}'")
+            logger.warning(f"Cálculo no soportado '{calculation}'")
             return None
 
     def perform_analysis(self, study_id: int, parameters: dict):
@@ -317,7 +320,7 @@ class AnalysisService:
         # Usar tempfile para mayor seguridad y limpieza automática si falla
         with tempfile.TemporaryDirectory(prefix=f"kineviz_report_{study_id}_") as temp_dir_str:
             temp_dir = Path(temp_dir_str)
-            print(f"Directorio temporal para gráficos: {temp_dir}")
+            logger.debug(f"Directorio temporal para gráficos: {temp_dir}")
 
             # --- Configurar PDF con ReportLab ---
             doc = SimpleDocTemplate(output_path_str, pagesize=letter,
@@ -472,9 +475,9 @@ class AnalysisService:
             # --- Construir PDF ---
             try:
                  doc.build(story)
-                 print(f"Reporte PDF generado exitosamente en {output_path}")
+                 logger.info(f"Reporte PDF generado exitosamente en {output_path}")
             except Exception as build_e:
-                 print(f"Error construyendo el PDF: {build_e}")
+                 logger.error(f"Error construyendo el PDF para estudio {study_id}: {build_e}", exc_info=True)
                  raise # Relanzar error de construcción
 
         # El directorio temporal se limpia automáticamente al salir del 'with'
@@ -502,7 +505,7 @@ class AnalysisService:
                 # Ordenar por nombre (o fecha si se extrae del nombre)
                 reports.sort(key=lambda x: x['name'], reverse=True)
         except Exception as e:
-            print(f"Error listando reportes para estudio {study_id}: {e}")
+            logger.error(f"Error listando reportes para estudio {study_id}: {e}", exc_info=True)
         return reports
 
     def delete_report(self, report_path_str: str):
@@ -521,7 +524,7 @@ class AnalysisService:
 
         try:
             report_path.unlink()
-            print(f"Reporte eliminado: {report_path}")
+            logger.info(f"Reporte eliminado: {report_path}")
         except OSError as e:
-            print(f"Error al eliminar el reporte {report_path}: {e}")
+            logger.error(f"Error al eliminar el reporte {report_path}: {e}", exc_info=True)
             raise
