@@ -159,15 +159,17 @@ class TestAnalysisService(unittest.TestCase):
         range_res = self.analysis_service._calculate_statistic(self.dummy_df, "Rango")
         invalid_res = self.analysis_service._calculate_statistic(self.dummy_df, "Mediana") # No soportado
 
-        pd.testing.assert_series_equal(max_res, pd.Series({'Val1': 3.0, 'Val2': 6.0}), check_names=False)
-        pd.testing.assert_series_equal(min_res, pd.Series({'Val1': 1.0, 'Val2': 4.0}), check_names=False)
-        pd.testing.assert_series_equal(range_res, pd.Series({'Val1': 2.0, 'Val2': 2.0}), check_names=False)
+        # Usar enteros en la serie esperada para que coincida el dtype
+        pd.testing.assert_series_equal(max_res, pd.Series({'Val1': 3, 'Val2': 6}), check_names=False)
+        pd.testing.assert_series_equal(min_res, pd.Series({'Val1': 1, 'Val2': 4}), check_names=False)
+        pd.testing.assert_series_equal(range_res, pd.Series({'Val1': 2, 'Val2': 2}), check_names=False)
         self.assertIsNone(invalid_res)
 
     def test_calculate_statistic_empty_or_nan(self):
         """Prueba cálculos con DataFrame vacío o solo NaN."""
         empty_df = pd.DataFrame()
         nan_df = pd.DataFrame({'A': [np.nan, np.nan], 'B': [np.nan, np.nan]})
+        # Ahora esperamos None porque el dataframe numérico estará vacío
         self.assertIsNone(self.analysis_service._calculate_statistic(empty_df, "Maximo"))
         self.assertIsNone(self.analysis_service._calculate_statistic(nan_df, "Maximo"))
         self.assertIsNone(self.analysis_service._calculate_statistic(None, "Maximo"))
@@ -237,18 +239,21 @@ class TestAnalysisService(unittest.TestCase):
     # Mockear dependencias para generate_report
     @patch('kineviz.core.services.analysis_service.AnalysisService._get_data_for_parameters')
     @patch('kineviz.core.services.analysis_service.AnalysisService._calculate_statistic')
-    @patch('kineviz.ui.widgets.charting.create_boxplot')
-    @patch('kineviz.ui.widgets.charting.create_barchart')
-    @patch('reportlab.platypus.SimpleDocTemplate') # Mockear el constructor del PDF
-    @patch('pathlib.Path.mkdir') # Mockear creación de directorios
-    def test_generate_report(self, mock_mkdir, mock_doc_template, mock_barchart, mock_boxplot, mock_calculate, mock_get_data):
+    @patch('kineviz.ui.widgets.charting.create_boxplot') # Mockear función de charting
+    @patch('kineviz.ui.widgets.charting.create_barchart') # Mockear función de charting
+    @patch('reportlab.platypus.SimpleDocTemplate') # Mockear clase de reportlab
+    @patch('reportlab.platypus.Image') # Mockear clase Image para evitar lectura de archivo
+    @patch('pathlib.Path.mkdir') # Mockear método de Path
+    def test_generate_report(self, mock_mkdir, mock_image, mock_doc_template, mock_barchart, mock_boxplot, mock_calculate, mock_get_data):
         """Prueba la generación de reportes (flujo y llamadas a mocks)."""
         # Simular datos y cálculos
         mock_get_data.return_value = {'Cinematica': {'CMJ_PRE': {'P01': self.dummy_df, 'P02': self.dummy_df}}}
         mock_calculate.return_value = self.dummy_stats_series
-        # Simular que los gráficos se crean exitosamente
-        mock_boxplot.side_effect = lambda **kwargs: kwargs['output_path'].touch()
-        mock_barchart.side_effect = lambda **kwargs: kwargs['output_path'].touch()
+        # Simular que los mocks de gráficos no hacen nada (solo registran llamada)
+        mock_boxplot.side_effect = None
+        mock_barchart.side_effect = None
+        # Configurar el mock de Image para que no falle
+        mock_image.return_value = MagicMock() # Devolver un mock simple para Image
 
         # Mockear el método build del documento PDF
         mock_pdf_doc = MagicMock()
@@ -279,22 +284,36 @@ class TestAnalysisService(unittest.TestCase):
 
     def test_generate_report_no_data(self):
         """Prueba generar reporte cuando no hay datos."""
+        # Usar una ruta dentro del directorio temporal
+        output_path_in_temp = self.analysis_service.file_service.project_root / "report_no_data.pdf"
         with patch('kineviz.core.services.analysis_service.AnalysisService._get_data_for_parameters', return_value={}):
-            with self.assertRaisesRegex(ValueError, "No se encontraron datos"):
-                self.analysis_service.generate_report(self.study_id, {}, "/fake/report.pdf")
+            # Mockear mkdir para evitar el error de sistema de archivos de solo lectura
+            with patch('pathlib.Path.mkdir'):
+                with self.assertRaisesRegex(ValueError, "No se encontraron datos"):
+                    self.analysis_service.generate_report(self.study_id, {}, str(output_path_in_temp))
 
-    @patch('pathlib.Path.exists')
-    @patch('pathlib.Path.is_dir')
+    # Simplificar mocks para Path en list_reports
     @patch('pathlib.Path.glob')
-    def test_list_reports(self, mock_glob, mock_is_dir, mock_exists):
+    @patch('pathlib.Path.is_dir')
+    @patch('pathlib.Path.exists')
+    def test_list_reports(self, mock_exists, mock_is_dir, mock_glob):
         """Prueba listar reportes existentes."""
         mock_reports_dir = self.study_path / "reportes"
-        mock_report_file = mock_reports_dir / "reporte_1.pdf"
+        mock_report_file = MagicMock(spec=Path) # Crear un mock para el archivo
+        mock_report_file.name = "reporte_1.pdf"
+        mock_report_file.__str__.return_value = str(mock_reports_dir / mock_report_file.name)
+        mock_report_file.is_file.return_value = True
 
-        # Simular existencia de directorio y archivo
-        mock_exists.side_effect = lambda: str(Path(mock_exists.call_args[0][0])) in [str(mock_reports_dir), str(mock_report_file)]
-        mock_is_dir.side_effect = lambda: str(Path(mock_is_dir.call_args[0][0])) == str(mock_reports_dir)
-        mock_glob.return_value = [mock_report_file] # Simular glob encontrando el archivo
+        # Configurar mocks de Path
+        def exists_side_effect(path_arg):
+            return str(path_arg) == str(mock_reports_dir) or str(path_arg) == str(mock_report_file)
+        mock_exists.side_effect = exists_side_effect
+
+        def is_dir_side_effect(path_arg):
+             return str(path_arg) == str(mock_reports_dir)
+        mock_is_dir.side_effect = is_dir_side_effect
+
+        mock_glob.return_value = [mock_report_file] # glob devuelve el mock del archivo
 
         # Mockear stat para evitar error al obtener fecha
         mock_stat_result = MagicMock()
