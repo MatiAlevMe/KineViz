@@ -245,8 +245,10 @@ class MainWindow:
         except PermissionError:
              messagebox.showerror("Error", f"No tiene permisos para acceder a la carpeta:\n'{folder_path}'")
         except subprocess.CalledProcessError as e:
+             logger.error(f"Comando para abrir carpeta {folder_path} falló: {e}", exc_info=True)
              messagebox.showerror("Error", f"El comando para abrir la carpeta falló:\n{e}")
         except Exception as e:
+            logger.error(f"Error inesperado al abrir carpeta {folder_path}: {e}", exc_info=True)
             messagebox.showerror("Error", f"No se pudo abrir la carpeta '{folder_path}':\n{str(e)}")
 
     def reset_to_defaults(self):
