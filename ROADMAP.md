@@ -131,7 +131,7 @@ Este ROADMAP debe ser actualizado en cada iteración hasta completar la refactor
 ## Fase 4: Refinamientos y Finalización
 
 *   [x] Implementar `ConfigDialog` (`kineviz/ui/dialogs/config_dialog.py`) y `AppSettings` (`kineviz/config/settings.py`).
-*   [ ] Mejorar manejo de errores y logging (`kineviz/utils/logger.py`).
+*   [x] Mejorar manejo de errores y logging (`kineviz/utils/logger.py`). (Implementación inicial)
 *   [ ] Añadir pruebas unitarias e de integración (`tests/`).
 *   [ ] Completar documentación (`docs/`).
 *   [x] Limpiar código remanente de `interfaz.py` y `lectura.py`.

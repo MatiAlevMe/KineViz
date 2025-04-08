@@ -1,6 +1,9 @@
 import sqlite3
 import os
+import logging # Importar logging
 from pathlib import Path # Importar Path
+
+logger = logging.getLogger(__name__) # Logger para este módulo
 
 class StudyRepository:
     def __init__(self, db_path='kineviz.db'):
@@ -117,14 +120,15 @@ class StudyRepository:
                 study_dir = project_root_dir / 'estudios' / study_name[0]
                 if study_dir.exists() and study_dir.is_dir():
                     import shutil
-                    print(f"Eliminando directorio: {study_dir}") # Log
-                    shutil.rmtree(study_dir, ignore_errors=True)
+                    logger.info(f"Eliminando directorio del estudio: {study_dir}")
+                    shutil.rmtree(study_dir, ignore_errors=True) # ignore_errors podría ocultar problemas
                 else:
-                    print(f"Directorio no encontrado o no es un directorio: {study_dir}") # Log
+                    logger.warning(f"Directorio del estudio no encontrado o no es un directorio: {study_dir}")
             else:
-                 print(f"No se encontró estudio con ID {study_id} para eliminar directorio.") # Log
+                 logger.warning(f"No se encontró estudio con ID {study_id} para eliminar directorio.")
 
             conn.commit() # Asegurar commit después de la operación
+            logger.info(f"Estudio ID {study_id} eliminado de la base de datos.")
 
     def count_studies(self):
         """
@@ -141,7 +145,7 @@ class StudyRepository:
                 count = cursor.fetchone()[0]
                 return count
         except sqlite3.Error as e:
-            print(f"Error al contar estudios en '{self.db_path}': {e}")
+            logger.error(f"Error al contar estudios en '{self.db_path}': {e}", exc_info=True)
             # Considerar lanzar una excepción personalizada o devolver 0/None
             return 0
 
@@ -168,7 +172,7 @@ class StudyRepository:
                 cursor.execute(query, params)
                 return [{'id': row[0], 'name': row[1]} for row in cursor.fetchall()]
         except sqlite3.Error as e:
-            print(f"Error al obtener estudios paginados: {e}")
+            logger.error(f"Error al obtener estudios paginados: {e}", exc_info=True)
             return []
 
     def get_total_studies_count(self, search_term: str = None):
@@ -191,7 +195,7 @@ class StudyRepository:
                 count = cursor.fetchone()[0]
                 return count
         except sqlite3.Error as e:
-            print(f"Error al contar estudios filtrados: {e}")
+            logger.error(f"Error al contar estudios filtrados: {e}", exc_info=True)
             return 0
 
     def update_study(self, study_id: int, study_data: dict):
@@ -222,9 +226,11 @@ class StudyRepository:
                 ))
                 conn.commit()
                 if cursor.rowcount == 0:
+                    logger.warning(f"Intento de actualizar estudio ID {study_id} fallido (no encontrado).")
                     raise ValueError(f"No se encontró estudio con ID {study_id} para actualizar.")
+                logger.info(f"Estudio ID {study_id} actualizado correctamente.")
         except sqlite3.Error as e:
-            print(f"Error al actualizar estudio ID {study_id}: {e}")
+            logger.error(f"Error al actualizar estudio ID {study_id}: {e}", exc_info=True)
             # Considerar relanzar una excepción personalizada
             raise
 
@@ -242,11 +248,11 @@ class StudyRepository:
         if old_path.exists() and old_path.is_dir():
             try:
                 os.rename(old_path, new_path)
-                print(f"Carpeta renombrada de '{old_name}' a '{new_name}'")
+                logger.info(f"Carpeta de estudio renombrada de '{old_name}' a '{new_name}'")
             except OSError as e:
-                print(f"Error al renombrar carpeta de '{old_name}' a '{new_name}': {e}")
-                # Considerar mostrar un error al usuario o loggear
+                logger.error(f"Error al renombrar carpeta de estudio de '{old_name}' a '{new_name}': {e}", exc_info=True)
+                # Considerar mostrar un error al usuario o relanzar
         elif not old_path.exists():
-             print(f"Advertencia: Carpeta original '{old_name}' no encontrada para renombrar.")
+             logger.warning(f"Carpeta original '{old_name}' no encontrada para renombrar.")
              # Crear la nueva carpeta si no existe la original? Depende del flujo deseado.
              # new_path.mkdir(parents=True, exist_ok=True)
