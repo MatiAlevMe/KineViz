@@ -132,7 +132,7 @@ Este ROADMAP debe ser actualizado en cada iteración hasta completar la refactor
 
 *   [x] Implementar `ConfigDialog` (`kineviz/ui/dialogs/config_dialog.py`) y `AppSettings` (`kineviz/config/settings.py`).
 *   [x] Mejorar manejo de errores y logging (`kineviz/utils/logger.py`). (Integrado en la mayoría de módulos)
-*   [ ] Añadir pruebas unitarias e de integración (`tests/`).
+*   [ ] Añadir pruebas unitarias e de integración (`tests/`). (Inicio: validadores)
 *   [ ] Completar documentación (`docs/`).
 *   [x] Limpiar código remanente de `interfaz.py` y `lectura.py`.
 *   [ ] Revisión final de estilos y UX.
