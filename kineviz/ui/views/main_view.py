@@ -9,7 +9,7 @@ class MainView:
         self.root = root
         self.main_window = main_window
         self.study_service = main_window.study_service
-        self.config = main_window.config # Acceder a la config cargada
+        # self.config = main_window.config # Ya no es necesario, se accede a través de main_window.settings o propiedades
 
         # Variables de estado
         self.current_page = 1
