@@ -134,7 +134,7 @@ Este ROADMAP debe ser actualizado en cada iteración hasta completar la refactor
 *   [ ] Mejorar manejo de errores y logging (`kineviz/utils/logger.py`).
 *   [ ] Añadir pruebas unitarias e de integración (`tests/`).
 *   [ ] Completar documentación (`docs/`).
-*   [ ] Limpiar código remanente de `interfaz.py` y `lectura.py`.
+*   [x] Limpiar código remanente de `interfaz.py` y `lectura.py`.
 *   [ ] Revisión final de estilos y UX.
 
 ---
