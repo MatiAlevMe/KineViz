@@ -120,10 +120,10 @@ Este ROADMAP debe ser actualizado en cada iteración hasta completar la refactor
     *   [x] Funcionalidad "Eliminar Archivo". (Hecho en Fase 2)
 *   [x] Implementar `FileService` para manejar la lógica de archivos (obtener, eliminar, filtrar, paginar, agregar). (Hecho en Fase 2 y 3)
 *   [x] Implementar diálogo para **Agregar Archivos** a un estudio, incluyendo validación de formato de nombre.
-*   [ ] Implementar `AnalysisDialog` (`kineviz/ui/dialogs/analysis_dialog.py`).
+*   [X] Implementar `AnalysisDialog` (`kineviz/ui/dialogs/analysis_dialog.py`).
     *   [x] Selección de parámetros (pacientes, frecuencias, tipos, periodos, cálculos).
-    *   [ ] Generación de reportes PDF.
-    *   [ ] Visualización/eliminación de reportes generados.
+    *   [X] Generación de reportes PDF.
+    *   [X] Visualización/eliminación de reportes generados.
 *   [x] Implementar `AnalysisService` para la lógica de análisis y generación de reportes. (Implementación inicial de PDF y cálculos)
 *   [x] Implementar `Charting` (`kineviz/ui/widgets/charting.py`) para visualizaciones. (Boxplot, Barchart básicos)
 *   [x] Implementar visualización/eliminación de reportes generados en `AnalysisDialog`.
