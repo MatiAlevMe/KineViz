@@ -296,7 +296,7 @@ class AnalysisDialog(Toplevel):
 
         try:
             self.analysis_service.generate_report(self.study_id, selected_parameters, output_path)
-            messagebox.showinfo("Reporte Generado (Placeholder)", f"Reporte guardado (o debería) en:\n{output_path}", parent=self)
+            messagebox.showinfo("Reporte Generado", f"Reporte guardado exitosamente en:\n{output_path}", parent=self)
             # Preguntar si desea abrir el archivo
             if messagebox.askyesno("Abrir Reporte", "¿Desea abrir el reporte generado?", parent=self):
                  try:
