@@ -40,13 +40,20 @@ class TestAnalysisService(unittest.TestCase):
 
     def setUp(self):
         """Configura mocks y la instancia de AnalysisService para cada prueba."""
+        # Crear directorio temporal real
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.temp_path = Path(self.temp_dir.name) # Definir self.temp_path
+
         self.mock_study_service = MagicMock()
         self.mock_file_service = MagicMock()
 
         # Configurar mocks con valores de retorno básicos
         self.study_id = 1
         self.study_name = "Test_Study"
-        self.study_path = Path("/fake/studies/Test_Study")
+        # self.study_path ahora debe apuntar dentro del directorio temporal
+        self.study_path = self.temp_path / "studies" / self.study_name
+        self.study_path.mkdir(parents=True) # Crear el directorio del estudio real
+
         self.mock_study_service.get_study_details.return_value = {
             'id': self.study_id, 'name': self.study_name,
             'test_types': 'CMJ,SJ', 'test_periods': 'PRE,POST'
