@@ -10,4 +10,6 @@ recursos/
 *.pdf
 kineviz.db
 
-google-cloud-sdk/
+## User Setup & Log
+config.ini
+logs/
