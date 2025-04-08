@@ -51,7 +51,12 @@ class TestAnalysisService(unittest.TestCase):
             'id': self.study_id, 'name': self.study_name,
             'test_types': 'CMJ,SJ', 'test_periods': 'PRE,POST'
         }
+        # Asegurar que el mock de file_service devuelva la ruta real del estudio temporal
         self.mock_file_service._get_study_path.return_value = self.study_path
+        # Configurar el project_root y studies_base_dir en el mock de file_service también
+        self.mock_file_service.project_root = self.temp_path
+        self.mock_file_service.studies_base_dir = self.temp_path / "studies"
+
         self.mock_file_service.get_unique_study_parameters.return_value = {
             'patients': {'P01', 'P02'}, 'frequencies': {'Cinematica'},
             'types': {'CMJ'}, 'periods': {'PRE'}
@@ -66,6 +71,10 @@ class TestAnalysisService(unittest.TestCase):
             'Val2': [4, 5, 6]
         })
         self.dummy_stats_series = pd.Series({'Val1': 3, 'Val2': 6}) # Ejemplo de resultado de cálculo
+
+    def tearDown(self):
+        """Limpia el directorio temporal después de cada prueba."""
+        self.temp_dir.cleanup()
 
     def test_get_analysis_parameters(self):
         """Prueba obtener parámetros de análisis."""
