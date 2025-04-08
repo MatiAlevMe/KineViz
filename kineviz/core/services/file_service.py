@@ -1,10 +1,12 @@
 import os
 import shutil
+import logging # Importar logging
 from pathlib import Path
 from tkinter import messagebox
 
 # Asume que StudyRepository está disponible para obtener detalles del estudio si es necesario
 # O que se pasa la ruta base de los estudios.
+logger = logging.getLogger(__name__) # Logger para este módulo
 # Por simplicidad inicial, asumiremos que la estructura de carpetas es conocida.
 
 class FileService:
@@ -26,7 +28,7 @@ class FileService:
             study_name = study_details['name']
             return self.studies_base_dir / study_name
         except Exception as e:
-            print(f"Error al obtener la ruta del estudio {study_id}: {e}")
+            logger.error(f"Error al obtener la ruta del estudio {study_id}: {e}", exc_info=True)
             messagebox.showerror("Error Interno", f"No se pudo encontrar la ruta para el estudio ID {study_id}.")
             return None
 
@@ -126,7 +128,7 @@ class FileService:
 
         try:
             file_path.unlink()  # Eliminar el archivo
-            print(f"Archivo eliminado: {file_path}")
+            logger.info(f"Archivo eliminado: {file_path}")
 
             # Intentar eliminar directorios padres si están vacíos, hasta la carpeta del estudio
             # Solo proceder si pudimos obtener study_path
@@ -143,19 +145,19 @@ class FileService:
 
                             if is_empty_simple:
                                 parent_dir.rmdir()
-                                print(f"Directorio vacío eliminado: {parent_dir}")
+                                logger.info(f"Directorio vacío eliminado: {parent_dir}")
                                 parent_dir = parent_dir.parent # Moverse al siguiente nivel superior
                             else:
-                                print(f"Directorio no vacío, deteniendo limpieza: {parent_dir}")
+                                logger.debug(f"Directorio no vacío, deteniendo limpieza: {parent_dir}")
                                 break # Detener si el directorio no está vacío
                         except OSError as e:
-                            print(f"No se pudo eliminar o verificar el directorio {parent_dir}: {e}")
+                            logger.warning(f"No se pudo eliminar o verificar el directorio {parent_dir}: {e}")
                             break # Detener si hay un error (ej. permisos, directorio no vacío)
             else:
-                 print(f"Advertencia: No se pudo determinar la ruta del estudio para la limpieza de directorios de {file_path}")
+                 logger.warning(f"No se pudo determinar la ruta del estudio para la limpieza de directorios de {file_path}")
 
         except OSError as e:
-            print(f"Error al eliminar el archivo {file_path}: {e}")
+            logger.error(f"Error al eliminar el archivo {file_path}: {e}", exc_info=True)
             raise # Relanzar la excepción
 
     # Removed study_id_from_path as it's unreliable and caused errors.
@@ -224,7 +226,7 @@ class FileService:
                     with open(ruta_archivo_seccion, 'a') as output_file:
                         processors.exportar_calculos(output_file, maximos, minimos, rangos)
                 else:
-                     print(f"Advertencia: No se encontraron mediciones en una sección de {source_file_path.name}")
+                     logger.warning(f"No se encontraron mediciones en una sección de {source_file_path.name}")
 
 
     def add_files_to_study(self, study_id: int, file_paths: list[str]) -> dict:
@@ -253,9 +255,12 @@ class FileService:
             valid_types = [t.strip() for t in types_str.split(',') if t.strip()]
             valid_periods = [p.strip() for p in periods_str.split(',') if p.strip()]
         except Exception as e:
-            results['errors'].append(f"Error al obtener criterios del estudio {study_id}: {e}")
+            error_msg = f"Error al obtener criterios del estudio {study_id}: {e}"
+            logger.error(error_msg, exc_info=True)
+            results['errors'].append(error_msg)
             return results
 
+        logger.info(f"Iniciando proceso de agregado de {len(file_paths)} archivos al estudio {study_id}.")
         for file_path_str in file_paths:
             source_file_path = Path(file_path_str)
             file_name = source_file_path.name
@@ -267,25 +272,24 @@ class FileService:
                 # 2. Procesar y copiar el archivo
                 self._process_and_copy_file(study_path, source_file_path)
                 results['success'] += 1
-                print(f"Archivo '{file_name}' procesado y agregado exitosamente.")
+                logger.info(f"Archivo '{file_name}' procesado y agregado exitosamente al estudio {study_id}.")
 
             except FileNotFoundError:
                  error_msg = f"Archivo no encontrado: {file_name}"
-                 print(error_msg)
+                 logger.error(error_msg)
                  results['errors'].append(error_msg)
             except ValueError as ve: # Errores de formato o validación
                  error_msg = f"{file_name}: {ve}"
-                 print(f"Error de validación/formato para {error_msg}")
+                 logger.warning(f"Error de validación/formato para {error_msg}")
                  results['errors'].append(error_msg)
             except Exception as e:
                  # Capturar otros errores durante el procesamiento
                  error_msg = f"Error procesando '{file_name}': {e}"
-                 print(error_msg)
+                 logger.error(error_msg, exc_info=True) # Usar exc_info para traceback
                  results['errors'].append(error_msg)
-                 # Para debugging más detallado:
-                 import traceback
-                 traceback.print_exc()
+                 # Ya no es necesario traceback.print_exc()
 
+        logger.info(f"Proceso de agregado finalizado para estudio {study_id}. Éxitos: {results['success']}, Errores: {len(results['errors'])}.")
         return results
 
     def get_unique_study_parameters(self, study_id: int) -> dict:
@@ -313,10 +317,11 @@ class FileService:
             valid_types_list = [t.strip() for t in types_str.split(',') if t.strip()]
             valid_periods_list = [p.strip() for p in periods_str.split(',') if p.strip()]
         except Exception as e:
-            print(f"Error al obtener criterios del estudio {study_id} para parámetros: {e}")
+            logger.error(f"Error al obtener criterios del estudio {study_id} para parámetros: {e}", exc_info=True)
             return {'patients': set(), 'frequencies': set(), 'types': set(), 'periods': set()}
 
         parameters = {'patients': set(), 'frequencies': set(), 'types': set(), 'periods': set()}
+        logger.debug(f"Buscando parámetros únicos para estudio {study_id} en {study_path}")
         processed_folders = ["Cinematica", "Cinetica", "Electromiografica"]
 
         for patient_dir in study_path.iterdir():
