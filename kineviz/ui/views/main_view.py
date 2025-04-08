@@ -1,7 +1,10 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import os # Necesario para verificar existencia de carpetas
+import logging # Importar logging
 from pathlib import Path # Importar Path
+
+logger = logging.getLogger(__name__) # Logger para este módulo
 
 class MainView:
     """Vista principal que muestra la lista de estudios."""
@@ -115,7 +118,7 @@ class MainView:
                 # Verificar si la carpeta del estudio existe (opcional pero bueno para consistencia)
                 study_folder_path = Path("estudios") / study['name']
                 if not study_folder_path.exists():
-                    print(f"Advertencia: Carpeta no encontrada para el estudio '{study['name']}'. Considerar eliminar registro.")
+                    logger.warning(f"Carpeta no encontrada para el estudio '{study['name']}' (ID: {study['id']}). El registro puede estar desincronizado.")
                     # Podríamos eliminar el estudio aquí o marcarlo visualmente
                     # self.study_service.delete_study(study['id']) # ¡Cuidado con esto!
                     # continue # Omitir estudio sin carpeta
@@ -130,9 +133,10 @@ class MainView:
             self.update_pagination_controls()
 
         except Exception as e:
+            logger.error(f"Error al cargar estudios: {e}", exc_info=True)
             messagebox.showerror("Error al Cargar Estudios", f"No se pudieron cargar los estudios:\n{e}", parent=self.root)
-            import traceback
-            traceback.print_exc() # Para debugging en consola
+            # import traceback # Ya no es necesario
+            # traceback.print_exc() # Reemplazado por logger
 
     def update_pagination_controls(self):
         """Actualiza los botones de paginación."""
@@ -176,7 +180,7 @@ class MainView:
             self.current_page = page_number
             self.load_studies()
         else:
-            print(f"Advertencia: Intento de ir a página inválida {page_number}")
+            logger.warning(f"Intento de ir a página inválida {page_number} (Total: {self.total_pages})")
 
     def search_studies(self):
         """Filtra los estudios basados en el término de búsqueda."""
@@ -212,15 +216,15 @@ class MainView:
         column_index = int(column_id.replace('#', '')) - 1 # Índice basado en 0
 
         if column_index == 1: # Columna "Ver"
-            print(f"DEBUG: Ver estudio ID {study_id}")
+            logger.debug(f"Acción 'Ver' para estudio ID {study_id}")
             self.main_window.show_study_view(study_id)
         elif column_index == 2: # Columna "Editar"
-            print(f"DEBUG: Editar estudio ID {study_id}")
+            logger.debug(f"Acción 'Editar' para estudio ID {study_id}")
             # Pasar el diccionario del estudio para precargar el diálogo
             study_details = {'id': study_id, 'name': study_name} # Info mínima necesaria
             self.main_window.show_create_study_dialog(study_to_edit=study_details)
         elif column_index == 3: # Columna "Eliminar"
-            print(f"DEBUG: Eliminar estudio ID {study_id}")
+            logger.debug(f"Acción 'Eliminar' para estudio ID {study_id}")
             self.delete_study(study_id, study_name)
 
     def delete_study(self, study_id, study_name):
@@ -237,9 +241,10 @@ class MainView:
                 if not self.study_service.has_studies():
                     self.main_window.show_landing_page()
             except Exception as e:
+                logger.error(f"Error al eliminar estudio ID {study_id} ('{study_name}'): {e}", exc_info=True)
                 messagebox.showerror("Error al Eliminar", f"No se pudo eliminar el estudio:\n{e}", parent=self.root)
-                import traceback
-                traceback.print_exc()
+                # import traceback # Ya no es necesario
+                # traceback.print_exc() # Reemplazado por logger
 
     def destroy(self):
         """Destruye el frame principal de esta vista."""

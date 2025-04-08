@@ -5,6 +5,7 @@ import sys
 import subprocess
 import shutil
 import configparser
+import logging # Importar logging
 from pathlib import Path
 
 # Vistas y Diálogos UI
@@ -19,6 +20,8 @@ from kineviz.core.services.study_service import StudyService
 from kineviz.core.services.file_service import FileService
 from kineviz.core.services.analysis_service import AnalysisService
 from kineviz.config.settings import AppSettings # Importar AppSettings
+
+logger = logging.getLogger(__name__) # Logger para este módulo
 
 class MainWindow:
     def __init__(self, root):
@@ -225,9 +228,9 @@ class MainWindow:
                 # Preguntar al usuario si desea crear la carpeta? O simplemente crearla?
                 # Por ahora, la creamos silenciosamente si no existe.
                 folder_path.mkdir(parents=True, exist_ok=True)
-                print(f"Carpeta creada: {folder_path}") # Log para debugging
+                logger.info(f"Carpeta creada: {folder_path}")
 
-            print(f"Intentando abrir: {folder_path}") # Log para debugging
+            logger.info(f"Intentando abrir carpeta: {folder_path}")
 
             if sys.platform == 'win32':
                 os.startfile(folder_path)
@@ -260,20 +263,30 @@ class MainWindow:
 
                 studies_base_dir = project_root_dir / "estudios" # Asumiendo que está en la raíz
 
-                print(f"Eliminando base de datos: {db_path}")
-                if db_path.exists():
-                    db_path.unlink()
-                else:
-                    print("Base de datos no encontrada, omitiendo eliminación.")
+                logger.warning(f"Iniciando restablecimiento a valores por defecto. Eliminando DB: {db_path}, Directorio Estudios: {studies_base_dir}")
 
-                print(f"Eliminando directorio de estudios: {studies_base_dir}")
-                if studies_base_dir.exists() and studies_base_dir.is_dir():
-                    shutil.rmtree(studies_base_dir)
+                if db_path.exists():
+                    try:
+                        db_path.unlink()
+                        logger.info(f"Base de datos eliminada: {db_path}")
+                    except OSError as e:
+                        logger.error(f"Error al eliminar base de datos {db_path}: {e}", exc_info=True)
+                        # Continuar de todos modos si es posible
                 else:
-                    print("Directorio de estudios no encontrado, omitiendo eliminación.")
+                    logger.info("Base de datos no encontrada, omitiendo eliminación.")
+
+                if studies_base_dir.exists() and studies_base_dir.is_dir():
+                    try:
+                        shutil.rmtree(studies_base_dir)
+                        logger.info(f"Directorio de estudios eliminado: {studies_base_dir}")
+                    except OSError as e:
+                        logger.error(f"Error al eliminar directorio de estudios {studies_base_dir}: {e}", exc_info=True)
+                        # Continuar de todos modos si es posible
+                else:
+                    logger.info("Directorio de estudios no encontrado, omitiendo eliminación.")
 
                 # Recrear la base de datos y la carpeta de estudios
-                print("Recreando estructura inicial...")
+                logger.info("Recreando estructura inicial...")
                 # Asegurarse de que el directorio para la DB exista si es necesario
                 db_path.parent.mkdir(parents=True, exist_ok=True)
                 self.study_service.repo._create_tables() # Llama al método privado para recrear tablas
@@ -282,7 +295,7 @@ class MainWindow:
                 messagebox.showinfo("Éxito", "Valores por defecto restablecidos correctamente.")
                 self.show_landing_page() # Volver a la landing page
             except Exception as e:
-                # Imprimir traceback para más detalles en la consola
-                import traceback
-                traceback.print_exc()
+                logger.critical(f"Error crítico durante el restablecimiento a valores por defecto: {e}", exc_info=True)
+                # import traceback # Ya no es necesario
+                # traceback.print_exc() # Reemplazado por logger
                 messagebox.showerror("Error", f"Error durante el restablecimiento:\n{str(e)}")

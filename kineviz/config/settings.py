@@ -1,6 +1,9 @@
 import configparser
 from pathlib import Path
 import os
+import logging # Importar logging
+
+logger = logging.getLogger(__name__) # Logger para este módulo
 
 class AppSettings:
     """Gestiona la carga y guardado de configuraciones desde config.ini."""
@@ -29,7 +32,7 @@ class AppSettings:
     def _ensure_config_exists(self):
         """Crea el archivo config.ini con valores por defecto si no existe."""
         if not self.config_path.exists():
-            print(f"Advertencia: No se encontró {self.config_path}. Creando archivo con valores por defecto.")
+            logger.warning(f"No se encontró {self.config_path}. Creando archivo con valores por defecto.")
             try:
                 # Crear configparser con valores por defecto
                 default_config = configparser.ConfigParser()
@@ -38,9 +41,9 @@ class AppSettings:
                 self.config_path.parent.mkdir(parents=True, exist_ok=True)
                 with open(self.config_path, 'w', encoding='utf-8') as configfile:
                     default_config.write(configfile)
-                print(f"Archivo de configuración creado en: {self.config_path}")
+                logger.info(f"Archivo de configuración creado en: {self.config_path}")
             except OSError as e:
-                print(f"Error crítico: No se pudo crear el archivo de configuración en {self.config_path}: {e}")
+                logger.critical(f"No se pudo crear el archivo de configuración en {self.config_path}: {e}", exc_info=True)
                 # Podríamos lanzar una excepción aquí o continuar con valores en memoria
 
     def load_settings(self):
@@ -50,16 +53,16 @@ class AppSettings:
             self.config.read(self.config_path, encoding='utf-8')
             # Validar/asegurar sección [SETTINGS] si es necesario
             if 'SETTINGS' not in self.config:
-                print("Advertencia: Sección [SETTINGS] no encontrada en config.ini. Usando valores por defecto.")
+                logger.warning("Sección [SETTINGS] no encontrada en config.ini. Usando valores por defecto.")
                 self.config['SETTINGS'] = self.DEFAULT_SETTINGS['SETTINGS']
 
         except configparser.Error as e:
-            print(f"Error leyendo {self.config_path}: {e}. Usando valores por defecto.")
+            logger.error(f"Error leyendo {self.config_path}: {e}. Usando valores por defecto.", exc_info=True)
             # Resetear a valores por defecto en memoria si hay error de lectura
             self.config = configparser.ConfigParser()
             self.config.read_dict(self.DEFAULT_SETTINGS)
         except Exception as e:
-            print(f"Error inesperado cargando configuraciones: {e}. Usando valores por defecto.")
+            logger.error(f"Error inesperado cargando configuraciones: {e}. Usando valores por defecto.", exc_info=True)
             self.config = configparser.ConfigParser()
             self.config.read_dict(self.DEFAULT_SETTINGS)
 
@@ -69,8 +72,9 @@ class AppSettings:
         try:
             with open(self.config_path, 'w', encoding='utf-8') as configfile:
                 self.config.write(configfile)
+            logger.info(f"Configuraciones guardadas en {self.config_path}")
         except OSError as e:
-            print(f"Error guardando configuraciones en {self.config_path}: {e}")
+            logger.error(f"Error guardando configuraciones en {self.config_path}: {e}", exc_info=True)
             # Considerar mostrar un error al usuario
             raise # Relanzar para que la UI pueda manejarlo
 
@@ -89,7 +93,7 @@ class AppSettings:
         try:
             return int(value_str)
         except (ValueError, TypeError):
-            print(f"Advertencia: Valor inválido para '{key}' en config.ini ('{value_str}'). Usando fallback: {fallback}")
+            logger.warning(f"Valor inválido para '{key}' en config.ini ('{value_str}'). Usando fallback: {fallback}")
             return fallback
 
     def set_setting(self, key: str, value: str):

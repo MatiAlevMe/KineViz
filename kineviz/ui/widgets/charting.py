@@ -1,10 +1,13 @@
 import matplotlib.pyplot as plt
 from pathlib import Path
 import numpy as np # Para manejar posibles NaN
+import logging # Importar logging
 
 # Asegurar que matplotlib no intente usar UI backend en entornos sin GUI
 import matplotlib
 matplotlib.use('Agg') # Usar backend no interactivo
+
+logger = logging.getLogger(__name__) # Logger para este módulo
 
 def create_boxplot(data_dict: dict, title: str, ylabel: str, output_path: Path):
     """
@@ -22,7 +25,7 @@ def create_boxplot(data_dict: dict, title: str, ylabel: str, output_path: Path):
     valid_labels = [lbl for lbl, d in zip(labels, data_dict.values()) if np.any(~np.isnan(d))]
 
     if not data_to_plot:
-        print(f"Advertencia: No hay datos válidos para generar boxplot: {title}")
+        logger.warning(f"No hay datos válidos para generar boxplot: {title}")
         # Opcional: crear un gráfico vacío o con un mensaje
         fig, ax = plt.subplots(figsize=(8, 6))
         ax.text(0.5, 0.5, 'No hay datos válidos', horizontalalignment='center', verticalalignment='center', transform=ax.transAxes)
@@ -55,7 +58,7 @@ def create_barchart(data_dict: dict, title: str, xlabel: str, ylabel: str, outpu
     values = list(data_dict.values())
 
     if not values:
-        print(f"Advertencia: No hay datos válidos para generar barchart: {title}")
+        logger.warning(f"No hay datos válidos para generar barchart: {title}")
         # Opcional: crear un gráfico vacío o con un mensaje
         fig, ax = plt.subplots(figsize=(8, 6))
         ax.text(0.5, 0.5, 'No hay datos válidos', horizontalalignment='center', verticalalignment='center', transform=ax.transAxes)
