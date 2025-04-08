@@ -6,10 +6,22 @@ from pathlib import Path # Importar Path
 logger = logging.getLogger(__name__) # Logger para este módulo
 
 class StudyRepository:
-    def __init__(self, db_path='kineviz.db'):
+    def __init__(self, db_path='kineviz.db', studies_base_dir=None):
+        """
+        Inicializa el repositorio.
+
+        :param db_path: Ruta al archivo de la base de datos SQLite.
+        :param studies_base_dir: Ruta base para las carpetas de estudios. Si es None,
+                                 se calcula relativo a la raíz del proyecto.
+        """
         self.db_path = db_path
+        if studies_base_dir:
+            self.studies_base_dir = Path(studies_base_dir)
+        else:
+            # Calcular ruta base por defecto relativa a la raíz del proyecto
+            self.studies_base_dir = Path(__file__).resolve().parent.parent.parent / 'estudios'
         self._create_tables()
-    
+
     def _create_tables(self):
         """
         Crea las tablas necesarias si no existen
@@ -49,12 +61,23 @@ class StudyRepository:
                 int(study_data['attempts_count'])
             ))
             conn.commit()
-            
-            # Crear directorio para el estudio
-            study_dir = os.path.join('estudios', study_data['name'])
-            os.makedirs(study_dir, exist_ok=True)
-            
-            return cursor.lastrowid
+            study_id = cursor.lastrowid
+
+            # Crear directorio para el estudio usando self.studies_base_dir
+            try:
+                study_dir = self.studies_base_dir / study_data['name']
+                study_dir.mkdir(parents=True, exist_ok=True)
+                logger.info(f"Directorio creado para estudio {study_id}: {study_dir}")
+            except OSError as e:
+                # Si falla la creación del directorio, ¿deberíamos revertir la creación en DB?
+                # Por ahora, solo loggeamos el error. Considerar una transacción más compleja.
+                logger.error(f"Error al crear directorio para estudio {study_id} ({study_data['name']}): {e}", exc_info=True)
+                # Podríamos eliminar el registro recién creado o lanzar una excepción
+                # cursor.execute('DELETE FROM estudios WHERE id_estudio = ?', (study_id,))
+                # conn.commit()
+                # raise IOError(f"Error creando directorio del estudio: {e}") from e
+
+            return study_id
     
     def get_all_studies(self):
         """
@@ -112,12 +135,8 @@ class StudyRepository:
                 
                 # Eliminar directorio del estudio
                 study_dir = os.path.join('estudios', study_name[0])
-                # Eliminar directorio del estudio si existe
-                # Asegurarse de que la ruta base sea correcta (asumiendo que 'estudios' está en la raíz del proyecto)
-                # La ruta de la DB puede ser relativa o absoluta, necesitamos la raíz del proyecto
-                from pathlib import Path
-                project_root_dir = Path(__file__).resolve().parent.parent.parent # Ajustar si la estructura es diferente
-                study_dir = project_root_dir / 'estudios' / study_name[0]
+                # Eliminar directorio del estudio usando self.studies_base_dir
+                study_dir = self.studies_base_dir / study_name[0]
                 if study_dir.exists() and study_dir.is_dir():
                     import shutil
                     logger.info(f"Eliminando directorio del estudio: {study_dir}")
@@ -241,9 +260,9 @@ class StudyRepository:
         :param old_name: Nombre original de la carpeta del estudio.
         :param new_name: Nuevo nombre para la carpeta del estudio.
         """
-        project_root_dir = Path(__file__).resolve().parent.parent.parent
-        old_path = project_root_dir / 'estudios' / old_name
-        new_path = project_root_dir / 'estudios' / new_name
+        # Usar self.studies_base_dir
+        old_path = self.studies_base_dir / old_name
+        new_path = self.studies_base_dir / new_name
 
         if old_path.exists() and old_path.is_dir():
             try:
