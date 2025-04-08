@@ -319,11 +319,13 @@ class AnalysisDialog(Toplevel):
             self.load_reports()
 
         except ValueError as ve: # Capturar errores específicos de validación o datos
+             logger.warning(f"Error de validación al generar reporte para estudio {self.study_id}: {ve}")
              messagebox.showerror("Error Reporte", f"No se pudo generar el reporte:\n{ve}", parent=self)
         except Exception as e:
+            logger.error(f"Error inesperado al generar reporte para estudio {self.study_id} en {output_path}: {e}", exc_info=True)
             messagebox.showerror("Error Reporte", f"Ocurrió un error inesperado al generar el reporte:\n{e}", parent=self)
-            import traceback
-            traceback.print_exc()
+            # import traceback # Ya no es necesario
+            # traceback.print_exc() # Reemplazado por logger
 
     # --- Métodos para Gestión de Reportes ---
 
