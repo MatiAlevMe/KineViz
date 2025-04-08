@@ -3,6 +3,8 @@ import shutil
 import logging # Importar logging
 from pathlib import Path
 from tkinter import messagebox
+# Importar validador a nivel de módulo
+from kineviz.ui.utils.validators import validate_filename_for_study_criteria
 
 # Asume que StudyRepository está disponible para obtener detalles del estudio si es necesario
 # O que se pasa la ruta base de los estudios.
@@ -237,9 +239,8 @@ class FileService:
         :param file_paths: Lista de rutas absolutas (como strings) de los archivos a agregar.
         :return: Diccionario con resultados: {'success': count, 'errors': [error_messages]}
         """
-        # Importar validador aquí
-        from kineviz.ui.utils.validators import validate_filename_for_study_criteria
         # Ya no es necesario importar pandas aquí, se importa dentro de _process_and_copy_file
+        # El validador se importa a nivel de módulo ahora
 
         results = {'success': 0, 'errors': []}
         study_path = self._get_study_path(study_id)
@@ -301,8 +302,7 @@ class FileService:
         :return: Diccionario {'patients': set(), 'frequencies': set(), 'types': set(), 'periods': set()}
                  o un diccionario vacío si hay error o no hay archivos.
         """
-        # Importar validador y función para extraer info del nombre
-        from kineviz.ui.utils.validators import validate_filename_for_study_criteria
+        # El validador se importa a nivel de módulo ahora
         from kineviz.core.data_processing.file_handlers import obtener_nombre_paciente # Necesitamos esta función
 
         study_path = self._get_study_path(study_id)

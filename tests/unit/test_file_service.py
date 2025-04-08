@@ -199,6 +199,7 @@ class TestFileService(unittest.TestCase):
             self.file_service.delete_file(non_existent_file, self.study_id_1)
 
     # Patch data processing functions for add_files tests
+    # El target ahora es correcto porque la función se importa en el módulo file_service
     @patch('kineviz.core.services.file_service.validate_filename_for_study_criteria', side_effect=dummy_validate_filename)
     @patch('kineviz.core.services.file_service.FileService._process_and_copy_file', side_effect=dummy_process_and_copy)
     def test_add_files_to_study_success(self, mock_process_copy, mock_validate):
@@ -225,6 +226,7 @@ class TestFileService(unittest.TestCase):
             call(self.study_path_1, file2_path)
         ], any_order=True)
 
+    # El target ahora es correcto
     @patch('kineviz.core.services.file_service.validate_filename_for_study_criteria')
     @patch('kineviz.core.services.file_service.FileService._process_and_copy_file', side_effect=dummy_process_and_copy)
     def test_add_files_to_study_invalid_name(self, mock_process_copy, mock_validate):
@@ -249,6 +251,7 @@ class TestFileService(unittest.TestCase):
         # Verificar que el procesamiento solo fue llamado para el válido
         mock_process_copy.assert_called_once_with(self.study_path_1, file1_path)
 
+    # El target ahora es correcto
     @patch('kineviz.core.services.file_service.validate_filename_for_study_criteria', side_effect=dummy_validate_filename)
     @patch('kineviz.core.services.file_service.FileService._process_and_copy_file')
     def test_add_files_to_study_processing_error(self, mock_process_copy, mock_validate):
@@ -269,6 +272,7 @@ class TestFileService(unittest.TestCase):
         mock_validate.assert_called_once()
         mock_process_copy.assert_called_once_with(self.study_path_1, file1_path)
 
+    # El target ahora es correcto
     @patch('kineviz.core.services.file_service.validate_filename_for_study_criteria', side_effect=dummy_validate_filename)
     def test_get_unique_study_parameters(self, mock_validate):
         """Prueba obtener parámetros únicos de archivos procesados válidos."""
