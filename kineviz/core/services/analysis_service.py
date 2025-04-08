@@ -297,7 +297,7 @@ class AnalysisService:
         :param parameters: Parámetros del análisis.
         :param output_path_str: Ruta (string) donde guardar el reporte PDF.
         """
-        print(f"Generando reporte para estudio {study_id} en {output_path_str}...")
+        logger.info(f"Generando reporte para estudio {study_id} en {output_path_str}...")
         output_path = Path(output_path_str)
         output_path.parent.mkdir(parents=True, exist_ok=True) # Asegurar que directorio exista
 
