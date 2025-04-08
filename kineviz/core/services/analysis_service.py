@@ -76,11 +76,12 @@ class AnalysisService:
             from io import StringIO
             data_io = StringIO("".join(data_lines))
 
-            # Leer la tercera línea para obtener los nombres de columna correctos
-            raw_col_names = lines[2].strip().split(';')
+            # Leer la tercera línea (índice 2) para obtener los nombres de columna,
+            # OMITIENDO los dos primeros elementos vacíos que no corresponden a datos.
+            raw_col_names = lines[2].strip().split(';')[2:] # Empezar desde el tercer elemento
 
             # --- Sanear nombres de columna para asegurar unicidad ---
-            col_names = []
+            sanitized_names = []
             counts = {}
             for i, name in enumerate(raw_col_names):
                 clean_name = name.strip()
@@ -95,10 +96,13 @@ class AnalysisService:
                 else:
                     counts[clean_name] = 0
                     unique_name = clean_name
-                col_names.append(unique_name)
+                sanitized_names.append(unique_name)
             # --- Fin saneamiento ---
 
-            df = pd.read_csv(data_io, sep=';', header=None, names=col_names, na_values=[''], keep_default_na=True)
+            # Añadir 'Tiempo' al principio de la lista de nombres
+            final_col_names = ['Tiempo'] + sanitized_names
+
+            df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
 
             # Seleccionar solo columnas numéricas (intentar convertir y ver qué falla)
             numeric_cols = []
@@ -241,6 +245,8 @@ class AnalysisService:
         if 'Tiempo' in numeric_df.columns:
              numeric_df = numeric_df.drop(columns=['Tiempo'])
 
+        # Devolver None si no quedan columnas numéricas o si todas son NaN (implícito en .empty después de dropna?)
+        # Comprobación explícita de si está vacío después de quitar 'Tiempo'
         if numeric_df.empty:
              return None
 
