@@ -261,7 +261,8 @@ class TestAnalysisService(unittest.TestCase):
 
         params = {'patients': ['P01', 'P02'], 'frequencies': ['Cinematica'],
                   'types': ['CMJ'], 'periods': ['PRE'], 'calculations': ['Maximo']}
-        output_path = "/fake/report.pdf"
+        # Usar una ruta dentro del directorio temporal
+        output_path = self.temp_path / "test_report.pdf"
 
         # Usar tempfile.TemporaryDirectory real para que los archivos de gráficos se creen y limpien
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -272,14 +273,16 @@ class TestAnalysisService(unittest.TestCase):
                 mock_tempdir_instance.__enter__.return_value = temp_dir # Devolver la ruta real
                 mock_tempdir_context.return_value = mock_tempdir_instance
 
-                self.analysis_service.generate_report(self.study_id, params, output_path)
+                # Pasar la ruta como string
+                self.analysis_service.generate_report(self.study_id, params, str(output_path))
 
                 # Verificar llamadas
                 mock_get_data.assert_called_once_with(self.study_id, params)
                 self.assertTrue(mock_calculate.called)
                 self.assertTrue(mock_boxplot.called)
                 self.assertTrue(mock_barchart.called)
-                mock_doc_template.assert_called_once_with(output_path, pagesize=ANY, leftMargin=ANY, rightMargin=ANY, topMargin=ANY, bottomMargin=ANY)
+                # Verificar que se llamó con la ruta string
+                mock_doc_template.assert_called_once_with(str(output_path), pagesize=ANY, leftMargin=ANY, rightMargin=ANY, topMargin=ANY, bottomMargin=ANY)
                 mock_pdf_doc.build.assert_called_once() # Verificar que se intentó construir el PDF
 
     def test_generate_report_no_data(self):
@@ -292,39 +295,30 @@ class TestAnalysisService(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "No se encontraron datos"):
                     self.analysis_service.generate_report(self.study_id, {}, str(output_path_in_temp))
 
-    # Simplificar mocks para Path en list_reports
-    @patch('pathlib.Path.glob')
-    @patch('pathlib.Path.is_dir')
-    @patch('pathlib.Path.exists')
-    def test_list_reports(self, mock_exists, mock_is_dir, mock_glob):
+    # No necesitamos mockear Path.glob, exists, is_dir si creamos la estructura real
+    @patch('pathlib.Path.stat') # Solo mockear stat si es necesario para la fecha
+    def test_list_reports(self, mock_stat):
         """Prueba listar reportes existentes."""
-        mock_reports_dir = self.study_path / "reportes"
-        mock_report_file = MagicMock(spec=Path) # Crear un mock para el archivo
-        mock_report_file.name = "reporte_1.pdf"
-        mock_report_file.__str__.return_value = str(mock_reports_dir / mock_report_file.name)
-        mock_report_file.is_file.return_value = True
+        # Crear estructura real dentro del directorio temporal
+        reports_dir = self.study_path / "reportes"
+        reports_dir.mkdir()
+        report_file_path = reports_dir / "reporte_1.pdf"
+        report_file_path.touch() # Crear archivo dummy
 
-        # Configurar mocks de Path
-        def exists_side_effect(path_arg):
-            return str(path_arg) == str(mock_reports_dir) or str(path_arg) == str(mock_report_file)
-        mock_exists.side_effect = exists_side_effect
-
-        def is_dir_side_effect(path_arg):
-             return str(path_arg) == str(mock_reports_dir)
-        mock_is_dir.side_effect = is_dir_side_effect
-
-        mock_glob.return_value = [mock_report_file] # glob devuelve el mock del archivo
-
-        # Mockear stat para evitar error al obtener fecha
+        # Configurar el mock de stat para devolver una fecha
         mock_stat_result = MagicMock()
         mock_stat_result.st_mtime = datetime.now().timestamp()
-        with patch('pathlib.Path.stat', return_value=mock_stat_result):
-             reports = self.analysis_service.list_reports(self.study_id)
+        mock_stat.return_value = mock_stat_result
 
+        # Llamar a la función bajo prueba
+        reports = self.analysis_service.list_reports(self.study_id)
+
+        # Verificar resultados
         self.assertEqual(len(reports), 1)
         self.assertEqual(reports[0]['name'], "reporte_1.pdf")
-        self.assertEqual(reports[0]['path'], str(mock_report_file))
+        self.assertEqual(reports[0]['path'], str(report_file_path)) # Verificar ruta real
         self.mock_file_service._get_study_path.assert_called_once_with(self.study_id)
+        mock_stat.assert_called_once_with(report_file_path) # Verificar que stat fue llamado
 
     @patch('pathlib.Path.exists')
     @patch('pathlib.Path.is_file')

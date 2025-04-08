@@ -245,9 +245,8 @@ class AnalysisService:
         if 'Tiempo' in numeric_df.columns:
              numeric_df = numeric_df.drop(columns=['Tiempo'])
 
-        # Devolver None si no quedan columnas numéricas o si todas son NaN (implícito en .empty después de dropna?)
-        # Comprobación explícita de si está vacío después de quitar 'Tiempo'
-        if numeric_df.empty:
+        # Devolver None si no quedan columnas numéricas O si todas las celdas son NaN
+        if numeric_df.empty or numeric_df.isnull().all().all():
              return None
 
         if calculation == "Maximo":
