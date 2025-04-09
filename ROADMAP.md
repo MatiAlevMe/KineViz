@@ -1,8 +1,6 @@
 # KineViz Development Roadmap
 
-Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicialmente se enfocó en la refactorización de la lógica original de `interfaz.py` y `lectura.py` a una estructura modular. A partir de la Fase 5, el enfoque cambia a mejoras incrementales y la adición de nuevas funcionalidades.
-
-Este ROADMAP debe ser actualizado en cada iteración y se debe dar la opción de ejecutar el programa con `python -m kineviz.app` para ir capturando errores.
+Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicialmente se enfocó en la refactorización de la lógica original a una estructura modular. A partir de la Fase 5, el enfoque cambia a mejoras incrementales y la adición de nuevas funcionalidades, mejoras a las funcionalidades actuales u bug-fixes.
 
 ## Estrctura de carpetas de refactorización
 
