@@ -265,22 +265,7 @@ class FileService:
 
             logger.info(f"Frecuencias procesadas para {source_file_path.name}: {processed_frequencies or 'Ninguna'}")
 
-
-    def add_files_to_study(self, study_id: int, file_paths: list[str]) -> dict:
-                    df = pd.DataFrame(mediciones, columns=columnas)
-                    # Renombrar columnas duplicadas si existen (aunque no debería pasar con la inserción de 'Tiempo')
-                    if df.columns.duplicated().any():
-                         df.columns = [f'{col}_{i}' if df.columns.duplicated()[i] else col for i, col in enumerate(df.columns)]
-
-                    maximos, minimos, rangos = processors.calcular_max_min_rango(df, columnas)
-
-                    # Exportar cálculos al mismo archivo
-                    with open(ruta_archivo_seccion, 'a') as output_file:
-                        processors.exportar_calculos(output_file, maximos, minimos, rangos)
-                else:
-                     logger.warning(f"No se encontraron mediciones en una sección de {source_file_path.name}")
-
-
+    # La definición correcta de add_files_to_study empieza aquí
     def add_files_to_study(self, study_id: int, file_paths: list[str]) -> dict:
         """
         Agrega y procesa una lista de archivos para un estudio específico.

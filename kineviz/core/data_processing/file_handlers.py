@@ -90,9 +90,10 @@ def leer_seccion(file, num_frames: int, linea_descripcion: str, ruta_archivo_bas
         else:
             break  # Si hay una línea vacía, salir del bucle
     # Escribir la sección al archivo
-    with open(ruta_archivo, 'w') as output_file:
-        output_file.write(f"{num_frames}\n{atributos_str}\n{columnas_str}\n{unidades_str}\n")
+    with open(ruta_archivo_seccion, 'w', encoding='utf-8') as output_file: # Usar ruta_archivo_seccion y encoding
+        output_file.write(f"{linea_descripcion}\n{num_frames}\n{atributos_line}\n{columnas_line}\n{unidades_line}\n") # Escribir cabeceras originales
         for medicion in mediciones:
+            # Escribir datos con formato y separador ';'
             output_file.write(";".join(processors.formato_personalizado(x) for x in medicion) + "\n")
 
     # Devolver también el tipo de frecuencia determinado
