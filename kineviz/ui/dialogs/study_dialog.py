@@ -188,66 +188,78 @@ class StudyDialog(Toplevel):
 
         study_data = {
             'name': self.var_nombre.get().strip(),
-        'num_subjects': self.var_num_sujetos.get().strip(),
-        'descriptores': current_descriptors, # Pasar la lista para validación
-        'attempts_count': self.var_cantidad_intentos.get().strip()
-    }
+            'num_subjects': self.var_num_sujetos.get().strip(),
+            'descriptores': current_descriptors,  # Pasar la lista para validación
+            'attempts_count': self.var_cantidad_intentos.get().strip()
+        }
 
-    # Validar datos básicos del formulario (incluyendo descriptores)
-    is_valid, error_message = validate_study_data(study_data)
-    if not is_valid:
-        messagebox.showerror("Datos Inválidos", error_message, parent=self)
-        return
+        # Validar datos básicos del formulario (incluyendo descriptores)
+        is_valid, error_message = validate_study_data(study_data)
+        if not is_valid:
+            messagebox.showerror("Datos Inválidos", error_message, parent=self)
+            return
 
-    # --- Lógica de manejo de cambio de criterios (DESHABILITADA TEMPORALMENTE) ---
-    proceed_with_save = True
-    if self.study_to_edit:
-        # Comparar descriptores nuevos con los originales
-        # new_descriptors_set = set(d for d in current_descriptors if d) # Ignorar vacíos para comparación
-        # original_descriptors_set = set(self.initial_descriptors)
-        # if new_descriptors_set != original_descriptors_set:
-        #     logger.info("Descriptores han cambiado.")
-        #     # Llamar a la función que maneja la validación/eliminación de archivos (Tarea 4)
-        #     proceed_with_save = self._handle_criteria_change(
-        #         self.study_to_edit['id'],
-        #         list(new_descriptors_set) # Pasar lista limpia
-        #     )
-        # else:
-        #     logger.debug(f"Descriptores no han cambiado para estudio {self.study_to_edit['id']}.")
-        pass # Omitir validación de archivos por ahora
-
-    # --- Proceder con el guardado si todo está bien ---
-    if not proceed_with_save:
-        logger.warning(f"Guardado de estudio {self.study_to_edit.get('id', 'N/A')} abortado debido a cancelación de eliminación de archivos.")
-        return # No guardar si el usuario canceló la eliminación
-
-    # Preparar datos finales para el servicio (unir descriptores)
-    final_study_data = study_data.copy()
-    # Filtrar descriptores vacíos antes de unir
-    valid_descriptors = [d for d in current_descriptors if d]
-    final_study_data['descriptores'] = ','.join(valid_descriptors)
-
-    try:
+        # --- Lógica de manejo de cambio de criterios (DESHABILITADA TEMPORALMENTE) ---
+        proceed_with_save = True
         if self.study_to_edit:
-            # Actualizar estudio existente
-            self.study_service.update_study(self.study_to_edit['id'], final_study_data)
-            messagebox.showinfo("Éxito", "Estudio actualizado correctamente", parent=self)
-        else:
-            # Crear nuevo estudio
-            self.study_service.create_study(final_study_data)
-            messagebox.showinfo("Éxito", "Estudio creado correctamente", parent=self)
+            # Comparar descriptores nuevos con los originales
+            # new_descriptors_set = set(d for d in current_descriptors if d) # Ignorar vacíos para comparación
+            # original_descriptors_set = set(self.initial_descriptors)
+            # if new_descriptors_set != original_descriptors_set:
+            #     logger.info("Descriptores han cambiado.")
+            #     # Llamar a la función que maneja la validación/eliminación de archivos (Tarea 4)
+            #     proceed_with_save = self._handle_criteria_change(
+            #         self.study_to_edit['id'],
+            #         list(new_descriptors_set) # Pasar lista limpia
+            #     )
+            # else:
+            #     logger.debug(f"Descriptores no han cambiado para estudio {self.study_to_edit['id'}.")
+            pass  # Omitir validación de archivos por ahora
 
-        # Llamar al callback si existe
+        # --- Proceder con el guardado si todo está bien ---
+        if not proceed_with_save:
+            logger.warning(
+                f"Guardado de estudio {self.study_to_edit.get('id', 'N/A')} abortado debido a cancelación de eliminación de archivos."
+            )
+            return  # No guardar si el usuario canceló la eliminación
+
+        # Preparar datos finales para el servicio (unir descriptores)
+        final_study_data = study_data.copy()
+        # Filtrar descriptores vacíos antes de unir
+        valid_descriptors = [d for d in current_descriptors if d]
+        final_study_data['descriptores'] = ','.join(valid_descriptors)
+
+        try:
+            if self.study_to_edit:
+                # Actualizar estudio existente
+                self.study_service.update_study(
+                    self.study_to_edit['id'], final_study_data
+                )
+                messagebox.showinfo(
+                    "Éxito", "Estudio actualizado correctamente", parent=self
+                )
+            else:
+                # Crear nuevo estudio
+                self.study_service.create_study(final_study_data)
+                messagebox.showinfo(
+                    "Éxito", "Estudio creado correctamente", parent=self
+                )
+
+            # Llamar al callback si existe
             if self.on_save_callback:
                 self.on_save_callback()
 
-            self.destroy() # Cerrar el diálogo
-        except ValueError as ve: # Capturar errores específicos de validación (ej. nombre duplicado si se implementa)
+            self.destroy()  # Cerrar el diálogo
+        except ValueError as ve:  # Capturar errores específicos de validación
             logger.warning(f"Error de validación al guardar estudio: {ve}")
             messagebox.showerror("Error de Validación", str(ve), parent=self)
-        except Exception as e: # Capturar errores generales del servicio o DB
-            study_id_log = self.study_to_edit['id'] if self.study_to_edit else "nuevo"
-            logger.error(f"Error inesperado al guardar estudio {study_id_log}: {e}", exc_info=True)
-            # import traceback # Ya no es necesario
-            # traceback.print_exc() # Reemplazado por logger
-            messagebox.showerror("Error al Guardar", f"Ocurrió un error inesperado:\n{str(e)}", parent=self)
+        except Exception as e:  # Capturar errores generales
+            study_id_log = (
+                self.study_to_edit['id' if self.study_to_edit else "nuevo"]
+            )
+            logger.error(
+                f"Error inesperado al guardar estudio {study_id_log}: {e}", exc_info=True
+            )
+            messagebox.showerror(
+                "Error al Guardar", f"Ocurrió un error inesperado:\n{str(e)}", parent=self
+            )
