@@ -1,8 +1,8 @@
-# KineViz Refactoring Roadmap
+# KineViz Development Roadmap
 
-Este roadmap describe el proceso de refactorización de la aplicación KineViz, moviendo la lógica original de los archivos `interfaz.py` y `lectura.py` a una estructura modular basada en servicios, repositorios y componentes de UI reutilizables dentro del paquete `kineviz`. El objetivo es mejorar la mantenibilidad, escalabilidad y organización del código.
+Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicialmente se enfocó en la refactorización de la lógica original de `interfaz.py` y `lectura.py` a una estructura modular. A partir de la Fase 5, el enfoque cambia a mejoras incrementales y la adición de nuevas funcionalidades.
 
-Este ROADMAP debe ser actualizado en cada iteración hasta completar la refactorización y se debe dar la opción de ejecutar el programa con "python -m kineviz.app" para ir capturando errores.
+Este ROADMAP debe ser actualizado en cada iteración y se debe dar la opción de ejecutar el programa con `python -m kineviz.app` para ir capturando errores.
 
 ## Estrctura de carpetas de refactorización
 
@@ -136,6 +136,42 @@ Este ROADMAP debe ser actualizado en cada iteración hasta completar la refactor
 *   [ ] Completar documentación (`docs/`).
 *   [x] Limpiar código remanente de `interfaz.py` y `lectura.py`.
 *   [ ] Revisión final de estilos y UX.
+
+## Fase 5: Mejoras Incrementales - Descriptores y Detección de Frecuencia
+
+*   [ ] **Modificación de Identificador de Frecuencias**: Cambiar la detección de tipo de frecuencia (Cinemática, Cinética, Electromiográfica) basada en metadatos del archivo en lugar del número de frames.
+*   [ ] **Implementación de Descriptores**: Reemplazar el sistema de "Tipos de Prueba" y "Periodos de Prueba" por un sistema flexible de "Descriptores" definidos por el usuario al crear/editar estudios.
+*   [ ] **Modificación de Etiquetas Post-Carga**: Permitir al usuario asignar alias o nombres descriptivos a los descriptores detectados en los archivos, para visualización en análisis y reportes.
+*   [ ] **Integración Completa**: Asegurar que los cambios en la detección de frecuencia y el sistema de descriptores se integren correctamente en la carga de archivos, validación, análisis, reportes y UI.
+
+---
+
+## Diccionario de Tareas (Fase 5+)
+
+**Fase 5: Mejoras Incrementales - Descriptores y Detección de Frecuencia**
+
+*   **1. Implementar detección automática de tipo de frecuencias basada en metadatos del archivo.**
+    *   **Detalle**: Modificar `kineviz.core.data_processing.directory_manager.determinar_tipo_frecuencia` y/o la lógica en `kineviz.core.services.file_service._process_and_copy_file` para identificar el tipo de sección (Cinemática, Cinética, Electromiográfica) buscando patrones específicos en las líneas de cabecera de cada sección, en lugar de basarse únicamente en `num_frames`. Aún se necesita `num_frames` para calcular el tiempo.
+    *   **1.1 Implementación de identificador de archivo para Cinemática**: Buscar la línea exacta "Model Outputs" para identificar el inicio de una sección de Cinemática.
+    *   **1.2 Implementación de identificador de archivo para Cinética**: Buscar la línea que contiene "Force Plate" (ej: "Imported Bertec Force Plate #1 - Force") en la cabecera de la sección para identificarla como Cinética. Considerar posibles variaciones.
+    *   **1.3 Implementación de identificador de archivo para Electromiográfica**: Pendiente de confirmación del formato/identificador específico (posiblemente "Delsys" o similar).
+
+*   **2. Implementación para crear/editar estudio con descriptores extra.**
+    *   **Detalle**: Modificar `kineviz.ui.dialogs.study_dialog.py` para reemplazar los campos de entrada de "Tipos de Prueba" y "Periodos de Prueba" por una sección dinámica que permita añadir/eliminar campos de texto para "Descriptores".
+    *   **2.1 Soportar múltiples etiquetas de descriptores**: La UI debe permitir añadir campos (`+`) y eliminar campos (`icono basura`) para N descriptores. El mínimo es 0. Modificar `kineviz.database.repositories.StudyRepository` y la tabla `estudios` para almacenar estos descriptores (ej: en una columna TEXT separada por un delimitador especial o en una tabla relacionada).
+    *   **2.2 Validación de descriptores**: En `kineviz.ui.utils.validators.validate_study_data`, añadir lógica para asegurar que no haya descriptores duplicados *exactos* (sensible a mayúsculas/minúsculas) al guardar el estudio. Permitir descriptores como "CMJ", "CmJ", "cmj".
+
+*   **3. Implementación para modificar nombres de etiquetas de descriptores post-carga.**
+    *   **Detalle**: Añadir una nueva funcionalidad (posiblemente en `kineviz.ui.views.study_view.py` o un nuevo diálogo) que permita al usuario ver los descriptores *detectados* en los nombres de archivo de un estudio y asignarles un "alias" o "nombre descriptivo" (ej: "CMJ" -> "Salto Contra Movimiento"). Este alias se usaría para mostrar en gráficos y reportes. El almacenamiento de estos alias podría ser en `config.ini` o en la base de datos. *Nota: Inicialmente, esta modificación es solo visual.*
+
+*   **4. Integrar con el resto del código.**
+    *   **Detalle**: Revisar y actualizar todos los módulos que dependían de `test_types` y `test_periods`:
+        *   `kineviz.core.services.file_service.add_files_to_study`: La validación `validate_filename_for_study_criteria` debe adaptarse o reemplazarse para validar contra los nuevos descriptores.
+        *   `kineviz.core.services.file_service.get_unique_study_parameters`: Debe extraer y devolver los descriptores encontrados en los nombres de archivo válidos.
+        *   `kineviz.core.services.analysis_service`: `get_analysis_parameters`, `_get_data_for_parameters`, `generate_report` deben usar "descriptores" en lugar de "tipos/periodos".
+        *   `kineviz.ui.dialogs.analysis_dialog.py`: Debe mostrar y permitir la selección de "Descriptores" en lugar de "Tipos/Periodos".
+        *   `kineviz.ui.utils.validators.validate_filename_for_study_criteria`: Debe ser actualizada o reemplazada para validar la presencia de los descriptores definidos en el estudio dentro del nombre del archivo.
+        *   Actualizar pruebas unitarias afectadas.
 
 ---
 
