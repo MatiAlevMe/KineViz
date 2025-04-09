@@ -1467,3 +1467,95 @@ Traceback (most recent call last):
                           ^^^^^^^^^^^
 OSError: telling position disabled by next() call
 2025-04-09 02:48:38,895 - INFO - [kineviz.core.services.file_service] - Proceso de agregado finalizado para estudio 13. Éxitos: 0, Errores: 2.
+2025-04-09 02:51:04,846 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 02:51:04,846 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 02:51:22,929 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'AAA' (ID: 2). El registro puede estar desincronizado.
+2025-04-09 02:51:22,931 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Aaa' (ID: 4). El registro puede estar desincronizado.
+2025-04-09 02:51:22,931 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'ABAS' (ID: 3). El registro puede estar desincronizado.
+2025-04-09 02:51:22,931 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 1' (ID: 5). El registro puede estar desincronizado.
+2025-04-09 02:51:22,931 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 2' (ID: 6). El registro puede estar desincronizado.
+2025-04-09 02:51:22,931 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 3' (ID: 7). El registro puede estar desincronizado.
+2025-04-09 02:51:22,931 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 4' (ID: 8). El registro puede estar desincronizado.
+2025-04-09 02:51:22,931 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 5' (ID: 9). El registro puede estar desincronizado.
+2025-04-09 02:51:22,932 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 6' (ID: 10). El registro puede estar desincronizado.
+2025-04-09 02:51:22,932 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 7' (ID: 11). El registro puede estar desincronizado.
+2025-04-09 02:51:24,347 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'AAA' (ID: 2). El registro puede estar desincronizado.
+2025-04-09 02:51:24,347 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Aaa' (ID: 4). El registro puede estar desincronizado.
+2025-04-09 02:51:24,348 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'ABAS' (ID: 3). El registro puede estar desincronizado.
+2025-04-09 02:51:24,348 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 1' (ID: 5). El registro puede estar desincronizado.
+2025-04-09 02:51:24,348 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 2' (ID: 6). El registro puede estar desincronizado.
+2025-04-09 02:51:24,348 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 3' (ID: 7). El registro puede estar desincronizado.
+2025-04-09 02:51:24,348 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 4' (ID: 8). El registro puede estar desincronizado.
+2025-04-09 02:51:24,348 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 5' (ID: 9). El registro puede estar desincronizado.
+2025-04-09 02:51:24,348 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 6' (ID: 10). El registro puede estar desincronizado.
+2025-04-09 02:51:24,349 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 7' (ID: 11). El registro puede estar desincronizado.
+2025-04-09 02:51:34,755 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 02:51:34,755 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 02:51:34,933 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'AAA' (ID: 2). El registro puede estar desincronizado.
+2025-04-09 02:51:34,933 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Aaa' (ID: 4). El registro puede estar desincronizado.
+2025-04-09 02:51:34,933 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'ABAS' (ID: 3). El registro puede estar desincronizado.
+2025-04-09 02:51:34,933 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 1' (ID: 5). El registro puede estar desincronizado.
+2025-04-09 02:51:34,933 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 2' (ID: 6). El registro puede estar desincronizado.
+2025-04-09 02:51:34,933 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 3' (ID: 7). El registro puede estar desincronizado.
+2025-04-09 02:51:34,933 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 4' (ID: 8). El registro puede estar desincronizado.
+2025-04-09 02:51:34,933 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 5' (ID: 9). El registro puede estar desincronizado.
+2025-04-09 02:51:34,933 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 6' (ID: 10). El registro puede estar desincronizado.
+2025-04-09 02:51:34,933 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 7' (ID: 11). El registro puede estar desincronizado.
+2025-04-09 02:51:44,884 - WARNING - [kineviz.database.repositories] - Directorio del estudio no encontrado o no es un directorio: /Users/arakito/Mati/Codigo/python/KineViz/estudios/AAA
+2025-04-09 02:51:44,886 - INFO - [kineviz.database.repositories] - Estudio ID 2 eliminado de la base de datos.
+2025-04-09 02:51:45,866 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Aaa' (ID: 4). El registro puede estar desincronizado.
+2025-04-09 02:51:45,866 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'ABAS' (ID: 3). El registro puede estar desincronizado.
+2025-04-09 02:51:45,867 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 1' (ID: 5). El registro puede estar desincronizado.
+2025-04-09 02:51:45,867 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 2' (ID: 6). El registro puede estar desincronizado.
+2025-04-09 02:51:45,867 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 3' (ID: 7). El registro puede estar desincronizado.
+2025-04-09 02:51:45,867 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 4' (ID: 8). El registro puede estar desincronizado.
+2025-04-09 02:51:45,867 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 5' (ID: 9). El registro puede estar desincronizado.
+2025-04-09 02:51:45,867 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 6' (ID: 10). El registro puede estar desincronizado.
+2025-04-09 02:51:45,868 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 7' (ID: 11). El registro puede estar desincronizado.
+2025-04-09 02:51:45,868 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 8' (ID: 12). El registro puede estar desincronizado.
+2025-04-09 02:51:48,448 - WARNING - [kineviz.database.repositories] - Directorio del estudio no encontrado o no es un directorio: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Aaa
+2025-04-09 02:51:48,449 - INFO - [kineviz.database.repositories] - Estudio ID 4 eliminado de la base de datos.
+2025-04-09 02:51:49,399 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'ABAS' (ID: 3). El registro puede estar desincronizado.
+2025-04-09 02:51:49,400 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 1' (ID: 5). El registro puede estar desincronizado.
+2025-04-09 02:51:49,400 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 2' (ID: 6). El registro puede estar desincronizado.
+2025-04-09 02:51:49,400 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 3' (ID: 7). El registro puede estar desincronizado.
+2025-04-09 02:51:49,400 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 4' (ID: 8). El registro puede estar desincronizado.
+2025-04-09 02:51:49,400 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 5' (ID: 9). El registro puede estar desincronizado.
+2025-04-09 02:51:49,400 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 6' (ID: 10). El registro puede estar desincronizado.
+2025-04-09 02:51:49,401 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 7' (ID: 11). El registro puede estar desincronizado.
+2025-04-09 02:51:49,401 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 8' (ID: 12). El registro puede estar desincronizado.
+2025-04-09 02:51:49,401 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 9' (ID: 13). El registro puede estar desincronizado.
+2025-04-09 02:53:53,233 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 02:53:53,233 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 02:53:53,643 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'ABAS' (ID: 3). El registro puede estar desincronizado.
+2025-04-09 02:53:53,643 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 1' (ID: 5). El registro puede estar desincronizado.
+2025-04-09 02:53:53,643 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 2' (ID: 6). El registro puede estar desincronizado.
+2025-04-09 02:53:53,643 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 3' (ID: 7). El registro puede estar desincronizado.
+2025-04-09 02:53:53,643 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 4' (ID: 8). El registro puede estar desincronizado.
+2025-04-09 02:53:53,643 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 5' (ID: 9). El registro puede estar desincronizado.
+2025-04-09 02:53:53,643 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 6' (ID: 10). El registro puede estar desincronizado.
+2025-04-09 02:53:53,643 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 7' (ID: 11). El registro puede estar desincronizado.
+2025-04-09 02:53:53,643 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 8' (ID: 12). El registro puede estar desincronizado.
+2025-04-09 02:53:53,643 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Prueba 9' (ID: 13). El registro puede estar desincronizado.
+2025-04-09 02:54:08,861 - WARNING - [kineviz.ui.main_window] - Iniciando restablecimiento a valores por defecto. Eliminando DB: /Users/arakito/Mati/Codigo/python/KineViz/kineviz.db, Directorio Estudios: /Users/arakito/Mati/Codigo/python/KineViz/estudios
+2025-04-09 02:54:08,863 - INFO - [kineviz.ui.main_window] - Base de datos eliminada: /Users/arakito/Mati/Codigo/python/KineViz/kineviz.db
+2025-04-09 02:54:08,864 - INFO - [kineviz.ui.main_window] - Directorio de estudios eliminado: /Users/arakito/Mati/Codigo/python/KineViz/estudios
+2025-04-09 02:54:08,864 - INFO - [kineviz.ui.main_window] - Recreando estructura inicial...
+2025-04-09 02:54:24,746 - INFO - [kineviz.database.repositories] - Directorio creado para estudio 1: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 1
+2025-04-09 02:56:03,520 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 02:56:03,521 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 02:56:08,955 - INFO - [kineviz.database.repositories] - Eliminando directorio del estudio: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 1
+2025-04-09 02:56:08,957 - INFO - [kineviz.database.repositories] - Estudio ID 1 eliminado de la base de datos.
+2025-04-09 02:56:19,967 - INFO - [kineviz.database.repositories] - Directorio creado para estudio 2: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 1
+2025-04-09 02:56:44,630 - INFO - [kineviz.core.services.file_service] - Iniciando proceso de agregado de 2 archivos al estudio 2.
+2025-04-09 02:56:44,688 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte10 Hola Mundo 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-09 02:56:44,688 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte10 Hola Mundo 01.txt' procesado y agregado exitosamente al estudio 2.
+2025-04-09 02:56:44,715 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte12 Hola Mundo 02.txt: {'Cinetica', 'Cinematica'}
+2025-04-09 02:56:44,715 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte12 Hola Mundo 02.txt' procesado y agregado exitosamente al estudio 2.
+2025-04-09 02:56:44,715 - INFO - [kineviz.core.services.file_service] - Proceso de agregado finalizado para estudio 2. Éxitos: 2, Errores: 0.
+2025-04-09 02:57:21,751 - INFO - [kineviz.core.services.analysis_service] - Generando reporte para estudio 2 en /Users/arakito/Downloads/a.pdf...
+2025-04-09 02:57:22,617 - INFO - [kineviz.core.services.analysis_service] - Reporte PDF generado exitosamente en /Users/arakito/Downloads/a.pdf
+2025-04-09 03:00:13,434 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 03:00:13,434 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 03:05:37,659 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 03:05:37,659 - INFO - [__main__] - Iniciando KineViz...
