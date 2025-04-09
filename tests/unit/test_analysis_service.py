@@ -109,11 +109,11 @@ class TestAnalysisService(unittest.TestCase):
         """Prueba leer datos de un archivo procesado simulado válido."""
         # Archivo procesado ahora empieza con num_frames
         file_content = (
-            "Desc\n"
-            "100\n" # Frecuencia (no usada directamente aquí)
-            ";;Val1;Val2\n" # Columnas
-            ";;m;m\n" # Unidades
-            "0.0;1;4\n"
+            "100\n" # Num Frames (línea 0)
+            ";;Atrib1;Atrib2\n" # Atributos (línea 1)
+            ";;Val1;Val2\n" # Columnas (línea 2) - Esta se usa para names
+            ";;m;m\n" # Unidades (línea 3)
+            "0.0;1;4\n" # Datos empiezan en línea 4
             "0.1;2;5\n"
             "0.2;3;6\n"
             ";;MAXIMO;3;6\n" # Stats
@@ -138,11 +138,11 @@ class TestAnalysisService(unittest.TestCase):
         """Prueba la sanitización de nombres de columna duplicados o vacíos."""
         # Archivo procesado ahora empieza con num_frames
         file_content = (
-            "Desc\n"
-            "100\n"
-            ";;Val1;;Val1\n" # Columnas con duplicado y vacío
-            ";;m;;m\n"
-            "0.0;1;99;4\n" # Dato para columna vacía
+            "100\n" # Num Frames
+            ";;Atr1;;Atr2\n" # Atributos
+            ";;Val1;;Val1\n" # Columnas con duplicado y vacío (línea 2)
+            ";;m;;m\n" # Unidades
+            "0.0;1;99;4\n" # Datos (4 columnas)
             "0.1;2;99;5\n"
             "0.2;3;99;6\n"
             ";;MAXIMO;3;99;6\n"
