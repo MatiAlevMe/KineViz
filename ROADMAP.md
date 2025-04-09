@@ -138,7 +138,7 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 ## Fase 5: Mejoras Incrementales - Descriptores y Detección de Frecuencia
 
 *   [x] **Modificación de Identificador de Frecuencias**: Cambiar la detección de tipo de frecuencia (Cinemática, Cinética, Electromiográfica) basada en metadatos del archivo ("Model Outputs", "Force Plate"). (Tarea 1)
-*   [ ] **Implementación de Descriptores**: Reemplazar el sistema de "Tipos de Prueba" y "Periodos de Prueba" por un sistema flexible de "Descriptores" definidos por el usuario al crear/editar estudios. (Tarea 2 - UI y DB)
+*   [X] **Implementación de Descriptores**: Reemplazar el sistema de "Tipos de Prueba" y "Periodos de Prueba" por un sistema flexible de "Descriptores" definidos por el usuario al crear/editar estudios. (Tarea 2 - UI y DB)
 *   [ ] **Modificación de Etiquetas Post-Carga**: Permitir al usuario asignar alias o nombres descriptivos a los descriptores detectados en los archivos, para visualización en análisis y reportes. (Tarea 3)
 *   [ ] **Integración Completa**: Asegurar que los cambios en la detección de frecuencia y el sistema de descriptores se integren correctamente en la carga de archivos, validación, análisis, reportes y UI. (Tarea 4)
 
