@@ -702,12 +702,13 @@ class AnalysisService:
                 last_attr = ""
                 for i in range(num_value_cols):
                     attr = atributos[i] if atributos[i] else last_attr # Propagar atributo si está vacío
-                    multi_index_tuples.append((attr, columnas[i]))
+                    multi_index_tuples.append((attr, columnas[i], unidades[i])) # Añadir unidad
                     last_attr = attr
-                # Añadir nivel de unidades (opcional, puede hacer el header muy ancho)
-                # multi_index_tuples_with_units = [t + (unidades[i],) for i, t in enumerate(multi_index_tuples)]
-                # column_multi_index = pd.MultiIndex.from_tuples(multi_index_tuples_with_units, names=["Atributo", "Columna", "Unidad"])
-                column_multi_index = pd.MultiIndex.from_tuples(multi_index_tuples, names=["Atributo", "Columna"])
+                # Crear MultiIndex con tres niveles: Atributo, Columna, Unidad
+                column_multi_index = pd.MultiIndex.from_tuples(
+                    multi_index_tuples,
+                    names=["Atributo", "Columna", "Unidad"]
+                )
 
 
                 for calc in calculations:
