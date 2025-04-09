@@ -319,8 +319,8 @@ class StudyDialog(Toplevel):
             self.destroy() # Cerrar el diálogo
 
         except ValueError as ve: # Capturar errores específicos de validación (ej. nombre duplicado si se implementa)
-             logger.warning(f"Error de validación al guardar estudio: {ve}")
-             messagebox.showerror("Error de Validación", str(ve), parent=self)
+            logger.warning(f"Error de validación al guardar estudio: {ve}")
+            messagebox.showerror("Error de Validación", str(ve), parent=self)
         except Exception as e: # Capturar errores generales del servicio o DB
             study_id_log = self.study_to_edit['id'] if self.study_to_edit else "nuevo"
             logger.error(f"Error inesperado al guardar estudio {study_id_log}: {e}", exc_info=True)
