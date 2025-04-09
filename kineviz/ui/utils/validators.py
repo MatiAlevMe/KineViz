@@ -144,6 +144,8 @@ def validate_filename_for_study_criteria(filename: str, descriptors: list[str]) 
         last_found_descriptor_index = -1 # Índice en 'descriptors' del último descriptor encontrado en el nombre del archivo
         for part in intermediate_parts:
             try:
+                # Loggear antes de buscar el índice
+                logger.debug(f"Buscando índice para parte: '{part}' (len={len(part)}) en descriptores definidos: {descriptors}")
                 # Encontrar el índice de la parte actual en la lista de descriptores definidos
                 current_index_in_definition = descriptors.index(part)
                 logger.debug(f"Parte '{part}' encontrada en índice {current_index_in_definition} de descriptores definidos.")
