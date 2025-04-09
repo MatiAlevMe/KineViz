@@ -116,17 +116,25 @@ def validate_filename_for_study_criteria(filename: str, descriptors: list[str]) 
 
     # Encontrar el índice del último elemento numérico (NN)
     nn_index = -1
+    attempt_number_str = None
     for i in range(len(parts) - 1, 0, -1): # Iterar desde el final hacia atrás, excluyendo Pte
-        if parts[i].isdigit():
+        part_candidate = parts[i]
+        if part_candidate.isdigit():
             nn_index = i
-            break
+            attempt_number_str = part_candidate
+            break # Encontramos el último número
 
-    # Verificar si se encontró un NN
+    # Verificar si se encontró un NN y si es realmente el último elemento esperado
+    # (o si no hay descriptores, debe ser el segundo elemento)
     if nn_index == -1:
         logger.debug(f"Validation Failed: No numeric attempt number (NN) found in parts: {parts}")
         return False
+    # Verificar si el NN encontrado es la última parte del nombre base
+    elif nn_index != len(parts) - 1:
+        logger.debug(f"Validation Failed: Numeric part '{attempt_number_str}' found, but it's not the last part of the base name: {parts}")
+        return False
 
-    logger.debug(f"Attempt number (NN) found at index {nn_index}: '{parts[nn_index]}'")
+    logger.debug(f"Attempt number (NN) found at index {nn_index}: '{attempt_number_str}'")
 
     # Las partes intermedias son las que están entre Pte (índice 0) y NN (índice nn_index)
     intermediate_parts = parts[1:nn_index]
