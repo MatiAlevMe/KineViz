@@ -12,6 +12,8 @@ from .file_service import FileService
 from .study_service import StudyService
 from kineviz.ui.widgets import charting # Importar nuestro módulo de gráficos
 from kineviz.core.data_processing import file_handlers # Para obtener nombre paciente si es necesario
+# Importar el validador de nombres de archivo
+from kineviz.ui.utils.validators import validate_filename_for_study_criteria
 
 # Importar reportlab
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
