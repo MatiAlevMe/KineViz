@@ -161,9 +161,9 @@ Esta funcionalidad está pensada para automatizar el análisis estadístico de d
 
 ### Gráficos y Tablas
 1.  **Generación de Gráficos y Reportes:**
-    *   Se generan gráficos que reflejen el análisis continuo de las variables desginadas
-    *   Se incorpora la opción de comparar dos o mas descriptores del estudio según lo definido por el usuario.
-    *   Los reportes generales se crean automáticamente en formato PDF, agrupados por tipo de cálculo. Es decir habrían 3 archivos si hay 3 calculos Maximo, Minimo, Rango, cada archivo muestra como ese calculo interactua en cada paciente con su intento por cada una de las articulación y su posición x, y o z del estudio, cada articulación y la posición x, y o z son distintas gráficas, y en cada gráfica se muestran distintas lineas para cada descriptor y como por ejemplo la persona obesa tiene un maximo mayor entonces puede que su angulo de inclinación para una articulación sea mayor que el de un normopeso, lo que quiere decir que en el gráfico se veria representado por una diferencia en el angulo de la linea formada por cada descriptor.
+    *   Se generan gráficos que reflejen el análisis de las variables desginadas
+    *   Se incorpora la opción de utilizar dos o mas descriptores del estudio según lo definido por el usuario.
+    *   Los reportes generales se crean automáticamente en formato PDF, agrupados por tipo de cálculo. Es decir habrían 3 archivos si hay 3 calculos Maximo, Minimo, Rango, cada archivo muestra como ese calculo interactua con los descriptores en un gráfico de boxplot para cada combinación de descriptores y el calculo fijo. Lo que quiere decir que se traducirian en varios gráficos en un archivo de una manera rapida y sencilla.
 
 2.  **Generación de Archivos y Acceso**
     *   Al hacer clic en el botón “Análisis Continuo” (para la parte de tablas discretas) se generan múltiples archivos automáticamente:
@@ -174,7 +174,7 @@ Esta funcionalidad está pensada para automatizar el análisis estadístico de d
     *   **Análisis Individual:**
         *   Se abre una ventana donde el usuario define parámetros tales como:
             *   El cálculo a utilizar.
-            *   Un calculo de referencia (fijo) para comparar con otros descriptores (que pueden ser n descriptores extras según permita el estudio) en un boxplot, estos descriptores seran las lineas del gráfico, y las columnas serán uno de los ejes, el otro sera el calculo.
+            *   Un calculo de referencia (fijo) para comparar con otros descriptores (que pueden ser n descriptores extras según permita el estudio) en un boxplot, estos descriptores seran también los puntos del gráfico, el calculo será el eje vertical y los distintos descriptores estarán en el eje horizontal.
             *   La variable (columna) a graficar.
         *   Se guarda la configuración y se despliega una lista de análisis previos, con opciones de búsqueda, filtrado y visualización (incluyendo un botón para abrir la carpeta de gráficos y tablas).
 
@@ -187,6 +187,9 @@ Esta funcionalidad está pensada para automatizar el análisis estadístico de d
 - **Enfoque Inicial:** Datos cinemáticos.
 - **Exclusiones:** Columnas "Frame", "Sub Frame", "Tiempo".
 - **Normalización:** No necesaria para análisis discreto.
+
+### Ejemplo de archivo de tabla resultante en "TABLA RESUMEN CINEMÁTICA CMJ MAX.csv"
+### Ejemplo de gráfico resultante en "H Salto.png"
 
 ## Fase 7: Refinamientos y Finalización (Antigua Fase 4)
 
@@ -244,7 +247,7 @@ Esta funcionalidad está pensada para automatizar el análisis estadístico de d
 *   **6. Generación de Gráficos:** (Pendiente) Implementar gráficos de barra y boxplot.
 *   **7. Exportación y Reporte:** (Pendiente) Exportar tablas en CSV/Excel/txt y generar reportes en PDF.
 *   **8. Análisis Individual:** (Pendiente)
-    *   **8.1 Crear ventana/diálogo** para configuración de análisis individual (cálculo, descriptor fijo, descriptores variables, variable a graficar).
+    *   **8.1 Crear ventana/diálogo** para configuración de análisis individual (cálculo fijo, n descriptores).
     *   **8.2 Implementar guardado/carga** de configuraciones de análisis individual.
     *   **8.3 Crear lista** de análisis guardados con búsqueda/filtrado.
     *   **8.4 Añadir botón** para abrir carpetas de tablas/gráficos de análisis individuales.
