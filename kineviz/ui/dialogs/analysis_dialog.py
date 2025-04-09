@@ -10,10 +10,13 @@ from pathlib import Path # Necesario para manejar rutas de reportes
 # Importar AnalysisService para type hinting
 from kineviz.core.services.analysis_service import AnalysisService
 
+# Importar AppSettings para type hinting
+from kineviz.config.settings import AppSettings
+
 logger = logging.getLogger(__name__) # Logger para este módulo
 
 class AnalysisDialog(Toplevel):
-    def __init__(self, parent, analysis_service: AnalysisService, study_id: int):
+    def __init__(self, parent, analysis_service: AnalysisService, study_id: int, app_settings: AppSettings):
         """
         Inicializa el diálogo de análisis.
 
@@ -24,7 +27,9 @@ class AnalysisDialog(Toplevel):
         super().__init__(parent)
         self.analysis_service = analysis_service
         self.study_id = study_id
+        self.app_settings = app_settings # Guardar referencia a AppSettings
         self.available_params = {} # Para almacenar los parámetros disponibles
+        self.descriptor_alias_map = {} # Para mapear display_name -> original_descriptor
 
         self.title(f"Análisis - Estudio ID: {study_id}")
         self.geometry("850x650") # Aumentar tamaño para acomodar listas
