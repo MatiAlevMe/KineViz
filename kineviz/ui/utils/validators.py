@@ -149,12 +149,12 @@ def validate_filename_for_study_criteria(filename: str, descriptors: list[str]) 
                 logger.debug(f"Parte '{part}' encontrada en índice {current_index_in_definition} de descriptores definidos.")
 
                 # Verificar si el índice actual es mayor que el índice del descriptor anterior encontrado
-                if current_index_in_definition > last_index_in_definition:
+                if current_index_in_definition > last_found_descriptor_index:
                     # El orden es correcto hasta ahora, actualizar el último índice encontrado
-                    last_index_in_definition = current_index_in_definition
+                    last_found_descriptor_index = current_index_in_definition
                 else:
                     # Error de orden: este descriptor aparece antes o en el mismo lugar que el anterior
-                    logger.debug(f"Validación fallida: Error de orden relativo. '{part}' (índice {current_index_in_definition}) no está después del último descriptor encontrado (índice {last_index_in_definition}).")
+                    logger.debug(f"Validación fallida: Error de orden relativo. '{part}' (índice {current_index_in_definition}) no está después del último descriptor encontrado (índice {last_found_descriptor_index}).")
                     return False
 
             except ValueError:
