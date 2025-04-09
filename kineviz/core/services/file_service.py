@@ -382,12 +382,27 @@ class FileService:
                              filename = file_path.name
                              # Validar nombre usando la lógica actualizada
                              if validate_filename_for_study_criteria(filename, defined_descriptors):
+                                 # Si el archivo es válido, AHORA añadimos paciente y frecuencia
+                                 parameters['patients'].add(patient_name)
+                                 parameters['frequencies'].add(freq_folder_name)
+
                                  # Extraer descriptores del nombre de archivo válido
                                  try:
-                                     # Asegurar que el split y el slicing no fallen
-                                     base_name_parts = filename.split(f'_{freq_folder_name}')
-                                     if not base_name_parts: continue # Nombre inesperado
-                                     base_name = base_name_parts[0]
+                                     # --- Lógica mejorada para extraer base_name ---
+                                     # 1. Quitar extensión
+                                     name_without_ext = file_path.stem
+                                     # 2. Quitar sufijo de frecuencia (_Cinematica, etc.) usando rsplit
+                                     base_name_parts = name_without_ext.rsplit('_', 1)
+                                     # Verificar si el split funcionó y si la última parte es una frecuencia conocida
+                                     if len(base_name_parts) == 2 and base_name_parts[1] in processed_folders:
+                                         base_name = base_name_parts[0]
+                                     else:
+                                         # Si no hay sufijo de frecuencia o no es conocido, usar el nombre sin extensión
+                                         # Esto podría pasar con archivos OG o nombres inesperados
+                                         base_name = name_without_ext
+                                         # Podríamos añadir una advertencia aquí si se espera siempre un sufijo
+                                         logger.debug(f"Nombre de archivo '{filename}' no parece tener sufijo de frecuencia esperado. Usando '{base_name}' como base.")
+                                     # --- Fin lógica mejorada ---
                                      parts = base_name.replace('_', ' ').split()
                                      if len(parts) > 2: # Asegurar que hay partes intermedias potenciales
                                          intermediate_parts = parts[1:-1]
