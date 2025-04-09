@@ -55,22 +55,13 @@ def leer_seccion(file, num_frames: int, linea_descripcion: str, ruta_archivo_bas
     # Asegurar que el directorio de frecuencia exista
     ruta_archivo_seccion.parent.mkdir(parents=True, exist_ok=True)
 
-
-    # --- Leer la primera línea de datos para determinar el número final de columnas ---
-    first_data_line_pos = file.tell() # Recordar posición actual
-    first_data_line_str = file.readline()
-    file.seek(first_data_line_pos) # Volver al inicio de los datos
-    num_final_data_fields = 0
-    if first_data_line_str:
-        original_data_fields = first_data_line_str.rstrip("\n").split("\t")
-        num_final_data_fields = len(original_data_fields) + 1 # +1 por la columna Tiempo
-    else:
-        # Manejar caso sin líneas de datos? Por ahora asumimos que hay datos.
-        # Podríamos loggear una advertencia o retornar temprano si no hay datos.
-        pass
+    # --- Determinar número esperado de columnas basado en la cabecera original ---
+    num_original_header_cols = len(columnas) # Longitud después de split('\t')
+    num_final_expected_cols = num_original_header_cols + 1 # +1 por Tiempo
+    # Ya no leemos la primera línea de datos aquí para determinar columnas. Confiamos en la cabecera.
 
     # --- Preparar y ajustar cabeceras ---
-    # Agregar la columna "Tiempo" a las listas de cabecera
+    # Agregar la columna "Tiempo" a las listas de cabecera (índice 2)
     nuevas_columnas_tiempo = ["Tiempo"]
     atributos = processors.agregar_columnas(atributos, [""], 2) # "" para atributo Tiempo
     columnas = processors.agregar_columnas(columnas, nuevas_columnas_tiempo, 2)
@@ -85,14 +76,12 @@ def leer_seccion(file, num_frames: int, linea_descripcion: str, ruta_archivo_bas
             return lst + [default_val] * (target_len - current_len)
         return lst
 
-    # Ajustar longitud de las cabeceras al número final de columnas de datos
-    if num_final_data_fields > 0:
-        atributos = adjust_list_length(atributos, num_final_data_fields)
-        columnas = adjust_list_length(columnas, num_final_data_fields)
-        unidades = adjust_list_length(unidades, num_final_data_fields)
-    # else: # Si no hay datos, las cabeceras quedarán como están (podrían estar vacías)
+    # Ajustar longitud de las cabeceras al número final esperado de columnas
+    atributos = adjust_list_length(atributos, num_final_expected_cols)
+    columnas = adjust_list_length(columnas, num_final_expected_cols)
+    unidades = adjust_list_length(unidades, num_final_expected_cols)
 
-    # Unir cabeceras ajustadas con ';' (ya no se necesita ajustar_fila)
+    # Unir cabeceras ajustadas con ';'
     atributos_str = ";".join(atributos)
     columnas_str = ";".join(columnas)
     unidades_str = ";".join(unidades)
