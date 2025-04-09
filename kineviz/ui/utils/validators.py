@@ -77,7 +77,7 @@ def validate_filename_for_study_criteria(filename: str, descriptors: list[str]) 
 
     # Importar Path dentro de la función o al inicio del archivo si no está ya
     from pathlib import Path
-    import logging # Asegurar que logging esté importado
+    # Eliminar import logging redundante de aquí
     logger = logging.getLogger(__name__) # Obtener logger si no está a nivel de módulo
 
     # 1. Quitar extensión
