@@ -1,0 +1,272 @@
+import tkinter as tk
+from tkinter import ttk, messagebox
+import os # Necesario para os.startfile
+import sys # Necesario para sys.platform
+import subprocess # Necesario para open/xdg-open
+from pathlib import Path # Para manejar rutas de archivo
+import logging # Importar logging
+# Importar FileService para type hinting
+from kineviz.core.services.file_service import FileService
+
+logger = logging.getLogger(__name__) # Logger para este módulo
+
+class FileBrowser(ttk.Frame):
+    def __init__(self, parent, file_service: FileService, study_id: int, files_per_page: int = 10):
+        super().__init__(parent)
+        self.file_service = file_service
+        self.study_id = study_id
+        self.files_per_page = files_per_page
+
+        # Estado de paginación y filtros
+        self.current_page = 1
+        self.total_files = 0
+        self.total_pages = 1
+        self.search_var = tk.StringVar()
+        self.filter_type_var = tk.StringVar(value="Todos")
+        self.filter_freq_var = tk.StringVar(value="Todos")
+
+        self.create_widgets()
+        self.load_files() # Carga inicial
+
+    def create_widgets(self):
+        # --- Frame para Filtros y Búsqueda ---
+        filter_frame = ttk.Frame(self)
+        filter_frame.pack(fill=tk.X, pady=(0, 5))
+
+        # Búsqueda
+        ttk.Label(filter_frame, text="Buscar:").pack(side=tk.LEFT, padx=(0, 5))
+        search_entry = ttk.Entry(filter_frame, textvariable=self.search_var)
+        search_entry.pack(side=tk.LEFT, padx=5)
+        search_entry.bind("<Return>", lambda event: self.apply_filters())
+
+        # Filtro Tipo
+        ttk.Label(filter_frame, text="Tipo:").pack(side=tk.LEFT, padx=(10, 5))
+        type_options = ["Todos", "Processed", "Original"]
+        type_menu = ttk.OptionMenu(filter_frame, self.filter_type_var, type_options[0], *type_options)
+        type_menu.pack(side=tk.LEFT, padx=5)
+
+        # Filtro Frecuencia
+        ttk.Label(filter_frame, text="Frecuencia:").pack(side=tk.LEFT, padx=(10, 5))
+        freq_options = ["Todos", "Cinematica", "Cinetica", "Electromiografica", "N/A"]
+        freq_menu = ttk.OptionMenu(filter_frame, self.filter_freq_var, freq_options[0], *freq_options)
+        freq_menu.pack(side=tk.LEFT, padx=5)
+
+        # Botones de Filtro
+        ttk.Button(filter_frame, text="Aplicar", command=self.apply_filters).pack(side=tk.LEFT, padx=5)
+        ttk.Button(filter_frame, text="Limpiar", command=self.clear_filters).pack(side=tk.LEFT, padx=5)
+
+        # --- Frame para Tabla y Scrollbar ---
+        table_container = ttk.Frame(self)
+        # Usar pack con fill=BOTH y expand=True para que la tabla ocupe el espacio
+        table_container.pack(fill=tk.BOTH, expand=True)
+
+        # Crear tabla de archivos
+        columns = ('Paciente', 'Nombre', 'Tipo', 'Frecuencia', 'Ver', 'Eliminar')
+        self.tree = ttk.Treeview(table_container, columns=columns, show='headings')
+
+        for col in columns:
+            self.tree.heading(col, text=col)
+            # Ajustar ancho y anclaje directamente aquí
+            self.tree.column(col, width=100, anchor='center' if col in ['Ver', 'Eliminar'] else 'w')
+
+        # Scrollbar (Configurar antes de usar grid)
+        scrollbar = ttk.Scrollbar(table_container, orient=tk.VERTICAL, command=self.tree.yview)
+        self.tree.configure(yscrollcommand=scrollbar.set)
+
+        # Empaquetar tabla y scrollbar usando grid dentro de table_container
+        table_container.grid_rowconfigure(0, weight=1)
+        table_container.grid_columnconfigure(0, weight=1)
+        self.tree.grid(row=0, column=0, sticky='nsew')
+        scrollbar.grid(row=0, column=1, sticky='ns')
+
+        # Configurar eventos
+        self.tree.bind('<ButtonRelease-1>', self.on_tree_click)
+
+        # --- Frame para Paginación ---
+        self.pagination_frame = ttk.Frame(self)
+        self.pagination_frame.pack(fill=tk.X, pady=(5, 0))
+
+    def load_files(self):
+        """Carga los archivos filtrados y paginados usando FileService."""
+        # Limpiar tabla
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+
+        # Obtener parámetros de filtro/búsqueda
+        search_query = self.search_var.get() or None
+        file_type_filter = self.filter_type_var.get()
+        frequency_filter = self.filter_freq_var.get()
+
+        try:
+            # Obtener archivos paginados y filtrados
+            files_on_page, self.total_files = self.file_service.get_study_files(
+                study_id=self.study_id,
+                page=self.current_page,
+                per_page=self.files_per_page,
+                search_term=search_query,
+                file_type=file_type_filter if file_type_filter != "Todos" else None,
+                frequency=frequency_filter if frequency_filter != "Todos" else None
+            )
+
+            # Calcular total de páginas
+            self.total_pages = (self.total_files // self.files_per_page) + \
+                               (1 if self.total_files % self.files_per_page else 0)
+            self.total_pages = max(1, self.total_pages) # Asegurar al menos 1 página
+
+            # Llenar tabla
+            for file_info in files_on_page:
+                # Indent this line
+                self.tree.insert('', 'end', values=(
+                    str(file_info.get('patient', 'N/A')),
+                    str(file_info.get('name', 'N/A')),
+                    str(file_info.get('type', 'N/A')),
+                str(file_info.get('frequency', 'N/A')),
+                'Ver',      # Texto para botón Ver
+                    'Eliminar'  # Texto para botón Eliminar
+                ), tags=(str(file_info.get('path', '')),)) # Guardar la ruta como string en tags
+
+            self.update_pagination_controls()
+
+        except Exception as e:
+            logger.error(f"Error al cargar archivos para estudio {self.study_id}: {e}", exc_info=True)
+            messagebox.showerror("Error al Cargar Archivos", f"No se pudieron cargar los archivos del estudio:\n{e}", parent=self)
+            self.total_files = 0
+            self.total_pages = 1
+            self.update_pagination_controls() # Actualizar controles incluso en error
+            # import traceback # Ya no es necesario
+            # traceback.print_exc() # Reemplazado por logger
+
+    def apply_filters(self):
+        """Aplica los filtros y búsqueda, reseteando a la página 1."""
+        self.current_page = 1
+        self.load_files()
+
+    def clear_filters(self):
+        """Limpia los filtros y búsqueda, y recarga los archivos."""
+        self.search_var.set("")
+        self.filter_type_var.set("Todos")
+        self.filter_freq_var.set("Todos")
+        self.current_page = 1
+        self.load_files()
+
+    def update_pagination_controls(self):
+        """Actualiza los botones y etiqueta de paginación."""
+        # Limpiar controles existentes
+        for widget in self.pagination_frame.winfo_children():
+            widget.destroy()
+
+        if self.total_pages <= 1:
+            return # No mostrar si solo hay una página
+
+        # Botón Primera Página
+        first_btn = ttk.Button(self.pagination_frame, text="<<", command=lambda: self.go_to_page(1))
+        first_btn.pack(side=tk.LEFT, padx=2)
+        if self.current_page == 1:
+            first_btn.config(state=tk.DISABLED)
+
+        # Botón Anterior
+        prev_btn = ttk.Button(self.pagination_frame, text="<", command=lambda: self.go_to_page(self.current_page - 1))
+        prev_btn.pack(side=tk.LEFT, padx=2)
+        if self.current_page == 1:
+            prev_btn.config(state=tk.DISABLED)
+
+        # Etiqueta de Página Actual
+        ttk.Label(self.pagination_frame, text=f"Página {self.current_page} de {self.total_pages} ({self.total_files} archivos)").pack(side=tk.LEFT, padx=5)
+
+        # Botón Siguiente
+        next_btn = ttk.Button(self.pagination_frame, text=">", command=lambda: self.go_to_page(self.current_page + 1))
+        next_btn.pack(side=tk.LEFT, padx=2)
+        if self.current_page == self.total_pages:
+            next_btn.config(state=tk.DISABLED)
+
+        # Botón Última Página
+        last_btn = ttk.Button(self.pagination_frame, text=">>", command=lambda: self.go_to_page(self.total_pages))
+        last_btn.pack(side=tk.LEFT, padx=2)
+        if self.current_page == self.total_pages:
+            last_btn.config(state=tk.DISABLED)
+
+    def go_to_page(self, page_number):
+        """Navega a una página específica."""
+        if 1 <= page_number <= self.total_pages:
+            self.current_page = page_number
+            self.load_files()
+        else:
+            logger.warning(f"Intento de ir a página inválida {page_number} (Total: {self.total_pages})")
+
+
+    def on_tree_click(self, event):
+        """Maneja los clics en la tabla de archivos."""
+        region = self.tree.identify("region", event.x, event.y)
+        if region != "cell":
+            return
+
+        column_id = self.tree.identify_column(event.x) # ej: '#5'
+        row_id = self.tree.identify_row(event.y) # ej: 'I001'
+
+        if not row_id: # Clic fuera de las filas
+            return
+
+        # Obtener la ruta del archivo desde los tags
+        item_tags = self.tree.item(row_id, "tags")
+        if not item_tags or not item_tags[0]:
+            messagebox.showwarning("Advertencia", "No se pudo obtener la ruta del archivo seleccionado.", parent=self)
+            return
+        file_path_str = item_tags[0]
+        file_path = Path(file_path_str) # Convertir a Path
+
+        # Determinar la acción basada en la columna clickeada
+        # Los índices de columna empiezan en 1 ('#1', '#2', ...)
+        column_index = int(column_id.replace('#', '')) - 1 # Índice basado en 0
+
+        if column_index == 4:  # Columna "Ver" (índice 4)
+            self.view_file(file_path)
+        elif column_index == 5:  # Columna "Eliminar" (índice 5)
+            self.delete_file(file_path, row_id) # Pasar row_id para eliminar de la vista si es exitoso
+
+    def view_file(self, file_path: Path):
+        """Abre el archivo seleccionado con la aplicación predeterminada."""
+        if not file_path.exists():
+             messagebox.showerror("Error", f"El archivo no existe:\n{file_path}", parent=self)
+             return
+        try:
+            if sys.platform == 'win32':
+                os.startfile(file_path)
+            elif sys.platform == 'darwin': # macOS
+                subprocess.run(['open', file_path], check=True)
+            else: # Linux, etc.
+                subprocess.run(['xdg-open', file_path], check=True)
+        except FileNotFoundError:
+             messagebox.showerror("Error", f"No se pudo encontrar la aplicación para abrir el archivo:\n{file_path}", parent=self)
+        except subprocess.CalledProcessError as e:
+             messagebox.showerror("Error", f"El comando para abrir el archivo falló:\n{e}", parent=self)
+        except Exception as e:
+            logger.error(f"Error al intentar abrir archivo {file_path}: {e}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudo abrir el archivo '{file_path.name}':\n{str(e)}", parent=self)
+
+    def delete_file(self, file_path: Path, item_id):
+        """Solicita confirmación y elimina un archivo usando FileService."""
+        if not file_path.exists():
+             messagebox.showerror("Error", f"El archivo ya no existe:\n{file_path}", parent=self)
+             self.load_files() # Recargar lista completa si el archivo no existe
+             return
+
+        file_name = file_path.name
+        if messagebox.askyesno("Confirmar Eliminación",
+                               f"¿Está seguro de que desea eliminar el archivo:\n'{file_name}'?\n\nEsta acción es permanente.",
+                               icon='warning', parent=self):
+            try:
+                # Usar el file_service para eliminar, pasando el study_id
+                self.file_service.delete_file(file_path, self.study_id)
+                messagebox.showinfo("Éxito", f"Archivo '{file_name}' eliminado correctamente.", parent=self)
+                # Eliminar solo el item de la tabla en lugar de recargar todo
+                # self.tree.delete(item_id) # Esto puede desincronizar la paginación
+                # Mejor recargar la página actual para reflejar el cambio y la paginación correcta
+                self.load_files()
+            except FileNotFoundError:
+                 messagebox.showerror("Error", f"El archivo no se encontró al intentar eliminarlo:\n{file_path}", parent=self)
+                 self.load_files() # Recargar lista completa
+            except Exception as e:
+                logger.error(f"Error al eliminar archivo {file_path} para estudio {self.study_id}: {e}", exc_info=True)
+                messagebox.showerror("Error al Eliminar", f"No se pudo eliminar el archivo:\n{e}", parent=self)
+                # import traceback # Ya no es necesario
+                # traceback.print_exc() # Reemplazado por logger
