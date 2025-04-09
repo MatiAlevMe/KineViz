@@ -146,13 +146,7 @@ Esta funcionalidad está pensada para automatizar el análisis estadístico de d
         *   Filas que representan a cada paciente (con sus intentos).
         *   Columnas que corresponden a las variables repetidas presentes en cada archivo (p.ej.: posiciones X, Y, Z agrupadas por articulación y unidad de medida).
 
-2.1 **Procesamiento Estadístico**
-    *   Se realiza una comprobación de distribución normal para determinar si los datos son paramétricos o no, lo cual condiciona el método estadístico a aplicar.
-    *   En caso de comparación entre:
-        *   **Dos descriptores:** Se ejecuta una prueba t.
-        *   **Tres o más descriptores:** Se realiza un ANOVA.
-
-2.2 **Interacción y Configuración del Análisis:**
+2. **Interacción y Configuración del Análisis:**
     *   **Paso 1: Definir el Diseño del Estudio**
         *   Preguntar al usuario si los datos son **pareados** o **independientes**.
         *   Preguntar si los datos se pueden asumir normalmente distribuidos o si se requiere la aplicación de una prueba automática para verificar la normalidad.
@@ -165,21 +159,22 @@ Esta funcionalidad está pensada para automatizar el análisis estadístico de d
         *   Elegir las variables y etiquetas que se utilizarán para generar las tablas y gráficos.
         *   Guardar la configuración para análisis individual y generar reportes generales en PDF con las combinaciones de gráficos y tablas pertinentes.
 
-3.  **Generación de Gráficos y Reportes:**
-    *   Se generan gráficos (barras y boxplots) que reflejen el análisis de las diferencias entre descriptores.
-    *   Se incorpora la opción de comparar un descriptor fijo contra otros, según lo definido por el usuario.
-    *   Los reportes generales se crean automáticamente en formato PDF, agrupados por tipo de cálculo y descriptores.
+### Gráficos y Tablas
+1.  **Generación de Gráficos y Reportes:**
+    *   Se generan gráficos que reflejen el análisis continuo de las variables desginadas
+    *   Se incorpora la opción de comparar dos o mas descriptores del estudio según lo definido por el usuario.
+    *   Los reportes generales se crean automáticamente en formato PDF, agrupados por tipo de cálculo. Es decir habrían 3 archivos si hay 3 calculos Maximo, Minimo, Rango, cada archivo muestra como ese calculo interactua en cada paciente con su intento por cada una de las articulación y su posición x, y o z del estudio, cada articulación y la posición x, y o z son distintas gráficas, y en cada gráfica se muestran distintas lineas para cada descriptor y como por ejemplo la persona obesa tiene un maximo mayor entonces puede que su angulo de inclinación para una articulación sea mayor que el de un normopeso, lo que quiere decir que en el gráfico se veria representado por una diferencia en el angulo de la linea formada por cada descriptor.
 
-4.  **Generación de Archivos y Acceso**
+2.  **Generación de Archivos y Acceso**
     *   Al hacer clic en el botón “Análisis Continuo” (para la parte de tablas discretas) se generan múltiples archivos automáticamente:
-        *   Cada archivo corresponde a un cálculo (por ejemplo, “Máximo – Cinemática – Estudio: Testing”).
-        *   Las tablas generadas se alojan en una estructura de carpetas accesible mediante un botón en la nueva ventana de análisis.
+        *   Cada archivo corresponde a un cálculo (por ejemplo, “Máximo – Cinemática – Estudio: Testing” y "Minimo - Cinemática - Estudio: Testing").
+        *   Las tablas generadas se alojan en una estructura de carpetas accesible mediante un botón en la nueva ventana de análisis. Algo asi como Estudios/[NOMBRE_DEL_ESTUDIO]/Analisis Discreto/Individual/[CALCULO]/[FRECUENCIA]/[ARCHIVOS]
 
-5.  **Análisis Individual y Reporte General**
+3.  **Análisis Individual y Reporte General**
     *   **Análisis Individual:**
         *   Se abre una ventana donde el usuario define parámetros tales como:
             *   El cálculo a utilizar.
-            *   Un descriptor de referencia (fijo) para comparar con otros descriptores (que pueden ser n descriptores extras según permita el estudio).
+            *   Un calculo de referencia (fijo) para comparar con otros descriptores (que pueden ser n descriptores extras según permita el estudio) en un boxplot, estos descriptores seran las lineas del gráfico, y las columnas serán uno de los ejes, el otro sera el calculo.
             *   La variable (columna) a graficar.
         *   Se guarda la configuración y se despliega una lista de análisis previos, con opciones de búsqueda, filtrado y visualización (incluyendo un botón para abrir la carpeta de gráficos y tablas).
 
