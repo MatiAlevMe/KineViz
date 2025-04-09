@@ -161,11 +161,16 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
     *   **2.1 Soportar múltiples etiquetas de descriptores**: (Hecho) UI modificada para añadir/eliminar campos. Tabla `estudios` modificada para usar columna `descriptores` (TEXT, separado por comas). Repositorio y Servicio actualizados.
     *   **2.2 Validación de descriptores**: (Hecho) Añadida validación en `kineviz.ui.utils.validators.validate_study_data` para evitar descriptores vacíos o duplicados exactos.
 
-*   **3. Implementación para modificar nombres de etiquetas de descriptores post-carga.** (Pendiente)
+*   **3. Implementación para modificar nombres de etiquetas de descriptores post-carga.** (Parcialmente Completado)
     *   **Detalle**: Añadir una nueva funcionalidad (posiblemente en `kineviz.ui.views.study_view.py` o un nuevo diálogo) que permita al usuario ver los descriptores *detectados* en los nombres de archivo de un estudio y asignarles un "alias" o "nombre descriptivo" (ej: "CMJ" -> "Salto Contra Movimiento"). Este alias se usaría para mostrar en gráficos y reportes. El almacenamiento de estos alias podría ser en `config.ini` o en la base de datos. *Nota: Inicialmente, esta modificación es solo visual.*
+    *   **3.1 Añadir gestión de alias en `AppSettings`**: (Hecho) Métodos para leer/escribir sección `[DESCRIPTOR_ALIASES]` en `config.ini`.
+    *   **3.2 Crear `DescriptorAliasDialog`**: (Hecho) Diálogo para ver descriptores detectados y asignar/guardar alias usando `AppSettings`.
+    *   **3.3 Añadir botón en `StudyView` para abrir el diálogo**: (Hecho)
 
-*   **4. Integrar con el resto del código. (Completado)**
-    *   **Detalle**: Revisar y actualizar todos los módulos que dependían de `test_types` y `test_periods`:
+*   **4. Integrar con el resto del código. (Pendiente - Alias)**
+    *   **Detalle**: Revisar y actualizar todos los módulos que dependían de `test_types` y `test_periods` (Hecho). **Adicionalmente**, integrar el uso de los alias de descriptores en:
+        *   `kineviz.core.services.analysis_service`: (Pendiente) Usar alias en `generate_report` para títulos, leyendas, etc.
+        *   `kineviz.ui.dialogs.analysis_dialog.py`: (Pendiente) Mostrar alias en el selector de descriptores. Asegurarse de pasar el descriptor original al servicio.
         *   `kineviz.ui.utils.validators.validate_filename_for_study_criteria`: (Hecho) Actualizada para validar contra `descriptors`.
         *   `kineviz.core.services.file_service.add_files_to_study`: (Hecho) Actualizado para usar el validador con `descriptors`.
         *   `kineviz.core.services.file_service.get_unique_study_parameters`: (Hecho) Actualizado para extraer `descriptors` de nombres de archivo válidos.

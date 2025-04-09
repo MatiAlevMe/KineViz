@@ -13,6 +13,11 @@ class AppSettings:
             'estudios_por_pagina': '10',
             'files_per_page': '10',
             'pdfs_per_page': '10'
+        },
+        'DESCRIPTOR_ALIASES': {
+            # Ejemplo:
+            # 'CMJ': 'Salto Contra Movimiento',
+            # 'SJ': 'Salto con Sentadilla'
         }
     }
 
@@ -55,6 +60,10 @@ class AppSettings:
             if 'SETTINGS' not in self.config:
                 logger.warning("Sección [SETTINGS] no encontrada en config.ini. Usando valores por defecto.")
                 self.config['SETTINGS'] = self.DEFAULT_SETTINGS['SETTINGS']
+            # Asegurar sección [DESCRIPTOR_ALIASES]
+            if 'DESCRIPTOR_ALIASES' not in self.config:
+                logger.warning("Sección [DESCRIPTOR_ALIASES] no encontrada en config.ini. Creando sección.")
+                self.config['DESCRIPTOR_ALIASES'] = self.DEFAULT_SETTINGS['DESCRIPTOR_ALIASES']
 
         except configparser.Error as e:
             logger.error(f"Error leyendo {self.config_path}: {e}. Usando valores por defecto.", exc_info=True)
@@ -102,6 +111,34 @@ class AppSettings:
             self.config['SETTINGS'] = {}
         self.config['SETTINGS'][key] = str(value) # Guardar como string
 
+    # --- Métodos para gestión de alias de descriptores ---
+
+    def get_all_aliases(self) -> dict:
+        """Obtiene todos los alias de descriptores definidos."""
+        if 'DESCRIPTOR_ALIASES' in self.config:
+            # Devolver una copia para evitar modificaciones accidentales
+            return dict(self.config['DESCRIPTOR_ALIASES'])
+        return {}
+
+    def get_descriptor_alias(self, descriptor: str) -> str | None:
+        """Obtiene el alias para un descriptor específico."""
+        if 'DESCRIPTOR_ALIASES' in self.config:
+            return self.config['DESCRIPTOR_ALIASES'].get(descriptor)
+        return None
+
+    def set_descriptor_alias(self, descriptor: str, alias: str):
+        """Establece o actualiza el alias para un descriptor."""
+        if 'DESCRIPTOR_ALIASES' not in self.config:
+            self.config['DESCRIPTOR_ALIASES'] = {}
+        # Guardar el alias. Si el alias está vacío, eliminar la entrada.
+        if alias and alias.strip():
+            self.config['DESCRIPTOR_ALIASES'][descriptor] = alias.strip()
+        elif descriptor in self.config['DESCRIPTOR_ALIASES']:
+            # Si el alias está vacío, eliminar la clave del configparser
+            del self.config['DESCRIPTOR_ALIASES'][descriptor]
+            logger.info(f"Alias eliminado para el descriptor: {descriptor}")
+
+
     # --- Métodos específicos para configuraciones conocidas ---
 
     @property
@@ -131,7 +168,11 @@ class AppSettings:
     def reset_to_defaults(self):
          """Restablece las configuraciones en memoria a los valores por defecto."""
          logger.info("Restableciendo configuraciones a valores por defecto...")
-         self.config = configparser.ConfigParser()
-         self.config.read_dict(self.DEFAULT_SETTINGS)
+         logger.info("Restableciendo configuraciones a valores por defecto (incluyendo alias)...")
+         # Crear un nuevo configparser y leer los defaults completos
+         new_config = configparser.ConfigParser()
+         new_config.read_dict(self.DEFAULT_SETTINGS)
+         self.config = new_config # Reemplazar el config actual
          # Guardar inmediatamente los valores por defecto en el archivo
          self.save_settings()
+         logger.info("Configuraciones restablecidas y guardadas.")
