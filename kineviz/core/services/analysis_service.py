@@ -15,6 +15,9 @@ from kineviz.core.data_processing import file_handlers # Para obtener nombre pac
 # Importar el validador de nombres de archivo
 from kineviz.ui.utils.validators import validate_filename_for_study_criteria
 
+# Importar AppSettings para type hinting
+from kineviz.config.settings import AppSettings
+
 # Importar reportlab
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
@@ -25,15 +28,17 @@ from reportlab.lib.units import inch # Para tamaños
 logger = logging.getLogger(__name__) # Logger para este módulo
 
 class AnalysisService:
-    def __init__(self, study_service: StudyService, file_service: FileService):
+    def __init__(self, study_service: StudyService, file_service: FileService, app_settings: AppSettings):
         """
         Inicializa el AnalysisService.
 
         :param study_service: Instancia de StudyService.
         :param file_service: Instancia de FileService.
+        :param app_settings: Instancia de AppSettings para acceder a alias.
         """
         self.study_service = study_service
         self.file_service = file_service
+        self.settings = app_settings # Guardar referencia a AppSettings
 
     def get_analysis_parameters(self, study_id: int) -> dict:
         """
@@ -370,10 +375,15 @@ class AnalysisService:
 
             # Parámetros Usados
             story.append(Paragraph("<b>Parámetros Seleccionados:</b>", styles['h3']))
+            # Mostrar alias para descriptores seleccionados
+            selected_descriptors_orig = parameters.get('descriptors', [])
+            selected_descriptors_display = [
+                self.settings.get_descriptor_alias(d) or d for d in selected_descriptors_orig
+            ]
             param_text = f"""
                 <b>Pacientes:</b> {', '.join(parameters.get('patients',[]))}<br/>
                 <b>Frecuencias:</b> {', '.join(parameters.get('frequencies',[]))}<br/>
-                <b>Descriptores:</b> {', '.join(parameters.get('descriptors',[]) or ['Todos'])}<br/>
+                <b>Descriptores:</b> {', '.join(selected_descriptors_display or ['Todos'])}<br/>
                 <b>Cálculos:</b> {', '.join(parameters.get('calculations',[]))}
             """
             story.append(Paragraph(param_text, styles['Normal']))
@@ -386,8 +396,10 @@ class AnalysisService:
                 story.append(Spacer(1, 0.1*inch))
 
                 for descriptor_key, patient_data in descriptor_data.items():
-                    # Usar la clave de descriptor (ej: "CMJ_PRE" o "DESC1_DESC2" o "NoDesc")
-                    descriptor_display = descriptor_key.replace('_', ', ') # Mostrar más legible
+                    # Obtener alias para cada parte de la clave de descriptor
+                    descriptor_parts = descriptor_key.split('_')
+                    descriptor_display_parts = [self.settings.get_descriptor_alias(part) or part for part in descriptor_parts]
+                    descriptor_display = ', '.join(descriptor_display_parts) if descriptor_key != "NoDesc" else "Sin Descriptores Específicos"
                     story.append(Paragraph(f"Descriptores: {descriptor_display}", styles['h3']))
                     story.append(Spacer(1, 0.1*inch))
 
@@ -406,6 +418,7 @@ class AnalysisService:
                     if boxplot_data:
                         plot_counter += 1
                         boxplot_filename = temp_dir / f"boxplot_{plot_counter}.png"
+                        # Usar descriptor_display (con alias) en el título del gráfico
                         charting.create_boxplot(
                             data_dict=boxplot_data,
                             title=f"Distribución General - {freq} ({descriptor_display})",
@@ -448,6 +461,7 @@ class AnalysisService:
                             if valid_avg_calc:
                                 plot_counter += 1
                                 barchart_filename = temp_dir / f"barchart_{plot_counter}.png"
+                                # Usar descriptor_display (con alias) en el título del gráfico
                                 charting.create_barchart(
                                     data_dict=valid_avg_calc,
                                     title=f"{calc} Promedio - {freq} ({descriptor_display})",
