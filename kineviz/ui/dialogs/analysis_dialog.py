@@ -78,8 +78,8 @@ class AnalysisDialog(Toplevel):
         # Crear selectores para cada parámetro
         self.patient_selector = self._create_parameter_selector(params_frame, "Pacientes", self.available_params.get('patients', set()))
         self.frequency_selector = self._create_parameter_selector(params_frame, "Frecuencias", self.available_params.get('frequencies', set()))
-        self.type_selector = self._create_parameter_selector(params_frame, "Tipos Prueba", self.available_params.get('types', set()))
-        self.period_selector = self._create_parameter_selector(params_frame, "Periodos Prueba", self.available_params.get('periods', set()))
+        # Reemplazar selectores de tipo/periodo por descriptor
+        self.descriptor_selector = self._create_parameter_selector(params_frame, "Descriptores", self.available_params.get('descriptors', set()))
         self.calculation_selector = self._create_parameter_selector(params_frame, "Cálculos", self.available_params.get('calculations', set()))
 
         # --- Botones de Acción ---
@@ -233,8 +233,7 @@ class AnalysisDialog(Toplevel):
         return {
             'patients': list(self.patient_selector['selected'].get(0, tk.END)),
             'frequencies': list(self.frequency_selector['selected'].get(0, tk.END)),
-            'types': list(self.type_selector['selected'].get(0, tk.END)),
-            'periods': list(self.period_selector['selected'].get(0, tk.END)),
+            'descriptors': list(self.descriptor_selector['selected'].get(0, tk.END)), # Usar descriptor_selector
             'calculations': list(self.calculation_selector['selected'].get(0, tk.END)),
         }
 
@@ -431,9 +430,10 @@ if __name__ == '__main__':
 
     # Crear instancias dummy/reales de los servicios necesarios
     class DummyAnalysisService:
-        def get_analysis_parameters(self, study_id): # Añadir método dummy
+        def get_analysis_parameters(self, study_id): # Método dummy actualizado
             print(f"DummyAnalysisService: get_analysis_parameters({study_id})")
-            return {'patients': {'P01', 'P02', 'P03'}, 'frequencies': {'Cinematica'}, 'types': {'CMJ'}, 'periods': {'PRE'}, 'calculations': {'Maximo', 'Minimo'}}
+            # Devolver 'descriptors' en lugar de 'types'/'periods'
+            return {'patients': {'P01', 'P02', 'P03'}, 'frequencies': {'Cinematica'}, 'descriptors': {'CMJ', 'PRE', 'POST'}, 'calculations': {'Maximo', 'Minimo'}}
         def list_reports(self, study_id): # Añadir método dummy
             print(f"DummyAnalysisService: list_reports({study_id})")
             return [{'name': 'dummy_report.pdf', 'path': '/tmp/dummy_report.pdf'}]
