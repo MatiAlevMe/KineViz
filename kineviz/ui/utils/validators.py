@@ -68,7 +68,10 @@ def validate_filename_for_study_criteria(filename: str, descriptors: list[str]) 
     :return: True si el nombre de archivo es válido según los criterios, False en caso contrario.
     """
     logger = logging.getLogger(__name__) # Asegurar logger
-    logger.debug(f"Validando nombre: '{filename}' con descriptores: {descriptors}")
+    # Log inicial para confirmar entrada y argumentos
+    logger.debug(f"--- ENTERING validate_filename_for_study_criteria ---")
+    logger.debug(f"Input filename: '{filename}'")
+    logger.debug(f"Input descriptors: {descriptors}")
 
     # --- Lógica mejorada para extraer base_name ---
     # No omitir validación basada solo en sufijo de frecuencia.
@@ -102,15 +105,16 @@ def validate_filename_for_study_criteria(filename: str, descriptors: list[str]) 
 
     # Se espera al menos PteXX y NN (2 partes)
     if len(parts) < 2:
-        logger.debug("Validación fallida: No tiene al menos 2 partes.")
+        logger.debug("Validation Failed: Less than 2 parts after splitting base name.")
         return False
 
     # Verificar que la última parte antes de la frecuencia sea un número (NN)
     # y la primera parte empiece con 'Pte' (o similar identificador de paciente)
     # Esta validación es básica, podría mejorarse con regex.
-    if not parts[-1].isdigit() or not parts[0].lower().startswith('pte'):
-         logger.debug(f"Validación fallida: No cumple patrón Pte...NN (Inicio: '{parts[0]}', Fin: '{parts[-1]}')")
-         # Podríamos ser más estrictos con el formato del paciente si es necesario
+    last_part_is_digit = parts[-1].isdigit()
+    first_part_starts_pte = parts[0].lower().startswith('pte')
+    if not last_part_is_digit or not first_part_starts_pte:
+         logger.debug(f"Validation Failed: Doesn't match Pte...NN pattern. Start: '{parts[0]}' (Starts 'pte'? {first_part_starts_pte}), End: '{parts[-1]}' (Is digit? {last_part_is_digit})")
          return False
 
     # Si no hay descriptores definidos para el estudio, solo validamos PteXX NN
@@ -121,23 +125,22 @@ def validate_filename_for_study_criteria(filename: str, descriptors: list[str]) 
 
     # Si hay descriptores definidos para el estudio:
     if descriptors:
+        logger.debug("Processing descriptors...")
         valid_descriptors_set = set(descriptors)
         intermediate_parts = parts[1:-1] # Partes entre PteXX y NN
+        logger.debug(f"Intermediate parts found: {intermediate_parts}")
 
-        logger.debug(f"Descriptores definidos: {descriptors}")
-        valid_descriptors_set = set(descriptors)
-        intermediate_parts = parts[1:-1] # Partes entre PteXX y NN
-        logger.debug(f"Partes intermedias encontradas: {intermediate_parts}")
-
-        # 1. Debe haber al menos una parte intermedia si hay descriptores definidos
+        # 1. Si hay descriptores definidos, debe haber partes intermedias O NINGUNA.
+        #    Si hay partes intermedias, deben ser validadas.
+        #    Si NO hay partes intermedias, el nombre es inválido si se definieron descriptores.
         if not intermediate_parts:
-            logger.debug("Validación fallida: Se definieron descriptores pero no se encontraron partes intermedias.")
-            return False
+             logger.debug("Validation Failed: Descriptors defined, but no intermediate parts found in filename.")
+             return False
 
         # 2. Todas las partes intermedias deben ser descriptores válidos definidos para el estudio
         invalid_parts = [part for part in intermediate_parts if part not in valid_descriptors_set]
         if invalid_parts:
-            logger.debug(f"Validación fallida: Partes intermedias inválidas encontradas: {invalid_parts}")
+            logger.debug(f"Validation Failed: Invalid intermediate parts found: {invalid_parts}")
             return False
 
         # 3. Las partes intermedias deben ser un subconjunto ordenado de los descriptores definidos
@@ -156,12 +159,12 @@ def validate_filename_for_study_criteria(filename: str, descriptors: list[str]) 
                     last_found_descriptor_index = current_index_in_definition
                 else:
                     # Error de orden: este descriptor aparece antes o en el mismo lugar que el anterior
-                    logger.debug(f"Validación fallida: Error de orden relativo. '{part}' (índice {current_index_in_definition}) no está después del último descriptor encontrado (índice {last_found_descriptor_index}).")
+                    logger.debug(f"Validation Failed: Relative order error. '{part}' (index {current_index_in_definition}) is not after the last found descriptor (index {last_found_descriptor_index}).")
                     return False
 
             except ValueError:
                 # Si 'part' no está en 'descriptors', el nombre de archivo es inválido
-                logger.debug(f"Validación fallida: Descriptor '{part}' no encontrado en la lista de descriptores definidos: {descriptors}")
+                logger.debug(f"Validation Failed: Descriptor '{part}' not found in defined list: {descriptors}")
                 return False
 
         # Si todas las partes intermedias son válidas y están en el orden correcto
