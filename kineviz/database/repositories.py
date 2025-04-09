@@ -85,8 +85,8 @@ class StudyRepository:
                 ''', (
                     study_data['name'],
                     int(study_data['num_subjects']),
-                    study_data.get('descriptores', ''), # Usar nueva clave 'descriptores'
-                    int(study_data['attempts_count'])
+                    int(study_data['attempts_count']), # Invertido con descriptores
+                    study_data.get('descriptores', '') # Invertido con attempts_count
                 ))
                 conn.commit()
                 study_id = cursor.lastrowid
@@ -269,8 +269,8 @@ class StudyRepository:
                 ''', (
                     study_data['name'],
                     int(study_data['num_subjects']),
-                    study_data.get('descriptores', ''), # Usar nueva clave 'descriptores'
-                    int(study_data['attempts_count']),
+                    int(study_data['attempts_count']), # Invertido con descriptores
+                    study_data.get('descriptores', ''), # Invertido con attempts_count
                     study_id
                 ))
                 conn.commit()
