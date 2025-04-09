@@ -3,16 +3,8 @@ __pycache__/
 *.pyc
 .DS_Store
 
+## KineViz - Personal Folders & Files
+kineviz.db
 estudios/
 recursos/
 .*
-*.docx
-*.pdf
-kineviz.db
-
-## User Setup & Log
-config.ini
-logs/
-
-## KineViz BD 
-kineviz.db
