@@ -269,6 +269,9 @@ Esta funcionalidad está pensada para automatizar el análisis estadístico de d
 *   **Validación de Pacientes para Análisis**: La validación ahora se basa en los parámetros únicos extraídos de archivos procesados válidos. Si un estudio tiene archivos pero no cumplen los criterios o solo tiene archivos OG, no permitirá el análisis.
 *   **Lectura de Datos Procesados**: La función `_read_processed_file_data` en `AnalysisService` asume un formato específico (';' como separador, 4 líneas de header, 3 de stats). Podría ser más robusta o configurable.
 *   **Logging**: El logging está implementado en la mayoría de los módulos. Se podrían añadir más mensajes de `DEBUG` o refinar los niveles existentes.
+*   **Análisis Discreto - formato CSV**: 
+*   *   Primera línea de comas vacías en el archivo de ejemplo.
+*   *   Algunas diferencias claves en el formato, pero creo que no son relevantes.              
 
 ---
 *Este archivo se actualizará y se marcaran con una X las tareas que se vayan realizando a medida que avance el desarrollo.*
