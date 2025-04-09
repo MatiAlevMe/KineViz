@@ -184,4 +184,4 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 *   **Logging**: El logging está implementado en la mayoría de los módulos. Se podrían añadir más mensajes de `DEBUG` o refinar los niveles existentes.
 
 ---
-*Este archivo se actualizará a medida que avance el desarrollo.*
+*Este archivo se actualizará y se marcaran con una X las tareas que se vayan realizando a medida que avance el desarrollo.*
