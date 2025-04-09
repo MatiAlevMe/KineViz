@@ -1,0 +1,142 @@
+2025-04-08 08:52:00,663 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-08 08:52:00,663 - INFO - [__main__] - Iniciando KineViz...
+2025-04-08 08:54:39,216 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-08 08:54:39,217 - INFO - [__main__] - Iniciando KineViz...
+2025-04-08 08:55:19,430 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-08 08:55:19,430 - INFO - [__main__] - Iniciando KineViz...
+2025-04-08 09:02:02,567 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-08 09:02:02,567 - INFO - [__main__] - Iniciando KineViz...
+2025-04-08 09:02:25,170 - INFO - [kineviz.core.services.analysis_service] - Generando reporte para estudio 5 en /Users/arakito/Downloads/b.pdf...
+2025-04-08 09:02:27,229 - INFO - [kineviz.core.services.analysis_service] - Reporte PDF generado exitosamente en /Users/arakito/Downloads/b.pdf
+2025-04-08 14:23:47,184 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-08 14:23:47,184 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 00:56:31,888 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 00:56:31,888 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 00:56:32,556 - WARNING - [kineviz.config.settings] - No se encontró /Users/arakito/Mati/Codigo/python/KineViz/config.ini. Creando archivo con valores por defecto.
+2025-04-09 00:56:32,557 - INFO - [kineviz.config.settings] - Archivo de configuración creado en: /Users/arakito/Mati/Codigo/python/KineViz/config.ini
+2025-04-09 00:56:32,563 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio '1' (ID: 14). El registro puede estar desincronizado.
+2025-04-09 00:56:32,563 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Estudio de Adultos Mayores' (ID: 13). El registro puede estar desincronizado.
+2025-04-09 00:57:02,724 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio '1' (ID: 14). El registro puede estar desincronizado.
+2025-04-09 00:57:02,726 - WARNING - [kineviz.ui.views.main_view] - Carpeta no encontrada para el estudio 'Estudio de Adultos Mayores' (ID: 13). El registro puede estar desincronizado.
+2025-04-09 01:04:47,459 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 01:04:47,459 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 01:05:06,303 - INFO - [kineviz.database.repositories] - Directorio creado para estudio 1: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Test 1
+2025-04-09 01:06:30,371 - INFO - [kineviz.core.services.file_service] - Iniciando proceso de agregado de 1 archivos al estudio 1.
+2025-04-09 01:06:30,444 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte10 CMJ 01.txt: {'Cinematica', 'Cinetica'}
+2025-04-09 01:06:30,444 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte10 CMJ 01.txt' procesado y agregado exitosamente al estudio 1.
+2025-04-09 01:06:30,444 - INFO - [kineviz.core.services.file_service] - Proceso de agregado finalizado para estudio 1. Éxitos: 1, Errores: 0.
+2025-04-09 01:08:14,710 - INFO - [kineviz.core.services.file_service] - Iniciando proceso de agregado de 1 archivos al estudio 1.
+2025-04-09 01:08:14,762 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte11 CMJ 01.txt: {'Desconocida', 'Cinetica'}
+2025-04-09 01:08:14,763 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte11 CMJ 01.txt' procesado y agregado exitosamente al estudio 1.
+2025-04-09 01:08:14,763 - INFO - [kineviz.core.services.file_service] - Proceso de agregado finalizado para estudio 1. Éxitos: 1, Errores: 0.
+2025-04-09 01:09:26,356 - INFO - [kineviz.core.services.file_service] - Iniciando proceso de agregado de 1 archivos al estudio 1.
+2025-04-09 01:09:26,407 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte12 CMJ 01.txt: {'Desconocida'}
+2025-04-09 01:09:26,407 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte12 CMJ 01.txt' procesado y agregado exitosamente al estudio 1.
+2025-04-09 01:09:26,407 - INFO - [kineviz.core.services.file_service] - Proceso de agregado finalizado para estudio 1. Éxitos: 1, Errores: 0.
+2025-04-09 01:26:41,476 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 01:26:41,476 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 01:26:42,161 - INFO - [kineviz.database.repositories] - Columna 'descriptores' añadida a la tabla 'estudios'.
+2025-04-09 01:26:42,161 - INFO - [kineviz.database.repositories] - Columna 'tipos_prueba' eliminada de la tabla 'estudios'.
+2025-04-09 01:26:42,162 - INFO - [kineviz.database.repositories] - Columna 'periodos_prueba' eliminada de la tabla 'estudios'.
+2025-04-09 01:26:51,810 - ERROR - [kineviz.ui.dialogs.study_dialog] - No se pudieron cargar los datos del estudio 1 para edición: 'int' object has no attribute 'split'
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/ui/dialogs/study_dialog.py", line 69, in _load_study_data
+    self.initial_descriptors = [d.strip() for d in descriptors_str.split(',') if d.strip()]
+                                                   ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'split'
+2025-04-09 01:26:59,601 - INFO - [kineviz.database.repositories] - Eliminando directorio del estudio: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Test 1
+2025-04-09 01:26:59,610 - INFO - [kineviz.database.repositories] - Estudio ID 1 eliminado de la base de datos.
+2025-04-09 01:27:26,873 - INFO - [kineviz.database.repositories] - Directorio creado para estudio 2: /Users/arakito/Mati/Codigo/python/KineViz/estudios/AAA
+2025-04-09 01:39:38,787 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 01:39:38,787 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 01:41:41,381 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 01:41:41,381 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 01:41:46,210 - ERROR - [kineviz.ui.dialogs.study_dialog] - No se pudieron cargar los datos del estudio 2 para edición: 'int' object has no attribute 'split'
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/ui/dialogs/study_dialog.py", line 69, in _load_study_data
+    self.initial_descriptors = [d.strip() for d in descriptors_str.split(',') if d.strip()]
+                                                   ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'split'
+2025-04-09 01:42:11,893 - INFO - [kineviz.database.repositories] - Directorio creado para estudio 3: /Users/arakito/Mati/Codigo/python/KineViz/estudios/ABAS
+2025-04-09 01:42:19,075 - ERROR - [kineviz.ui.dialogs.study_dialog] - No se pudieron cargar los datos del estudio 3 para edición: 'int' object has no attribute 'split'
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/ui/dialogs/study_dialog.py", line 69, in _load_study_data
+    self.initial_descriptors = [d.strip() for d in descriptors_str.split(',') if d.strip()]
+                                                   ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'split'
+2025-04-09 01:43:00,197 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 01:43:00,197 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 01:43:01,842 - ERROR - [kineviz.ui.dialogs.study_dialog] - No se pudieron cargar los datos del estudio 3 para edición: 'int' object has no attribute 'split'
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/ui/dialogs/study_dialog.py", line 69, in _load_study_data
+    self.initial_descriptors = [d.strip() for d in descriptors_str.split(',') if d.strip()]
+                                                   ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'split'
+2025-04-09 01:43:57,375 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 01:43:57,375 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 01:44:00,397 - ERROR - [kineviz.ui.dialogs.file_dialog] - No se pudieron cargar los descriptores del estudio 3 en FileDialog: 'int' object has no attribute 'split'
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/ui/dialogs/file_dialog.py", line 30, in __init__
+    self.valid_descriptors = [d.strip() for d in descriptors_str.split(',') if d.strip()]
+                                                 ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'split'
+2025-04-09 01:44:50,056 - ERROR - [kineviz.ui.dialogs.file_dialog] - No se pudieron cargar los descriptores del estudio 3 en FileDialog: 'int' object has no attribute 'split'
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/ui/dialogs/file_dialog.py", line 30, in __init__
+    self.valid_descriptors = [d.strip() for d in descriptors_str.split(',') if d.strip()]
+                                                 ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'split'
+2025-04-09 01:44:52,595 - ERROR - [kineviz.core.services.file_service] - Error al obtener descriptores del estudio 3 para parámetros: 'int' object has no attribute 'split'
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/file_service.py", line 348, in get_unique_study_parameters
+    defined_descriptors = [d.strip() for d in descriptors_str.split(',') if d.strip()]
+                                              ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'split'
+2025-04-09 01:46:02,985 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 01:46:02,985 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 01:46:06,579 - INFO - [__main__] - KineViz cerrado normalmente.
+2025-04-09 01:46:10,047 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 01:46:10,047 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 01:46:46,753 - INFO - [kineviz.database.repositories] - Directorio creado para estudio 4: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Aaa
+2025-04-09 01:49:30,144 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 01:49:30,144 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 01:49:50,108 - INFO - [kineviz.database.repositories] - Directorio creado para estudio 5: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 1
+2025-04-09 01:50:29,957 - INFO - [kineviz.core.services.file_service] - Iniciando proceso de agregado de 1 archivos al estudio 5.
+2025-04-09 01:50:30,020 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte10 CMJ 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-09 01:50:30,021 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte10 CMJ 01.txt' procesado y agregado exitosamente al estudio 5.
+2025-04-09 01:50:30,021 - INFO - [kineviz.core.services.file_service] - Proceso de agregado finalizado para estudio 5. Éxitos: 1, Errores: 0.
+2025-04-09 01:54:41,531 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 01:54:41,531 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 01:54:55,196 - INFO - [kineviz.core.services.file_service] - Iniciando proceso de agregado de 1 archivos al estudio 5.
+2025-04-09 01:54:55,252 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte1 Marcha PRE 01.txt: {'Cinematica', 'Cinetica'}
+2025-04-09 01:54:55,252 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte1 Marcha PRE 01.txt' procesado y agregado exitosamente al estudio 5.
+2025-04-09 01:54:55,252 - INFO - [kineviz.core.services.file_service] - Proceso de agregado finalizado para estudio 5. Éxitos: 1, Errores: 0.
+2025-04-09 02:01:09,996 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 02:01:09,996 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 02:01:28,543 - INFO - [kineviz.database.repositories] - Directorio creado para estudio 6: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 2
+2025-04-09 02:01:58,903 - INFO - [kineviz.database.repositories] - Directorio creado para estudio 7: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 3
+2025-04-09 02:02:10,609 - INFO - [kineviz.core.services.file_service] - Iniciando proceso de agregado de 1 archivos al estudio 7.
+2025-04-09 02:02:10,653 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte1 CMJ PRE 04.txt: {'Cinematica', 'Cinetica'}
+2025-04-09 02:02:10,653 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte1 CMJ PRE 04.txt' procesado y agregado exitosamente al estudio 7.
+2025-04-09 02:02:10,653 - INFO - [kineviz.core.services.file_service] - Proceso de agregado finalizado para estudio 7. Éxitos: 1, Errores: 0.
+2025-04-09 02:02:29,634 - INFO - [kineviz.database.repositories] - Directorio creado para estudio 8: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 4
+2025-04-09 02:03:10,652 - INFO - [kineviz.database.repositories] - Directorio creado para estudio 9: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 5
+2025-04-09 02:03:20,440 - INFO - [kineviz.core.services.file_service] - Iniciando proceso de agregado de 1 archivos al estudio 9.
+2025-04-09 02:03:20,474 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte1 CMJ PRE 04.txt: {'Cinematica', 'Cinetica'}
+2025-04-09 02:03:20,474 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte1 CMJ PRE 04.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-09 02:03:20,474 - INFO - [kineviz.core.services.file_service] - Proceso de agregado finalizado para estudio 9. Éxitos: 1, Errores: 0.
+2025-04-09 02:03:32,161 - INFO - [kineviz.core.services.file_service] - Iniciando proceso de agregado de 1 archivos al estudio 9.
+2025-04-09 02:03:32,207 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte4 CMJ POST 12.txt: {'Cinematica', 'Cinetica'}
+2025-04-09 02:03:32,208 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte4 CMJ POST 12.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-09 02:03:32,208 - INFO - [kineviz.core.services.file_service] - Proceso de agregado finalizado para estudio 9. Éxitos: 1, Errores: 0.
+2025-04-09 02:07:22,262 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 02:07:22,262 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 02:07:38,677 - INFO - [kineviz.database.repositories] - Directorio creado para estudio 10: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 6
+2025-04-09 02:07:48,644 - INFO - [kineviz.core.services.file_service] - Iniciando proceso de agregado de 1 archivos al estudio 10.
+2025-04-09 02:07:48,683 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte1 CMJ PRE 04.txt: {'Cinetica', 'Cinematica'}
+2025-04-09 02:07:48,683 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte1 CMJ PRE 04.txt' procesado y agregado exitosamente al estudio 10.
+2025-04-09 02:07:48,683 - INFO - [kineviz.core.services.file_service] - Proceso de agregado finalizado para estudio 10. Éxitos: 1, Errores: 0.
+2025-04-09 02:08:10,268 - INFO - [kineviz.core.services.file_service] - Iniciando proceso de agregado de 1 archivos al estudio 10.
+2025-04-09 02:08:10,316 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte1 Marcha PRE 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-09 02:08:10,316 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte1 Marcha PRE 01.txt' procesado y agregado exitosamente al estudio 10.
+2025-04-09 02:08:10,316 - INFO - [kineviz.core.services.file_service] - Proceso de agregado finalizado para estudio 10. Éxitos: 1, Errores: 0.
