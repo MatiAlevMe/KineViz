@@ -52,6 +52,10 @@ class StudyView:
         ttk.Button(header_frame, text="Gestionar Alias Descriptores",
                    command=self.manage_descriptor_aliases).pack(side=tk.LEFT, padx=(0, 10))
 
+        # Botón Análisis Discreto (Fase 6)
+        ttk.Button(header_frame, text="Análisis Discreto",
+                   command=lambda: self.main_window.show_discrete_analysis_view(self.study_id)).pack(side=tk.LEFT, padx=(0, 10))
+
 
         # --- Detalles del estudio ---
         study_details = self.main_window.study_service.get_study_details(self.study_id)

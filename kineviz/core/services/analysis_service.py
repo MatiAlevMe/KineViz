@@ -24,6 +24,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.lib.units import inch # Para tamaños
+import itertools # Para combinaciones de descriptores
 
 logger = logging.getLogger(__name__) # Logger para este módulo
 
@@ -571,3 +572,192 @@ class AnalysisService:
         except OSError as e:
             logger.error(f"Error al eliminar el reporte {report_path}: {e}", exc_info=True)
             raise
+
+    # --- Métodos para Análisis Discreto (Fase 6) ---
+
+    def _extract_stats_from_processed_file(self, file_path: Path, calculation: str) -> list | None:
+        """Lee las últimas líneas de un archivo procesado y extrae la fila de datos para el cálculo especificado."""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                lines = f.readlines()
+            if len(lines) < 3: # Necesita al menos las 3 líneas de stats
+                logger.warning(f"Archivo {file_path.name} no tiene suficientes líneas para extraer estadísticas.")
+                return None
+
+            # Buscar la línea del cálculo (Maximo, Minimo, Rango) en las últimas 3 líneas
+            calc_line_prefix = f";;{calculation.upper()};"
+            for line in reversed(lines[-3:]):
+                if line.startswith(calc_line_prefix):
+                    # Quitar prefijo y dividir por ';'
+                    # Devolver los valores como lista de strings (incluyendo vacíos)
+                    return line.strip()[len(calc_line_prefix):].split(';')
+            logger.warning(f"No se encontró la línea de cálculo '{calculation}' en {file_path.name}")
+            return None
+        except Exception as e:
+            logger.error(f"Error extrayendo estadísticas de {file_path.name} para cálculo {calculation}: {e}", exc_info=True)
+            return None
+
+    def _parse_processed_file_headers(self, file_path: Path) -> tuple[list, list, list] | None:
+        """Lee las líneas 1, 2 y 3 (atributos, columnas, unidades) de un archivo procesado."""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                lines = f.readlines()
+            if len(lines) < 4: # Necesita num_frames, attr, col, unit
+                logger.warning(f"Archivo {file_path.name} no tiene suficientes líneas de cabecera.")
+                return None
+            # Líneas 1, 2, 3 (índices 1, 2, 3)
+            atributos = lines[1].strip().split(';')[3:] # Omitir Frame, SubFrame, Tiempo
+            columnas = lines[2].strip().split(';')[3:]
+            unidades = lines[3].strip().split(';')[3:]
+
+            # Asegurar que todas las listas tengan la misma longitud (la más larga)
+            max_len = max(len(atributos), len(columnas), len(unidades))
+            atributos.extend([''] * (max_len - len(atributos)))
+            columnas.extend([''] * (max_len - len(columnas)))
+            unidades.extend([''] * (max_len - len(unidades)))
+
+            return atributos, columnas, unidades
+        except Exception as e:
+            logger.error(f"Error parseando cabeceras de {file_path.name}: {e}", exc_info=True)
+            return None
+
+    def generate_discrete_summary_tables(self, study_id: int):
+        """
+        Genera tablas resumen CSV para cálculos discretos (Max, Min, Rango)
+        agrupados por frecuencia y combinación de descriptores.
+        Enfocado inicialmente en 'Cinematica'.
+
+        :param study_id: ID del estudio.
+        :return: Diccionario con rutas de los archivos generados o errores.
+                 {'success': [path_str], 'errors': [error_msg]}
+        """
+        logger.info(f"Iniciando generación de tablas de resumen discreto para estudio {study_id}")
+        results = {'success': [], 'errors': []}
+        target_frequency = "Cinematica" # Enfocarse en Cinemática por ahora
+        calculations = ["Maximo", "Minimo", "Rango"]
+
+        try:
+            study_path = self.file_service._get_study_path(study_id)
+            if not study_path:
+                results['errors'].append(f"No se pudo encontrar la ruta del estudio {study_id}.")
+                return results
+
+            study_details = self.study_service.get_study_details(study_id)
+            defined_descriptors = [d.strip() for d in (study_details.get('descriptores', '') or '').split(',') if d.strip()]
+
+            # 1. Encontrar y agrupar archivos procesados de Cinemática
+            files_by_descriptor_combo = {} # { 'Desc1_Desc2': [path1, path2,...], ... }
+            processed_files, _ = self.file_service.get_study_files(
+                study_id=study_id,
+                page=1,
+                per_page=10000, # Obtener todos los archivos
+                file_type='Processed',
+                frequency=target_frequency
+            )
+
+            if not processed_files:
+                 results['errors'].append(f"No se encontraron archivos procesados de '{target_frequency}' para el estudio {study_id}.")
+                 return results
+
+            for file_info in processed_files:
+                file_path = file_info['path']
+                filename = file_path.name
+
+                # Validar nombre (ya filtrado por frecuencia, pero re-validar por si acaso)
+                if not validate_filename_for_study_criteria(filename, defined_descriptors):
+                    logger.warning(f"Omitiendo archivo con nombre inválido: {filename}")
+                    continue
+
+                # Extraer descriptores del nombre base
+                base_name = filename.split(f'_{target_frequency}')[0]
+                parts = base_name.replace('_', ' ').split()
+                file_descriptors = sorted(parts[1:-1]) # Descriptores ordenados
+                descriptor_key = "_".join(file_descriptors) if file_descriptors else "SinDescriptores"
+
+                if descriptor_key not in files_by_descriptor_combo:
+                    files_by_descriptor_combo[descriptor_key] = []
+                files_by_descriptor_combo[descriptor_key].append(file_path)
+
+            if not files_by_descriptor_combo:
+                 results['errors'].append(f"No se encontraron archivos válidos agrupables por descriptores para '{target_frequency}'.")
+                 return results
+
+            # 2. Generar tabla para cada combinación de descriptores y cálculo
+            output_base_dir = study_path / "Analisis Discreto" / "Tablas" / target_frequency
+            output_base_dir.mkdir(parents=True, exist_ok=True)
+
+            for descriptor_key, file_paths in files_by_descriptor_combo.items():
+                if not file_paths: continue
+
+                # Leer cabeceras desde el primer archivo del grupo
+                headers = self._parse_processed_file_headers(file_paths[0])
+                if not headers:
+                    results['errors'].append(f"No se pudieron leer las cabeceras para el grupo '{descriptor_key}'.")
+                    continue
+                atributos, columnas, unidades = headers
+                num_value_cols = len(columnas) # Número de columnas de datos (sin Frame, Sub, Tiempo)
+
+                # Crear MultiIndex para las columnas
+                multi_index_tuples = []
+                last_attr = ""
+                for i in range(num_value_cols):
+                    attr = atributos[i] if atributos[i] else last_attr # Propagar atributo si está vacío
+                    multi_index_tuples.append((attr, columnas[i]))
+                    last_attr = attr
+                # Añadir nivel de unidades (opcional, puede hacer el header muy ancho)
+                # multi_index_tuples_with_units = [t + (unidades[i],) for i, t in enumerate(multi_index_tuples)]
+                # column_multi_index = pd.MultiIndex.from_tuples(multi_index_tuples_with_units, names=["Atributo", "Columna", "Unidad"])
+                column_multi_index = pd.MultiIndex.from_tuples(multi_index_tuples, names=["Atributo", "Columna"])
+
+
+                for calc in calculations:
+                    table_data = []
+                    file_basenames = []
+
+                    for file_path in file_paths:
+                        stats_row = self._extract_stats_from_processed_file(file_path, calc)
+                        if stats_row and len(stats_row) == num_value_cols:
+                            table_data.append(stats_row)
+                            file_basenames.append(file_path.stem.split(f'_{target_frequency}')[0]) # Nombre base sin frecuencia
+                        else:
+                            logger.warning(f"Datos de '{calc}' inconsistentes o faltantes en {file_path.name}. Se omitirá del archivo {calc}_{target_frequency}_{descriptor_key}.csv")
+                            # Opcional: añadir fila de NaNs?
+                            # table_data.append([np.nan] * num_value_cols)
+                            # file_basenames.append(file_path.stem.split(f'_{target_frequency}')[0] + " (Error)")
+
+                    if table_data:
+                        try:
+                            # Crear DataFrame
+                            df = pd.DataFrame(table_data, columns=column_multi_index, index=file_basenames)
+                            df.index.name = "ARCHIVO"
+
+                            # Convertir a numérico, forzando errores a NaN y usando coma decimal
+                            for col in df.columns:
+                                 # Intentar reemplazar coma por punto ANTES de convertir
+                                 if df[col].dtype == 'object':
+                                     df[col] = df[col].str.replace(',', '.', regex=False)
+                                 df[col] = pd.to_numeric(df[col], errors='coerce')
+
+
+                            # Guardar CSV
+                            output_filename = f"{calc}_{target_frequency}_{descriptor_key}.csv"
+                            output_csv_path = output_base_dir / output_filename
+                            df.to_csv(output_csv_path, sep=',', decimal=',', encoding='utf-8') # Usar coma como separador decimal
+                            results['success'].append(str(output_csv_path))
+                            logger.info(f"Tabla de resumen generada: {output_csv_path}")
+
+                        except Exception as e_df:
+                            error_msg = f"Error creando o guardando DataFrame para {calc}_{target_frequency}_{descriptor_key}: {e_df}"
+                            logger.error(error_msg, exc_info=True)
+                            results['errors'].append(error_msg)
+                    else:
+                         logger.warning(f"No se encontraron datos válidos para generar la tabla {calc}_{target_frequency}_{descriptor_key}.csv")
+
+
+        except Exception as e:
+            error_msg = f"Error inesperado durante la generación de tablas discretas para estudio {study_id}: {e}"
+            logger.critical(error_msg, exc_info=True)
+            results['errors'].append(error_msg)
+
+        logger.info(f"Generación de tablas discretas finalizada para estudio {study_id}. Éxitos: {len(results['success'])}, Errores: {len(results['errors'])}")
+        return results
