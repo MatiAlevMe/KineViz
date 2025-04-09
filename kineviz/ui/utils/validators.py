@@ -108,16 +108,31 @@ def validate_filename_for_study_criteria(filename: str, descriptors: list[str]) 
         logger.debug("Validation Failed: Less than 2 parts after splitting base name.")
         return False
 
-    # Verificar que la última parte antes de la frecuencia sea un número (NN)
-    # y la primera parte empiece con 'Pte' (o similar identificador de paciente)
-    # Esta validación es básica, podría mejorarse con regex.
-    last_part_is_digit = parts[-1].isdigit()
+    # Verificar que la primera parte empiece con 'Pte'
     first_part_starts_pte = parts[0].lower().startswith('pte')
-    if not last_part_is_digit or not first_part_starts_pte:
-         logger.debug(f"Validation Failed: Doesn't match Pte...NN pattern. Start: '{parts[0]}' (Starts 'pte'? {first_part_starts_pte}), End: '{parts[-1]}' (Is digit? {last_part_is_digit})")
-         return False
+    if not first_part_starts_pte:
+        logger.debug(f"Validation Failed: First part '{parts[0]}' does not start with 'pte'.")
+        return False
 
-    # Si no hay descriptores definidos para el estudio, solo validamos PteXX NN
+    # Encontrar el índice del último elemento numérico (NN)
+    nn_index = -1
+    for i in range(len(parts) - 1, 0, -1): # Iterar desde el final hacia atrás, excluyendo Pte
+        if parts[i].isdigit():
+            nn_index = i
+            break
+
+    # Verificar si se encontró un NN
+    if nn_index == -1:
+        logger.debug(f"Validation Failed: No numeric attempt number (NN) found in parts: {parts}")
+        return False
+
+    logger.debug(f"Attempt number (NN) found at index {nn_index}: '{parts[nn_index]}'")
+
+    # Las partes intermedias son las que están entre Pte (índice 0) y NN (índice nn_index)
+    intermediate_parts = parts[1:nn_index]
+    logger.debug(f"Intermediate parts identified: {intermediate_parts}")
+
+    # Si no hay descriptores definidos para el estudio, las partes intermedias deben estar vacías
     if not descriptors:
         is_valid = len(parts) == 2
         logger.debug(f"Validación (sin descriptores definidos): {'Éxito' if is_valid else 'Fallo'} (Se esperaban 2 partes).")
@@ -125,17 +140,12 @@ def validate_filename_for_study_criteria(filename: str, descriptors: list[str]) 
 
     # Si hay descriptores definidos para el estudio:
     if descriptors:
-        logger.debug("Processing descriptors...")
+        logger.debug("Processing defined descriptors...")
         valid_descriptors_set = set(descriptors)
-        intermediate_parts = parts[1:-1] # Partes entre PteXX y NN
-        logger.debug(f"Intermediate parts found: {intermediate_parts}")
 
-        # 1. Si hay descriptores definidos, debe haber partes intermedias O NINGUNA.
+        # 1. Validar las partes intermedias encontradas
+        #    Si no hay partes intermedias, es válido (ej. Pte1 01.txt con descriptores definidos)
         #    Si hay partes intermedias, deben ser validadas.
-        #    Si NO hay partes intermedias, el nombre es inválido si se definieron descriptores.
-        if not intermediate_parts:
-             logger.debug("Validation Failed: Descriptors defined, but no intermediate parts found in filename.")
-             return False
 
         # 2. Todas las partes intermedias deben ser descriptores válidos definidos para el estudio
         invalid_parts = [part for part in intermediate_parts if part not in valid_descriptors_set]
@@ -168,10 +178,5 @@ def validate_filename_for_study_criteria(filename: str, descriptors: list[str]) 
                 return False
 
         # Si todas las partes intermedias son válidas y están en el orden correcto
-        logger.debug("Validación de descriptores exitosa: Cumple formato y orden.")
+        logger.debug("Validation successful: Format and descriptors (if any) are valid.")
         return True
-    # else: # Este else ya no es necesario debido a la estructura if/if/else anterior
-    #     # Si no hay descriptores definidos para el estudio, solo validamos PteXX NN
-    #     is_valid = len(parts) == 2
-    #     logger.debug(f"Validación (sin descriptores definidos): {'Éxito' if is_valid else 'Fallo'} (Se esperaban 2 partes).")
-    #     return is_valid
