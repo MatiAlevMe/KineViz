@@ -298,12 +298,17 @@ class FileService:
         for file_path_str in file_paths:
             source_file_path = Path(file_path_str)
             file_name = source_file_path.name
+            logger.debug(f"Intentando agregar archivo: '{file_name}' al estudio {study_id}")
             try:
                 # 1. Validar nombre de archivo usando descriptores
-                if not validate_filename_for_study_criteria(file_name, valid_descriptors):
+                logger.debug(f"Validando '{file_name}' con descriptores: {valid_descriptors}")
+                is_valid_name = validate_filename_for_study_criteria(file_name, valid_descriptors)
+                logger.debug(f"Resultado validación para '{file_name}': {is_valid_name}")
+                if not is_valid_name:
+                    # Lanzar ValueError si la validación falla
                     raise ValueError(f"Nombre de archivo '{file_name}' no cumple con los descriptores definidos para el estudio.")
 
-                # 2. Procesar y copiar el archivo
+                # 2. Procesar y copiar el archivo (Solo si la validación fue exitosa)
                 self._process_and_copy_file(study_path, source_file_path)
                 results['success'] += 1
                 logger.info(f"Archivo '{file_name}' procesado y agregado exitosamente al estudio {study_id}.")
@@ -371,18 +376,32 @@ class FileService:
                 if patient_dir.exists() and patient_dir.is_dir(): # Asegurar que es un directorio
                     parameters['patients'].add(patient_name)
 
-        # 2. Iterar de nuevo para encontrar descriptores *solo* de archivos válidos
-        for patient_name in parameters['patients']: # Iterar sobre pacientes ya encontrados
+        # 2. Iterar de nuevo para encontrar frecuencias y descriptores *solo* de archivos válidos
+        #    Iterar sobre pacientes encontrados y carpetas de frecuencia *potenciales*.
+        patients_found_step1 = list(parameters['patients']) # Copiar para evitar modificar mientras se itera
+        parameters['patients'] = set() # Resetear pacientes, se añadirán solo si tienen archivos válidos
+        parameters['frequencies'] = set() # Asegurar que frecuencias esté vacío antes de llenarlo
+
+        logger.debug(f"Paso 2: Validando archivos para pacientes {patients_found_step1} en frecuencias {processed_folders}")
+        for patient_name in patients_found_step1:
             patient_dir = study_path / patient_name
-            for freq_folder_name in parameters['frequencies']: # Iterar sobre frecuencias ya encontradas
+            if not patient_dir.is_dir(): continue # Saltar si la carpeta del paciente no existe
+
+            for freq_folder_name in processed_folders: # Iterar sobre carpetas de frecuencia POTENCIALES
                  freq_folder_path = patient_dir / freq_folder_name
-                 if freq_folder_path.exists() and freq_folder_path.is_dir(): # Doble check por si acaso
+                 if freq_folder_path.exists() and freq_folder_path.is_dir():
+                     logger.debug(f"Escaneando carpeta: {freq_folder_path}")
                      for file_path in freq_folder_path.iterdir():
                          if file_path.is_file() and file_path.suffix.lower() in ['.txt', '.csv']:
                              filename = file_path.name
+                             logger.debug(f"Validando archivo: {filename}")
                              # Validar nombre usando la lógica actualizada
-                             if validate_filename_for_study_criteria(filename, defined_descriptors):
+                             is_valid_name = validate_filename_for_study_criteria(filename, defined_descriptors)
+                             logger.debug(f"Resultado validación para '{filename}': {is_valid_name}")
+
+                             if is_valid_name:
                                  # Si el archivo es válido, AHORA añadimos paciente y frecuencia
+                                 logger.debug(f"Archivo válido encontrado: {filename}. Añadiendo paciente '{patient_name}' y frecuencia '{freq_folder_name}'.")
                                  parameters['patients'].add(patient_name)
                                  parameters['frequencies'].add(freq_folder_name)
 
@@ -398,20 +417,22 @@ class FileService:
                                          base_name = base_name_parts[0]
                                      else:
                                          # Si no hay sufijo de frecuencia o no es conocido, usar el nombre sin extensión
-                                         # Esto podría pasar con archivos OG o nombres inesperados
                                          base_name = name_without_ext
-                                         # Podríamos añadir una advertencia aquí si se espera siempre un sufijo
-                                         logger.debug(f"Nombre de archivo '{filename}' no parece tener sufijo de frecuencia esperado. Usando '{base_name}' como base.")
+                                         logger.debug(f"'{filename}' no tiene sufijo de frecuencia esperado. Usando '{base_name}' como base.")
                                      # --- Fin lógica mejorada ---
+
                                      parts = base_name.replace('_', ' ').split()
                                      if len(parts) > 2: # Asegurar que hay partes intermedias potenciales
                                          intermediate_parts = parts[1:-1]
+                                         logger.debug(f"Descriptores extraídos de '{filename}': {intermediate_parts}")
                                          for desc in intermediate_parts:
                                              parameters['descriptors'].add(desc)
+                                     else:
+                                          logger.debug(f"No se encontraron descriptores intermedios en '{base_name}'")
                                  except Exception as parse_err:
-                                     logger.warning(f"Error parseando descriptores de nombre de archivo válido '{filename}': {parse_err}")
+                                     logger.warning(f"Error parseando descriptores de nombre de archivo válido '{filename}': {parse_err}", exc_info=True) # Añadir exc_info
 
-
+        logger.debug(f"Parámetros únicos encontrados: {parameters}")
         return parameters
 
 

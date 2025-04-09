@@ -65,16 +65,14 @@ def validate_filename_for_study_criteria(filename: str, descriptors: list[str]) 
     :param descriptors: Lista de descriptores válidos para el estudio.
     :return: True si el nombre de archivo es válido según los criterios, False en caso contrario.
     """
-    # Ignorar archivos que no parecen seguir el formato esperado (ej. reportes, archivos temporales, etc.)
-    # o archivos dentro de la carpeta OG que no deben ser validados por criterios.
-    # Una heurística simple es verificar si contiene los sufijos de frecuencia.
-    if not any(freq in filename for freq in ["_Cinematica", "_Cinetica", "_Electromiografica"]):
-        # Podríamos refinar esto, pero por ahora asumimos que solo validamos archivos procesados.
-        # O podríamos pasar el tipo de archivo ('Processed', 'Original') y solo validar 'Processed'.
-        # Devolvemos True aquí para no bloquear archivos OG u otros que no necesiten validación de descriptores.
-        return True
+    logger = logging.getLogger(__name__) # Asegurar logger
+    logger.debug(f"Validando nombre: '{filename}' con descriptores: {descriptors}")
 
     # --- Lógica mejorada para extraer base_name ---
+    # No omitir validación basada solo en sufijo de frecuencia.
+    # La validación se basa en el patrón Pte...NN y los descriptores.
+    # Los archivos OG u otros se filtrarán antes si es necesario.
+
     # Importar Path dentro de la función o al inicio del archivo si no está ya
     from pathlib import Path
     import logging # Asegurar que logging esté importado
@@ -94,54 +92,74 @@ def validate_filename_for_study_criteria(filename: str, descriptors: list[str]) 
         # Si no tiene sufijo de frecuencia, no debería validarse contra descriptores?
         # Por ahora, continuamos la validación con base_name, pero esto podría necesitar ajuste.
         logger.debug(f"Validador: Nombre de archivo '{filename}' no parece tener sufijo de frecuencia esperado. Usando '{base_name}' como base para validación de descriptores.")
+    logger.debug(f"Base name extraído: '{base_name}'")
     # --- Fin lógica mejorada ---
 
     parts = base_name.replace('_', ' ').split() # Dividir por espacios y guiones bajos convertidos
+    logger.debug(f"Partes del nombre base: {parts}")
 
     # Se espera al menos PteXX y NN (2 partes)
     if len(parts) < 2:
+        logger.debug("Validación fallida: No tiene al menos 2 partes.")
         return False
 
     # Verificar que la última parte antes de la frecuencia sea un número (NN)
     # y la primera parte empiece con 'Pte' (o similar identificador de paciente)
     # Esta validación es básica, podría mejorarse con regex.
     if not parts[-1].isdigit() or not parts[0].lower().startswith('pte'):
+         logger.debug(f"Validación fallida: No cumple patrón Pte...NN (Inicio: '{parts[0]}', Fin: '{parts[-1]}')")
          # Podríamos ser más estrictos con el formato del paciente si es necesario
          return False
 
     # Si no hay descriptores definidos para el estudio, solo validamos PteXX NN
     if not descriptors:
-        return len(parts) == 2
+        is_valid = len(parts) == 2
+        logger.debug(f"Validación (sin descriptores definidos): {'Éxito' if is_valid else 'Fallo'} (Se esperaban 2 partes).")
+        return is_valid
 
     # Si hay descriptores definidos para el estudio:
     if descriptors:
         valid_descriptors_set = set(descriptors)
         intermediate_parts = parts[1:-1] # Partes entre PteXX y NN
 
+        logger.debug(f"Descriptores definidos: {descriptors}")
+        valid_descriptors_set = set(descriptors)
+        intermediate_parts = parts[1:-1] # Partes entre PteXX y NN
+        logger.debug(f"Partes intermedias encontradas: {intermediate_parts}")
+
         # 1. Debe haber al menos una parte intermedia si hay descriptores definidos
         if not intermediate_parts:
+            logger.debug("Validación fallida: Se definieron descriptores pero no se encontraron partes intermedias.")
             return False
 
         # 2. Todas las partes intermedias deben ser descriptores válidos definidos para el estudio
-        if not all(part in valid_descriptors_set for part in intermediate_parts):
+        invalid_parts = [part for part in intermediate_parts if part not in valid_descriptors_set]
+        if invalid_parts:
+            logger.debug(f"Validación fallida: Partes intermedias inválidas encontradas: {invalid_parts}")
             return False
 
         # 3. Las partes intermedias deben mantener el orden relativo definido en 'descriptors'
         last_index = -1
-        for part in intermediate_parts:
+        for i, part in enumerate(intermediate_parts):
             try:
                 # Encontrar el índice de esta parte en la lista original de descriptores (que mantiene el orden)
                 current_index = descriptors.index(part)
+                logger.debug(f"Parte '{part}' encontrada en índice {current_index} de descriptores definidos.")
                 # Verificar si el índice actual es mayor que el anterior
                 if current_index <= last_index:
+                    logger.debug(f"Validación fallida: Error de orden. '{part}' (índice {current_index}) no está después del anterior (último índice {last_index}).")
                     return False # Error de orden
                 last_index = current_index
             except ValueError:
-                 # Esto no debería ocurrir si la comprobación anterior (all) funcionó, pero por seguridad:
+                 # Esto no debería ocurrir si la comprobación anterior (invalid_parts) funcionó, pero por seguridad:
+                 logger.error(f"Error inesperado: Descriptor '{part}' no encontrado en lista original {descriptors} durante chequeo de orden.")
                  return False # Descriptor no encontrado en la lista original
 
         # Si todas las comprobaciones pasan
+        logger.debug("Validación exitosa: Cumple formato y descriptores (incluyendo orden).")
         return True
-    else:
-        # Si no hay descriptores definidos para el estudio, solo validamos PteXX NN
-        return len(parts) == 2
+    # else: # Este else ya no es necesario debido a la estructura if/if/else anterior
+    #     # Si no hay descriptores definidos para el estudio, solo validamos PteXX NN
+    #     is_valid = len(parts) == 2
+    #     logger.debug(f"Validación (sin descriptores definidos): {'Éxito' if is_valid else 'Fallo'} (Se esperaban 2 partes).")
+    #     return is_valid
