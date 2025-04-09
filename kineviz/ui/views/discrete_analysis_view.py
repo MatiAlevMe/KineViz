@@ -94,16 +94,3 @@ class DiscreteAnalysisView(ttk.Frame):
     def destroy(self):
         """Destruye el frame principal de esta vista."""
         super().destroy()
-
-```
-
-**5. Update `ROADMAP.md`:**
-
-```markdown
-ROADMAP.md
-<<<<<<< SEARCH
-**Fase 6: Análisis Estadístico Discreto y Reportes Avanzados**
-
-*   **1. Generación de Matrices:** (Pendiente) Crear tablas por tipo de cálculo y descriptor (ej: "máximo_cinemática_obesidad").
-*   **2. Selector de Variables y Etiquetas:** (Pendiente) Permitir que el usuario elija las variables a utilizar en el análisis.
-*   **3. Interacción sobre Datos Pareados:** (Pendiente) Preguntar si los datos son pareados o independientes.
