@@ -71,15 +71,30 @@ def validate_filename_for_study_criteria(filename: str, descriptors: list[str]) 
     if not any(freq in filename for freq in ["_Cinematica", "_Cinetica", "_Electromiografica"]):
         # Podríamos refinar esto, pero por ahora asumimos que solo validamos archivos procesados.
         # O podríamos pasar el tipo de archivo ('Processed', 'Original') y solo validar 'Processed'.
-        return True # No validar archivos no procesados o con nombres inesperados
+        # Devolvemos True aquí para no bloquear archivos OG u otros que no necesiten validación de descriptores.
+        return True
 
-    # Extraer el nombre base sin el sufijo de frecuencia y extensión
-    name_parts = filename.split('_')
-    if len(name_parts) < 2: # No tiene sufijo de frecuencia
-        base_name = filename.split('.')[0]
+    # --- Lógica mejorada para extraer base_name ---
+    # Importar Path dentro de la función o al inicio del archivo si no está ya
+    from pathlib import Path
+    import logging # Asegurar que logging esté importado
+    logger = logging.getLogger(__name__) # Obtener logger si no está a nivel de módulo
+
+    # 1. Quitar extensión
+    name_without_ext = Path(filename).stem
+    # 2. Quitar sufijo de frecuencia (_Cinematica, etc.) usando rsplit
+    base_name_parts = name_without_ext.rsplit('_', 1)
+    # Verificar si el split funcionó y si la última parte es una frecuencia conocida
+    processed_folders = ["Cinematica", "Cinetica", "Electromiografica"]
+    if len(base_name_parts) == 2 and base_name_parts[1] in processed_folders:
+        base_name = base_name_parts[0]
     else:
-        base_name = '_'.join(name_parts[:-1]) # Unir todo excepto el último elemento (frecuencia)
-        base_name = base_name.split('.')[0] # Quitar extensión si aún está
+        # Si no hay sufijo de frecuencia o no es conocido, usar el nombre sin extensión
+        base_name = name_without_ext
+        # Si no tiene sufijo de frecuencia, no debería validarse contra descriptores?
+        # Por ahora, continuamos la validación con base_name, pero esto podría necesitar ajuste.
+        logger.debug(f"Validador: Nombre de archivo '{filename}' no parece tener sufijo de frecuencia esperado. Usando '{base_name}' como base para validación de descriptores.")
+    # --- Fin lógica mejorada ---
 
     parts = base_name.replace('_', ' ').split() # Dividir por espacios y guiones bajos convertidos
 
