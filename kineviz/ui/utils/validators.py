@@ -1,3 +1,5 @@
+import logging # Importar logging
+
 def validate_study_data(data):
     """
     Valida los datos de un estudio.
