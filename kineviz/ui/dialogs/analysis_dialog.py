@@ -283,6 +283,7 @@ class AnalysisDialog(Toplevel):
         # if not selected_parameters.get('types'):
         #      messagebox.showwarning("Validación Fallida", "Debe seleccionar al menos un tipo de prueba.", parent=self)
         #      return
+        # Ya no se validan tipos/periodos
         # if not selected_parameters.get('periods'):
         #      messagebox.showwarning("Validación Fallida", "Debe seleccionar al menos un periodo de prueba.", parent=self)
         #      return
