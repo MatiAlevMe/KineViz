@@ -18,8 +18,7 @@ class TestValidators(unittest.TestCase):
         valid_data = {
             'name': 'Estudio Válido',
             'num_subjects': '5',
-            'test_types': 'CMJ, SJ',
-            'test_periods': 'PRE, POST',
+            'descriptores': ['CMJ', 'SJ', 'PRE', 'POST'], # Usar lista de descriptores
             'attempts_count': '3'
         }
         is_valid, message = validate_study_data(valid_data)
@@ -31,8 +30,7 @@ class TestValidators(unittest.TestCase):
         valid_data = {
             'name': 'Estudio Simple',
             'num_subjects': '1',
-            'test_types': '',
-            'test_periods': '',
+            'descriptores': [], # Lista vacía para sin descriptores
             'attempts_count': '1'
         }
         is_valid, message = validate_study_data(valid_data)
@@ -41,156 +39,140 @@ class TestValidators(unittest.TestCase):
 
     def test_validate_study_data_invalid_name_empty(self):
         """Prueba nombre de estudio vacío."""
-        invalid_data = {'name': ' ', 'num_subjects': '1', 'test_types': '', 'test_periods': '', 'attempts_count': '1'}
+        invalid_data = {'name': ' ', 'num_subjects': '1', 'descriptores': [], 'attempts_count': '1'}
         is_valid, message = validate_study_data(invalid_data)
         self.assertFalse(is_valid)
         self.assertIn("nombre del estudio es obligatorio", message)
 
     def test_validate_study_data_invalid_name_short(self):
         """Prueba nombre de estudio demasiado corto."""
-        invalid_data = {'name': 'AB', 'num_subjects': '1', 'test_types': '', 'test_periods': '', 'attempts_count': '1'}
+        invalid_data = {'name': 'AB', 'num_subjects': '1', 'descriptores': [], 'attempts_count': '1'}
         is_valid, message = validate_study_data(invalid_data)
         self.assertFalse(is_valid)
         self.assertIn("al menos 3 caracteres", message)
 
     def test_validate_study_data_invalid_subjects_empty(self):
         """Prueba número de sujetos vacío."""
-        invalid_data = {'name': 'Test', 'num_subjects': '', 'test_types': '', 'test_periods': '', 'attempts_count': '1'}
+        invalid_data = {'name': 'Test', 'num_subjects': '', 'descriptores': [], 'attempts_count': '1'}
         is_valid, message = validate_study_data(invalid_data)
         self.assertFalse(is_valid)
         self.assertIn("número de sujetos es obligatorio", message)
 
     def test_validate_study_data_invalid_subjects_zero(self):
         """Prueba número de sujetos cero."""
-        invalid_data = {'name': 'Test', 'num_subjects': '0', 'test_types': '', 'test_periods': '', 'attempts_count': '1'}
+        invalid_data = {'name': 'Test', 'num_subjects': '0', 'descriptores': [], 'attempts_count': '1'}
         is_valid, message = validate_study_data(invalid_data)
         self.assertFalse(is_valid)
         self.assertIn("entero positivo", message)
 
     def test_validate_study_data_invalid_subjects_text(self):
         """Prueba número de sujetos no numérico."""
-        invalid_data = {'name': 'Test', 'num_subjects': 'abc', 'test_types': '', 'test_periods': '', 'attempts_count': '1'}
+        invalid_data = {'name': 'Test', 'num_subjects': 'abc', 'descriptores': [], 'attempts_count': '1'}
         is_valid, message = validate_study_data(invalid_data)
         self.assertFalse(is_valid)
         self.assertIn("número entero", message)
 
     def test_validate_study_data_invalid_attempts_empty(self):
         """Prueba cantidad de intentos vacía."""
-        invalid_data = {'name': 'Test', 'num_subjects': '1', 'test_types': '', 'test_periods': '', 'attempts_count': ''}
+        invalid_data = {'name': 'Test', 'num_subjects': '1', 'descriptores': [], 'attempts_count': ''}
         is_valid, message = validate_study_data(invalid_data)
         self.assertFalse(is_valid)
         self.assertIn("cantidad de intentos es obligatoria", message)
 
     def test_validate_study_data_invalid_attempts_negative(self):
         """Prueba cantidad de intentos negativa."""
-        invalid_data = {'name': 'Test', 'num_subjects': '1', 'test_types': '', 'test_periods': '', 'attempts_count': '-1'}
+        invalid_data = {'name': 'Test', 'num_subjects': '1', 'descriptores': [], 'attempts_count': '-1'}
         is_valid, message = validate_study_data(invalid_data)
         self.assertFalse(is_valid)
         self.assertIn("entero positivo", message)
 
     def test_validate_study_data_invalid_attempts_text(self):
         """Prueba cantidad de intentos no numérico."""
-        invalid_data = {'name': 'Test', 'num_subjects': '1', 'test_types': '', 'test_periods': '', 'attempts_count': 'uno'}
+        invalid_data = {'name': 'Test', 'num_subjects': '1', 'descriptores': [], 'attempts_count': 'uno'}
         is_valid, message = validate_study_data(invalid_data)
         self.assertFalse(is_valid)
         self.assertIn("número entero", message)
 
-    def test_validate_study_data_duplicate_type_period(self):
-        """Prueba valores duplicados entre tipos y periodos."""
+    def test_validate_study_data_duplicate_descriptors(self):
+        """Prueba descriptores duplicados."""
         invalid_data = {
             'name': 'Estudio Duplicado',
             'num_subjects': '2',
-            'test_types': 'CMJ, DUPLICADO',
-            'test_periods': 'PRE, DUPLICADO',
+            'descriptores': ['CMJ', 'PRE', 'CMJ'], # Descriptor duplicado
             'attempts_count': '1'
         }
         is_valid, message = validate_study_data(invalid_data)
         self.assertFalse(is_valid)
-        self.assertIn("duplicados entre Tipos y Periodos", message)
-        self.assertIn("DUPLICADO", message)
+        self.assertIn("descriptores están duplicados", message)
+        self.assertIn("CMJ", message)
 
     # --- Pruebas para validate_filename_for_study_criteria ---
 
-    def test_validate_filename_valid_both_criteria(self):
-        """Prueba nombre válido con tipos y periodos definidos."""
-        types = ['CMJ', 'SJ']
-        periods = ['PRE', 'POST']
-        self.assertTrue(validate_filename_for_study_criteria("P01 CMJ PRE 01_Cinematica.txt", types, periods))
-        self.assertTrue(validate_filename_for_study_criteria("P02 SJ POST 02_Cinetica.txt", types, periods))
-        # Orden inverso
-        self.assertTrue(validate_filename_for_study_criteria("P03 PRE CMJ 03_Electromiografica.txt", types, periods))
+    def test_validate_filename_valid_with_descriptors(self):
+        """Prueba nombres válidos con descriptores definidos."""
+        descriptors = ['CMJ', 'PRE', 'GrupoA']
+        # Todos los descriptores presentes y en orden
+        self.assertTrue(validate_filename_for_study_criteria("P01 CMJ PRE GrupoA 01_Cinematica.txt", descriptors))
+        # Subconjunto de descriptores en orden
+        self.assertTrue(validate_filename_for_study_criteria("P02 CMJ PRE 02_Cinetica.txt", descriptors))
+        self.assertTrue(validate_filename_for_study_criteria("P03 PRE GrupoA 03_Electromiografica.txt", descriptors))
+        self.assertTrue(validate_filename_for_study_criteria("P04 CMJ 04_Cinematica.txt", descriptors))
+        self.assertTrue(validate_filename_for_study_criteria("P05 GrupoA 05_Cinetica.txt", descriptors))
+        # Con guiones bajos en lugar de espacios
+        self.assertTrue(validate_filename_for_study_criteria("P06_CMJ_PRE_06_Cinematica.txt", descriptors))
 
-    def test_validate_filename_invalid_both_criteria_wrong_type(self):
-        """Prueba nombre inválido (tipo incorrecto) con tipos y periodos."""
-        types = ['CMJ', 'SJ']
-        periods = ['PRE', 'POST']
-        self.assertFalse(validate_filename_for_study_criteria("P01 XYZ PRE 01_Cinematica.txt", types, periods))
+    def test_validate_filename_invalid_wrong_descriptor(self):
+        """Prueba nombre inválido (descriptor incorrecto)."""
+        descriptors = ['CMJ', 'PRE']
+        self.assertFalse(validate_filename_for_study_criteria("P01 CMJ POST 01_Cinematica.txt", descriptors))
+        self.assertFalse(validate_filename_for_study_criteria("P01 XYZ PRE 01_Cinematica.txt", descriptors))
 
-    def test_validate_filename_invalid_both_criteria_wrong_period(self):
-        """Prueba nombre inválido (periodo incorrecto) con tipos y periodos."""
-        types = ['CMJ', 'SJ']
-        periods = ['PRE', 'POST']
-        self.assertFalse(validate_filename_for_study_criteria("P01 CMJ ABC 01_Cinematica.txt", types, periods))
+    def test_validate_filename_invalid_wrong_order(self):
+        """Prueba nombre inválido (orden incorrecto de descriptores)."""
+        descriptors = ['CMJ', 'PRE', 'GrupoA']
+        self.assertFalse(validate_filename_for_study_criteria("P01 PRE CMJ GrupoA 01_Cinematica.txt", descriptors))
+        self.assertFalse(validate_filename_for_study_criteria("P02 GrupoA PRE 02_Cinetica.txt", descriptors))
 
-    def test_validate_filename_invalid_both_criteria_missing_part(self):
-        """Prueba nombre inválido (falta parte) con tipos y periodos."""
-        types = ['CMJ', 'SJ']
-        periods = ['PRE', 'POST']
-        self.assertFalse(validate_filename_for_study_criteria("P01 CMJ 01_Cinematica.txt", types, periods)) # Falta periodo
+    def test_validate_filename_invalid_missing_descriptor_part(self):
+        """Prueba nombre inválido (falta parte intermedia) con descriptores definidos."""
+        descriptors = ['CMJ', 'PRE']
+        self.assertFalse(validate_filename_for_study_criteria("P01 01_Cinematica.txt", descriptors))
 
-    def test_validate_filename_valid_only_types(self):
-        """Prueba nombre válido solo con tipos definidos."""
-        types = ['CMJ', 'SJ']
-        periods = []
-        self.assertTrue(validate_filename_for_study_criteria("P01 CMJ 01_Cinematica.txt", types, periods))
-        self.assertTrue(validate_filename_for_study_criteria("P02 SJ 02_Cinetica.txt", types, periods))
+    def test_validate_filename_invalid_extra_descriptor_part(self):
+        """Prueba nombre inválido (parte intermedia extra no definida)."""
+        descriptors = ['CMJ', 'PRE']
+        self.assertFalse(validate_filename_for_study_criteria("P01 CMJ PRE EXTRA 01_Cinematica.txt", descriptors))
 
-    def test_validate_filename_invalid_only_types_wrong_type(self):
-        """Prueba nombre inválido (tipo incorrecto) solo con tipos."""
-        types = ['CMJ', 'SJ']
-        periods = []
-        self.assertFalse(validate_filename_for_study_criteria("P01 XYZ 01_Cinematica.txt", types, periods))
+    def test_validate_filename_valid_no_descriptors_defined(self):
+        """Prueba nombre válido cuando no hay descriptores definidos."""
+        descriptors = []
+        self.assertTrue(validate_filename_for_study_criteria("P01 01_Cinematica.txt", descriptors))
+        self.assertTrue(validate_filename_for_study_criteria("Pte02 02_Cinetica.txt", descriptors))
 
-    def test_validate_filename_invalid_only_types_extra_part(self):
-        """Prueba nombre inválido (parte extra) solo con tipos."""
-        types = ['CMJ', 'SJ']
-        periods = []
-        self.assertFalse(validate_filename_for_study_criteria("P01 CMJ EXTRA 01_Cinematica.txt", types, periods))
+    def test_validate_filename_invalid_no_descriptors_defined_extra_part(self):
+        """Prueba nombre inválido (parte extra) sin descriptores definidos."""
+        descriptors = []
+        self.assertFalse(validate_filename_for_study_criteria("P01 EXTRA 01_Cinematica.txt", descriptors))
+        self.assertFalse(validate_filename_for_study_criteria("P02 CMJ 02_Cinetica.txt", descriptors))
 
-    def test_validate_filename_valid_only_periods(self):
-        """Prueba nombre válido solo con periodos definidos."""
-        types = []
-        periods = ['PRE', 'POST']
-        self.assertTrue(validate_filename_for_study_criteria("P01 PRE 01_Cinematica.txt", types, periods))
-        self.assertTrue(validate_filename_for_study_criteria("P02 POST 02_Cinetica.txt", types, periods))
+    def test_validate_filename_invalid_format(self):
+        """Prueba formatos de nombre inválidos (sin Pte, sin NN)."""
+        descriptors = ['CMJ']
+        self.assertFalse(validate_filename_for_study_criteria("Sujeto01 CMJ 01_Cinematica.txt", descriptors))
+        self.assertFalse(validate_filename_for_study_criteria("P01 CMJ Uno_Cinematica.txt", descriptors))
+        self.assertFalse(validate_filename_for_study_criteria("P01_Cinematica.txt", descriptors))
+        self.assertFalse(validate_filename_for_study_criteria("P01_CMJ_Cinematica.txt", descriptors)) # Falta NN
 
-    def test_validate_filename_invalid_only_periods_wrong_period(self):
-        """Prueba nombre inválido (periodo incorrecto) solo con periodos."""
-        types = []
-        periods = ['PRE', 'POST']
-        self.assertFalse(validate_filename_for_study_criteria("P01 ABC 01_Cinematica.txt", types, periods))
-
-    def test_validate_filename_valid_no_criteria(self):
-        """Prueba nombre válido sin tipos ni periodos definidos."""
-        types = []
-        periods = []
-        self.assertTrue(validate_filename_for_study_criteria("P01 01_Cinematica.txt", types, periods))
-        self.assertTrue(validate_filename_for_study_criteria("P02 02_Cinetica.txt", types, periods))
-
-    def test_validate_filename_invalid_no_criteria_extra_part(self):
-        """Prueba nombre inválido (parte extra) sin tipos ni periodos."""
-        types = []
-        periods = []
-        self.assertFalse(validate_filename_for_study_criteria("P01 EXTRA 01_Cinematica.txt", types, periods))
-
-    def test_validate_filename_non_processed_file(self):
-        """Prueba que archivos no procesados (sin sufijo de frecuencia) se consideren válidos."""
-        types = ['CMJ']
-        periods = ['PRE']
-        # Archivos en OG o con nombres diferentes no deben ser invalidados por esta función
-        self.assertTrue(validate_filename_for_study_criteria("P01 CMJ PRE 01.txt", types, periods))
-        self.assertTrue(validate_filename_for_study_criteria("OtroArchivo.csv", types, periods))
-        self.assertTrue(validate_filename_for_study_criteria("reporte_final.pdf", types, periods))
+    def test_validate_filename_non_processed_file_ignored(self):
+        """Prueba que archivos no procesados (sin sufijo de frecuencia) se ignoren."""
+        # La lógica actual del validador devuelve True si no detecta sufijo de frecuencia.
+        # Esto es para no bloquear archivos OG, pero significa que no valida descriptores en ellos.
+        descriptors = ['CMJ', 'PRE']
+        self.assertTrue(validate_filename_for_study_criteria("P01 CMJ PRE 01.txt", descriptors))
+        self.assertTrue(validate_filename_for_study_criteria("OtroArchivo.csv", descriptors))
+        self.assertTrue(validate_filename_for_study_criteria("reporte_final.pdf", descriptors))
+        # Incluso si el nombre parece tener descriptores pero no sufijo, se ignora la validación de descriptores
+        self.assertTrue(validate_filename_for_study_criteria("P01 CMJ POST 01.txt", descriptors)) # POST es inválido, pero pasa
 
 
 if __name__ == '__main__':

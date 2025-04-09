@@ -162,14 +162,14 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 *   **3. Implementación para modificar nombres de etiquetas de descriptores post-carga.** (Pendiente)
     *   **Detalle**: Añadir una nueva funcionalidad (posiblemente en `kineviz.ui.views.study_view.py` o un nuevo diálogo) que permita al usuario ver los descriptores *detectados* en los nombres de archivo de un estudio y asignarles un "alias" o "nombre descriptivo" (ej: "CMJ" -> "Salto Contra Movimiento"). Este alias se usaría para mostrar en gráficos y reportes. El almacenamiento de estos alias podría ser en `config.ini` o en la base de datos. *Nota: Inicialmente, esta modificación es solo visual.*
 
-*   **4. Integrar con el resto del código. (En Progreso)**
+*   **4. Integrar con el resto del código. (Completado)**
     *   **Detalle**: Revisar y actualizar todos los módulos que dependían de `test_types` y `test_periods`:
         *   `kineviz.ui.utils.validators.validate_filename_for_study_criteria`: (Hecho) Actualizada para validar contra `descriptors`.
         *   `kineviz.core.services.file_service.add_files_to_study`: (Hecho) Actualizado para usar el validador con `descriptors`.
         *   `kineviz.core.services.file_service.get_unique_study_parameters`: (Hecho) Actualizado para extraer `descriptors` de nombres de archivo válidos.
         *   `kineviz.core.services.analysis_service`: (Hecho) `get_analysis_parameters`, `_get_data_for_parameters`, `generate_report` actualizados para usar `descriptors`.
         *   `kineviz.ui.dialogs.analysis_dialog.py`: (Hecho) Actualizado para mostrar y usar selector de `descriptors`.
-        *   Actualizar pruebas unitarias afectadas. (Pendiente)
+        *   Actualizar pruebas unitarias afectadas. (Hecho)
 
 ---
 
