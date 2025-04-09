@@ -14,7 +14,8 @@ from kineviz.ui.views.study_view import StudyView
 from kineviz.ui.views.main_view import MainView
 from kineviz.ui.dialogs.study_dialog import StudyDialog
 from kineviz.ui.dialogs.analysis_dialog import AnalysisDialog
-from kineviz.ui.dialogs.config_dialog import ConfigDialog # Importar ConfigDialog
+from kineviz.ui.dialogs.config_dialog import ConfigDialog
+from kineviz.ui.views.discrete_analysis_view import DiscreteAnalysisView # Importar nueva vista
 # Servicios Core
 from kineviz.core.services.study_service import StudyService
 from kineviz.core.services.file_service import FileService
@@ -114,6 +115,13 @@ class MainWindow:
         # Pasar la instancia de file_service a StudyView
         self.current_view = StudyView(self.root, self, study_id, self.file_service)
         # El pack/grid se maneja dentro de StudyView
+
+    def show_discrete_analysis_view(self, study_id: int):
+        """Muestra la vista para el análisis discreto (Fase 6)."""
+        self.clear_window()
+        # Pasar main_window, analysis_service y study_id
+        self.current_view = DiscreteAnalysisView(self.root, self, self.analysis_service, study_id)
+        # El pack/grid se maneja dentro de DiscreteAnalysisView
 
     def show_create_study_dialog(self, study_to_edit=None):
         """

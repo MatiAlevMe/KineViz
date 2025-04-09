@@ -247,7 +247,7 @@ Esta funcionalidad está pensada para automatizar el análisis estadístico de d
 *   **6. Generación de Gráficos:** (Pendiente) Implementar gráficos de barra y boxplot.
 *   **7. Exportación y Reporte:** (Pendiente) Exportar tablas en CSV/Excel/txt y generar reportes en PDF.
 *   **8. Análisis Individual:** (Pendiente)
-    *   **8.1 Crear ventana/diálogo** para configuración de análisis individual (cálculo fijo, n descriptores).
+    *   **8.1 Crear ventana/diálogo** para configuración de análisis individual (cálculo, descriptor fijo, descriptores variables, variable a graficar).
     *   **8.2 Implementar guardado/carga** de configuraciones de análisis individual.
     *   **8.3 Crear lista** de análisis guardados con búsqueda/filtrado.
     *   **8.4 Añadir botón** para abrir carpetas de tablas/gráficos de análisis individuales.
