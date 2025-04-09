@@ -126,14 +126,72 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 *   [x] Implementar `Charting` (`kineviz/ui/widgets/charting.py`) para visualizaciones. (Boxplot, Barchart básicos)
 *   [x] Implementar visualización/eliminación de reportes generados en `AnalysisDialog`.
 
-## Fase 5: Mejoras Incrementales - Descriptores y Detección de Frecuencia
+## Fase 5: Mejoras Incrementales - Descriptores y Detección de Frecuencia (Completada)
 
 *   [x] **Modificación de Identificador de Frecuencias**: Cambiar la detección de tipo de frecuencia (Cinemática, Cinética, Electromiográfica) basada en metadatos del archivo ("Model Outputs", "Force Plate"). (Tarea 1)
-*   [X] **Implementación de Descriptores**: Reemplazar el sistema de "Tipos de Prueba" y "Periodos de Prueba" por un sistema flexible de "Descriptores" definidos por el usuario al crear/editar estudios. (Tarea 2 - UI y DB)
-*   [ ] **Modificación de Etiquetas Post-Carga**: Permitir al usuario asignar alias o nombres descriptivos a los descriptores detectados en los archivos, para visualización en análisis y reportes. (Tarea 3)
-*   [ ] **Integración Completa**: Asegurar que los cambios en la detección de frecuencia y el sistema de descriptores se integren correctamente en la carga de archivos, validación, análisis, reportes y UI. (Tarea 4)
+*   [x] **Implementación de Descriptores**: Reemplazar el sistema de "Tipos de Prueba" y "Periodos de Prueba" por un sistema flexible de "Descriptores" definidos por el usuario al crear/editar estudios. (Tarea 2 - UI y DB)
+*   [x] **Modificación de Etiquetas Post-Carga**: Permitir al usuario asignar alias o nombres descriptivos a los descriptores detectados en los archivos, para visualización en análisis y reportes. (Tarea 3)
+*   [x] **Integración Completa**: Asegurar que los cambios en la detección de frecuencia y el sistema de descriptores se integren correctamente en la carga de archivos, validación, análisis, reportes y UI. (Tarea 4)
 
-## Fase 6: Análisis Discreto - Individual y General - Tablas y Gráficos (WIP)
+## Fase 6: Análisis Estadístico Discreto y Reportes Avanzados (Pendiente)
+
+### **Visión General**
+Esta funcionalidad está pensada para automatizar el análisis estadístico de datos discretos (por ejemplo, valores máximos, mínimos y rangos) obtenidos de estudios, en donde cada estudio puede contener múltiples archivos por paciente y por intento. Principalmente, se enfoca en datos cinemáticos, generando tanto tablas como gráficos (barras y boxplots) para comparar estadísticamente distintos descriptores según las etiquetas asignadas.
+
+### Flujo del Proceso
+1.  **Extracción y Normalización de Datos**
+    *   Se genera una tabla para cada cálculo (máximo, mínimo, rango) basada en los datos originales del estudio.
+    *   Cada tabla contendrá:
+        *   El tipo de cálculo realizado (por ejemplo, máximo).
+        *   Filas que representan a cada paciente (con sus intentos).
+        *   Columnas que corresponden a las variables repetidas presentes en cada archivo (p.ej.: posiciones X, Y, Z agrupadas por articulación y unidad de medida).
+
+2.1 **Procesamiento Estadístico**
+    *   Se realiza una comprobación de distribución normal para determinar si los datos son paramétricos o no, lo cual condiciona el método estadístico a aplicar.
+    *   En caso de comparación entre:
+        *   **Dos descriptores:** Se ejecuta una prueba t.
+        *   **Tres o más descriptores:** Se realiza un ANOVA.
+
+2.2 **Interacción y Configuración del Análisis:**
+    *   **Paso 1: Definir el Diseño del Estudio**
+        *   Preguntar al usuario si los datos son **pareados** o **independientes**.
+        *   Preguntar si los datos se pueden asumir normalmente distribuidos o si se requiere la aplicación de una prueba automática para verificar la normalidad.
+    *   **Paso 2: Seleccionar el Método Estadístico**
+        *   **Si se comparan dos descriptores:**
+            *   Utilizar t-test pareado o t-test para muestras independientes, según corresponda.
+        *   **Si se comparan tres o más descriptores:**
+            *   Utilizar ANOVA (o su equivalente no paramétrico en caso de datos no normales).
+    *   **Paso 3: Configuración Adicional**
+        *   Elegir las variables y etiquetas que se utilizarán para generar las tablas y gráficos.
+        *   Guardar la configuración para análisis individual y generar reportes generales en PDF con las combinaciones de gráficos y tablas pertinentes.
+
+3.  **Generación de Gráficos y Reportes:**
+    *   Se generan gráficos (barras y boxplots) que reflejen el análisis de las diferencias entre descriptores.
+    *   Se incorpora la opción de comparar un descriptor fijo contra otros, según lo definido por el usuario.
+    *   Los reportes generales se crean automáticamente en formato PDF, agrupados por tipo de cálculo y descriptores.
+
+4.  **Generación de Archivos y Acceso**
+    *   Al hacer clic en el botón “Análisis Continuo” (para la parte de tablas discretas) se generan múltiples archivos automáticamente:
+        *   Cada archivo corresponde a un cálculo (por ejemplo, “Máximo – Cinemática – Estudio: Testing”).
+        *   Las tablas generadas se alojan en una estructura de carpetas accesible mediante un botón en la nueva ventana de análisis.
+
+5.  **Análisis Individual y Reporte General**
+    *   **Análisis Individual:**
+        *   Se abre una ventana donde el usuario define parámetros tales como:
+            *   El cálculo a utilizar.
+            *   Un descriptor de referencia (fijo) para comparar con otros descriptores (que pueden ser n descriptores extras según permita el estudio).
+            *   La variable (columna) a graficar.
+        *   Se guarda la configuración y se despliega una lista de análisis previos, con opciones de búsqueda, filtrado y visualización (incluyendo un botón para abrir la carpeta de gráficos y tablas).
+
+    *   **Reporte General:**
+        *   Se genera un PDF automático que incluye todos los posibles gráficos generados para cada cálculo, utilizando todas las variables y combinaciones de descriptores disponibles en el estudio.
+        *   La nomenclatura de los archivos y carpetas sigue una estructura jerárquica basada en el cálculo y el descriptor fijo.
+
+### Consideraciones Técnicas
+- **Herramientas:** Pandas, Matplotlib/Seaborn, SciPy.
+- **Enfoque Inicial:** Datos cinemáticos.
+- **Exclusiones:** Columnas "Frame", "Sub Frame", "Tiempo".
+- **Normalización:** No necesaria para análisis discreto.
 
 ## Fase 7: Refinamientos y Finalización (Antigua Fase 4)
 
@@ -161,7 +219,7 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
     *   **2.1 Soportar múltiples etiquetas de descriptores**: (Hecho) UI modificada para añadir/eliminar campos. Tabla `estudios` modificada para usar columna `descriptores` (TEXT, separado por comas). Repositorio y Servicio actualizados.
     *   **2.2 Validación de descriptores**: (Hecho) Añadida validación en `kineviz.ui.utils.validators.validate_study_data` para evitar descriptores vacíos o duplicados exactos.
 
-*   **3. Implementación para modificar nombres de etiquetas de descriptores post-carga.** (Parcialmente Completado)
+*   **3. Implementación para modificar nombres de etiquetas de descriptores post-carga.** (Completado)
     *   **Detalle**: Añadir una nueva funcionalidad (posiblemente en `kineviz.ui.views.study_view.py` o un nuevo diálogo) que permita al usuario ver los descriptores *detectados* en los nombres de archivo de un estudio y asignarles un "alias" o "nombre descriptivo" (ej: "CMJ" -> "Salto Contra Movimiento"). Este alias se usaría para mostrar en gráficos y reportes. El almacenamiento de estos alias podría ser en `config.ini` o en la base de datos. *Nota: Inicialmente, esta modificación es solo visual.*
     *   **3.1 Añadir gestión de alias en `AppSettings`**: (Hecho) Métodos para leer/escribir sección `[DESCRIPTOR_ALIASES]` en `config.ini`.
     *   **3.2 Crear `DescriptorAliasDialog`**: (Hecho) Diálogo para ver descriptores detectados y asignar/guardar alias usando `AppSettings`.
