@@ -258,30 +258,11 @@ class StudyDialog(Toplevel):
             return False # No proceder si hubo un error en la validación
 
     def save(self):
-        # Preparar datos del estudio, limpiando tipos y periodos
-        # Dividir por comas, quitar espacios y filtrar vacíos
-        cleaned_types = [t.strip() for t in self.var_tipos_prueba.get().split(',') if t.strip()]
-        cleaned_periods = [p.strip() for p in self.var_periodos_prueba.get().split(',') if p.strip()]
+        # Recolectar descriptores de las entradas
+        current_descriptors = [var.get().strip() for var in self.descriptor_vars]
 
         study_data = {
-            'name': self.var_nombre.get().strip(), # También quitar espacios del nombre
-            'num_subjects': self.var_num_sujetos.get().strip(),
-            'test_types': ','.join(cleaned_types), # Unir los valores limpios
-            'test_periods': ','.join(cleaned_periods), # Unir los valores limpios
-            'attempts_count': self.var_cantidad_intentos.get().strip()
-        }
-
-        # Validar datos básicos del formulario
-        is_valid, error_message = validate_study_data(study_data)
-        if not is_valid:
-            messagebox.showerror("Datos Inválidos", error_message, parent=self)
-            return
-
-    # Recolectar descriptores de las entradas
-    current_descriptors = [var.get().strip() for var in self.descriptor_vars]
-
-    study_data = {
-        'name': self.var_nombre.get().strip(),
+            'name': self.var_nombre.get().strip(),
         'num_subjects': self.var_num_sujetos.get().strip(),
         'descriptores': current_descriptors, # Pasar la lista para validación
         'attempts_count': self.var_cantidad_intentos.get().strip()
