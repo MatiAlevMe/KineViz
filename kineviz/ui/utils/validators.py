@@ -141,21 +141,29 @@ def validate_filename_for_study_criteria(filename: str, descriptors: list[str]) 
             return False
 
         # 3. Las partes intermedias deben mantener el orden relativo definido en 'descriptors'
-        last_index = -1
-        for i, part in enumerate(intermediate_parts):
+        #    Permitiendo omitir descriptores.
+        last_index_in_definition = -1 # Índice en 'descriptors' del descriptor anterior encontrado en el nombre
+        for part_in_filename in intermediate_parts:
             try:
-                # Encontrar el índice de esta parte en la lista original de descriptores (que mantiene el orden)
-                current_index = descriptors.index(part)
-                logger.debug(f"Parte '{part}' encontrada en índice {current_index} de descriptores definidos.")
-                # Verificar si el índice actual es mayor que el anterior
-                if current_index <= last_index:
-                    logger.debug(f"Validación fallida: Error de orden. '{part}' (índice {current_index}) no está después del anterior (último índice {last_index}).")
-                    return False # Error de orden
-                last_index = current_index
+                # Encontrar dónde está definido este descriptor
+                current_index_in_definition = descriptors.index(part_in_filename)
+                logger.debug(f"Parte '{part_in_filename}' encontrada en índice {current_index_in_definition} de descriptores definidos.")
+
+                # Comprobar si el índice de definición actual es estrictamente mayor
+                # que el índice de definición del descriptor anterior encontrado en el nombre.
+                if current_index_in_definition > last_index_in_definition:
+                    # El orden es correcto hasta ahora, actualizar el último índice encontrado
+                    last_index_in_definition = current_index_in_definition
+                else:
+                    # Error de orden: este descriptor aparece antes en la definición
+                    # que el descriptor anterior encontrado en el nombre.
+                    logger.debug(f"Validación fallida: Error de orden relativo. '{part_in_filename}' (índice {current_index_in_definition}) no está después del último descriptor encontrado previamente (índice {last_index_in_definition}).")
+                    return False
+
             except ValueError:
-                 # Esto no debería ocurrir si la comprobación anterior (invalid_parts) funcionó, pero por seguridad:
-                 logger.error(f"Error inesperado: Descriptor '{part}' no encontrado en lista original {descriptors} durante chequeo de orden.")
-                 return False # Descriptor no encontrado en la lista original
+                # Este caso no debería ocurrir si la comprobación #2 (invalid_parts) funcionó.
+                logger.error(f"Error inesperado: Descriptor '{part_in_filename}' no encontrado en lista original {descriptors} durante chequeo de orden.")
+                return False
 
         # Si todas las comprobaciones pasan
         logger.debug("Validación exitosa: Cumple formato y descriptores (incluyendo orden).")
