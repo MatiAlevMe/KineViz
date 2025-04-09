@@ -359,14 +359,16 @@ class FileService:
             # Ignorar carpetas especiales y archivos a nivel de estudio
             if patient_dir.is_dir() and not patient_dir.name.lower() in ["reportes", "temp", "og"]:
                 patient_name = patient_dir.name
-                has_any_freq_folder = False
-                for freq_folder_name in processed_folders:
-                    freq_folder_path = patient_dir / freq_folder_name
-                    if freq_folder_path.exists() and freq_folder_path.is_dir():
-                        parameters['frequencies'].add(freq_folder_name) # Añadir frecuencia si la carpeta existe
-                        has_any_freq_folder = True
-                # Añadir paciente solo si tiene al menos una carpeta de frecuencia válida
-                if has_any_freq_folder:
+                # No añadir frecuencia aquí todavía. Se añadirá solo si se encuentra un archivo válido.
+                # has_any_freq_folder = False
+                # for freq_folder_name in processed_folders:
+                #     freq_folder_path = patient_dir / freq_folder_name
+                #     if freq_folder_path.exists() and freq_folder_path.is_dir():
+                #         # parameters['frequencies'].add(freq_folder_name) # NO AÑADIR AQUÍ
+                #         has_any_freq_folder = True
+                # Añadir paciente si la carpeta del paciente existe (simplificado)
+                # La lógica de si tiene archivos válidos se maneja en el paso 2
+                if patient_dir.exists() and patient_dir.is_dir(): # Asegurar que es un directorio
                     parameters['patients'].add(patient_name)
 
         # 2. Iterar de nuevo para encontrar descriptores *solo* de archivos válidos
