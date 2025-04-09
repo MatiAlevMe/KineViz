@@ -89,11 +89,16 @@ def leer_seccion(file, num_frames: int, linea_descripcion: str, ruta_archivo_bas
 
         else:
             break  # Si hay una línea vacía, salir del bucle
-    # Escribir la sección al archivo
-    with open(ruta_archivo_seccion, 'w', encoding='utf-8') as output_file: # Usar ruta_archivo_seccion y encoding
-        output_file.write(f"{linea_descripcion}\n{num_frames}\n{atributos_line}\n{columnas_line}\n{unidades_line}\n") # Escribir cabeceras originales
+    # Escribir la sección al archivo con separador ';' para TODO
+    with open(ruta_archivo_seccion, 'w', encoding='utf-8') as output_file:
+        # Escribir las primeras 2 líneas (descripción, num_frames) sin cambios
+        output_file.write(f"{linea_descripcion}\n{num_frames}\n")
+        # Escribir las líneas de atributos, columnas y unidades MODIFICADAS (con Tiempo y ';')
+        output_file.write(f"{atributos_str}\n")
+        output_file.write(f"{columnas_str}\n")
+        output_file.write(f"{unidades_str}\n")
+        # Escribir datos con formato y separador ';'
         for medicion in mediciones:
-            # Escribir datos con formato y separador ';'
             output_file.write(";".join(processors.formato_personalizado(x) for x in medicion) + "\n")
 
     # Devolver también el tipo de frecuencia determinado

@@ -96,23 +96,28 @@ class AnalysisService:
                  logger.warning(f"No se detectaron columnas de datos en {file_path.name}")
                  return None
 
-            # --- Generar nombres de columna basados en la línea 3 y ajustar a num_data_cols ---
-            # Leer la tercera línea COMPLETA (índice 2) para obtener los nombres de columna base
-            raw_col_names_line3 = lines[2].strip().split(';')
-            logger.debug(f"Nombres crudos de línea 3: {raw_col_names_line3}")
+            # --- Generar nombres de columna basados en la línea 3 (ahora separada por ';') ---
+            # Leer la línea de nombres de columna (índice 2)
+            col_names_line = lines[2].strip()
+            raw_col_names_from_header = col_names_line.split(';')
+            logger.debug(f"Nombres crudos leídos de línea 3: {raw_col_names_from_header}")
 
-            # Sanear nombres de columna base para asegurar unicidad y no vacíos
-            sanitized_base_names = []
+            # Validar si el número de nombres coincide con el número de columnas de datos
+            if len(raw_col_names_from_header) != num_data_cols:
+                 logger.warning(f"Discrepancia en {file_path.name}: "
+                                f"Nombres en línea 3 ({len(raw_col_names_from_header)}) != "
+                                f"Columnas en datos ({num_data_cols}). Se usarán los nombres de la línea 3 truncados/rellenados.")
+                 # Podríamos decidir fallar aquí si la discrepancia es un problema grave
+
+            # Sanear nombres de columna leídos para asegurar unicidad y no vacíos
+            final_col_names = [] # Renombrado de sanitized_base_names
             counts = {}
-            # Sanitize names from the full line 3
-            for i, name in enumerate(raw_col_names_line3):
+            # Sanitize names from the header line
+            for i, name in enumerate(raw_col_names_from_header):
                 clean_name = name.strip()
-                # Handle empty names, potentially giving special names to first two meta columns
+                # Handle empty names
                 if not clean_name:
-                    if i < 2: # First two columns are often empty/meta in original format
-                         clean_name = f"Meta_{i+1}"
-                    else:
-                         clean_name = f"Unnamed_{i}"
+                     clean_name = f"Unnamed_{i}" # Usar nombre genérico simple
 
                 # Add suffix if the name is duplicated
                 if clean_name in counts:
@@ -121,17 +126,18 @@ class AnalysisService:
                 else:
                     counts[clean_name] = 0
                     unique_name = clean_name
-                sanitized_base_names.append(unique_name)
-            logger.debug(f"Nombres base saneados ({len(sanitized_base_names)}): {sanitized_base_names}")
+                final_col_names.append(unique_name)
+            logger.debug(f"Nombres saneados ({len(final_col_names)}): {final_col_names}")
 
-            # Construir la lista final de nombres, ajustando al número real de columnas de datos (num_data_cols)
-            # NO prependemos 'Tiempo'. Usamos los nombres saneados de la línea 3 como base.
-            final_col_names = sanitized_base_names[:num_data_cols] # Truncate if line 3 had more names than data columns
-            # Pad with generic names if line 3 had fewer names than data columns
-            while len(final_col_names) < num_data_cols:
-                final_col_names.append(f"Data_Col_{len(final_col_names)}") # Use a distinct name for padding
+            # Ajustar la lista final si hubo discrepancia con num_data_cols
+            if len(final_col_names) > num_data_cols:
+                 final_col_names = final_col_names[:num_data_cols] # Truncar
+            elif len(final_col_names) < num_data_cols:
+                 # Pad con nombres genéricos
+                 for i in range(len(final_col_names), num_data_cols):
+                     final_col_names.append(f"Data_Col_{i}")
 
-            logger.debug(f"Nombres de columna finales para {file_path.name} ({len(final_col_names)}): {final_col_names}")
+            logger.debug(f"Nombres de columna finales ajustados para {file_path.name} ({len(final_col_names)}): {final_col_names}")
             # --- Fin ajuste de nombres ---
 
             try:
