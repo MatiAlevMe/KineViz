@@ -192,31 +192,81 @@ class FileService:
         directory_manager.copiar_archivo_origen(source_file_path, archivo_og)
 
         # 4. Procesar archivo sección por sección
-        with open(source_file_path, 'r') as file:
+        with open(source_file_path, 'r', encoding='utf-8') as file: # Asegurar encoding
+            processed_frequencies = set() # Para loggear qué frecuencias se procesaron
             while True:
+                # Leer la línea de descripción/identificador
+                linea_descripcion = file.readline()
+                if not linea_descripcion: break # Fin del archivo
+                linea_descripcion = linea_descripcion.rstrip("\n") # Quitar salto de línea
+
                 # Leer número de frames (con validación básica)
-                primera_fila = file.readline() # Leer la línea de descripción (no usada aquí)
-                if not primera_fila: break # EOF
-                segunda_fila = file.readline().rstrip()
-                if not segunda_fila: break # EOF inesperado
-                if not segunda_fila.isdigit():
-                    raise ValueError(f"Formato inválido: Se esperaba número de frames, se obtuvo '{segunda_fila}' en {source_file_path.name}")
-                num_frames = int(segunda_fila)
+                linea_num_frames = file.readline()
+                if not linea_num_frames: break # EOF inesperado
+                linea_num_frames = linea_num_frames.rstrip()
+                if not linea_num_frames.isdigit():
+                    # Podría ser el inicio de otra sección (ej. "Model Outputs")
+                    # Si la línea de descripción anterior era "Model Outputs", esto es esperado.
+                    if "Model Outputs" in linea_descripcion:
+                         # Asumimos que la siguiente línea es num_frames para Cinemática
+                         linea_num_frames = file.readline()
+                         if not linea_num_frames: break # EOF
+                         linea_num_frames = linea_num_frames.rstrip()
+                         if not linea_num_frames.isdigit():
+                              raise ValueError(f"Formato inválido después de 'Model Outputs': Se esperaba número de frames, se obtuvo '{linea_num_frames}' en {source_file_path.name}")
+                    else:
+                         # Si no era "Model Outputs", es un error de formato
+                         raise ValueError(f"Formato inválido: Se esperaba número de frames, se obtuvo '{linea_num_frames}' en {source_file_path.name}")
 
-                # Determinar tipo y crear carpeta
-                tipo_frecuencia = directory_manager.determinar_tipo_frecuencia(num_frames)
-                carpeta_frecuencia = directory_manager.crear_carpeta_frecuencia(paciente_path, tipo_frecuencia)
+                num_frames = int(linea_num_frames)
 
-                # Generar nombre de archivo procesado
-                nombre_archivo_procesado = source_file_path.name.replace(".txt", f"_{tipo_frecuencia}.txt").replace(".csv", f"_{tipo_frecuencia}.csv")
-                ruta_archivo_seccion = carpeta_frecuencia / nombre_archivo_procesado
+                # Generar ruta base para el archivo procesado (sin frecuencia)
+                # El nombre final y la carpeta se determinarán en leer_seccion
+                ruta_base_procesado = paciente_path / source_file_path.name
 
                 # Leer sección usando file_handlers
-                # Pasar el file handle ya posicionado
-                mediciones, columnas = file_handlers.leer_seccion(file, num_frames, ruta_archivo_seccion)
+                # Pasar el file handle, num_frames, la línea de descripción leída y la ruta base
+                try:
+                    mediciones, columnas, tipo_frecuencia_determinado = file_handlers.leer_seccion(
+                        file,
+                        num_frames,
+                        linea_descripcion,
+                        ruta_base_procesado # Pasamos la ruta base, leer_seccion construye la final
+                    )
+                    processed_frequencies.add(tipo_frecuencia_determinado)
 
-                # Calcular estadísticas usando processors
-                if mediciones: # Solo calcular si hay datos
+                    # Calcular estadísticas usando processors si hay datos
+                    if mediciones:
+                        # La ruta final ahora se construye dentro de leer_seccion
+                        nombre_archivo_procesado = ruta_base_procesado.name.replace(".txt", f"_{tipo_frecuencia_determinado}.txt").replace(".csv", f"_{tipo_frecuencia_determinado}.csv")
+                        ruta_archivo_seccion_final = paciente_path / tipo_frecuencia_determinado / nombre_archivo_procesado
+
+                        df = pd.DataFrame(mediciones, columns=columnas)
+                        # Renombrar columnas duplicadas si existen
+                        if df.columns.duplicated().any():
+                            df.columns = [f'{col}_{i}' if df.columns.duplicated()[i] else col for i, col in enumerate(df.columns)]
+
+                        maximos, minimos, rangos = processors.calcular_max_min_rango(df, columnas)
+
+                        # Exportar cálculos al archivo ya creado por leer_seccion
+                        with open(ruta_archivo_seccion_final, 'a', encoding='utf-8') as output_file:
+                            processors.exportar_calculos(output_file, maximos, minimos, rangos)
+                    else:
+                        logger.warning(f"No se encontraron mediciones en la sección {tipo_frecuencia_determinado} de {source_file_path.name}")
+
+                except Exception as e_seccion:
+                     # Loggear error de sección pero continuar si es posible con otras secciones
+                     logger.error(f"Error procesando una sección ({num_frames} frames) de {source_file_path.name}: {e_seccion}", exc_info=True)
+                     # ¿Cómo avanzar el puntero del archivo si falla la lectura de sección?
+                     # Podríamos intentar leer las líneas restantes de esa sección fallida para posicionarnos para la siguiente.
+                     # Por ahora, si falla, probablemente el bucle while termine o falle en la siguiente iteración.
+                     # Considerar añadir un manejo más robusto para saltar secciones corruptas.
+                     raise # Relanzar por ahora para no ocultar el error
+
+            logger.info(f"Frecuencias procesadas para {source_file_path.name}: {processed_frequencies or 'Ninguna'}")
+
+
+    def add_files_to_study(self, study_id: int, file_paths: list[str]) -> dict:
                     df = pd.DataFrame(mediciones, columns=columnas)
                     # Renombrar columnas duplicadas si existen (aunque no debería pasar con la inserción de 'Tiempo')
                     if df.columns.duplicated().any():

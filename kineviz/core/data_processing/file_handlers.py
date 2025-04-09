@@ -10,17 +10,51 @@ from ..exceptions import ( # Importar excepciones desde el nivel superior (core)
     FileNotFoundError,
     InvalidFileFormatError,                                                                                                                                    
     IOError                                                                                                                                                    
-) 
+)
 
-def leer_seccion(file, num_frames, ruta_archivo):
+def _determinar_frecuencia_por_contenido(linea_descripcion: str, linea_atributos: str) -> str:
+    """Determina el tipo de frecuencia basado en palabras clave en las cabeceras."""
+    # Priorizar "Model Outputs" ya que podría haber "Force Plate" en la descripción de cinemática
+    if "Model Outputs" in linea_descripcion:
+        return "Cinematica"
+    elif "Force Plate" in linea_atributos: # Buscar en la línea de atributos/columnas
+        return "Cinetica"
+    # TODO: Añadir lógica para Electromiografica (ej. buscar "Delsys"?)
+    # elif "Delsys" in linea_descripcion or "Delsys" in linea_atributos:
+    #     return "Electromiografica"
+    else:
+        return "Desconocida"
+
+
+def leer_seccion(file, num_frames: int, linea_descripcion: str, ruta_archivo_base: Path) -> tuple[list, list, str]:
     """
-    Lee una sección del archivo desde los atributos hasta los valores de medición,
-    exportando el resultado a la ruta especificada.
+    Lee una sección del archivo, determina su tipo de frecuencia por contenido,
+    y exporta el resultado a la ruta apropiada.
+
+    :param file: Handle del archivo de entrada, posicionado al inicio de la sección (después de num_frames).
+    :param num_frames: Número de frames de datos en la sección.
+    :param linea_descripcion: La primera línea leída de la sección (puede contener "Model Outputs").
+    :param ruta_archivo_base: Ruta base para guardar el archivo procesado (sin el sufijo de frecuencia).
+    :return: Tupla (mediciones, columnas, tipo_frecuencia_determinado).
     """
-    # Leer atributos, columnas, unidades
-    atributos = file.readline().rstrip("\n").split("\t")
-    columnas = file.readline().rstrip("\n").split("\t")
-    unidades = file.readline().rstrip("\n").split("\t")
+    # Leer atributos, columnas, unidades (las siguientes 3 líneas)
+    atributos_line = file.readline().rstrip("\n")
+    columnas_line = file.readline().rstrip("\n")
+    unidades_line = file.readline().rstrip("\n")
+
+    atributos = atributos_line.split("\t")
+    columnas = columnas_line.split("\t")
+    unidades = unidades_line.split("\t")
+
+    # Determinar tipo de frecuencia basado en el contenido de las cabeceras
+    tipo_frecuencia = _determinar_frecuencia_por_contenido(linea_descripcion, atributos_line)
+
+    # Construir la ruta final del archivo procesado con la frecuencia determinada
+    nombre_archivo_procesado = ruta_archivo_base.name.replace(".txt", f"_{tipo_frecuencia}.txt").replace(".csv", f"_{tipo_frecuencia}.csv")
+    ruta_archivo_seccion = ruta_archivo_base.parent / tipo_frecuencia / nombre_archivo_procesado
+    # Asegurar que el directorio de frecuencia exista
+    ruta_archivo_seccion.parent.mkdir(parents=True, exist_ok=True)
+
 
     # Agregar la columna "Tiempo"
     nuevas_columnas = ["Tiempo"]
@@ -60,7 +94,9 @@ def leer_seccion(file, num_frames, ruta_archivo):
         output_file.write(f"{num_frames}\n{atributos_str}\n{columnas_str}\n{unidades_str}\n")
         for medicion in mediciones:
             output_file.write(";".join(processors.formato_personalizado(x) for x in medicion) + "\n")
-    return mediciones, columnas
+
+    # Devolver también el tipo de frecuencia determinado
+    return mediciones, columnas, tipo_frecuencia
 
 def obtener_nombre_paciente(nombre_archivo: str) -> str:
     """Extrae el identificador del paciente del nombre del archivo."""
