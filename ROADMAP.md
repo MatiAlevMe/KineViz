@@ -237,7 +237,11 @@ Esta funcionalidad está pensada para automatizar el análisis estadístico de d
 
 **Fase 6: Análisis Estadístico Discreto y Reportes Avanzados**
 
-*   **1. Generación de Matrices:** (Pendiente) Crear tablas por tipo de cálculo y descriptor (ej: "máximo_cinemática_obesidad").
+*   **1. Generación de Matrices:** (En Progreso) Crear tablas por tipo de cálculo y descriptor (ej: "máximo_cinemática_obesidad").               
+    *   **1.1 Servicio `generate_discrete_summary_tables`**: (Hecho) Lógica para agrupar archivos, leer stats, crear DataFrames y guardar CSVs (inicialmente para Cinemática).
+    *   **1.2 Botón en `StudyView`**: (Hecho) Añadido botón "Análisis Discreto".                                       
+    *   **1.3 Vista `DiscreteAnalysisView`**: (Hecho) Creada vista básica con botón para generar tablas.
+    *   **1.4 Listar/Mostrar Tablas Generadas**: (Pendiente) Implementar Treeview y lógica para mostrar archivos CSV en `DiscreteAnalysisView`.
 *   **2. Selector de Variables y Etiquetas:** (Pendiente) Permitir que el usuario elija las variables a utilizar en el análisis.
 *   **3. Interacción sobre Datos Pareados:** (Pendiente) Preguntar si los datos son pareados o independientes.
 *   **4. Chequeo de Distribución:** (Pendiente) Permitir al usuario indicar si confía en que sus datos son normales o si se debe realizar una prueba automática (ej: Shapiro-Wilk).

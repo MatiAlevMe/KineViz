@@ -6917,3 +6917,231 @@ OSError: telling position disabled by next() call
 2025-04-09 03:56:41,974 - DEBUG - [kineviz.ui.views.study_view] - Descriptores detectados: ['Hola', 'Mundo']
 2025-04-09 03:56:41,974 - DEBUG - [kineviz.ui.views.study_view] - Aliases obtenidos de settings: {'hola': 'A', 'mundo': 'JI'}
 2025-04-09 03:56:41,974 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Hola (A), Mundo (JI)'
+2025-04-09 11:34:42,992 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 11:34:42,992 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 11:35:02,832 - INFO - [kineviz.database.repositories] - Directorio creado para estudio 4: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 3
+2025-04-09 11:35:06,612 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Editar' para estudio ID 4
+2025-04-09 11:35:10,883 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 4
+2025-04-09 11:35:10,891 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 4
+2025-04-09 11:35:10,892 - DEBUG - [kineviz.core.services.file_service] - Buscando parámetros únicos para estudio 4 en /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 3
+2025-04-09 11:35:10,892 - DEBUG - [kineviz.core.services.file_service] - Paso 2: Validando archivos para pacientes [] en frecuencias ['Cinematica', 'Cinetica', 'Electromiografica']
+2025-04-09 11:35:10,892 - DEBUG - [kineviz.core.services.file_service] - Parámetros únicos encontrados: {'patients': set(), 'frequencies': set(), 'descriptors': set()}
+2025-04-09 11:35:10,892 - DEBUG - [kineviz.ui.views.study_view] - Descriptores detectados: []
+2025-04-09 11:35:10,892 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado: Sin descriptores detectados.
+2025-04-09 11:35:17,424 - DEBUG - [kineviz.core.services.file_service] - Buscando parámetros únicos para estudio 4 en /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 3
+2025-04-09 11:35:17,425 - DEBUG - [kineviz.core.services.file_service] - Paso 2: Validando archivos para pacientes [] en frecuencias ['Cinematica', 'Cinetica', 'Electromiografica']
+2025-04-09 11:35:17,425 - DEBUG - [kineviz.core.services.file_service] - Parámetros únicos encontrados: {'patients': set(), 'frequencies': set(), 'descriptors': set()}
+2025-04-09 11:35:17,425 - INFO - [kineviz.ui.dialogs.descriptor_alias_dialog] - Descriptores detectados para estudio 4: set()
+2025-04-09 11:35:22,216 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 4
+2025-04-09 11:35:22,217 - DEBUG - [kineviz.core.services.file_service] - Buscando parámetros únicos para estudio 4 en /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 3
+2025-04-09 11:35:22,217 - DEBUG - [kineviz.core.services.file_service] - Paso 2: Validando archivos para pacientes [] en frecuencias ['Cinematica', 'Cinetica', 'Electromiografica']
+2025-04-09 11:35:22,217 - DEBUG - [kineviz.core.services.file_service] - Parámetros únicos encontrados: {'patients': set(), 'frequencies': set(), 'descriptors': set()}
+2025-04-09 11:35:22,217 - DEBUG - [kineviz.ui.views.study_view] - Descriptores detectados: []
+2025-04-09 11:35:22,218 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado: Sin descriptores detectados.
+2025-04-09 11:35:57,839 - DEBUG - [kineviz.ui.utils.validators] - --- ENTERING validate_filename_for_study_criteria ---
+2025-04-09 11:35:57,840 - DEBUG - [kineviz.ui.utils.validators] - Input filename: 'Pte10 Hola 01.txt'
+2025-04-09 11:35:57,840 - DEBUG - [kineviz.ui.utils.validators] - Input descriptors: ['Hola', 'Mundo']
+2025-04-09 11:35:57,840 - DEBUG - [kineviz.ui.utils.validators] - Validador: Nombre de archivo 'Pte10 Hola 01.txt' no parece tener sufijo de frecuencia esperado. Usando 'Pte10 Hola 01' como base para validación de descriptores.
+2025-04-09 11:35:57,840 - DEBUG - [kineviz.ui.utils.validators] - Base name extraído: 'Pte10 Hola 01'
+2025-04-09 11:35:57,840 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'Hola', '01']
+2025-04-09 11:35:57,840 - DEBUG - [kineviz.ui.utils.validators] - Attempt number (NN) found at index 2: '01'
+2025-04-09 11:35:57,840 - DEBUG - [kineviz.ui.utils.validators] - Intermediate parts identified: ['Hola']
+2025-04-09 11:35:57,840 - DEBUG - [kineviz.ui.utils.validators] - Processing defined descriptors...
+2025-04-09 11:35:57,840 - DEBUG - [kineviz.ui.utils.validators] - Buscando índice para parte: 'Hola' (len=4) en descriptores definidos: ['Hola', 'Mundo']
+2025-04-09 11:35:57,840 - DEBUG - [kineviz.ui.utils.validators] - Parte 'Hola' encontrada en índice 0 de descriptores definidos.
+2025-04-09 11:35:57,841 - DEBUG - [kineviz.ui.utils.validators] - Validation successful: Format and descriptors (if any) are valid.
+2025-04-09 11:35:57,841 - DEBUG - [kineviz.ui.utils.validators] - --- ENTERING validate_filename_for_study_criteria ---
+2025-04-09 11:35:57,841 - DEBUG - [kineviz.ui.utils.validators] - Input filename: 'Pte10 Hola Mundo 01.txt'
+2025-04-09 11:35:57,841 - DEBUG - [kineviz.ui.utils.validators] - Input descriptors: ['Hola', 'Mundo']
+2025-04-09 11:35:57,841 - DEBUG - [kineviz.ui.utils.validators] - Validador: Nombre de archivo 'Pte10 Hola Mundo 01.txt' no parece tener sufijo de frecuencia esperado. Usando 'Pte10 Hola Mundo 01' como base para validación de descriptores.
+2025-04-09 11:35:57,841 - DEBUG - [kineviz.ui.utils.validators] - Base name extraído: 'Pte10 Hola Mundo 01'
+2025-04-09 11:35:57,841 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'Hola', 'Mundo', '01']
+2025-04-09 11:35:57,841 - DEBUG - [kineviz.ui.utils.validators] - Attempt number (NN) found at index 3: '01'
+2025-04-09 11:35:57,841 - DEBUG - [kineviz.ui.utils.validators] - Intermediate parts identified: ['Hola', 'Mundo']
+2025-04-09 11:35:57,841 - DEBUG - [kineviz.ui.utils.validators] - Processing defined descriptors...
+2025-04-09 11:35:57,841 - DEBUG - [kineviz.ui.utils.validators] - Buscando índice para parte: 'Hola' (len=4) en descriptores definidos: ['Hola', 'Mundo']
+2025-04-09 11:35:57,841 - DEBUG - [kineviz.ui.utils.validators] - Parte 'Hola' encontrada en índice 0 de descriptores definidos.
+2025-04-09 11:35:57,841 - DEBUG - [kineviz.ui.utils.validators] - Buscando índice para parte: 'Mundo' (len=5) en descriptores definidos: ['Hola', 'Mundo']
+2025-04-09 11:35:57,841 - DEBUG - [kineviz.ui.utils.validators] - Parte 'Mundo' encontrada en índice 1 de descriptores definidos.
+2025-04-09 11:35:57,841 - DEBUG - [kineviz.ui.utils.validators] - Validation successful: Format and descriptors (if any) are valid.
+2025-04-09 11:35:57,841 - DEBUG - [kineviz.ui.utils.validators] - --- ENTERING validate_filename_for_study_criteria ---
+2025-04-09 11:35:57,842 - DEBUG - [kineviz.ui.utils.validators] - Input filename: 'Pte10 Hola Mundo 02.txt'
+2025-04-09 11:35:57,842 - DEBUG - [kineviz.ui.utils.validators] - Input descriptors: ['Hola', 'Mundo']
+2025-04-09 11:35:57,842 - DEBUG - [kineviz.ui.utils.validators] - Validador: Nombre de archivo 'Pte10 Hola Mundo 02.txt' no parece tener sufijo de frecuencia esperado. Usando 'Pte10 Hola Mundo 02' como base para validación de descriptores.
+2025-04-09 11:35:57,842 - DEBUG - [kineviz.ui.utils.validators] - Base name extraído: 'Pte10 Hola Mundo 02'
+2025-04-09 11:35:57,842 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'Hola', 'Mundo', '02']
+2025-04-09 11:35:57,842 - DEBUG - [kineviz.ui.utils.validators] - Attempt number (NN) found at index 3: '02'
+2025-04-09 11:35:57,842 - DEBUG - [kineviz.ui.utils.validators] - Intermediate parts identified: ['Hola', 'Mundo']
+2025-04-09 11:35:57,842 - DEBUG - [kineviz.ui.utils.validators] - Processing defined descriptors...
+2025-04-09 11:35:57,842 - DEBUG - [kineviz.ui.utils.validators] - Buscando índice para parte: 'Hola' (len=4) en descriptores definidos: ['Hola', 'Mundo']
+2025-04-09 11:35:57,842 - DEBUG - [kineviz.ui.utils.validators] - Parte 'Hola' encontrada en índice 0 de descriptores definidos.
+2025-04-09 11:35:57,842 - DEBUG - [kineviz.ui.utils.validators] - Buscando índice para parte: 'Mundo' (len=5) en descriptores definidos: ['Hola', 'Mundo']
+2025-04-09 11:35:57,842 - DEBUG - [kineviz.ui.utils.validators] - Parte 'Mundo' encontrada en índice 1 de descriptores definidos.
+2025-04-09 11:35:57,842 - DEBUG - [kineviz.ui.utils.validators] - Validation successful: Format and descriptors (if any) are valid.
+2025-04-09 11:35:57,842 - DEBUG - [kineviz.ui.utils.validators] - --- ENTERING validate_filename_for_study_criteria ---
+2025-04-09 11:35:57,842 - DEBUG - [kineviz.ui.utils.validators] - Input filename: 'Pte10 Mundo 01.txt'
+2025-04-09 11:35:57,842 - DEBUG - [kineviz.ui.utils.validators] - Input descriptors: ['Hola', 'Mundo']
+2025-04-09 11:35:57,842 - DEBUG - [kineviz.ui.utils.validators] - Validador: Nombre de archivo 'Pte10 Mundo 01.txt' no parece tener sufijo de frecuencia esperado. Usando 'Pte10 Mundo 01' como base para validación de descriptores.
+2025-04-09 11:35:57,842 - DEBUG - [kineviz.ui.utils.validators] - Base name extraído: 'Pte10 Mundo 01'
+2025-04-09 11:35:57,842 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'Mundo', '01']
+2025-04-09 11:35:57,842 - DEBUG - [kineviz.ui.utils.validators] - Attempt number (NN) found at index 2: '01'
+2025-04-09 11:35:57,842 - DEBUG - [kineviz.ui.utils.validators] - Intermediate parts identified: ['Mundo']
+2025-04-09 11:35:57,842 - DEBUG - [kineviz.ui.utils.validators] - Processing defined descriptors...
+2025-04-09 11:35:57,843 - DEBUG - [kineviz.ui.utils.validators] - Buscando índice para parte: 'Mundo' (len=5) en descriptores definidos: ['Hola', 'Mundo']
+2025-04-09 11:35:57,843 - DEBUG - [kineviz.ui.utils.validators] - Parte 'Mundo' encontrada en índice 1 de descriptores definidos.
+2025-04-09 11:35:57,843 - DEBUG - [kineviz.ui.utils.validators] - Validation successful: Format and descriptors (if any) are valid.
+2025-04-09 11:35:57,843 - DEBUG - [kineviz.ui.utils.validators] - --- ENTERING validate_filename_for_study_criteria ---
+2025-04-09 11:35:57,843 - DEBUG - [kineviz.ui.utils.validators] - Input filename: 'Pte10 Mundo Hola 01.txt'
+2025-04-09 11:35:57,843 - DEBUG - [kineviz.ui.utils.validators] - Input descriptors: ['Hola', 'Mundo']
+2025-04-09 11:35:57,843 - DEBUG - [kineviz.ui.utils.validators] - Validador: Nombre de archivo 'Pte10 Mundo Hola 01.txt' no parece tener sufijo de frecuencia esperado. Usando 'Pte10 Mundo Hola 01' como base para validación de descriptores.
+2025-04-09 11:35:57,843 - DEBUG - [kineviz.ui.utils.validators] - Base name extraído: 'Pte10 Mundo Hola 01'
+2025-04-09 11:35:57,843 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'Mundo', 'Hola', '01']
+2025-04-09 11:35:57,843 - DEBUG - [kineviz.ui.utils.validators] - Attempt number (NN) found at index 3: '01'
+2025-04-09 11:35:57,843 - DEBUG - [kineviz.ui.utils.validators] - Intermediate parts identified: ['Mundo', 'Hola']
+2025-04-09 11:35:57,843 - DEBUG - [kineviz.ui.utils.validators] - Processing defined descriptors...
+2025-04-09 11:35:57,843 - DEBUG - [kineviz.ui.utils.validators] - Buscando índice para parte: 'Mundo' (len=5) en descriptores definidos: ['Hola', 'Mundo']
+2025-04-09 11:35:57,843 - DEBUG - [kineviz.ui.utils.validators] - Parte 'Mundo' encontrada en índice 1 de descriptores definidos.
+2025-04-09 11:35:57,843 - DEBUG - [kineviz.ui.utils.validators] - Buscando índice para parte: 'Hola' (len=4) en descriptores definidos: ['Hola', 'Mundo']
+2025-04-09 11:35:57,843 - DEBUG - [kineviz.ui.utils.validators] - Parte 'Hola' encontrada en índice 0 de descriptores definidos.
+2025-04-09 11:35:57,843 - DEBUG - [kineviz.ui.utils.validators] - Validation Failed: Relative order error. 'Hola' (index 0) is not after the last found descriptor (index 1).
+2025-04-09 11:35:57,843 - DEBUG - [kineviz.ui.utils.validators] - --- ENTERING validate_filename_for_study_criteria ---
+2025-04-09 11:35:57,843 - DEBUG - [kineviz.ui.utils.validators] - Input filename: 'Pte11 CMJ 01-error-file.txt'
+2025-04-09 11:35:57,843 - DEBUG - [kineviz.ui.utils.validators] - Input descriptors: ['Hola', 'Mundo']
+2025-04-09 11:35:57,843 - DEBUG - [kineviz.ui.utils.validators] - Validador: Nombre de archivo 'Pte11 CMJ 01-error-file.txt' no parece tener sufijo de frecuencia esperado. Usando 'Pte11 CMJ 01-error-file' como base para validación de descriptores.
+2025-04-09 11:35:57,843 - DEBUG - [kineviz.ui.utils.validators] - Base name extraído: 'Pte11 CMJ 01-error-file'
+2025-04-09 11:35:57,843 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte11', 'CMJ', '01-error-file']
+2025-04-09 11:35:57,844 - DEBUG - [kineviz.ui.utils.validators] - Validation Failed: No numeric attempt number (NN) found in parts: ['Pte11', 'CMJ', '01-error-file']
+2025-04-09 11:36:04,352 - INFO - [kineviz.core.services.file_service] - Iniciando proceso de agregado de 4 archivos al estudio 4.
+2025-04-09 11:36:04,352 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte10 Hola 01.txt' al estudio 4
+2025-04-09 11:36:04,353 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte10 Hola 01.txt' con descriptores: ['Hola', 'Mundo']
+2025-04-09 11:36:04,353 - DEBUG - [kineviz.ui.utils.validators] - --- ENTERING validate_filename_for_study_criteria ---
+2025-04-09 11:36:04,353 - DEBUG - [kineviz.ui.utils.validators] - Input filename: 'Pte10 Hola 01.txt'
+2025-04-09 11:36:04,353 - DEBUG - [kineviz.ui.utils.validators] - Input descriptors: ['Hola', 'Mundo']
+2025-04-09 11:36:04,353 - DEBUG - [kineviz.ui.utils.validators] - Validador: Nombre de archivo 'Pte10 Hola 01.txt' no parece tener sufijo de frecuencia esperado. Usando 'Pte10 Hola 01' como base para validación de descriptores.
+2025-04-09 11:36:04,353 - DEBUG - [kineviz.ui.utils.validators] - Base name extraído: 'Pte10 Hola 01'
+2025-04-09 11:36:04,353 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'Hola', '01']
+2025-04-09 11:36:04,353 - DEBUG - [kineviz.ui.utils.validators] - Attempt number (NN) found at index 2: '01'
+2025-04-09 11:36:04,353 - DEBUG - [kineviz.ui.utils.validators] - Intermediate parts identified: ['Hola']
+2025-04-09 11:36:04,353 - DEBUG - [kineviz.ui.utils.validators] - Processing defined descriptors...
+2025-04-09 11:36:04,353 - DEBUG - [kineviz.ui.utils.validators] - Buscando índice para parte: 'Hola' (len=4) en descriptores definidos: ['Hola', 'Mundo']
+2025-04-09 11:36:04,353 - DEBUG - [kineviz.ui.utils.validators] - Parte 'Hola' encontrada en índice 0 de descriptores definidos.
+2025-04-09 11:36:04,353 - DEBUG - [kineviz.ui.utils.validators] - Validation successful: Format and descriptors (if any) are valid.
+2025-04-09 11:36:04,353 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte10 Hola 01.txt': True
+2025-04-09 11:36:04,406 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte10 Hola 01.txt: {'Cinematica', 'Cinetica'}
+2025-04-09 11:36:04,406 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte10 Hola 01.txt' procesado y agregado exitosamente al estudio 4.
+2025-04-09 11:36:04,406 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte10 Hola Mundo 01.txt' al estudio 4
+2025-04-09 11:36:04,406 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte10 Hola Mundo 01.txt' con descriptores: ['Hola', 'Mundo']
+2025-04-09 11:36:04,406 - DEBUG - [kineviz.ui.utils.validators] - --- ENTERING validate_filename_for_study_criteria ---
+2025-04-09 11:36:04,406 - DEBUG - [kineviz.ui.utils.validators] - Input filename: 'Pte10 Hola Mundo 01.txt'
+2025-04-09 11:36:04,406 - DEBUG - [kineviz.ui.utils.validators] - Input descriptors: ['Hola', 'Mundo']
+2025-04-09 11:36:04,407 - DEBUG - [kineviz.ui.utils.validators] - Validador: Nombre de archivo 'Pte10 Hola Mundo 01.txt' no parece tener sufijo de frecuencia esperado. Usando 'Pte10 Hola Mundo 01' como base para validación de descriptores.
+2025-04-09 11:36:04,407 - DEBUG - [kineviz.ui.utils.validators] - Base name extraído: 'Pte10 Hola Mundo 01'
+2025-04-09 11:36:04,407 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'Hola', 'Mundo', '01']
+2025-04-09 11:36:04,407 - DEBUG - [kineviz.ui.utils.validators] - Attempt number (NN) found at index 3: '01'
+2025-04-09 11:36:04,407 - DEBUG - [kineviz.ui.utils.validators] - Intermediate parts identified: ['Hola', 'Mundo']
+2025-04-09 11:36:04,407 - DEBUG - [kineviz.ui.utils.validators] - Processing defined descriptors...
+2025-04-09 11:36:04,407 - DEBUG - [kineviz.ui.utils.validators] - Buscando índice para parte: 'Hola' (len=4) en descriptores definidos: ['Hola', 'Mundo']
+2025-04-09 11:36:04,407 - DEBUG - [kineviz.ui.utils.validators] - Parte 'Hola' encontrada en índice 0 de descriptores definidos.
+2025-04-09 11:36:04,407 - DEBUG - [kineviz.ui.utils.validators] - Buscando índice para parte: 'Mundo' (len=5) en descriptores definidos: ['Hola', 'Mundo']
+2025-04-09 11:36:04,407 - DEBUG - [kineviz.ui.utils.validators] - Parte 'Mundo' encontrada en índice 1 de descriptores definidos.
+2025-04-09 11:36:04,407 - DEBUG - [kineviz.ui.utils.validators] - Validation successful: Format and descriptors (if any) are valid.
+2025-04-09 11:36:04,407 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte10 Hola Mundo 01.txt': True
+2025-04-09 11:36:04,433 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte10 Hola Mundo 01.txt: {'Cinematica', 'Cinetica'}
+2025-04-09 11:36:04,433 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte10 Hola Mundo 01.txt' procesado y agregado exitosamente al estudio 4.
+2025-04-09 11:36:04,433 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte10 Hola Mundo 02.txt' al estudio 4
+2025-04-09 11:36:04,433 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte10 Hola Mundo 02.txt' con descriptores: ['Hola', 'Mundo']
+2025-04-09 11:36:04,433 - DEBUG - [kineviz.ui.utils.validators] - --- ENTERING validate_filename_for_study_criteria ---
+2025-04-09 11:36:04,433 - DEBUG - [kineviz.ui.utils.validators] - Input filename: 'Pte10 Hola Mundo 02.txt'
+2025-04-09 11:36:04,433 - DEBUG - [kineviz.ui.utils.validators] - Input descriptors: ['Hola', 'Mundo']
+2025-04-09 11:36:04,433 - DEBUG - [kineviz.ui.utils.validators] - Validador: Nombre de archivo 'Pte10 Hola Mundo 02.txt' no parece tener sufijo de frecuencia esperado. Usando 'Pte10 Hola Mundo 02' como base para validación de descriptores.
+2025-04-09 11:36:04,433 - DEBUG - [kineviz.ui.utils.validators] - Base name extraído: 'Pte10 Hola Mundo 02'
+2025-04-09 11:36:04,433 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'Hola', 'Mundo', '02']
+2025-04-09 11:36:04,433 - DEBUG - [kineviz.ui.utils.validators] - Attempt number (NN) found at index 3: '02'
+2025-04-09 11:36:04,433 - DEBUG - [kineviz.ui.utils.validators] - Intermediate parts identified: ['Hola', 'Mundo']
+2025-04-09 11:36:04,433 - DEBUG - [kineviz.ui.utils.validators] - Processing defined descriptors...
+2025-04-09 11:36:04,433 - DEBUG - [kineviz.ui.utils.validators] - Buscando índice para parte: 'Hola' (len=4) en descriptores definidos: ['Hola', 'Mundo']
+2025-04-09 11:36:04,433 - DEBUG - [kineviz.ui.utils.validators] - Parte 'Hola' encontrada en índice 0 de descriptores definidos.
+2025-04-09 11:36:04,433 - DEBUG - [kineviz.ui.utils.validators] - Buscando índice para parte: 'Mundo' (len=5) en descriptores definidos: ['Hola', 'Mundo']
+2025-04-09 11:36:04,433 - DEBUG - [kineviz.ui.utils.validators] - Parte 'Mundo' encontrada en índice 1 de descriptores definidos.
+2025-04-09 11:36:04,433 - DEBUG - [kineviz.ui.utils.validators] - Validation successful: Format and descriptors (if any) are valid.
+2025-04-09 11:36:04,433 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte10 Hola Mundo 02.txt': True
+2025-04-09 11:36:04,457 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte10 Hola Mundo 02.txt: {'Cinematica', 'Cinetica'}
+2025-04-09 11:36:04,457 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte10 Hola Mundo 02.txt' procesado y agregado exitosamente al estudio 4.
+2025-04-09 11:36:04,457 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte10 Mundo 01.txt' al estudio 4
+2025-04-09 11:36:04,457 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte10 Mundo 01.txt' con descriptores: ['Hola', 'Mundo']
+2025-04-09 11:36:04,457 - DEBUG - [kineviz.ui.utils.validators] - --- ENTERING validate_filename_for_study_criteria ---
+2025-04-09 11:36:04,457 - DEBUG - [kineviz.ui.utils.validators] - Input filename: 'Pte10 Mundo 01.txt'
+2025-04-09 11:36:04,457 - DEBUG - [kineviz.ui.utils.validators] - Input descriptors: ['Hola', 'Mundo']
+2025-04-09 11:36:04,457 - DEBUG - [kineviz.ui.utils.validators] - Validador: Nombre de archivo 'Pte10 Mundo 01.txt' no parece tener sufijo de frecuencia esperado. Usando 'Pte10 Mundo 01' como base para validación de descriptores.
+2025-04-09 11:36:04,457 - DEBUG - [kineviz.ui.utils.validators] - Base name extraído: 'Pte10 Mundo 01'
+2025-04-09 11:36:04,457 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'Mundo', '01']
+2025-04-09 11:36:04,457 - DEBUG - [kineviz.ui.utils.validators] - Attempt number (NN) found at index 2: '01'
+2025-04-09 11:36:04,457 - DEBUG - [kineviz.ui.utils.validators] - Intermediate parts identified: ['Mundo']
+2025-04-09 11:36:04,457 - DEBUG - [kineviz.ui.utils.validators] - Processing defined descriptors...
+2025-04-09 11:36:04,457 - DEBUG - [kineviz.ui.utils.validators] - Buscando índice para parte: 'Mundo' (len=5) en descriptores definidos: ['Hola', 'Mundo']
+2025-04-09 11:36:04,458 - DEBUG - [kineviz.ui.utils.validators] - Parte 'Mundo' encontrada en índice 1 de descriptores definidos.
+2025-04-09 11:36:04,458 - DEBUG - [kineviz.ui.utils.validators] - Validation successful: Format and descriptors (if any) are valid.
+2025-04-09 11:36:04,458 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte10 Mundo 01.txt': True
+2025-04-09 11:36:04,479 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte10 Mundo 01.txt: {'Cinematica', 'Cinetica'}
+2025-04-09 11:36:04,479 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte10 Mundo 01.txt' procesado y agregado exitosamente al estudio 4.
+2025-04-09 11:36:04,479 - INFO - [kineviz.core.services.file_service] - Proceso de agregado finalizado para estudio 4. Éxitos: 4, Errores: 0.
+2025-04-09 11:36:16,008 - INFO - [kineviz.ui.views.discrete_analysis_view] - Solicitando generación de tablas discretas para estudio 4
+2025-04-09 11:36:16,009 - INFO - [kineviz.core.services.analysis_service] - Iniciando generación de tablas de resumen discreto para estudio 4
+2025-04-09 11:36:16,013 - DEBUG - [kineviz.ui.utils.validators] - --- ENTERING validate_filename_for_study_criteria ---
+2025-04-09 11:36:16,013 - DEBUG - [kineviz.ui.utils.validators] - Input filename: 'Pte10 Hola 01_Cinematica.txt'
+2025-04-09 11:36:16,013 - DEBUG - [kineviz.ui.utils.validators] - Input descriptors: ['Hola', 'Mundo']
+2025-04-09 11:36:16,013 - DEBUG - [kineviz.ui.utils.validators] - Base name extraído: 'Pte10 Hola 01'
+2025-04-09 11:36:16,013 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'Hola', '01']
+2025-04-09 11:36:16,013 - DEBUG - [kineviz.ui.utils.validators] - Attempt number (NN) found at index 2: '01'
+2025-04-09 11:36:16,013 - DEBUG - [kineviz.ui.utils.validators] - Intermediate parts identified: ['Hola']
+2025-04-09 11:36:16,014 - DEBUG - [kineviz.ui.utils.validators] - Processing defined descriptors...
+2025-04-09 11:36:16,014 - DEBUG - [kineviz.ui.utils.validators] - Buscando índice para parte: 'Hola' (len=4) en descriptores definidos: ['Hola', 'Mundo']
+2025-04-09 11:36:16,014 - DEBUG - [kineviz.ui.utils.validators] - Parte 'Hola' encontrada en índice 0 de descriptores definidos.
+2025-04-09 11:36:16,014 - DEBUG - [kineviz.ui.utils.validators] - Validation successful: Format and descriptors (if any) are valid.
+2025-04-09 11:36:16,014 - DEBUG - [kineviz.ui.utils.validators] - --- ENTERING validate_filename_for_study_criteria ---
+2025-04-09 11:36:16,014 - DEBUG - [kineviz.ui.utils.validators] - Input filename: 'Pte10 Hola Mundo 02_Cinematica.txt'
+2025-04-09 11:36:16,014 - DEBUG - [kineviz.ui.utils.validators] - Input descriptors: ['Hola', 'Mundo']
+2025-04-09 11:36:16,014 - DEBUG - [kineviz.ui.utils.validators] - Base name extraído: 'Pte10 Hola Mundo 02'
+2025-04-09 11:36:16,014 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'Hola', 'Mundo', '02']
+2025-04-09 11:36:16,014 - DEBUG - [kineviz.ui.utils.validators] - Attempt number (NN) found at index 3: '02'
+2025-04-09 11:36:16,014 - DEBUG - [kineviz.ui.utils.validators] - Intermediate parts identified: ['Hola', 'Mundo']
+2025-04-09 11:36:16,014 - DEBUG - [kineviz.ui.utils.validators] - Processing defined descriptors...
+2025-04-09 11:36:16,014 - DEBUG - [kineviz.ui.utils.validators] - Buscando índice para parte: 'Hola' (len=4) en descriptores definidos: ['Hola', 'Mundo']
+2025-04-09 11:36:16,014 - DEBUG - [kineviz.ui.utils.validators] - Parte 'Hola' encontrada en índice 0 de descriptores definidos.
+2025-04-09 11:36:16,014 - DEBUG - [kineviz.ui.utils.validators] - Buscando índice para parte: 'Mundo' (len=5) en descriptores definidos: ['Hola', 'Mundo']
+2025-04-09 11:36:16,014 - DEBUG - [kineviz.ui.utils.validators] - Parte 'Mundo' encontrada en índice 1 de descriptores definidos.
+2025-04-09 11:36:16,014 - DEBUG - [kineviz.ui.utils.validators] - Validation successful: Format and descriptors (if any) are valid.
+2025-04-09 11:36:16,014 - DEBUG - [kineviz.ui.utils.validators] - --- ENTERING validate_filename_for_study_criteria ---
+2025-04-09 11:36:16,015 - DEBUG - [kineviz.ui.utils.validators] - Input filename: 'Pte10 Hola Mundo 01_Cinematica.txt'
+2025-04-09 11:36:16,015 - DEBUG - [kineviz.ui.utils.validators] - Input descriptors: ['Hola', 'Mundo']
+2025-04-09 11:36:16,015 - DEBUG - [kineviz.ui.utils.validators] - Base name extraído: 'Pte10 Hola Mundo 01'
+2025-04-09 11:36:16,015 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'Hola', 'Mundo', '01']
+2025-04-09 11:36:16,015 - DEBUG - [kineviz.ui.utils.validators] - Attempt number (NN) found at index 3: '01'
+2025-04-09 11:36:16,015 - DEBUG - [kineviz.ui.utils.validators] - Intermediate parts identified: ['Hola', 'Mundo']
+2025-04-09 11:36:16,015 - DEBUG - [kineviz.ui.utils.validators] - Processing defined descriptors...
+2025-04-09 11:36:16,015 - DEBUG - [kineviz.ui.utils.validators] - Buscando índice para parte: 'Hola' (len=4) en descriptores definidos: ['Hola', 'Mundo']
+2025-04-09 11:36:16,015 - DEBUG - [kineviz.ui.utils.validators] - Parte 'Hola' encontrada en índice 0 de descriptores definidos.
+2025-04-09 11:36:16,015 - DEBUG - [kineviz.ui.utils.validators] - Buscando índice para parte: 'Mundo' (len=5) en descriptores definidos: ['Hola', 'Mundo']
+2025-04-09 11:36:16,015 - DEBUG - [kineviz.ui.utils.validators] - Parte 'Mundo' encontrada en índice 1 de descriptores definidos.
+2025-04-09 11:36:16,015 - DEBUG - [kineviz.ui.utils.validators] - Validation successful: Format and descriptors (if any) are valid.
+2025-04-09 11:36:16,015 - DEBUG - [kineviz.ui.utils.validators] - --- ENTERING validate_filename_for_study_criteria ---
+2025-04-09 11:36:16,015 - DEBUG - [kineviz.ui.utils.validators] - Input filename: 'Pte10 Mundo 01_Cinematica.txt'
+2025-04-09 11:36:16,015 - DEBUG - [kineviz.ui.utils.validators] - Input descriptors: ['Hola', 'Mundo']
+2025-04-09 11:36:16,015 - DEBUG - [kineviz.ui.utils.validators] - Base name extraído: 'Pte10 Mundo 01'
+2025-04-09 11:36:16,015 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'Mundo', '01']
+2025-04-09 11:36:16,015 - DEBUG - [kineviz.ui.utils.validators] - Attempt number (NN) found at index 2: '01'
+2025-04-09 11:36:16,015 - DEBUG - [kineviz.ui.utils.validators] - Intermediate parts identified: ['Mundo']
+2025-04-09 11:36:16,016 - DEBUG - [kineviz.ui.utils.validators] - Processing defined descriptors...
+2025-04-09 11:36:16,016 - DEBUG - [kineviz.ui.utils.validators] - Buscando índice para parte: 'Mundo' (len=5) en descriptores definidos: ['Hola', 'Mundo']
+2025-04-09 11:36:16,016 - DEBUG - [kineviz.ui.utils.validators] - Parte 'Mundo' encontrada en índice 1 de descriptores definidos.
+2025-04-09 11:36:16,016 - DEBUG - [kineviz.ui.utils.validators] - Validation successful: Format and descriptors (if any) are valid.
+2025-04-09 11:36:16,057 - INFO - [kineviz.core.services.analysis_service] - Tabla de resumen generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 3/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Hola.csv
+2025-04-09 11:36:16,077 - INFO - [kineviz.core.services.analysis_service] - Tabla de resumen generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 3/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Hola.csv
+2025-04-09 11:36:16,093 - INFO - [kineviz.core.services.analysis_service] - Tabla de resumen generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 3/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Hola.csv
+2025-04-09 11:36:16,108 - INFO - [kineviz.core.services.analysis_service] - Tabla de resumen generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 3/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Hola_Mundo.csv
+2025-04-09 11:36:16,121 - INFO - [kineviz.core.services.analysis_service] - Tabla de resumen generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 3/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Hola_Mundo.csv
+2025-04-09 11:36:16,135 - INFO - [kineviz.core.services.analysis_service] - Tabla de resumen generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 3/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Hola_Mundo.csv
+2025-04-09 11:36:16,149 - INFO - [kineviz.core.services.analysis_service] - Tabla de resumen generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 3/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Mundo.csv
+2025-04-09 11:36:16,162 - INFO - [kineviz.core.services.analysis_service] - Tabla de resumen generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 3/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Mundo.csv
+2025-04-09 11:36:16,175 - INFO - [kineviz.core.services.analysis_service] - Tabla de resumen generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 3/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Mundo.csv
+2025-04-09 11:36:16,175 - INFO - [kineviz.core.services.analysis_service] - Generación de tablas discretas finalizada para estudio 4. Éxitos: 9, Errores: 0
