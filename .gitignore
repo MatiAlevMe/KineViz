@@ -6,6 +6,10 @@ __pycache__/
 estudios/
 recursos/
 .*
+*.docx
+*.pdf
+kineviz.db
 
-.env
-.aider*
+## User Setup & Log
+config.ini
+logs/
