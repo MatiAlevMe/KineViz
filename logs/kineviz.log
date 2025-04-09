@@ -7678,3 +7678,17 @@ OSError: telling position disabled by next() call
 2025-04-09 15:16:01,122 - INFO - [kineviz.core.services.analysis_service] - Tabla de resumen generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 4/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Mundo.csv
 2025-04-09 15:16:01,135 - INFO - [kineviz.core.services.analysis_service] - Tabla de resumen generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 4/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Mundo.csv
 2025-04-09 15:16:01,136 - INFO - [kineviz.core.services.analysis_service] - Generación de tablas discretas finalizada para estudio 5. Éxitos: 9, Errores: 0
+2025-04-09 15:24:06,630 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 15:24:06,630 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 15:24:14,076 - INFO - [kineviz.ui.views.discrete_analysis_view] - Solicitando generación de tablas discretas para estudio 5
+2025-04-09 15:24:14,076 - INFO - [kineviz.core.services.analysis_service] - Iniciando generación de tablas de resumen discreto para estudio 5
+2025-04-09 15:24:14,117 - INFO - [kineviz.core.services.analysis_service] - Tabla de resumen generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 4/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Hola.csv
+2025-04-09 15:24:14,137 - INFO - [kineviz.core.services.analysis_service] - Tabla de resumen generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 4/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Hola.csv
+2025-04-09 15:24:14,152 - INFO - [kineviz.core.services.analysis_service] - Tabla de resumen generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 4/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Hola.csv
+2025-04-09 15:24:14,168 - INFO - [kineviz.core.services.analysis_service] - Tabla de resumen generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 4/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Hola_Mundo.csv
+2025-04-09 15:24:14,183 - INFO - [kineviz.core.services.analysis_service] - Tabla de resumen generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 4/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Hola_Mundo.csv
+2025-04-09 15:24:14,197 - INFO - [kineviz.core.services.analysis_service] - Tabla de resumen generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 4/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Hola_Mundo.csv
+2025-04-09 15:24:14,213 - INFO - [kineviz.core.services.analysis_service] - Tabla de resumen generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 4/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Mundo.csv
+2025-04-09 15:24:14,227 - INFO - [kineviz.core.services.analysis_service] - Tabla de resumen generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 4/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Mundo.csv
+2025-04-09 15:24:14,241 - INFO - [kineviz.core.services.analysis_service] - Tabla de resumen generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 4/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Mundo.csv
+2025-04-09 15:24:14,241 - INFO - [kineviz.core.services.analysis_service] - Generación de tablas discretas finalizada para estudio 5. Éxitos: 9, Errores: 0
