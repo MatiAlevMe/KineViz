@@ -1,79 +1,189 @@
-# KineViz Roadmap
+# KineViz Development Roadmap
 
-## Versión Actual: Beta
+Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicialmente se enfocó en la refactorización de la lógica original de `interfaz.py` y `lectura.py` a una estructura modular. A partir de la Fase 5, el enfoque cambia a mejoras incrementales y la adición de nuevas funcionalidades.
 
-### Tareas Completadas
+Este ROADMAP debe ser actualizado en cada iteración y se debe dar la opción de ejecutar el programa con `python -m kineviz.app` para ir capturando errores.
 
-- [x] **Diseño e Implementación Base:**
-    - [x] Creación de la estructura básica del proyecto.
-    - [x] Diseño inicial de la interfaz de usuario (landing page, pantalla principal).
-    - [x] Implementación de la lectura de archivos CSV y TXT.
-    - [x] Creación de la base de datos SQLite.
-    - [x] Implementación de la lógica para guardar estudios localmente.
-    - [x] Desarrollo de funcionalidades de paginación y búsqueda.
-    - [x] Implementación de validaciones básicas de datos.
-    - [x] Generación automática de carpetas para organizar los datos.
-    - [x] Cálculo automático de máximos, mínimos y rangos.
-    - [x] Creación de una columna de "tiempo" calculada.
-    - [x] Generación de archivos de salida en formato TXT y PDF.
-    - [x] Implementación de la funcionalidad de análisis individual (Beta).
-    - [x] Implementación de la funcionalidad de análisis grupal (Beta).
-    - [x] Creación del manual de usuario (WIP).
-    - [x] Creación de la funcionalidad de "Restablecer Valores por Defecto".
+## Estrctura de carpetas de refactorización
 
-- [x] **Documentación:**
-    - [x] README inicial.
-    - [x] Roadmap inicial.
-    - [x] Documentación en el informe del seminario.
+├── __init__.py
+├── app.py           # Punto de entrada principal
+│
+├── core/                 # Lógica de negocio y dominio
+│   ├── __init__.py
+│   ├── exceptions.py  
+│   ├── data_processing/  # Procesamiento de datos
+│   │   ├── processors.py  # (formatos, cálculos)
+│   │   ├── file_handlers.py  # Manejo específico de archivos
+│   │   └── directory_manager.py  # Gestión de estructura de directorios
+│   │
+│   ├── models/           # Modelos de datos y DTOs
+│   │   ├── study.py
+│   │   ├── measurement.py
+│   │   └── report.py
+│   │
+│   └── services/         # Lógica de negocio
+│       ├── study_service.py
+│       ├── file_service.py
+│       └── analysis_service.py
+│
+├── ui/                   # Capa de presentación
+│   ├── __init__.py
+│   ├── main_window.py    # Ventana principal
+│   │
+│   ├── views/            # Vistas complejas
+│   │   ├── landing_page.py
+│   │   ├── study_view.py
+│   │   └── analysis_view.py
+│   │
+│   ├── dialogs/          # Diálogos modales
+│   │   ├── analysis_dialog.py
+│   │   ├── study_dialog.py
+│   │   ├── file_dialog.py
+│   │   └── report_dialog.py
+│   │
+│   ├── widgets/          # Componentes reutilizables
+│   │   ├── pagination.py
+│   │   ├── paginated_table.py
+│   │   ├── file_tree.py
+│   │   ├── file_browser.py
+│   │   └── charting.py
+│   │
+│   └── utils/            # Helpers de UI
+│       ├── validators.py
+│       ├── file_ops.py
+│       └── style.py      # Temas y estilos
+│
+├── database/             # Persistencia de datos
+│   ├── __init__.py
+│   ├── operations.py     # CRUD básico
+│   ├── repositories.py   # Patrón repositorio
+│   └── models.py         # Modelos de DB
+│
+├── config/               # Configuración
+│   ├── __init__.py
+│   ├── settings.py
+│   └── environment.py    # Gestión de entornos
+│
+├── utils/                # Utilidades generales
+│   ├── __init__.py
+│   ├── logger.py
+│   └── security.py       # Encriptación, etc.
+│
+├── tests/                # Pruebas automatizadas
+│   ├── unit/
+│   └── integration/
+│
+├── docs/                 # Documentación
+└── examples/             # Ejemplos de uso
 
-### Próximas Tareas (Siguiente Iteración)
+## Fase 1: Integración Inicial y Estructura Base (Completada - d2caeef)
 
-- [ ] **Mejoras en la Interfaz de Usuario:**
-    - [ ] Refinar la interfaz de usuario basándose en el feedback de los usuarios.
-    - [ ] Implementar un asistente de configuración inicial.
-    - [ ] Mejorar la visualización de datos dentro de la aplicación (tablas interactivas).
-    - [ ] Implementar la funcionalidad de edición de estudios (agregar/eliminar archivos, modificar metadatos).
-        - [ ]  Implementar eliminación lógica (papelera) en lugar de eliminación física.
-    - [ ] Agregar funcionalidad de comentarios/notas a los estudios.
-    - [ ] Mejorar la interfaz para ver los datos de manera ordenada (columnas alineadas).
-    - [ ] Crear interfaz de resumen de datos relevantes.
+*   [x] Crear estructura básica del proyecto (`kineviz` package).
+*   [x] Mover lógica de `lectura.py` a `kineviz.core.data_processing` y `kineviz.core.services`.
+*   [x] Crear punto de entrada `kineviz/app.py`.
+*   [x] Refactorizar `kineviz/ui/main_window.py` para manejar la ventana principal, configuración inicial y navegación básica.
+*   [x] Integrar `LandingPage` (`kineviz/ui/views/landing_page.py`).
+*   [x] Integrar diálogo de creación/edición de estudios (`kineviz/ui/dialogs/study_dialog.py`) con validación básica.
+*   [x] Adaptar `StudyService` y `StudyRepository` para soportar operaciones básicas y conteo.
+*   [x] Corregir errores iniciales de importación y validación.
 
-- [ ] **Análisis Avanzado:**
-    - [ ] Implementar cálculos estadísticos más avanzados (velocidad en cinética/cinemática, etc.).
-    - [ ] Desarrollar modelos de predicción (futuro).
-    - [ ] Permitir la personalización de los cálculos y gráficos.
-    - [ ] Mejorar la generación de reportes PDF.
-        - [ ]  Crear un listado de reportes generados.
-        - [ ]  Mostrar un resumen antes de exportar el PDF.
+## Fase 2: Vista Principal y Gestión de Estudios
 
-- [ ] **Gestión de Usuarios (Futuro):**
-    - [ ] Implementar un sistema de usuarios y permisos (versión multiusuario).
+*   [x] Implementar `MainView` (`kineviz/ui/views/main_view.py`) para mostrar la lista de estudios.
+    *   [x] Tabla de estudios (`ttk.Treeview`).
+    *   [x] Funcionalidad de búsqueda.
+    *   [x] Paginación de estudios.
+    *   [x] Botones de acción (Ver, Editar, Eliminar) en la tabla.
+    *   [x] Botones de cabecera (Manual, Config, Ayuda, Abrir Carpeta).
+*   [x] Implementar la funcionalidad completa de **Editar Estudio** en `StudyDialog` y `StudyService`/`StudyRepository`.
+    *   [x] Cargar datos existentes en el diálogo.
+    *   [x] Validar datos modificados.
+    *   [x] Actualizar datos en la base de datos (`StudyService.update_study`).
+    *   [x] Renombrar carpeta del estudio si el nombre cambia (`StudyRepository.rename_study_folder`).
+    *   [x] Manejar la validación/eliminación de archivos existentes si los criterios (tipos/periodos) cambian.
+*   [x] Implementar la funcionalidad de **Eliminar Estudio** en `MainView` y `StudyService`/`StudyRepository`.
+*   [x] Implementar la funcionalidad de **Ver Estudio** (`StudyView`).
+    *   [x] Mostrar detalles básicos del estudio.
+    *   [x] Integrar `FileBrowser` para mostrar archivos del estudio.
+    *   [x] Implementar carga real de archivos en `FileBrowser` desde `FileService`.
+    *   [x] Funcionalidad "Ver Archivo".
+    *   [x] Funcionalidad "Eliminar Archivo".
 
-- [ ] **Pruebas:**
-    - [ ] Realizar pruebas exhaustivas de usabilidad y rendimiento.
-    - [ ] Realizar pruebas con usuarios reales (profesionales de kinesiología).
+## Fase 3: Gestión de Archivos y Análisis
 
-- [ ] **Documentación:**
-    - [ ] Completar el manual de usuario.
-    - [ ] Crear documentación técnica para desarrolladores.
-    - [ ] Actualizar el README y el Roadmap.
+*   [x] Implementar `FileBrowser` (`kineviz/ui/widgets/file_browser.py`) completamente.
+    *   [x] Cargar y mostrar archivos del estudio desde `FileService`. (Hecho en Fase 2)
+    *   [x] Paginación de archivos.
+    *   [x] Búsqueda/filtrado de archivos.
+    *   [x] Funcionalidad "Ver Archivo". (Hecho en Fase 2)
+    *   [x] Funcionalidad "Eliminar Archivo". (Hecho en Fase 2)
+*   [x] Implementar `FileService` para manejar la lógica de archivos (obtener, eliminar, filtrar, paginar, agregar). (Hecho en Fase 2 y 3)
+*   [x] Implementar diálogo para **Agregar Archivos** a un estudio, incluyendo validación de formato de nombre.
+*   [X] Implementar `AnalysisDialog` (`kineviz/ui/dialogs/analysis_dialog.py`).
+    *   [x] Selección de parámetros (pacientes, frecuencias, tipos, periodos, cálculos).
+    *   [X] Generación de reportes PDF.
+    *   [X] Visualización/eliminación de reportes generados.
+*   [x] Implementar `AnalysisService` para la lógica de análisis y generación de reportes. (Implementación inicial de PDF y cálculos)
+*   [x] Implementar `Charting` (`kineviz/ui/widgets/charting.py`) para visualizaciones. (Boxplot, Barchart básicos)
+*   [x] Implementar visualización/eliminación de reportes generados en `AnalysisDialog`.
 
-- [ ] **Refactorización y optimización del código**
+## Fase 4: Refinamientos y Finalización
 
-- [ ] **Mejoras de Validación:**
-    - [ ]  Implementar un selector para tipos de prueba (pre, post, etc.) con opción "Otro" y campo de texto asociado.
-    - [ ]  Asegurar que no se puedan agregar archivos con tipos de prueba incorrectos.
+*   [x] Implementar `ConfigDialog` (`kineviz/ui/dialogs/config_dialog.py`) y `AppSettings` (`kineviz/config/settings.py`).
+*   [x] Mejorar manejo de errores y logging (`kineviz/utils/logger.py`). (Integrado en la mayoría de módulos)
+*   [ ] Añadir pruebas unitarias e de integración (`tests/`). (Inicio: validadores, StudyRepository, FileService, AnalysisService)
+*   [ ] Completar documentación (`docs/`).
+*   [x] Limpiar código remanente de `interfaz.py` y `lectura.py`.
+*   [ ] Revisión final de estilos y UX.
 
-### Tareas a Largo Plazo (Futuras Versiones)
+## Fase 5: Mejoras Incrementales - Descriptores y Detección de Frecuencia
 
-- [ ] Integración con la nube.
-- [ ] Versión multiusuario completa.
-- [ ] Implementación de modelos predictivos.
-- [ ] Soporte para más formatos de archivo.
-- [ ] Internacionalización (soporte para múltiples idiomas).
-- [ ] Funcionalidad de recuperación de archivos eliminados (si es necesario, con un log de eliminaciones).
-- [ ] Auto-asistente de bienvenida.
+*   [ ] **Modificación de Identificador de Frecuencias**: Cambiar la detección de tipo de frecuencia (Cinemática, Cinética, Electromiográfica) basada en metadatos del archivo en lugar del número de frames.
+*   [ ] **Implementación de Descriptores**: Reemplazar el sistema de "Tipos de Prueba" y "Periodos de Prueba" por un sistema flexible de "Descriptores" definidos por el usuario al crear/editar estudios.
+*   [ ] **Modificación de Etiquetas Post-Carga**: Permitir al usuario asignar alias o nombres descriptivos a los descriptores detectados en los archivos, para visualización en análisis y reportes.
+*   [ ] **Integración Completa**: Asegurar que los cambios en la detección de frecuencia y el sistema de descriptores se integren correctamente en la carga de archivos, validación, análisis, reportes y UI.
 
-### Planificación Detallada
+---
 
-Para una planificación detallada de las tareas, incluyendo el cronograma semanal para ClickUp, consulta el archivo [Planificar.md](Planificar.md).
+## Diccionario de Tareas (Fase 5+)
+
+**Fase 5: Mejoras Incrementales - Descriptores y Detección de Frecuencia**
+
+*   **1. Implementar detección automática de tipo de frecuencias basada en metadatos del archivo.**
+    *   **Detalle**: Modificar `kineviz.core.data_processing.directory_manager.determinar_tipo_frecuencia` y/o la lógica en `kineviz.core.services.file_service._process_and_copy_file` para identificar el tipo de sección (Cinemática, Cinética, Electromiográfica) buscando patrones específicos en las líneas de cabecera de cada sección, en lugar de basarse únicamente en `num_frames`. Aún se necesita `num_frames` para calcular el tiempo.
+    *   **1.1 Implementación de identificador de archivo para Cinemática**: Buscar la línea exacta "Model Outputs" para identificar el inicio de una sección de Cinemática.
+    *   **1.2 Implementación de identificador de archivo para Cinética**: Buscar la línea que contiene "Force Plate" (ej: "Imported Bertec Force Plate #1 - Force") en la cabecera de la sección para identificarla como Cinética. Considerar posibles variaciones.
+    *   **1.3 Implementación de identificador de archivo para Electromiográfica**: Pendiente de confirmación del formato/identificador específico (posiblemente "Delsys" o similar).
+
+*   **2. Implementación para crear/editar estudio con descriptores extra.**
+    *   **Detalle**: Modificar `kineviz.ui.dialogs.study_dialog.py` para reemplazar los campos de entrada de "Tipos de Prueba" y "Periodos de Prueba" por una sección dinámica que permita añadir/eliminar campos de texto para "Descriptores".
+    *   **2.1 Soportar múltiples etiquetas de descriptores**: La UI debe permitir añadir campos (`+`) y eliminar campos (`icono basura`) para N descriptores. El mínimo es 0. Modificar `kineviz.database.repositories.StudyRepository` y la tabla `estudios` para almacenar estos descriptores (ej: en una columna TEXT separada por un delimitador especial o en una tabla relacionada).
+    *   **2.2 Validación de descriptores**: En `kineviz.ui.utils.validators.validate_study_data`, añadir lógica para asegurar que no haya descriptores duplicados *exactos* (sensible a mayúsculas/minúsculas) al guardar el estudio. Permitir descriptores como "CMJ", "CmJ", "cmj".
+
+*   **3. Implementación para modificar nombres de etiquetas de descriptores post-carga.**
+    *   **Detalle**: Añadir una nueva funcionalidad (posiblemente en `kineviz.ui.views.study_view.py` o un nuevo diálogo) que permita al usuario ver los descriptores *detectados* en los nombres de archivo de un estudio y asignarles un "alias" o "nombre descriptivo" (ej: "CMJ" -> "Salto Contra Movimiento"). Este alias se usaría para mostrar en gráficos y reportes. El almacenamiento de estos alias podría ser en `config.ini` o en la base de datos. *Nota: Inicialmente, esta modificación es solo visual.*
+
+*   **4. Integrar con el resto del código.**
+    *   **Detalle**: Revisar y actualizar todos los módulos que dependían de `test_types` y `test_periods`:
+        *   `kineviz.core.services.file_service.add_files_to_study`: La validación `validate_filename_for_study_criteria` debe adaptarse o reemplazarse para validar contra los nuevos descriptores.
+        *   `kineviz.core.services.file_service.get_unique_study_parameters`: Debe extraer y devolver los descriptores encontrados en los nombres de archivo válidos.
+        *   `kineviz.core.services.analysis_service`: `get_analysis_parameters`, `_get_data_for_parameters`, `generate_report` deben usar "descriptores" en lugar de "tipos/periodos".
+        *   `kineviz.ui.dialogs.analysis_dialog.py`: Debe mostrar y permitir la selección de "Descriptores" en lugar de "Tipos/Periodos".
+        *   `kineviz.ui.utils.validators.validate_filename_for_study_criteria`: Debe ser actualizada o reemplazada para validar la presencia de los descriptores definidos en el estudio dentro del nombre del archivo.
+        *   Actualizar pruebas unitarias afectadas.
+
+---
+
+## Known Issues / Bugs
+
+*   **Edición de Estudio - Cambio de Criterios**: Al editar un estudio y cambiar los `Tipos de Prueba` o `Periodos de Prueba`, no se validan ni eliminan automáticamente los archivos existentes que ya no cumplen con los nuevos criterios. (Ver Fase 2 - Editar Estudio).
+*   **Análisis y Reportes**: La lógica de análisis, generación de PDF y gestión básica de reportes (listar, ver, eliminar) está implementada.
+*   **Configuración**: Implementada la gestión básica de configuración (`AppSettings`, `ConfigDialog`) para paginación. El botón de reseteo global está conectado.
+*   **Limpieza de Directorios**: La limpieza de directorios vacíos (paciente, frecuencia) después de eliminar el último archivo dentro de ellos funciona, pero podría mejorarse para manejar casos borde o errores de permisos de forma más robusta.
+*   **Validación de Pacientes para Análisis**: La validación ahora se basa en los parámetros únicos extraídos de archivos procesados válidos. Si un estudio tiene archivos pero no cumplen los criterios o solo tiene archivos OG, no permitirá el análisis.
+*   **Lectura de Datos Procesados**: La función `_read_processed_file_data` en `AnalysisService` asume un formato específico (';' como separador, 4 líneas de header, 3 de stats). Podría ser más robusta o configurable.
+*   **Logging**: El logging está implementado en la mayoría de los módulos. Se podrían añadir más mensajes de `DEBUG` o refinar los niveles existentes.
+
+---
+*Este archivo se actualizará a medida que avance el desarrollo.*
