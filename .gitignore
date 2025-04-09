@@ -13,3 +13,6 @@ kineviz.db
 ## User Setup & Log
 config.ini
 logs/
+
+## KineViz BD 
+kineviz.db
