@@ -1,5 +1,6 @@
 import tkinter as tk # Importar tk para fill/expand
 from tkinter import ttk, messagebox # Importar messagebox
+import logging # Importar logging
 # Ya no se necesita PaginatedTable aquí
 from kineviz.ui.widgets.file_browser import FileBrowser
 # Importar FileService para type hinting
@@ -7,6 +8,8 @@ from kineviz.core.services.file_service import FileService
 # Importar diálogos necesarios
 from kineviz.ui.dialogs.file_dialog import FileDialog
 from kineviz.ui.dialogs.descriptor_alias_dialog import DescriptorAliasDialog
+
+logger = logging.getLogger(__name__) # Logger para este módulo
 
 class StudyView:
     # Añadir file_service y aceptar config
@@ -108,7 +111,7 @@ class StudyView:
     def manage_descriptor_aliases(self):
         """Abre el diálogo para gestionar los alias de los descriptores."""
         # Necesitamos pasar AppSettings, FileService y study_id
-        DescriptorAliasDialog(
+        dialog = DescriptorAliasDialog( # Asignar a la variable 'dialog'
             self.frame, # Padre
             self.main_window.settings, # AppSettings desde MainWindow
             self.file_service,
