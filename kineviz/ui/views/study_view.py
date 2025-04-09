@@ -57,8 +57,8 @@ class StudyView:
         study_details = self.main_window.study_service.get_study_details(self.study_id)
         details_frame = ttk.LabelFrame(self.frame, text="Detalles del Estudio")
         details_frame.pack(fill='x', padx=10, pady=10)
-        
-        ttk.Label(details_frame, text=f"Nombre: {study_details['name']}").pack(anchor='w')
+
+        # Corregido: Mostrar solo una vez el nombre
         ttk.Label(details_frame, text=f"Nombre: {study_details.get('name', 'N/A')}").pack(anchor='w', padx=5, pady=2)
         ttk.Label(details_frame, text=f"Número de Sujetos: {study_details.get('num_subjects', 'N/A')}").pack(anchor='w', padx=5, pady=2)
         # Mostrar Descriptores definidos en el estudio
@@ -79,17 +79,21 @@ class StudyView:
 
     def update_alias_display(self):
         """Obtiene y muestra los alias asignados a los descriptores detectados."""
+        logger.debug(f"Actualizando display de alias para estudio {self.study_id}") # Log inicio
         try:
             # Obtener descriptores detectados
             params = self.file_service.get_unique_study_parameters(self.study_id)
             detected_descriptors = sorted(list(params.get('descriptors', set())))
+            logger.debug(f"Descriptores detectados: {detected_descriptors}") # Log descriptores
 
             if not detected_descriptors:
                 self.alias_label.config(text="Alias Asignados: No se detectaron descriptores en archivos válidos.")
+                logger.debug("Display de alias actualizado: Sin descriptores detectados.") # Log sin descriptores
                 return
 
             # Obtener alias de la configuración
             all_aliases = self.main_window.settings.get_all_aliases()
+            logger.debug(f"Aliases obtenidos de settings: {all_aliases}") # Log aliases cargados
 
             # Construir string de alias
             alias_parts = []
@@ -102,6 +106,7 @@ class StudyView:
 
             alias_display_text = "Alias Asignados: " + ", ".join(alias_parts)
             self.alias_label.config(text=alias_display_text)
+            logger.debug(f"Display de alias actualizado a: '{alias_display_text}'") # Log texto final
 
         except Exception as e:
             logger.error(f"Error actualizando display de alias para estudio {self.study_id}: {e}", exc_info=True)
