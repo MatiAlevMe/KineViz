@@ -40,8 +40,8 @@ class MainWindow:
         # --- Instanciación de Servicios ---
         self.study_service = StudyService()
         self.file_service = FileService(self.study_service) # Servicio para operaciones de archivos dentro de estudios
-        # Pasar study_service y file_service a AnalysisService
-        self.analysis_service = AnalysisService(self.study_service, self.file_service) # Servicio para lógica de análisis y reportes
+        # Pasar study_service, file_service y settings a AnalysisService
+        self.analysis_service = AnalysisService(self.study_service, self.file_service, self.settings) # Servicio para lógica de análisis y reportes
 
         self.current_view = None
         self.style = ttk.Style()
@@ -128,9 +128,8 @@ class MainWindow:
     def show_analysis_dialog(self, study_id: int):
         """Muestra el diálogo para realizar análisis en un estudio."""
         # Instanciar y mostrar el AnalysisDialog real
-        # Pasarle el servicio de análisis y el ID del estudio
-        AnalysisDialog(self.root, self.analysis_service, study_id)
-        # Ya no se necesita el messagebox de placeholder
+        # Pasarle el servicio de análisis, el ID del estudio y los settings
+        AnalysisDialog(self.root, self.analysis_service, study_id, self.settings)
 
 
     def show_config_dialog(self):

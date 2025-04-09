@@ -167,10 +167,10 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
     *   **3.2 Crear `DescriptorAliasDialog`**: (Hecho) Diálogo para ver descriptores detectados y asignar/guardar alias usando `AppSettings`.
     *   **3.3 Añadir botón en `StudyView` para abrir el diálogo**: (Hecho)
 
-*   **4. Integrar con el resto del código. (Pendiente - Alias)**
+*   **4. Integrar con el resto del código. (Completado - Alias)**
     *   **Detalle**: Revisar y actualizar todos los módulos que dependían de `test_types` y `test_periods` (Hecho). **Adicionalmente**, integrar el uso de los alias de descriptores en:
-        *   `kineviz.core.services.analysis_service`: (Pendiente) Usar alias en `generate_report` para títulos, leyendas, etc.
-        *   `kineviz.ui.dialogs.analysis_dialog.py`: (Pendiente) Mostrar alias en el selector de descriptores. Asegurarse de pasar el descriptor original al servicio.
+        *   `kineviz.core.services.analysis_service`: (Hecho) Usar alias en `generate_report` para títulos, leyendas, etc.
+        *   `kineviz.ui.dialogs.analysis_dialog.py`: (Hecho) Mostrar alias en el selector de descriptores. Asegurarse de pasar el descriptor original al servicio.
         *   `kineviz.ui.utils.validators.validate_filename_for_study_criteria`: (Hecho) Actualizada para validar contra `descriptors`.
         *   `kineviz.core.services.file_service.add_files_to_study`: (Hecho) Actualizado para usar el validador con `descriptors`.
         *   `kineviz.core.services.file_service.get_unique_study_parameters`: (Hecho) Actualizado para extraer `descriptors` de nombres de archivo válidos.
