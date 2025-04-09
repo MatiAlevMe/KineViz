@@ -31,13 +31,40 @@ class StudyRepository:
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS estudios (
                     id_estudio INTEGER PRIMARY KEY AUTOINCREMENT,
-                    nombre_estudio TEXT NOT NULL,
+                    nombre_estudio TEXT NOT NULL UNIQUE, -- Añadir UNIQUE constraint
                     num_sujetos INTEGER NOT NULL,
-                    tipos_prueba TEXT,
-                    periodos_prueba TEXT,
+                    descriptores TEXT, -- Nueva columna para descriptores (separados por coma)
                     cantidad_intentos_prueba INTEGER NOT NULL
                 )
             ''')
+            # Manejar posible error si la tabla ya existe con la estructura vieja
+            # Esto es simplificado, una migración real sería más robusta
+            try:
+                # Intentar añadir la nueva columna si no existe
+                cursor.execute("ALTER TABLE estudios ADD COLUMN descriptores TEXT")
+                logger.info("Columna 'descriptores' añadida a la tabla 'estudios'.")
+            except sqlite3.OperationalError as e:
+                if "duplicate column name" in str(e):
+                    pass # La columna ya existe, ignorar
+                else:
+                    raise # Otro error
+            # Intentar eliminar las columnas viejas si existen (ignorar errores si no existen)
+            try:
+                cursor.execute("ALTER TABLE estudios DROP COLUMN tipos_prueba")
+                logger.info("Columna 'tipos_prueba' eliminada de la tabla 'estudios'.")
+            except sqlite3.OperationalError as e:
+                 if "no such column" in str(e):
+                     pass
+                 else:
+                     logger.warning(f"No se pudo eliminar la columna 'tipos_prueba': {e}") # Advertir pero continuar
+            try:
+                cursor.execute("ALTER TABLE estudios DROP COLUMN periodos_prueba")
+                logger.info("Columna 'periodos_prueba' eliminada de la tabla 'estudios'.")
+            except sqlite3.OperationalError as e:
+                 if "no such column" in str(e):
+                     pass
+                 else:
+                     logger.warning(f"No se pudo eliminar la columna 'periodos_prueba': {e}") # Advertir pero continuar
             conn.commit()
     
     def create_study(self, study_data):
@@ -112,11 +139,10 @@ class StudyRepository:
                 'id': row[0],
                 'name': row[1],
                 'num_subjects': row[2],
-                'test_types': row[3],
-                'test_periods': row[4],
-                'attempts_count': row[5]
+                'descriptores': row[3], # Usar columna 'descriptores'
+                'attempts_count': row[4] # El índice cambia
             }
-    
+
     def delete_study(self, study_id):
         """
         Elimina un estudio de la base de datos
@@ -231,15 +257,13 @@ class StudyRepository:
                     UPDATE estudios
                     SET nombre_estudio = ?,
                         num_sujetos = ?,
-                        tipos_prueba = ?,
-                        periodos_prueba = ?,
+                        descriptores = ?,
                         cantidad_intentos_prueba = ?
                     WHERE id_estudio = ?
                 ''', (
                     study_data['name'],
                     int(study_data['num_subjects']),
-                    study_data['test_types'],
-                    study_data['test_periods'],
+                    study_data.get('descriptores', ''), # Usar nueva clave 'descriptores'
                     int(study_data['attempts_count']),
                     study_id
                 ))
@@ -248,9 +272,14 @@ class StudyRepository:
                     logger.warning(f"Intento de actualizar estudio ID {study_id} fallido (no encontrado).")
                     raise ValueError(f"No se encontró estudio con ID {study_id} para actualizar.")
                 logger.info(f"Estudio ID {study_id} actualizado correctamente.")
+        except sqlite3.IntegrityError as e:
+             if "UNIQUE constraint failed: estudios.nombre_estudio" in str(e):
+                  raise ValueError(f"Ya existe un estudio con el nombre '{study_data['name']}'.")
+             else:
+                  logger.error(f"Error de integridad al actualizar estudio ID {study_id}: {e}", exc_info=True)
+                  raise
         except sqlite3.Error as e:
-            logger.error(f"Error al actualizar estudio ID {study_id}: {e}", exc_info=True)
-            # Considerar relanzar una excepción personalizada
+            logger.error(f"Error general de DB al actualizar estudio ID {study_id}: {e}", exc_info=True)
             raise
 
     def rename_study_folder(self, old_name: str, new_name: str):

@@ -53,8 +53,9 @@ class StudyView:
         ttk.Label(details_frame, text=f"Nombre: {study_details['name']}").pack(anchor='w')
         ttk.Label(details_frame, text=f"Nombre: {study_details.get('name', 'N/A')}").pack(anchor='w', padx=5, pady=2)
         ttk.Label(details_frame, text=f"Número de Sujetos: {study_details.get('num_subjects', 'N/A')}").pack(anchor='w', padx=5, pady=2)
-        ttk.Label(details_frame, text=f"Tipos Prueba: {study_details.get('test_types', 'N/A') or 'N/A'}").pack(anchor='w', padx=5, pady=2)
-        ttk.Label(details_frame, text=f"Periodos Prueba: {study_details.get('test_periods', 'N/A') or 'N/A'}").pack(anchor='w', padx=5, pady=2)
+        # Mostrar Descriptores en lugar de Tipos/Periodos
+        descriptors_str = study_details.get('descriptores', 'Ninguno') or 'Ninguno'
+        ttk.Label(details_frame, text=f"Descriptores: {descriptors_str}").pack(anchor='w', padx=5, pady=2)
         ttk.Label(details_frame, text=f"Intentos: {study_details.get('attempts_count', 'N/A')}").pack(anchor='w', padx=5, pady=2)
 
         # --- File browser ---
