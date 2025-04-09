@@ -25,8 +25,9 @@ class FileDialog(Toplevel):
         self.valid_descriptors = [] # Cambiado de types/periods a descriptors
         try:
             self.study_details = self.file_service.study_service.get_study_details(self.study_id)
-            # Cargar descriptores en lugar de tipos/periodos
-            descriptors_str = self.study_details.get('descriptores', '') or ''
+            # Cargar descriptores, asegurándose de que sea una cadena antes de split
+            descriptors_value = self.study_details.get('descriptores') # Obtener valor
+            descriptors_str = str(descriptors_value) if descriptors_value is not None else '' # Convertir a str, manejar None
             self.valid_descriptors = [d.strip() for d in descriptors_str.split(',') if d.strip()]
         except Exception as e:
             logger.error(f"No se pudieron cargar los descriptores del estudio {self.study_id} en FileDialog: {e}", exc_info=True)
