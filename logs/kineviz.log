@@ -174,3 +174,1296 @@ Traceback (most recent call last):
     if not validate_filename_for_study_criteria(filename, defined_descriptors):
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 NameError: name 'validate_filename_for_study_criteria' is not defined
+2025-04-09 02:25:45,677 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 02:25:45,677 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 02:26:04,596 - INFO - [kineviz.core.services.analysis_service] - Generando reporte para estudio 11 en /Users/arakito/Downloads/ah.pdf...
+2025-04-09 02:26:04,602 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte10 Hola Mundo 02_Cinematica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 111, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:26:04,605 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte10 Hola Mundo 02_Cinematica.txt
+2025-04-09 02:26:04,607 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte10 Hola Mundo 01_Cinematica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 111, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:26:04,608 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte10 Hola Mundo 01_Cinematica.txt
+2025-04-09 02:26:04,610 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte10 Hola Mundo 01_Cinetica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 111, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:26:04,610 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte10 Hola Mundo 01_Cinetica.txt
+2025-04-09 02:26:04,612 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte10 Hola Mundo 02_Cinetica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 111, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:26:04,613 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte10 Hola Mundo 02_Cinetica.txt
+2025-04-09 02:26:04,614 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte12 Hola Mundo 02_Cinematica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 111, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:26:04,615 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte12 Hola Mundo 02_Cinematica.txt
+2025-04-09 02:26:04,617 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte12 Hola Mundo 02_Cinetica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 111, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:26:04,618 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte12 Hola Mundo 02_Cinetica.txt
+2025-04-09 02:26:04,627 - INFO - [kineviz.core.services.analysis_service] - Reporte PDF generado exitosamente en /Users/arakito/Downloads/ah.pdf
+2025-04-09 02:26:43,408 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 02:26:43,408 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 02:27:00,597 - INFO - [kineviz.core.services.analysis_service] - Generando reporte para estudio 11 en /Users/arakito/Downloads/aaa.pdf...
+2025-04-09 02:27:00,601 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte10 Hola Mundo 02_Cinematica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 111, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:27:00,604 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte10 Hola Mundo 02_Cinematica.txt
+2025-04-09 02:27:00,605 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte10 Hola Mundo 01_Cinematica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 111, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:27:00,606 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte10 Hola Mundo 01_Cinematica.txt
+2025-04-09 02:27:00,608 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte10 Hola Mundo 01_Cinetica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 111, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:27:00,610 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte10 Hola Mundo 01_Cinetica.txt
+2025-04-09 02:27:00,612 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte10 Hola Mundo 02_Cinetica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 111, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:27:00,613 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte10 Hola Mundo 02_Cinetica.txt
+2025-04-09 02:27:00,615 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte12 Hola Mundo 02_Cinematica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 111, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:27:00,616 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte12 Hola Mundo 02_Cinematica.txt
+2025-04-09 02:27:00,617 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte12 Hola Mundo 02_Cinetica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 111, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:27:00,618 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte12 Hola Mundo 02_Cinetica.txt
+2025-04-09 02:27:00,626 - INFO - [kineviz.core.services.analysis_service] - Reporte PDF generado exitosamente en /Users/arakito/Downloads/aaa.pdf
+2025-04-09 02:28:33,753 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 02:28:33,754 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 02:28:56,427 - INFO - [kineviz.core.services.analysis_service] - Generando reporte para estudio 11 en /Users/arakito/Downloads/abss.pdf...
+2025-04-09 02:28:56,434 - ERROR - [kineviz.core.services.analysis_service] - Error de Pandas al parsear Pte10 Hola Mundo 02_Cinematica.txt con 1 columnas esperadas: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:28:56,437 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte10 Hola Mundo 02_Cinematica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:28:56,437 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte10 Hola Mundo 02_Cinematica.txt
+2025-04-09 02:28:56,439 - ERROR - [kineviz.core.services.analysis_service] - Error de Pandas al parsear Pte10 Hola Mundo 01_Cinematica.txt con 1 columnas esperadas: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:28:56,440 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte10 Hola Mundo 01_Cinematica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:28:56,440 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte10 Hola Mundo 01_Cinematica.txt
+2025-04-09 02:28:56,442 - ERROR - [kineviz.core.services.analysis_service] - Error de Pandas al parsear Pte10 Hola Mundo 01_Cinetica.txt con 1 columnas esperadas: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:28:56,443 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte10 Hola Mundo 01_Cinetica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:28:56,444 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte10 Hola Mundo 01_Cinetica.txt
+2025-04-09 02:28:56,447 - ERROR - [kineviz.core.services.analysis_service] - Error de Pandas al parsear Pte10 Hola Mundo 02_Cinetica.txt con 1 columnas esperadas: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:28:56,447 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte10 Hola Mundo 02_Cinetica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:28:56,448 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte10 Hola Mundo 02_Cinetica.txt
+2025-04-09 02:28:56,450 - ERROR - [kineviz.core.services.analysis_service] - Error de Pandas al parsear Pte12 Hola Mundo 02_Cinematica.txt con 1 columnas esperadas: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:28:56,451 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte12 Hola Mundo 02_Cinematica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:28:56,451 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte12 Hola Mundo 02_Cinematica.txt
+2025-04-09 02:28:56,453 - ERROR - [kineviz.core.services.analysis_service] - Error de Pandas al parsear Pte12 Hola Mundo 02_Cinetica.txt con 1 columnas esperadas: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:28:56,454 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte12 Hola Mundo 02_Cinetica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:28:56,454 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte12 Hola Mundo 02_Cinetica.txt
+2025-04-09 02:28:56,467 - INFO - [kineviz.core.services.analysis_service] - Reporte PDF generado exitosamente en /Users/arakito/Downloads/abss.pdf
+2025-04-09 02:29:31,216 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 02:29:31,216 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 02:29:48,150 - INFO - [kineviz.core.services.analysis_service] - Generando reporte para estudio 11 en /Users/arakito/Downloads/AAA.pdf...
+2025-04-09 02:29:48,155 - ERROR - [kineviz.core.services.analysis_service] - Error de Pandas al parsear Pte10 Hola Mundo 02_Cinematica.txt con 1 columnas esperadas: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:29:48,158 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte10 Hola Mundo 02_Cinematica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:29:48,159 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte10 Hola Mundo 02_Cinematica.txt
+2025-04-09 02:29:48,161 - ERROR - [kineviz.core.services.analysis_service] - Error de Pandas al parsear Pte10 Hola Mundo 01_Cinematica.txt con 1 columnas esperadas: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:29:48,162 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte10 Hola Mundo 01_Cinematica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:29:48,163 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte10 Hola Mundo 01_Cinematica.txt
+2025-04-09 02:29:48,165 - ERROR - [kineviz.core.services.analysis_service] - Error de Pandas al parsear Pte10 Hola Mundo 01_Cinetica.txt con 1 columnas esperadas: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:29:48,165 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte10 Hola Mundo 01_Cinetica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:29:48,166 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte10 Hola Mundo 01_Cinetica.txt
+2025-04-09 02:29:48,168 - ERROR - [kineviz.core.services.analysis_service] - Error de Pandas al parsear Pte10 Hola Mundo 02_Cinetica.txt con 1 columnas esperadas: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:29:48,169 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte10 Hola Mundo 02_Cinetica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:29:48,169 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte10 Hola Mundo 02_Cinetica.txt
+2025-04-09 02:29:48,170 - ERROR - [kineviz.core.services.analysis_service] - Error de Pandas al parsear Pte12 Hola Mundo 02_Cinematica.txt con 1 columnas esperadas: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:29:48,171 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte12 Hola Mundo 02_Cinematica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:29:48,172 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte12 Hola Mundo 02_Cinematica.txt
+2025-04-09 02:29:48,174 - ERROR - [kineviz.core.services.analysis_service] - Error de Pandas al parsear Pte12 Hola Mundo 02_Cinetica.txt con 1 columnas esperadas: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:29:48,174 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte12 Hola Mundo 02_Cinetica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 133, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:29:48,175 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte12 Hola Mundo 02_Cinetica.txt
+2025-04-09 02:29:48,183 - INFO - [kineviz.core.services.analysis_service] - Reporte PDF generado exitosamente en /Users/arakito/Downloads/AAA.pdf
+2025-04-09 02:31:39,469 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 02:31:39,469 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 02:31:56,655 - INFO - [kineviz.core.services.analysis_service] - Generando reporte para estudio 11 en /Users/arakito/Downloads/aaa.pdf...
+2025-04-09 02:31:56,661 - ERROR - [kineviz.core.services.analysis_service] - Error de Pandas al parsear Pte10 Hola Mundo 02_Cinematica.txt con 1 columnas esperadas: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 138, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:31:56,665 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte10 Hola Mundo 02_Cinematica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 138, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:31:56,666 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte10 Hola Mundo 02_Cinematica.txt
+2025-04-09 02:31:56,667 - ERROR - [kineviz.core.services.analysis_service] - Error de Pandas al parsear Pte10 Hola Mundo 01_Cinematica.txt con 1 columnas esperadas: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 138, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:31:56,668 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte10 Hola Mundo 01_Cinematica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 138, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:31:56,668 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte10 Hola Mundo 01_Cinematica.txt
+2025-04-09 02:31:56,670 - ERROR - [kineviz.core.services.analysis_service] - Error de Pandas al parsear Pte10 Hola Mundo 01_Cinetica.txt con 1 columnas esperadas: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 138, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:31:56,671 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte10 Hola Mundo 01_Cinetica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 138, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:31:56,671 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte10 Hola Mundo 01_Cinetica.txt
+2025-04-09 02:31:56,673 - ERROR - [kineviz.core.services.analysis_service] - Error de Pandas al parsear Pte10 Hola Mundo 02_Cinetica.txt con 1 columnas esperadas: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 138, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:31:56,673 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte10 Hola Mundo 02_Cinetica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 138, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:31:56,674 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte10 Hola Mundo 02_Cinetica.txt
+2025-04-09 02:31:56,675 - ERROR - [kineviz.core.services.analysis_service] - Error de Pandas al parsear Pte12 Hola Mundo 02_Cinematica.txt con 1 columnas esperadas: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 138, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:31:56,676 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte12 Hola Mundo 02_Cinematica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 138, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 57
+
+2025-04-09 02:31:56,676 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte12 Hola Mundo 02_Cinematica.txt
+2025-04-09 02:31:56,677 - ERROR - [kineviz.core.services.analysis_service] - Error de Pandas al parsear Pte12 Hola Mundo 02_Cinetica.txt con 1 columnas esperadas: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 138, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:31:56,678 - ERROR - [kineviz.core.services.analysis_service] - Error leyendo datos de Pte12 Hola Mundo 02_Cinetica.txt: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 138, in _read_processed_file_data
+    df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 626, in _read
+    return parser.read(nrows)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1923, in read
+    ) = self._engine.read(  # type: ignore[attr-defined]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/.venv/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 234, in read
+    chunks = self._reader.read_low_memory(nrows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 838, in pandas._libs.parsers.TextReader.read_low_memory
+  File "parsers.pyx", line 905, in pandas._libs.parsers.TextReader._read_rows
+  File "parsers.pyx", line 874, in pandas._libs.parsers.TextReader._tokenize_rows
+  File "parsers.pyx", line 891, in pandas._libs.parsers.TextReader._check_tokenize_status
+  File "parsers.pyx", line 2061, in pandas._libs.parsers.raise_parser_error
+pandas.errors.ParserError: Error tokenizing data. C error: Expected 1 fields in line 2, saw 12
+
+2025-04-09 02:31:56,678 - WARNING - [kineviz.core.services.analysis_service] - No se pudieron leer datos válidos de Pte12 Hola Mundo 02_Cinetica.txt
+2025-04-09 02:31:56,687 - INFO - [kineviz.core.services.analysis_service] - Reporte PDF generado exitosamente en /Users/arakito/Downloads/aaa.pdf
+2025-04-09 02:32:35,879 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 02:32:35,879 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 02:34:59,647 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 02:34:59,647 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 02:35:10,958 - INFO - [kineviz.core.services.file_service] - Archivo eliminado: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 7/Pte10/Cinematica/Pte10 Hola Mundo 02_Cinematica.txt
+2025-04-09 02:35:14,403 - INFO - [kineviz.core.services.file_service] - Archivo eliminado: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 7/Pte10/Cinematica/Pte10 Hola Mundo 01_Cinematica.txt
+2025-04-09 02:35:14,404 - INFO - [kineviz.core.services.file_service] - Directorio vacío eliminado: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 7/Pte10/Cinematica
+2025-04-09 02:35:17,706 - INFO - [kineviz.core.services.file_service] - Archivo eliminado: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 7/Pte10/Cinetica/Pte10 Hola Mundo 01_Cinetica.txt
+2025-04-09 02:35:20,623 - INFO - [kineviz.core.services.file_service] - Archivo eliminado: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 7/Pte10/Cinetica/Pte10 Hola Mundo 02_Cinetica.txt
+2025-04-09 02:35:20,624 - INFO - [kineviz.core.services.file_service] - Directorio vacío eliminado: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 7/Pte10/Cinetica
+2025-04-09 02:35:26,855 - INFO - [kineviz.core.services.file_service] - Archivo eliminado: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 7/Pte10/OG/Pte10 Hola Mundo 01.txt
+2025-04-09 02:35:29,586 - INFO - [kineviz.core.services.file_service] - Archivo eliminado: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 7/Pte10/OG/Pte10 Hola Mundo 02.txt
+2025-04-09 02:35:29,587 - INFO - [kineviz.core.services.file_service] - Directorio vacío eliminado: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 7/Pte10/OG
+2025-04-09 02:35:32,591 - INFO - [kineviz.core.services.file_service] - Archivo eliminado: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 7/Pte12/Cinematica/Pte12 Hola Mundo 02_Cinematica.txt
+2025-04-09 02:35:32,591 - INFO - [kineviz.core.services.file_service] - Directorio vacío eliminado: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 7/Pte12/Cinematica
+2025-04-09 02:35:35,538 - INFO - [kineviz.core.services.file_service] - Archivo eliminado: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 7/Pte12/Cinetica/Pte12 Hola Mundo 02_Cinetica.txt
+2025-04-09 02:35:35,538 - INFO - [kineviz.core.services.file_service] - Directorio vacío eliminado: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 7/Pte12/Cinetica
+2025-04-09 02:35:37,971 - INFO - [kineviz.core.services.file_service] - Archivo eliminado: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 7/Pte12/OG/Pte12 Hola Mundo 02.txt
+2025-04-09 02:35:37,971 - INFO - [kineviz.core.services.file_service] - Directorio vacío eliminado: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 7/Pte12/OG
+2025-04-09 02:36:00,068 - INFO - [kineviz.core.services.file_service] - Iniciando proceso de agregado de 2 archivos al estudio 11.
+2025-04-09 02:36:00,121 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte10 Hola Mundo 01.txt: {'Cinematica', 'Cinetica'}
+2025-04-09 02:36:00,121 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte10 Hola Mundo 01.txt' procesado y agregado exitosamente al estudio 11.
+2025-04-09 02:36:00,147 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte12 Hola Mundo 02.txt: {'Cinematica', 'Cinetica'}
+2025-04-09 02:36:00,147 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte12 Hola Mundo 02.txt' procesado y agregado exitosamente al estudio 11.
+2025-04-09 02:36:00,147 - INFO - [kineviz.core.services.file_service] - Proceso de agregado finalizado para estudio 11. Éxitos: 2, Errores: 0.
+2025-04-09 02:36:48,533 - INFO - [kineviz.core.services.analysis_service] - Generando reporte para estudio 11 en /Users/arakito/Downloads/aaa.pdf...
+2025-04-09 02:36:48,536 - WARNING - [kineviz.core.services.analysis_service] - Discrepancia en Pte10 Hola Mundo 01_Cinematica.txt: Nombres en línea 3 (58) != Columnas en datos (57). Se usarán los nombres de la línea 3 truncados/rellenados.
+2025-04-09 02:36:48,555 - WARNING - [kineviz.core.services.analysis_service] - Discrepancia en Pte10 Hola Mundo 01_Cinetica.txt: Nombres en línea 3 (13) != Columnas en datos (12). Se usarán los nombres de la línea 3 truncados/rellenados.
+2025-04-09 02:36:48,562 - WARNING - [kineviz.core.services.analysis_service] - Discrepancia en Pte12 Hola Mundo 02_Cinematica.txt: Nombres en línea 3 (58) != Columnas en datos (57). Se usarán los nombres de la línea 3 truncados/rellenados.
+2025-04-09 02:36:48,568 - WARNING - [kineviz.core.services.analysis_service] - Discrepancia en Pte12 Hola Mundo 02_Cinetica.txt: Nombres en línea 3 (13) != Columnas en datos (12). Se usarán los nombres de la línea 3 truncados/rellenados.
+2025-04-09 02:36:49,414 - INFO - [kineviz.core.services.analysis_service] - Reporte PDF generado exitosamente en /Users/arakito/Downloads/aaa.pdf
+2025-04-09 02:39:11,718 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 02:39:11,719 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 02:39:27,949 - INFO - [kineviz.core.services.analysis_service] - Generando reporte para estudio 11 en /Users/arakito/Downloads/aaa.pdf...
+2025-04-09 02:39:27,952 - WARNING - [kineviz.core.services.analysis_service] - Discrepancia en Pte10 Hola Mundo 01_Cinematica.txt: Nombres en línea 3 (58) != Columnas en datos (57). Se usarán los nombres de la línea 3 truncados/rellenados.
+2025-04-09 02:39:27,974 - WARNING - [kineviz.core.services.analysis_service] - Discrepancia en Pte10 Hola Mundo 01_Cinetica.txt: Nombres en línea 3 (13) != Columnas en datos (12). Se usarán los nombres de la línea 3 truncados/rellenados.
+2025-04-09 02:39:27,981 - WARNING - [kineviz.core.services.analysis_service] - Discrepancia en Pte12 Hola Mundo 02_Cinematica.txt: Nombres en línea 3 (58) != Columnas en datos (57). Se usarán los nombres de la línea 3 truncados/rellenados.
+2025-04-09 02:39:27,988 - WARNING - [kineviz.core.services.analysis_service] - Discrepancia en Pte12 Hola Mundo 02_Cinetica.txt: Nombres en línea 3 (13) != Columnas en datos (12). Se usarán los nombres de la línea 3 truncados/rellenados.
+2025-04-09 02:39:28,812 - INFO - [kineviz.core.services.analysis_service] - Reporte PDF generado exitosamente en /Users/arakito/Downloads/aaa.pdf
+2025-04-09 02:43:25,218 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 02:43:25,218 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 02:43:41,198 - INFO - [kineviz.database.repositories] - Directorio creado para estudio 12: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 8
+2025-04-09 02:44:18,044 - INFO - [kineviz.core.services.file_service] - Iniciando proceso de agregado de 2 archivos al estudio 12.
+2025-04-09 02:44:18,075 - WARNING - [kineviz.core.services.file_service] - Error de validación/formato para Pte10 Hola Mundo 01.txt: Formato inválido: Se esperaba número de frames, se obtuvo '309	2	-2.45845	0.274523	-82.8871	8344.08	-4973.52	-981.523	139.996	199.332	0' en Pte10 Hola Mundo 01.txt
+2025-04-09 02:44:18,091 - WARNING - [kineviz.core.services.file_service] - Error de validación/formato para Pte12 Hola Mundo 02.txt: Formato inválido: Se esperaba número de frames, se obtuvo '309	2	-2.45845	0.274523	-82.8871	8344.08	-4973.52	-981.523	139.996	199.332	0' en Pte12 Hola Mundo 02.txt
+2025-04-09 02:44:18,092 - INFO - [kineviz.core.services.file_service] - Proceso de agregado finalizado para estudio 12. Éxitos: 0, Errores: 2.
+2025-04-09 02:48:10,021 - INFO - [root] - Logging configurado. Nivel: INFO. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-09 02:48:10,021 - INFO - [__main__] - Iniciando KineViz...
+2025-04-09 02:48:26,837 - INFO - [kineviz.database.repositories] - Directorio creado para estudio 13: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 9
+2025-04-09 02:48:38,829 - INFO - [kineviz.core.services.file_service] - Iniciando proceso de agregado de 2 archivos al estudio 13.
+2025-04-09 02:48:38,871 - ERROR - [kineviz.core.services.file_service] - Error procesando una sección (100 frames) de Pte10 Hola Mundo 01.txt: telling position disabled by next() call
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/file_service.py", line 230, in _process_and_copy_file
+    mediciones, columnas, tipo_frecuencia_determinado = file_handlers.leer_seccion(
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/data_processing/file_handlers.py", line 60, in leer_seccion
+    first_data_line_pos = file.tell() # Recordar posición actual
+                          ^^^^^^^^^^^
+OSError: telling position disabled by next() call
+2025-04-09 02:48:38,873 - ERROR - [kineviz.core.services.file_service] - Error procesando 'Pte10 Hola Mundo 01.txt': telling position disabled by next() call
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/file_service.py", line 312, in add_files_to_study
+    self._process_and_copy_file(study_path, source_file_path)
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/file_service.py", line 230, in _process_and_copy_file
+    mediciones, columnas, tipo_frecuencia_determinado = file_handlers.leer_seccion(
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/data_processing/file_handlers.py", line 60, in leer_seccion
+    first_data_line_pos = file.tell() # Recordar posición actual
+                          ^^^^^^^^^^^
+OSError: telling position disabled by next() call
+2025-04-09 02:48:38,894 - ERROR - [kineviz.core.services.file_service] - Error procesando una sección (100 frames) de Pte12 Hola Mundo 02.txt: telling position disabled by next() call
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/file_service.py", line 230, in _process_and_copy_file
+    mediciones, columnas, tipo_frecuencia_determinado = file_handlers.leer_seccion(
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/data_processing/file_handlers.py", line 60, in leer_seccion
+    first_data_line_pos = file.tell() # Recordar posición actual
+                          ^^^^^^^^^^^
+OSError: telling position disabled by next() call
+2025-04-09 02:48:38,895 - ERROR - [kineviz.core.services.file_service] - Error procesando 'Pte12 Hola Mundo 02.txt': telling position disabled by next() call
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/file_service.py", line 312, in add_files_to_study
+    self._process_and_copy_file(study_path, source_file_path)
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/file_service.py", line 230, in _process_and_copy_file
+    mediciones, columnas, tipo_frecuencia_determinado = file_handlers.leer_seccion(
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/data_processing/file_handlers.py", line 60, in leer_seccion
+    first_data_line_pos = file.tell() # Recordar posición actual
+                          ^^^^^^^^^^^
+OSError: telling position disabled by next() call
+2025-04-09 02:48:38,895 - INFO - [kineviz.core.services.file_service] - Proceso de agregado finalizado para estudio 13. Éxitos: 0, Errores: 2.
