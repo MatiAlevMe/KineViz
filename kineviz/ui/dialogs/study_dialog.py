@@ -64,8 +64,9 @@ class StudyDialog(Toplevel):
             self.var_num_sujetos.set(str(study_details.get('num_subjects', '')))
             self.var_cantidad_intentos.set(str(study_details.get('attempts_count', '')))
 
-            # Cargar descriptores
-            descriptors_str = study_details.get('descriptores', '') or ''
+            # Cargar descriptores, asegurándose de que sea una cadena antes de split
+            descriptors_value = study_details.get('descriptores') # Obtener valor (puede ser None, str, int)
+            descriptors_str = str(descriptors_value) if descriptors_value is not None else '' # Convertir a str, manejar None
             self.initial_descriptors = [d.strip() for d in descriptors_str.split(',') if d.strip()]
 
         except Exception as e:
