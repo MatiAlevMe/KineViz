@@ -354,35 +354,46 @@ class FileService:
         logger.debug(f"Buscando parámetros únicos para estudio {study_id} en {study_path}")
         processed_folders = ["Cinematica", "Cinetica", "Electromiografica"]
 
+        # 1. Iterar para encontrar pacientes y frecuencias existentes (basado en carpetas)
         for patient_dir in study_path.iterdir():
+            # Ignorar carpetas especiales y archivos a nivel de estudio
             if patient_dir.is_dir() and not patient_dir.name.lower() in ["reportes", "temp", "og"]:
                 patient_name = patient_dir.name
-                # No añadir paciente aquí, hacerlo solo si se encuentra un archivo válido dentro
-                # has_processed_folder = any((patient_dir / pf).exists() for pf in processed_folders)
-                # if has_processed_folder:
-                #      parameters['patients'].add(patient_name)
-
+                has_any_freq_folder = False
                 for freq_folder_name in processed_folders:
                     freq_folder_path = patient_dir / freq_folder_name
                     if freq_folder_path.exists() and freq_folder_path.is_dir():
-                        for file_path in freq_folder_path.iterdir():
-                            if file_path.is_file() and file_path.suffix.lower() in ['.txt', '.csv']:
-                                filename = file_path.name
-                                # Validar nombre ANTES de extraer parámetros y añadir frecuencia/paciente
-                                if validate_filename_for_study_criteria(filename, defined_descriptors):
-                                    # Si el archivo es válido, añadir su frecuencia y paciente
-                                    parameters['frequencies'].add(freq_folder_name)
-                                    parameters['patients'].add(patient_name)
+                        parameters['frequencies'].add(freq_folder_name) # Añadir frecuencia si la carpeta existe
+                        has_any_freq_folder = True
+                # Añadir paciente solo si tiene al menos una carpeta de frecuencia válida
+                if has_any_freq_folder:
+                    parameters['patients'].add(patient_name)
 
-                                    # Extraer descriptores del nombre de archivo
-                                    base_name = filename.split(f'_{freq_folder_name}')[0]
-                                    parts = base_name.replace('_', ' ').split()
-                                    intermediate_parts = parts[1:-1] # Partes entre PteXX y NN
+        # 2. Iterar de nuevo para encontrar descriptores *solo* de archivos válidos
+        for patient_name in parameters['patients']: # Iterar sobre pacientes ya encontrados
+            patient_dir = study_path / patient_name
+            for freq_folder_name in parameters['frequencies']: # Iterar sobre frecuencias ya encontradas
+                 freq_folder_path = patient_dir / freq_folder_name
+                 if freq_folder_path.exists() and freq_folder_path.is_dir(): # Doble check por si acaso
+                     for file_path in freq_folder_path.iterdir():
+                         if file_path.is_file() and file_path.suffix.lower() in ['.txt', '.csv']:
+                             filename = file_path.name
+                             # Validar nombre usando la lógica actualizada
+                             if validate_filename_for_study_criteria(filename, defined_descriptors):
+                                 # Extraer descriptores del nombre de archivo válido
+                                 try:
+                                     # Asegurar que el split y el slicing no fallen
+                                     base_name_parts = filename.split(f'_{freq_folder_name}')
+                                     if not base_name_parts: continue # Nombre inesperado
+                                     base_name = base_name_parts[0]
+                                     parts = base_name.replace('_', ' ').split()
+                                     if len(parts) > 2: # Asegurar que hay partes intermedias potenciales
+                                         intermediate_parts = parts[1:-1]
+                                         for desc in intermediate_parts:
+                                             parameters['descriptors'].add(desc)
+                                 except Exception as parse_err:
+                                     logger.warning(f"Error parseando descriptores de nombre de archivo válido '{filename}': {parse_err}")
 
-                                    # Añadir las partes intermedias (que ya sabemos son válidas por el chequeo anterior)
-                                    # al set de descriptores encontrados.
-                                    for desc in intermediate_parts:
-                                        parameters['descriptors'].add(desc)
 
         return parameters
 
