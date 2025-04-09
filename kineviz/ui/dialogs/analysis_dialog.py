@@ -77,10 +77,10 @@ class AnalysisDialog(Toplevel):
 
         # Crear selectores para cada parámetro
         self.patient_selector = self._create_parameter_selector(params_frame, "Pacientes", self.available_params.get('patients', set()))
-        self.frequency_selector = self._create_parameter_selector(params_frame, "Frecuencias", self.available_params.get('frequencies', set()))
-        # Reemplazar selectores de tipo/periodo por descriptor
-        self.descriptor_selector = self._create_parameter_selector(params_frame, "Descriptores", self.available_params.get('descriptors', set()))
-        self.calculation_selector = self._create_parameter_selector(params_frame, "Cálculos", self.available_params.get('calculations', set()))
+        self.frequency_selector = self._create_parameter_selector(params_frame, "Frecuencias", self.available_params.get('frequencies', set()), use_alias=False)
+        # Reemplazar selectores de tipo/periodo por descriptor, indicando usar alias
+        self.descriptor_selector = self._create_parameter_selector(params_frame, "Descriptores", self.available_params.get('descriptors', set()), use_alias=True)
+        self.calculation_selector = self._create_parameter_selector(params_frame, "Cálculos", self.available_params.get('calculations', set()), use_alias=False)
 
         # --- Botones de Acción ---
         button_frame = ttk.Frame(main_frame)
@@ -137,9 +137,17 @@ class AnalysisDialog(Toplevel):
             logger.error(f"No se pudieron cargar los parámetros de análisis para estudio {self.study_id}: {e}", exc_info=True)
             messagebox.showerror("Error", f"No se pudieron cargar los parámetros de análisis: {e}", parent=self)
             self.available_params = {} # Asegurar que sea un diccionario vacío
+        # Cargar mapa de alias para descriptores
+        self.descriptor_alias_map = {
+            desc: self.app_settings.get_descriptor_alias(desc)
+            for desc in self.available_params.get('descriptors', set())
+        }
 
-    def _create_parameter_selector(self, parent, title: str, available_items: set):
-        """Crea un conjunto de widgets para seleccionar un parámetro."""
+    def _create_parameter_selector(self, parent, title: str, available_items: set, use_alias: bool = False):
+        """
+        Crea un conjunto de widgets para seleccionar un parámetro.
+        Si use_alias es True, muestra 'Alias (Descriptor)' o 'Descriptor'.
+        """
         container = ttk.LabelFrame(parent, text=title)
         container.pack(side=tk.TOP, fill=tk.X, padx=5, pady=5) # Usar TOP para apilar verticalmente
 
@@ -156,8 +164,17 @@ class AnalysisDialog(Toplevel):
         available_listbox.configure(yscrollcommand=available_scrollbar.set)
         available_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         available_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        for item in sorted(list(available_items)): # Poblar lista ordenada
-            available_listbox.insert(tk.END, item)
+
+        # Poblar lista ordenada, aplicando formato de alias si es necesario
+        display_map = {} # Mapa local para display_name -> original_item
+        for item in sorted(list(available_items)):
+            display_name = item
+            if use_alias and title == "Descriptores": # Solo aplicar alias a descriptores
+                alias = self.descriptor_alias_map.get(item)
+                if alias:
+                    display_name = f"{alias} ({item})"
+            available_listbox.insert(tk.END, display_name)
+            display_map[display_name] = item # Guardar mapeo
 
         # Botones Centrales
         button_frame = ttk.Frame(frame)
@@ -177,29 +194,30 @@ class AnalysisDialog(Toplevel):
         selected_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         selected_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        # Devolver las listas para poder acceder a ellas
-        return {'available': available_listbox, 'selected': selected_listbox}
+        # Devolver las listas y el mapa de display para descriptores
+        return {'available': available_listbox, 'selected': selected_listbox, 'display_map': display_map if use_alias else None}
 
     def _move_items(self, source_listbox: Listbox, dest_listbox: Listbox):
         """Mueve los elementos seleccionados de una lista a otra."""
         selected_indices = source_listbox.curselection()
-        items_to_move = [source_listbox.get(i) for i in selected_indices]
+        # Obtener los nombres mostrados
+        display_names_to_move = [source_listbox.get(i) for i in selected_indices]
 
-        # Añadir a destino si no existe y ordenar
-        current_dest_items = set(dest_listbox.get(0, tk.END))
-        new_items_added = False
-        for item in items_to_move:
-            if item not in current_dest_items:
-                dest_listbox.insert(tk.END, item)
-                current_dest_items.add(item)
-                new_items_added = True
+        # Añadir a destino si no existe y ordenar (usando display names)
+        current_dest_display_names = set(dest_listbox.get(0, tk.END))
+        new_display_names_added = False
+        for display_name in display_names_to_move:
+            if display_name not in current_dest_display_names:
+                dest_listbox.insert(tk.END, display_name)
+                current_dest_display_names.add(display_name)
+                new_display_names_added = True
 
-        if new_items_added:
-             # Ordenar lista destino
-             all_dest_items = sorted(list(current_dest_items))
+        if new_display_names_added:
+             # Ordenar lista destino por display name
+             all_dest_display_names = sorted(list(current_dest_display_names))
              dest_listbox.delete(0, tk.END)
-             for item in all_dest_items:
-                 dest_listbox.insert(tk.END, item)
+             for display_name in all_dest_display_names:
+                 dest_listbox.insert(tk.END, display_name)
 
         # Eliminar de origen (iterar en reversa)
         for i in reversed(selected_indices):
@@ -207,33 +225,47 @@ class AnalysisDialog(Toplevel):
 
     def _move_all_items(self, source_listbox: Listbox, dest_listbox: Listbox):
          """Mueve todos los elementos de una lista a otra."""
-         all_items = source_listbox.get(0, tk.END)
-         current_dest_items = set(dest_listbox.get(0, tk.END))
-         new_items_added = False
+         all_display_names = source_listbox.get(0, tk.END)
+         current_dest_display_names = set(dest_listbox.get(0, tk.END))
+         new_display_names_added = False
 
-         for item in all_items:
-             if item not in current_dest_items:
-                 dest_listbox.insert(tk.END, item)
-                 current_dest_items.add(item)
-                 new_items_added = True
+         for display_name in all_display_names:
+             if display_name not in current_dest_display_names:
+                 dest_listbox.insert(tk.END, display_name)
+                 current_dest_display_names.add(display_name)
+                 new_display_names_added = True
 
-         if new_items_added:
-             # Ordenar lista destino
-             all_dest_items = sorted(list(current_dest_items))
+         if new_display_names_added:
+             # Ordenar lista destino por display name
+             all_dest_display_names = sorted(list(current_dest_display_names))
              dest_listbox.delete(0, tk.END)
-             for item in all_dest_items:
-                 dest_listbox.insert(tk.END, item)
+             for display_name in all_dest_display_names:
+                 dest_listbox.insert(tk.END, display_name)
 
          # Limpiar origen
          source_listbox.delete(0, tk.END)
 
 
     def _get_selected_parameters(self) -> dict:
-        """Recolecta los parámetros seleccionados de las listas."""
+        """
+        Recolecta los parámetros seleccionados de las listas.
+        Para descriptores, extrae el valor original del display name.
+        """
+        selected_display_descriptors = self.descriptor_selector['selected'].get(0, tk.END)
+        original_descriptors = []
+        for display_name in selected_display_descriptors:
+            # Extraer el descriptor original (ej: "CMJ" de "Salto Contra Movimiento (CMJ)")
+            # o usar el display_name si no hay paréntesis
+            if '(' in display_name and display_name.endswith(')'):
+                original = display_name.split('(')[-1][:-1]
+                original_descriptors.append(original)
+            else:
+                original_descriptors.append(display_name) # Asumir que es el original si no hay alias
+
         return {
             'patients': list(self.patient_selector['selected'].get(0, tk.END)),
             'frequencies': list(self.frequency_selector['selected'].get(0, tk.END)),
-            'descriptors': list(self.descriptor_selector['selected'].get(0, tk.END)), # Usar descriptor_selector
+            'descriptors': original_descriptors, # Usar lista de descriptores originales
             'calculations': list(self.calculation_selector['selected'].get(0, tk.END)),
         }
 
