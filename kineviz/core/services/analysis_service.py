@@ -82,14 +82,22 @@ class AnalysisService:
             from io import StringIO
             data_io = StringIO("".join(data_lines))
 
-            # Leer la tercera línea (índice 2) para obtener los nombres de columna,
-            # OMITIENDO los dos primeros elementos vacíos que no corresponden a datos.
-            raw_col_names = lines[2].strip().split(';')[2:] # Empezar desde el tercer elemento
+            # --- Determinar número de columnas de los datos reales ---
+            if not data_lines:
+                 logger.warning(f"Archivo {file_path.name} no contiene líneas de datos después de quitar cabecera/pie.")
+                 return None
+            first_data_line_parts = data_lines[0].strip().split(';')
+            num_data_cols = len(first_data_line_parts)
+            logger.debug(f"Detectadas {num_data_cols} columnas en la primera línea de datos de {file_path.name}")
 
-            # --- Sanear nombres de columna para asegurar unicidad ---
-            sanitized_names = []
+            # --- Generar nombres de columna basados en la línea 3 y ajustar a num_data_cols ---
+            # Leer la tercera línea (índice 2) para obtener los nombres de columna base
+            raw_col_names_base = lines[2].strip().split(';')[2:] # Empezar desde el tercer elemento
+
+            # Sanear nombres de columna base para asegurar unicidad y no vacíos
+            sanitized_base_names = []
             counts = {}
-            for i, name in enumerate(raw_col_names):
+            for i, name in enumerate(raw_col_names_base):
                 clean_name = name.strip()
                 # Reemplazar nombres vacíos
                 if not clean_name:
@@ -102,13 +110,31 @@ class AnalysisService:
                 else:
                     counts[clean_name] = 0
                     unique_name = clean_name
-                sanitized_names.append(unique_name)
-            # --- Fin saneamiento ---
+                sanitized_base_names.append(unique_name)
 
-            # Añadir 'Tiempo' al principio de la lista de nombres
-            final_col_names = ['Tiempo'] + sanitized_names
+            # Construir la lista final de nombres, ajustando al número real de columnas de datos
+            # Se asume que la primera columna de datos es 'Tiempo'
+            if num_data_cols > 0:
+                 final_col_names = ['Tiempo']
+                 # Añadir nombres saneados, hasta num_data_cols - 1
+                 final_col_names.extend(sanitized_base_names[:num_data_cols - 1])
+                 # Si aún faltan nombres (porque la línea 3 tenía menos o num_data_cols es mayor), añadir genéricos
+                 while len(final_col_names) < num_data_cols:
+                     final_col_names.append(f"Unnamed_{len(final_col_names)}")
+            else:
+                 # Si no hay columnas de datos, devolver DataFrame vacío o None
+                 logger.warning(f"No se detectaron columnas de datos en {file_path.name}")
+                 return None
 
-            df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+            logger.debug(f"Nombres de columna finales para {file_path.name} ({len(final_col_names)}): {final_col_names}")
+            # --- Fin ajuste de nombres ---
+
+            try:
+                df = pd.read_csv(data_io, sep=';', header=None, names=final_col_names, na_values=[''], keep_default_na=True)
+            except pd.errors.ParserError as pe:
+                 # Añadir más contexto al error de pandas
+                 logger.error(f"Error de Pandas al parsear {file_path.name} con {len(final_col_names)} columnas esperadas: {pe}", exc_info=True)
+                 raise # Relanzar para que se maneje en el bloque exterior
 
             # Seleccionar solo columnas numéricas (intentar convertir y ver qué falla)
             numeric_cols = []
