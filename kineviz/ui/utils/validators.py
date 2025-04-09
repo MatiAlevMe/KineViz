@@ -53,17 +53,20 @@ def validate_study_data(data):
     return True, None
 
 
-def validate_filename_for_study_criteria(filename: str, test_types: list[str], test_periods: list[str]) -> bool:
+def validate_filename_for_study_criteria(filename: str, descriptors: list[str]) -> bool:
     """
-    Valida si un nombre de archivo cumple con los criterios de tipos y periodos de prueba.
+    Valida si un nombre de archivo cumple con los criterios de descriptores del estudio.
+
+    Asume un formato como: PteXX [DESC1] [DESC2] ... NN_Frecuencia.ext
+    Donde [DESCn] son los descriptores definidos para el estudio.
+    Verifica que las partes intermedias correspondan a descriptores válidos.
 
     :param filename: El nombre del archivo (sin ruta, solo el nombre base con extensión).
-    :param test_types: Lista de tipos de prueba válidos para el estudio.
-    :param test_periods: Lista de periodos de prueba válidos para el estudio.
+    :param descriptors: Lista de descriptores válidos para el estudio.
     :return: True si el nombre de archivo es válido según los criterios, False en caso contrario.
     """
-    # Ignorar archivos que no parecen seguir el formato esperado (ej. reportes, archivos temporales)
-    # O archivos dentro de la carpeta OG que no deben ser validados por criterios.
+    # Ignorar archivos que no parecen seguir el formato esperado (ej. reportes, archivos temporales, etc.)
+    # o archivos dentro de la carpeta OG que no deben ser validados por criterios.
     # Una heurística simple es verificar si contiene los sufijos de frecuencia.
     if not any(freq in filename for freq in ["_Cinematica", "_Cinetica", "_Electromiografica"]):
         # Podríamos refinar esto, pero por ahora asumimos que solo validamos archivos procesados.
@@ -78,31 +81,34 @@ def validate_filename_for_study_criteria(filename: str, test_types: list[str], t
         base_name = '_'.join(name_parts[:-1]) # Unir todo excepto el último elemento (frecuencia)
         base_name = base_name.split('.')[0] # Quitar extensión si aún está
 
-    parts = base_name.replace('_', ' ').split() # Dividir por espacios
+    parts = base_name.replace('_', ' ').split() # Dividir por espacios y guiones bajos convertidos
 
-    # Limpiar listas de criterios (quitar vacíos)
-    valid_types = {t for t in test_types if t}
-    valid_periods = {p for p in test_periods if p}
+    # Se espera al menos PteXX y NN (2 partes)
+    if len(parts) < 2:
+        return False
 
-    # --- Lógica de validación basada en interfaz.py ---
-    # Caso 1: Sin tipos ni periodos definidos -> formato "PteXX NN" (2 partes)
-    if not valid_types and not valid_periods:
+    # Verificar que la última parte antes de la frecuencia sea un número (NN)
+    # y la primera parte empiece con 'Pte' (o similar identificador de paciente)
+    # Esta validación es básica, podría mejorarse con regex.
+    if not parts[-1].isdigit() or not parts[0].lower().startswith('pte'):
+         # Podríamos ser más estrictos con el formato del paciente si es necesario
+         return False
+
+    # Si no hay descriptores definidos para el estudio, solo validamos PteXX NN
+    if not descriptors:
         return len(parts) == 2
 
-    # Caso 2: Solo tipos o solo periodos definidos -> formato "PteXX CRITERIO NN" (3 partes)
-    if bool(valid_types) != bool(valid_periods): # XOR
-        if len(parts) != 3:
-            return False
-        middle_part = parts[1]
-        if valid_types:
-            return middle_part in valid_types
-        else: # Solo periodos
-            return middle_part in valid_periods
+    # Si hay descriptores definidos, verificar las partes intermedias
+    valid_descriptors_set = set(descriptors)
+    intermediate_parts = parts[1:-1] # Partes entre PteXX y NN
 
-    # Caso 3: Ambos tipos y periodos definidos -> formato "PteXX TIPO PERIODO NN" o "PteXX PERIODO TIPO NN" (4 partes)
-    if len(parts) != 4:
-        return False
-    # Verificar ambas combinaciones posibles
-    order1_valid = (parts[1] in valid_types and parts[2] in valid_periods)
-    order2_valid = (parts[1] in valid_periods and parts[2] in valid_types)
-    return order1_valid or order2_valid
+    # Si no hay partes intermedias pero se definieron descriptores, es inválido
+    if not intermediate_parts and descriptors:
+         return False
+
+    # Verificar que TODAS las partes intermedias sean descriptores válidos
+    all_intermediate_are_valid = all(part in valid_descriptors_set for part in intermediate_parts)
+
+    # Opcional: ¿Deberían estar *todos* los descriptores definidos presentes?
+    # Por ahora, solo validamos que las partes presentes sean válidas.
+    return all_intermediate_are_valid

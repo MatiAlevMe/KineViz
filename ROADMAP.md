@@ -154,22 +154,22 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
     *   **1.2 Implementación de identificador de archivo para Cinética**: Hecho.
     *   **1.3 Implementación de identificador de archivo para Electromiográfica**: Pendiente de confirmación del formato/identificador.
 
-*   **2. Implementación para crear/editar estudio con descriptores extra. (En Progreso)**
-    *   **Detalle**: Modificar `kineviz.ui.dialogs.study_dialog.py` para reemplazar los campos de entrada de "Tipos de Prueba" y "Periodos de Prueba" por una sección dinámica que permita añadir/eliminar campos de texto para "Descriptores".
+*   **2. Implementación para crear/editar estudio con descriptores extra. (Completado)**
+    *   **Detalle**: Modificado `kineviz.ui.dialogs.study_dialog.py` para reemplazar los campos de entrada de "Tipos de Prueba" y "Periodos de Prueba" por una sección dinámica que permita añadir/eliminar campos de texto para "Descriptores".
     *   **2.1 Soportar múltiples etiquetas de descriptores**: (Hecho) UI modificada para añadir/eliminar campos. Tabla `estudios` modificada para usar columna `descriptores` (TEXT, separado por comas). Repositorio y Servicio actualizados.
     *   **2.2 Validación de descriptores**: (Hecho) Añadida validación en `kineviz.ui.utils.validators.validate_study_data` para evitar descriptores vacíos o duplicados exactos.
 
 *   **3. Implementación para modificar nombres de etiquetas de descriptores post-carga.** (Pendiente)
     *   **Detalle**: Añadir una nueva funcionalidad (posiblemente en `kineviz.ui.views.study_view.py` o un nuevo diálogo) que permita al usuario ver los descriptores *detectados* en los nombres de archivo de un estudio y asignarles un "alias" o "nombre descriptivo" (ej: "CMJ" -> "Salto Contra Movimiento"). Este alias se usaría para mostrar en gráficos y reportes. El almacenamiento de estos alias podría ser en `config.ini` o en la base de datos. *Nota: Inicialmente, esta modificación es solo visual.*
 
-*   **4. Integrar con el resto del código.**
+*   **4. Integrar con el resto del código. (En Progreso)**
     *   **Detalle**: Revisar y actualizar todos los módulos que dependían de `test_types` y `test_periods`:
-        *   `kineviz.core.services.file_service.add_files_to_study`: La validación `validate_filename_for_study_criteria` debe adaptarse o reemplazarse para validar contra los nuevos descriptores.
-        *   `kineviz.core.services.file_service.get_unique_study_parameters`: Debe extraer y devolver los descriptores encontrados en los nombres de archivo válidos.
-        *   `kineviz.core.services.analysis_service`: `get_analysis_parameters`, `_get_data_for_parameters`, `generate_report` deben usar "descriptores" en lugar de "tipos/periodos".
-        *   `kineviz.ui.dialogs.analysis_dialog.py`: Debe mostrar y permitir la selección de "Descriptores" en lugar de "Tipos/Periodos".
-        *   `kineviz.ui.utils.validators.validate_filename_for_study_criteria`: Debe ser actualizada o reemplazada para validar la presencia de los descriptores definidos en el estudio dentro del nombre del archivo.
-        *   Actualizar pruebas unitarias afectadas.
+        *   `kineviz.ui.utils.validators.validate_filename_for_study_criteria`: (Hecho) Actualizada para validar contra `descriptors`.
+        *   `kineviz.core.services.file_service.add_files_to_study`: (Hecho) Actualizado para usar el validador con `descriptors`.
+        *   `kineviz.core.services.file_service.get_unique_study_parameters`: (Hecho) Actualizado para extraer `descriptors` de nombres de archivo válidos.
+        *   `kineviz.core.services.analysis_service`: (Hecho) `get_analysis_parameters`, `_get_data_for_parameters`, `generate_report` actualizados para usar `descriptors`.
+        *   `kineviz.ui.dialogs.analysis_dialog.py`: (Hecho) Actualizado para mostrar y usar selector de `descriptors`.
+        *   Actualizar pruebas unitarias afectadas. (Pendiente)
 
 ---
 
