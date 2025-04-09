@@ -50,23 +50,25 @@ class TestAnalysisService(unittest.TestCase):
         # Configurar mocks con valores de retorno básicos
         self.study_id = 1
         self.study_name = "Test_Study"
-        # self.study_path ahora debe apuntar dentro del directorio temporal
         self.study_path = self.temp_path / "studies" / self.study_name
         self.study_path.mkdir(parents=True) # Crear el directorio del estudio real
 
+        # Actualizar mock para usar descriptores
+        self.study_descriptors = ['CMJ', 'SJ', 'PRE', 'POST']
         self.mock_study_service.get_study_details.return_value = {
             'id': self.study_id, 'name': self.study_name,
-            'test_types': 'CMJ,SJ', 'test_periods': 'PRE,POST'
+            'descriptores': ','.join(self.study_descriptors) # Guardado como string
         }
-        # Asegurar que el mock de file_service devuelva la ruta real del estudio temporal
+        # Asegurar que el mock de file_service devuelva la ruta real
         self.mock_file_service._get_study_path.return_value = self.study_path
         # Configurar el project_root y studies_base_dir en el mock de file_service también
         self.mock_file_service.project_root = self.temp_path
         self.mock_file_service.studies_base_dir = self.temp_path / "studies"
 
+        # Actualizar mock para devolver descriptores
         self.mock_file_service.get_unique_study_parameters.return_value = {
             'patients': {'P01', 'P02'}, 'frequencies': {'Cinematica'},
-            'types': {'CMJ'}, 'periods': {'PRE'}
+            'descriptors': {'CMJ', 'PRE'} # Descriptores encontrados en archivos
         }
 
         self.analysis_service = AnalysisService(self.mock_study_service, self.mock_file_service)
@@ -89,8 +91,9 @@ class TestAnalysisService(unittest.TestCase):
         self.mock_file_service.get_unique_study_parameters.assert_called_once_with(self.study_id)
         self.assertIn('patients', params)
         self.assertIn('frequencies', params)
-        self.assertIn('types', params)
-        self.assertIn('periods', params)
+        self.assertIn('descriptors', params) # Verificar descriptors
+        self.assertNotIn('types', params) # Asegurar que ya no existen
+        self.assertNotIn('periods', params) # Asegurar que ya no existen
         self.assertIn('calculations', params)
         self.assertEqual(params['calculations'], {'Maximo', 'Minimo', 'Rango'})
         self.assertEqual(params['patients'], {'P01', 'P02'}) # Valor del mock
@@ -99,10 +102,12 @@ class TestAnalysisService(unittest.TestCase):
         """Prueba el manejo de errores al obtener parámetros."""
         self.mock_file_service.get_unique_study_parameters.side_effect = Exception("Error simulado")
         params = self.analysis_service.get_analysis_parameters(self.study_id)
-        self.assertEqual(params, {'patients': set(), 'frequencies': set(), 'types': set(), 'periods': set(), 'calculations': set()})
+        # Verificar estructura vacía con descriptors
+        self.assertEqual(params, {'patients': set(), 'frequencies': set(), 'descriptors': set(), 'calculations': set()})
 
     def test_read_processed_file_data_valid(self):
         """Prueba leer datos de un archivo procesado simulado válido."""
+        # Archivo procesado ahora empieza con num_frames
         file_content = (
             "Desc\n"
             "100\n" # Frecuencia (no usada directamente aquí)
@@ -123,12 +128,15 @@ class TestAnalysisService(unittest.TestCase):
             mock_open.assert_called_once_with(mock_file_path, 'r', encoding='utf-8')
             self.assertIsNotNone(df)
             self.assertIsInstance(df, pd.DataFrame)
-            self.assertListEqual(list(df.columns), ['Tiempo', 'Val1', 'Val2'])
+            # Los nombres ahora vienen de la línea 2 del archivo procesado
+            self.assertListEqual(list(df.columns), ['Meta_1', 'Meta_2', 'Val1', 'Val2'])
             self.assertEqual(len(df), 3)
+            # Seleccionar por nombre para la comparación
             pd.testing.assert_frame_equal(df[['Val1', 'Val2']], self.dummy_df[['Val1', 'Val2']])
 
     def test_read_processed_file_data_sanitized_columns(self):
         """Prueba la sanitización de nombres de columna duplicados o vacíos."""
+        # Archivo procesado ahora empieza con num_frames
         file_content = (
             "Desc\n"
             "100\n"
@@ -145,15 +153,16 @@ class TestAnalysisService(unittest.TestCase):
         with patch("builtins.open", unittest.mock.mock_open(read_data=file_content)):
             df = self.analysis_service._read_processed_file_data(mock_file_path)
             self.assertIsNotNone(df)
-            # Esperamos: Tiempo, Val1, Unnamed_3, Val1_1 (o similar)
-            self.assertIn('Tiempo', df.columns)
+            # Esperamos: Meta_1, Meta_2, Val1, Unnamed_3, Val1_1
+            self.assertIn('Meta_1', df.columns)
+            self.assertIn('Meta_2', df.columns)
             self.assertIn('Val1', df.columns)
-            self.assertTrue(any(col.startswith('Unnamed_') for col in df.columns))
-            self.assertTrue(any(col.startswith('Val1_') for col in df.columns))
-            self.assertEqual(len(df.columns), 4) # Tiempo + 3 columnas de datos
+            self.assertIn('Unnamed_3', df.columns) # Nombre saneado para columna vacía
+            self.assertIn('Val1_1', df.columns) # Nombre saneado para duplicado
+            self.assertEqual(len(df.columns), 5) # 5 columnas en total
 
     def test_read_processed_file_data_not_enough_lines(self):
-        """Prueba leer un archivo con menos de 7 líneas."""
+        """Prueba leer un archivo con menos de 7 líneas (4 header + 3 stats)."""
         file_content = "Line1\nLine2\nLine3\nLine4\nLine5\nLine6\n"
         mock_file_path = Path("/fake/short_file.txt")
         with patch("builtins.open", unittest.mock.mock_open(read_data=file_content)):
@@ -191,13 +200,17 @@ class TestAnalysisService(unittest.TestCase):
         self.assertIsNone(self.analysis_service._calculate_statistic(None, "Maximo"))
 
     # Mockear _read_processed_file_data para las pruebas de nivel superior
+    # Patch validate_filename_for_study_criteria también
+    @patch('kineviz.core.services.analysis_service.validate_filename_for_study_criteria')
     @patch('kineviz.core.services.analysis_service.AnalysisService._read_processed_file_data')
-    def test_get_data_for_parameters(self, mock_read_data):
-        """Prueba la estructuración de datos basada en parámetros."""
+    def test_get_data_for_parameters(self, mock_read_data, mock_validate_filename):
+        """Prueba la estructuración de datos basada en descriptores."""
         mock_read_data.return_value = self.dummy_df
-        params = {'patients': ['P01'], 'frequencies': ['Cinematica'], 'types': ['CMJ'], 'periods': ['PRE']}
+        mock_validate_filename.return_value = True # Asumir que todos los nombres son válidos
+        # Usar descriptores en los parámetros
+        params = {'patients': ['P01'], 'frequencies': ['Cinematica'], 'descriptors': ['CMJ', 'PRE']}
 
-        # Simular estructura de archivos usando mock_file_service._get_study_path y patch('pathlib.Path.glob')
+        # Simular estructura de archivos
         mock_patient_path = self.study_path / "P01"
         mock_freq_path = mock_patient_path / "Cinematica"
         mock_file = mock_freq_path / "P01 CMJ PRE 01_Cinematica.txt"
@@ -208,8 +221,12 @@ class TestAnalysisService(unittest.TestCase):
 
             structured_data = self.analysis_service._get_data_for_parameters(self.study_id, params)
 
+            # Verificar que validate_filename fue llamado
+            mock_validate_filename.assert_called_once_with(mock_file.name, self.study_descriptors)
+
+            # Verificar estructura con clave de descriptores
             self.assertIn('Cinematica', structured_data)
-            self.assertIn('CMJ_PRE', structured_data['Cinematica'])
+            self.assertIn('CMJ_PRE', structured_data['Cinematica']) # Clave ahora es 'CMJ_PRE'
             self.assertIn('P01', structured_data['Cinematica']['CMJ_PRE'])
             pd.testing.assert_frame_equal(structured_data['Cinematica']['CMJ_PRE']['P01'], self.dummy_df)
             # Verificar que _read_processed_file_data fue llamado
@@ -220,19 +237,21 @@ class TestAnalysisService(unittest.TestCase):
     def test_perform_analysis(self, mock_calculate, mock_get_data):
         """Prueba el flujo completo de perform_analysis."""
         # Simular datos estructurados devueltos por _get_data_for_parameters
+        # Simular datos estructurados con clave de descriptores
         mock_get_data.return_value = {
             'Cinematica': {
-                'CMJ_PRE': {
+                'CMJ_PRE': { # Clave basada en descriptores
                     'P01': self.dummy_df,
-                    'P02': self.dummy_df.copy() # Otra instancia
+                    'P02': self.dummy_df.copy()
                 }
             }
         }
-        # Simular resultado de _calculate_statistic
+        # Simular resultado de cálculo
         mock_calculate.return_value = self.dummy_stats_series
 
+        # Usar descriptores en los parámetros
         params = {'patients': ['P01', 'P02'], 'frequencies': ['Cinematica'],
-                  'types': ['CMJ'], 'periods': ['PRE'], 'calculations': ['Maximo']}
+                  'descriptors': ['CMJ', 'PRE'], 'calculations': ['Maximo']}
 
         results = self.analysis_service.perform_analysis(self.study_id, params)
 
@@ -244,9 +263,9 @@ class TestAnalysisService(unittest.TestCase):
             call(ANY, 'Maximo') # ANY para el df copiado de P02
         ], any_order=True)
 
-        # Verificar estructura del resultado
+        # Verificar estructura del resultado con clave de descriptores
         self.assertIn('Cinematica', results)
-        self.assertIn('CMJ_PRE', results['Cinematica'])
+        self.assertIn('CMJ_PRE', results['Cinematica']) # Clave de descriptores
         self.assertIn('Maximo', results['Cinematica']['CMJ_PRE'])
         self.assertIn('P01', results['Cinematica']['CMJ_PRE']['Maximo'])
         self.assertIn('P02', results['Cinematica']['CMJ_PRE']['Maximo'])
@@ -262,10 +281,10 @@ class TestAnalysisService(unittest.TestCase):
     @patch('pathlib.Path.mkdir') # Mockear método de Path
     def test_generate_report(self, mock_mkdir, mock_image, mock_doc_template, mock_barchart, mock_boxplot, mock_calculate, mock_get_data):
         """Prueba la generación de reportes (flujo y llamadas a mocks)."""
-        # Simular datos y cálculos
+        # Simular datos con clave de descriptores
         mock_get_data.return_value = {'Cinematica': {'CMJ_PRE': {'P01': self.dummy_df, 'P02': self.dummy_df}}}
         mock_calculate.return_value = self.dummy_stats_series
-        # Simular que los mocks de gráficos no hacen nada (solo registran llamada)
+        # Simular mocks de gráficos
         mock_boxplot.side_effect = None
         mock_barchart.side_effect = None
         # Configurar el mock de Image para que no falle
@@ -275,9 +294,10 @@ class TestAnalysisService(unittest.TestCase):
         mock_pdf_doc = MagicMock()
         mock_doc_template.return_value = mock_pdf_doc
 
+        # Usar descriptores en los parámetros
         params = {'patients': ['P01', 'P02'], 'frequencies': ['Cinematica'],
-                  'types': ['CMJ'], 'periods': ['PRE'], 'calculations': ['Maximo']}
-        # Usar una ruta dentro del directorio temporal
+                  'descriptors': ['CMJ', 'PRE'], 'calculations': ['Maximo']}
+        # Usar ruta temporal
         output_path = self.temp_path / "test_report.pdf"
 
         # Usar tempfile.TemporaryDirectory real para que los archivos de gráficos se creen y limpien

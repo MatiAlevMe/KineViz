@@ -50,9 +50,11 @@ class TestFileService(unittest.TestCase):
         # Datos de estudio simulados comunes
         self.study_id_1 = 1
         self.study_name_1 = "Estudio_FS_1"
+        # Actualizar mock para usar descriptores
+        self.study_descriptors_1 = ['CMJ', 'SJ', 'PRE', 'POST']
         self.study_details_1 = {
             'id': self.study_id_1, 'name': self.study_name_1,
-            'test_types': 'CMJ,SJ', 'test_periods': 'PRE,POST',
+            'descriptores': ','.join(self.study_descriptors_1), # Guardado como string
             'num_subjects': 2, 'attempts_count': 3
         }
         self.study_path_1 = self.test_studies_base_dir / self.study_name_1
@@ -199,11 +201,12 @@ class TestFileService(unittest.TestCase):
             self.file_service.delete_file(non_existent_file, self.study_id_1)
 
     # Patch data processing functions for add_files tests
-    # El target ahora es correcto porque la función se importa en el módulo file_service
-    @patch('kineviz.core.services.file_service.validate_filename_for_study_criteria', side_effect=dummy_validate_filename)
+    # Patch con la nueva firma (filename, descriptors)
+    @patch('kineviz.core.services.file_service.validate_filename_for_study_criteria')
     @patch('kineviz.core.services.file_service.FileService._process_and_copy_file', side_effect=dummy_process_and_copy)
     def test_add_files_to_study_success(self, mock_process_copy, mock_validate):
         """Prueba agregar archivos válidos."""
+        mock_validate.return_value = True # Simular siempre válido
         # Crear archivos fuente temporales
         source_dir = self.temp_path / "source_files"
         source_dir.mkdir()
@@ -218,9 +221,14 @@ class TestFileService(unittest.TestCase):
         self.assertEqual(results['success'], 2)
         self.assertEqual(len(results['errors']), 0)
         # Verificar que la validación y el procesamiento fueron llamados
+        # Verificar que la validación fue llamada con descriptores
         self.assertEqual(mock_validate.call_count, 2)
+        mock_validate.assert_has_calls([
+            call(file1_path.name, self.study_descriptors_1),
+            call(file2_path.name, self.study_descriptors_1)
+        ], any_order=True)
+        # Verificar llamadas a _process_and_copy_file
         self.assertEqual(mock_process_copy.call_count, 2)
-        # Verificar llamadas a _process_and_copy_file con los argumentos correctos
         mock_process_copy.assert_has_calls([
             call(self.study_path_1, file1_path),
             call(self.study_path_1, file2_path)
@@ -231,7 +239,8 @@ class TestFileService(unittest.TestCase):
     @patch('kineviz.core.services.file_service.FileService._process_and_copy_file', side_effect=dummy_process_and_copy)
     def test_add_files_to_study_invalid_name(self, mock_process_copy, mock_validate):
         """Prueba agregar un archivo con nombre inválido."""
-        mock_validate.side_effect = lambda name, types, periods: "INVALIDO" not in name
+        # Simular que la validación falla si el nombre contiene "INVALIDO"
+        mock_validate.side_effect = lambda name, descriptors: "INVALIDO" not in name
 
         source_dir = self.temp_path / "source_files"
         source_dir.mkdir()
@@ -245,17 +254,22 @@ class TestFileService(unittest.TestCase):
 
         self.assertEqual(results['success'], 1)
         self.assertEqual(len(results['errors']), 1)
-        self.assertIn("Nombre de archivo 'P02 INVALIDO POST 01.txt' no cumple los criterios", results['errors'][0])
-        # Verificar que la validación fue llamada para ambos
+        # Mensaje de error ahora menciona descriptores
+        self.assertIn("Nombre de archivo 'P02 INVALIDO POST 01.txt' no cumple con los descriptores", results['errors'][0])
+        # Verificar que la validación fue llamada para ambos con descriptores
         self.assertEqual(mock_validate.call_count, 2)
+        mock_validate.assert_has_calls([
+            call(file1_path.name, self.study_descriptors_1),
+            call(file2_path.name, self.study_descriptors_1)
+        ], any_order=True)
         # Verificar que el procesamiento solo fue llamado para el válido
         mock_process_copy.assert_called_once_with(self.study_path_1, file1_path)
 
-    # El target ahora es correcto
-    @patch('kineviz.core.services.file_service.validate_filename_for_study_criteria', side_effect=dummy_validate_filename)
+    @patch('kineviz.core.services.file_service.validate_filename_for_study_criteria')
     @patch('kineviz.core.services.file_service.FileService._process_and_copy_file')
     def test_add_files_to_study_processing_error(self, mock_process_copy, mock_validate):
         """Prueba el manejo de errores durante el procesamiento."""
+        mock_validate.return_value = True # Asegurar que la validación pase
         mock_process_copy.side_effect = Exception("Error simulado en procesamiento")
 
         source_dir = self.temp_path / "source_files"
@@ -269,13 +283,12 @@ class TestFileService(unittest.TestCase):
         self.assertEqual(results['success'], 0)
         self.assertEqual(len(results['errors']), 1)
         self.assertIn("Error procesando 'P01 CMJ PRE 01.txt': Error simulado en procesamiento", results['errors'][0])
-        mock_validate.assert_called_once()
+        mock_validate.assert_called_once_with(file1_path.name, self.study_descriptors_1) # Verificar llamada a validate
         mock_process_copy.assert_called_once_with(self.study_path_1, file1_path)
 
-    # El target ahora es correcto
-    @patch('kineviz.core.services.file_service.validate_filename_for_study_criteria', side_effect=dummy_validate_filename)
+    @patch('kineviz.core.services.file_service.validate_filename_for_study_criteria')
     def test_get_unique_study_parameters(self, mock_validate):
-        """Prueba obtener parámetros únicos de archivos procesados válidos."""
+        """Prueba obtener parámetros únicos (incluyendo descriptores)."""
         # Crear estructura más compleja
         p1_path = self.study_path_1 / "P01"
         p2_path = self.study_path_1 / "P02"
@@ -299,14 +312,21 @@ class TestFileService(unittest.TestCase):
         (p1_og_path / "P01 CMJ PRE 01.txt").touch()
 
         # Configurar mock_validate para que falle con "INVALIDO"
-        mock_validate.side_effect = lambda name, types, periods: "INVALIDO" not in name
+        # La función real ahora toma (filename, descriptors)
+        mock_validate.side_effect = lambda name, descriptors: "INVALIDO" not in name
 
         params = self.file_service.get_unique_study_parameters(self.study_id_1)
 
+        # Verificar llamadas a validate con descriptores
+        self.assertTrue(mock_validate.called)
+        # Ejemplo de verificación de una llamada (puede ser más complejo verificar todas)
+        mock_validate.assert_any_call("P01 CMJ PRE 01_Cinematica.txt", self.study_descriptors_1)
+
+        # Verificar parámetros extraídos
         self.assertEqual(params['patients'], {'P01', 'P02'})
         self.assertEqual(params['frequencies'], {'Cinematica', 'Electromiografica'})
-        self.assertEqual(params['types'], {'CMJ', 'SJ'})
-        self.assertEqual(params['periods'], {'PRE', 'POST'})
+        # Verificar descriptores extraídos de los nombres de archivo válidos
+        self.assertEqual(params['descriptors'], {'CMJ', 'SJ', 'PRE', 'POST'})
 
 
 if __name__ == '__main__':
