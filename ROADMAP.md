@@ -136,7 +136,7 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 ## Fase 6: Análisis Estadístico Discreto y Reportes Avanzados (Pendiente)
 
 ### **Visión General**
-Esta funcionalidad está pensada para automatizar el análisis estadístico de datos discretos (por ejemplo, valores máximos, mínimos y rangos) obtenidos de estudios, en donde cada estudio puede contener múltiples archivos por paciente y por intento. Principalmente, se enfoca en datos cinemáticos, generando tanto tablas como gráficos (barras y boxplots) para comparar estadísticamente distintos descriptores según las etiquetas asignadas.
+Esta funcionalidad está pensada para automatizar el análisis estadístico de datos discretos (por ejemplo, valores máximos, mínimos y rangos) obtenidos de estudios, en donde cada estudio puede contener múltiples archivos por paciente y por intento. Principalmente, se enfoca en datos cinemáticos, generando tanto tablas como gráficos para comparar estadísticamente distintos descriptores según las etiquetas asignadas.
 
 ### Flujo del Proceso
 1.  **Extracción y Normalización de Datos**
