@@ -283,15 +283,13 @@ class FileService:
             results['errors'].append(f"No se pudo encontrar la ruta para el estudio ID {study_id}.")
             return results
 
-        # Obtener criterios del estudio para validación
+        # Obtener descriptores del estudio para validación
         try:
             study_details = self.study_service.get_study_details(study_id)
-            types_str = study_details.get('test_types', '') or ''
-            periods_str = study_details.get('test_periods', '') or ''
-            valid_types = [t.strip() for t in types_str.split(',') if t.strip()]
-            valid_periods = [p.strip() for p in periods_str.split(',') if p.strip()]
+            descriptors_str = study_details.get('descriptores', '') or ''
+            valid_descriptors = [d.strip() for d in descriptors_str.split(',') if d.strip()]
         except Exception as e:
-            error_msg = f"Error al obtener criterios del estudio {study_id}: {e}"
+            error_msg = f"Error al obtener descriptores del estudio {study_id}: {e}"
             logger.error(error_msg, exc_info=True)
             results['errors'].append(error_msg)
             return results
@@ -301,9 +299,9 @@ class FileService:
             source_file_path = Path(file_path_str)
             file_name = source_file_path.name
             try:
-                # 1. Validar nombre de archivo
-                if not validate_filename_for_study_criteria(file_name, valid_types, valid_periods):
-                    raise ValueError(f"Nombre de archivo '{file_name}' no cumple los criterios del estudio.")
+                # 1. Validar nombre de archivo usando descriptores
+                if not validate_filename_for_study_criteria(file_name, valid_descriptors):
+                    raise ValueError(f"Nombre de archivo '{file_name}' no cumple con los descriptores definidos para el estudio.")
 
                 # 2. Procesar y copiar el archivo
                 self._process_and_copy_file(study_path, source_file_path)
@@ -334,28 +332,25 @@ class FileService:
         basados en los archivos procesados válidos de un estudio.
 
         :param study_id: ID del estudio.
-        :return: Diccionario {'patients': set(), 'frequencies': set(), 'types': set(), 'periods': set()}
+        :return: Diccionario {'patients': set(), 'frequencies': set(), 'descriptors': set()}
                  o un diccionario vacío si hay error o no hay archivos.
         """
-        # El validador se importa a nivel de módulo ahora
         from kineviz.core.data_processing.file_handlers import obtener_nombre_paciente # Necesitamos esta función
 
         study_path = self._get_study_path(study_id)
         if not study_path:
             return {'patients': set(), 'frequencies': set(), 'types': set(), 'periods': set()}
 
-        # Obtener criterios del estudio para validación de nombres
+        # Obtener descriptores definidos para el estudio (para validación y referencia)
         try:
             study_details = self.study_service.get_study_details(study_id)
-            types_str = study_details.get('test_types', '') or ''
-            periods_str = study_details.get('test_periods', '') or ''
-            valid_types_list = [t.strip() for t in types_str.split(',') if t.strip()]
-            valid_periods_list = [p.strip() for p in periods_str.split(',') if p.strip()]
+            descriptors_str = study_details.get('descriptores', '') or ''
+            defined_descriptors = [d.strip() for d in descriptors_str.split(',') if d.strip()]
         except Exception as e:
-            logger.error(f"Error al obtener criterios del estudio {study_id} para parámetros: {e}", exc_info=True)
-            return {'patients': set(), 'frequencies': set(), 'types': set(), 'periods': set()}
+            logger.error(f"Error al obtener descriptores del estudio {study_id} para parámetros: {e}", exc_info=True)
+            return {'patients': set(), 'frequencies': set(), 'descriptors': set()}
 
-        parameters = {'patients': set(), 'frequencies': set(), 'types': set(), 'periods': set()}
+        parameters = {'patients': set(), 'frequencies': set(), 'descriptors': set()}
         logger.debug(f"Buscando parámetros únicos para estudio {study_id} en {study_path}")
         processed_folders = ["Cinematica", "Cinetica", "Electromiografica"]
 
@@ -373,35 +368,21 @@ class FileService:
                         for file_path in freq_folder_path.iterdir():
                             if file_path.is_file() and file_path.suffix.lower() in ['.txt', '.csv']:
                                 filename = file_path.name
-                                # Validar nombre antes de extraer parámetros
                                 # Validar nombre ANTES de extraer parámetros y añadir frecuencia/paciente
-                                # Esto asegura que solo contamos parámetros de archivos válidos
-                                if validate_filename_for_study_criteria(filename, valid_types_list, valid_periods_list):
-                                    # Si el archivo es válido, añadir su frecuencia y paciente (si no existe ya)
+                                if validate_filename_for_study_criteria(filename, defined_descriptors):
+                                    # Si el archivo es válido, añadir su frecuencia y paciente
                                     parameters['frequencies'].add(freq_folder_name)
-                                    parameters['patients'].add(patient_name) # Añadir paciente solo si tiene archivos válidos
+                                    parameters['patients'].add(patient_name)
 
-                                    # Extraer tipo y periodo del nombre (simplificado)
-                                    # Asume formato PteXX TIPO PERIODO NN_Frecuencia.ext
+                                    # Extraer descriptores del nombre de archivo
                                     base_name = filename.split(f'_{freq_folder_name}')[0]
                                     parts = base_name.replace('_', ' ').split()
-                                    if len(parts) == 4:
-                                        # Asignar basado en si está en la lista válida
-                                        if parts[1] in valid_types_list:
-                                            parameters['types'].add(parts[1])
-                                        elif parts[1] in valid_periods_list:
-                                             parameters['periods'].add(parts[1])
+                                    intermediate_parts = parts[1:-1] # Partes entre PteXX y NN
 
-                                        if parts[2] in valid_types_list:
-                                            parameters['types'].add(parts[2])
-                                        elif parts[2] in valid_periods_list:
-                                             parameters['periods'].add(parts[2])
-                                    elif len(parts) == 3:
-                                         if parts[1] in valid_types_list:
-                                             parameters['types'].add(parts[1])
-                                         elif parts[1] in valid_periods_list:
-                                             parameters['periods'].add(parts[1])
-                                    # Ignorar caso de 2 partes (sin tipo/periodo)
+                                    # Añadir las partes intermedias (que ya sabemos son válidas por el chequeo anterior)
+                                    # al set de descriptores encontrados.
+                                    for desc in intermediate_parts:
+                                        parameters['descriptors'].add(desc)
 
         return parameters
 

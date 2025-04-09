@@ -39,19 +39,23 @@ class AnalysisService:
 
         :param study_id: ID del estudio.
         :return: Diccionario con sets de parámetros disponibles
-                 {'patients': set(), 'frequencies': set(), 'types': set(), 'periods': set()}
+                 {'patients': set(), 'frequencies': set(), 'descriptors': set(), 'calculations': set()}
                  Retorna sets vacíos si no se encuentran parámetros o hay error.
         """
         try:
             # Obtener parámetros únicos del FileService
+            # Obtener parámetros únicos del FileService (ahora incluye 'descriptors')
             params = self.file_service.get_unique_study_parameters(study_id)
             # Añadir cálculos fijos
             params['calculations'] = {'Maximo', 'Minimo', 'Rango'}
+            # Asegurar que 'descriptors' exista aunque esté vacío
+            if 'descriptors' not in params:
+                params['descriptors'] = set()
             return params
         except Exception as e:
             logger.error(f"Error obteniendo parámetros de análisis para estudio {study_id}: {e}", exc_info=True)
             # Devolver vacío en caso de error para que la UI no falle
-            return {'patients': set(), 'frequencies': set(), 'types': set(), 'periods': set(), 'calculations': set()}
+            return {'patients': set(), 'frequencies': set(), 'descriptors': set(), 'calculations': set()}
 
     def _read_processed_file_data(self, file_path: Path) -> pd.DataFrame | None:
         """
@@ -134,11 +138,11 @@ class AnalysisService:
         con los parámetros seleccionados.
 
         :param study_id: ID del estudio.
-        :param parameters: Diccionario con listas de 'patients', 'frequencies', 'types', 'periods'.
+        :param parameters: Diccionario con listas de 'patients', 'frequencies', 'descriptors', 'calculations'.
         :return: Diccionario anidado:
                  {
                      'frequency1': {
-                         'type1_period1': {
+                         'descriptor_combo_key': { # Clave basada en descriptores encontrados
                              'patient1': DataFrame,
                              'patient2': DataFrame, ...
                          }, ...
@@ -153,16 +157,15 @@ class AnalysisService:
 
         selected_patients = parameters.get('patients', [])
         selected_frequencies = parameters.get('frequencies', [])
-        selected_types = parameters.get('types', [])
-        selected_periods = parameters.get('periods', [])
+        selected_descriptors = parameters.get('descriptors', []) # Usar 'descriptors'
 
-        # Obtener criterios del estudio para construir nombres de archivo
+        # Obtener descriptores definidos del estudio para validación y extracción
         try:
             study_details = self.study_service.get_study_details(study_id)
-            types_list = [t.strip() for t in (study_details.get('test_types') or '').split(',') if t.strip()]
-            periods_list = [p.strip() for p in (study_details.get('test_periods') or '').split(',') if p.strip()]
+            descriptors_str = study_details.get('descriptores', '') or ''
+            defined_descriptors = [d.strip() for d in descriptors_str.split(',') if d.strip()]
         except Exception as e:
-            logger.error(f"Error obteniendo detalles del estudio {study_id} para buscar datos: {e}", exc_info=True)
+            logger.error(f"Error obteniendo descriptores del estudio {study_id} para buscar datos: {e}", exc_info=True)
             return {}
 
 
@@ -181,57 +184,43 @@ class AnalysisService:
                 for file_path in freq_path.glob('*.txt'): # Asumiendo extensión .txt para procesados
                     filename = file_path.name
 
-                    # Extraer tipo y periodo del nombre de archivo para comparar
-                    # Asume formato PteXX TIPO PERIODO NN_Frecuencia.txt o similar
+                    # Validar nombre de archivo ANTES de procesar
+                    if not validate_filename_for_study_criteria(filename, defined_descriptors):
+                        continue # Omitir archivo si no cumple criterios
+
+                    # Extraer descriptores del nombre de archivo
                     base_name = filename.split(f'_{freq}')[0]
                     parts = base_name.replace('_', ' ').split()
+                    file_descriptors = parts[1:-1] # Descriptores están entre PteXX y NN
 
-                    file_type = None
-                    file_period = None
+                    # Comprobar si los descriptores del archivo coinciden con la selección
+                    # Si no se seleccionaron descriptores, incluir todos los archivos válidos.
+                    # Si se seleccionaron, el archivo debe contener TODOS los seleccionados.
+                    descriptors_match = (not selected_descriptors) or \
+                                        all(desc in file_descriptors for desc in selected_descriptors)
 
-                    # Lógica de extracción basada en si tipos/periodos están definidos
-                    if types_list and periods_list and len(parts) >= 4:
-                        if parts[1] in types_list and parts[2] in periods_list:
-                            file_type = parts[1]
-                            file_period = parts[2]
-                        elif parts[1] in periods_list and parts[2] in types_list:
-                            file_period = parts[1]
-                            file_type = parts[2]
-                    elif (types_list or periods_list) and len(parts) >= 3:
-                        if types_list and parts[1] in types_list:
-                            file_type = parts[1]
-                        elif periods_list and parts[1] in periods_list:
-                            file_period = parts[1]
-                    # Caso sin tipos ni periodos: file_type y file_period permanecen None
+                    if descriptors_match:
+                        # Crear clave combinada para los descriptores encontrados en el archivo,
+                        # ordenados alfabéticamente para consistencia.
+                        descriptor_key = "_".join(sorted(file_descriptors)) if file_descriptors else "NoDesc"
 
-                    # Comprobar si el tipo y periodo del archivo coinciden con la selección
-                    # Si no hay tipos/periodos seleccionados, se incluyen todos los archivos de esa frecuencia/paciente
-                    type_match = (not selected_types) or (file_type in selected_types)
-                    period_match = (not selected_periods) or (file_period in selected_periods)
-
-                    if type_match and period_match:
-                        # Crear clave combinada para tipo/periodo
-                        type_period_key = f"{file_type or 'NT'}_{file_period or 'NP'}" # NT: No Type, NP: No Period
-
-                        if type_period_key not in structured_data[freq]:
-                            structured_data[freq][type_period_key] = {}
+                        if descriptor_key not in structured_data[freq]:
+                            structured_data[freq][descriptor_key] = {}
 
                         # Leer datos del archivo
                         df_data = self._read_processed_file_data(file_path)
                         if df_data is not None and not df_data.empty:
-                            # Acumular datos si ya existe una entrada para este paciente/freq/tipo/periodo
-                            # Esto podría pasar si hay múltiples intentos (01, 02, etc.)
-                            if patient not in structured_data[freq][type_period_key]:
-                                structured_data[freq][type_period_key][patient] = df_data
+                            # Acumular datos si ya existe una entrada para este paciente/freq/descriptor_key
+                            if patient not in structured_data[freq][descriptor_key]:
+                                structured_data[freq][descriptor_key][patient] = df_data
                             else:
-                                # Concatenar DataFrames (ignorar índice para evitar duplicados)
-                                structured_data[freq][type_period_key][patient] = pd.concat(
-                                    [structured_data[freq][type_period_key][patient], df_data],
+                                # Concatenar DataFrames
+                                structured_data[freq][descriptor_key][patient] = pd.concat(
+                                    [structured_data[freq][descriptor_key][patient], df_data],
                                     ignore_index=True
                                 )
                         else:
-                             print(f"Advertencia: No se pudieron leer datos válidos de {filename}")
-
+                             logger.warning(f"No se pudieron leer datos válidos de {filename}")
 
         return structured_data
 
@@ -265,9 +254,9 @@ class AnalysisService:
         Calcula las estadísticas seleccionadas para los datos agrupados.
 
         :param study_id: ID del estudio a analizar.
-        :param parameters: Diccionario con los parámetros de análisis.
+        :param parameters: Diccionario con los parámetros de análisis ('patients', 'frequencies', 'descriptors', 'calculations').
         :return: Diccionario con resultados del análisis, agrupados por
-                 frecuencia -> tipo_periodo -> calculo -> paciente -> Serie de resultados.
+                 frecuencia -> descriptor_key -> calculo -> paciente -> Serie de resultados.
                  Ej: {'Cinematica': {'CMJ_PRE': {'Maximo': {'P01': pd.Series, 'P02': pd.Series}}}}
         """
         logger.info(f"Realizando análisis para estudio {study_id} con parámetros: {parameters}")
@@ -279,18 +268,18 @@ class AnalysisService:
             logger.warning(f"No se encontraron datos para los parámetros de análisis seleccionados en estudio {study_id}.")
             return {}
 
-        for freq, type_period_data in structured_data.items():
+        for freq, descriptor_data in structured_data.items():
             analysis_results[freq] = {}
-            for type_period_key, patient_data in type_period_data.items():
-                analysis_results[freq][type_period_key] = {}
+            for descriptor_key, patient_data in descriptor_data.items():
+                analysis_results[freq][descriptor_key] = {}
                 for calc in selected_calculations:
-                    analysis_results[freq][type_period_key][calc] = {}
+                    analysis_results[freq][descriptor_key][calc] = {}
                     for patient, df in patient_data.items():
                         stats = self._calculate_statistic(df, calc)
                         if stats is not None:
-                            analysis_results[freq][type_period_key][calc][patient] = stats
+                            analysis_results[freq][descriptor_key][calc][patient] = stats
 
-        print("Análisis completado.")
+        logger.info(f"Análisis completado para estudio {study_id}.")
         return analysis_results
 
 
@@ -345,8 +334,7 @@ class AnalysisService:
             param_text = f"""
                 <b>Pacientes:</b> {', '.join(parameters.get('patients',[]))}<br/>
                 <b>Frecuencias:</b> {', '.join(parameters.get('frequencies',[]))}<br/>
-                <b>Tipos Prueba:</b> {', '.join(parameters.get('types',[]) or ['Todos'])}<br/>
-                <b>Periodos Prueba:</b> {', '.join(parameters.get('periods',[]) or ['Todos'])}<br/>
+                <b>Descriptores:</b> {', '.join(parameters.get('descriptors',[]) or ['Todos'])}<br/>
                 <b>Cálculos:</b> {', '.join(parameters.get('calculations',[]))}
             """
             story.append(Paragraph(param_text, styles['Normal']))
@@ -354,20 +342,17 @@ class AnalysisService:
 
             # --- Iterar y Generar Contenido ---
             plot_counter = 0
-            for freq, type_period_data in structured_data.items():
+            for freq, descriptor_data in structured_data.items():
                 story.append(Paragraph(f"Resultados para Frecuencia: {freq}", styles['h2']))
                 story.append(Spacer(1, 0.1*inch))
 
-                for type_period_key, patient_data in type_period_data.items():
-                    # Extraer tipo y periodo de la clave
-                    tp_parts = type_period_key.split('_')
-                    type_str = tp_parts[0] if tp_parts[0] != 'NT' else 'N/A'
-                    period_str = tp_parts[1] if tp_parts[1] != 'NP' else 'N/A'
-                    story.append(Paragraph(f"Tipo: {type_str}, Periodo: {period_str}", styles['h3']))
+                for descriptor_key, patient_data in descriptor_data.items():
+                    # Usar la clave de descriptor (ej: "CMJ_PRE" o "DESC1_DESC2" o "NoDesc")
+                    descriptor_display = descriptor_key.replace('_', ', ') # Mostrar más legible
+                    story.append(Paragraph(f"Descriptores: {descriptor_display}", styles['h3']))
                     story.append(Spacer(1, 0.1*inch))
 
-                    # --- Boxplot General por Paciente (para esta freq/tipo/periodo) ---
-                    # Necesitamos agrupar todos los valores numéricos por paciente
+                    # --- Boxplot General por Paciente (para esta freq/combinación de descriptores) ---
                     boxplot_data = {}
                     all_numeric_columns = set()
                     for patient, df in patient_data.items():
@@ -384,7 +369,7 @@ class AnalysisService:
                         boxplot_filename = temp_dir / f"boxplot_{plot_counter}.png"
                         charting.create_boxplot(
                             data_dict=boxplot_data,
-                            title=f"Distribución General - {freq} ({type_str}/{period_str})",
+                            title=f"Distribución General - {freq} ({descriptor_display})",
                             ylabel="Valor Medición",
                             output_path=boxplot_filename
                         )
@@ -426,7 +411,7 @@ class AnalysisService:
                                 barchart_filename = temp_dir / f"barchart_{plot_counter}.png"
                                 charting.create_barchart(
                                     data_dict=valid_avg_calc,
-                                    title=f"{calc} Promedio - {freq} ({type_str}/{period_str})",
+                                    title=f"{calc} Promedio - {freq} ({descriptor_display})",
                                     xlabel="Paciente",
                                     ylabel=f"{calc} Promedio",
                                     output_path=barchart_filename
