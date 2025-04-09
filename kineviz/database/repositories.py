@@ -76,19 +76,25 @@ class StudyRepository:
         """
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
-            cursor.execute('''
-                INSERT INTO estudios 
-                (nombre_estudio, num_sujetos, tipos_prueba, periodos_prueba, cantidad_intentos_prueba)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (
-                study_data['name'], 
-                int(study_data['num_subjects']), 
-                study_data['test_types'], 
-                study_data['test_periods'], 
-                int(study_data['attempts_count'])
-            ))
-            conn.commit()
-            study_id = cursor.lastrowid
+            # Intentar insertar, manejar error de unicidad de nombre
+            try:
+                cursor.execute('''
+                    INSERT INTO estudios
+                    (nombre_estudio, num_sujetos, descriptores, cantidad_intentos_prueba)
+                    VALUES (?, ?, ?, ?)
+                ''', (
+                    study_data['name'],
+                    int(study_data['num_subjects']),
+                    study_data.get('descriptores', ''), # Usar nueva clave 'descriptores'
+                    int(study_data['attempts_count'])
+                ))
+                conn.commit()
+                study_id = cursor.lastrowid
+            except sqlite3.IntegrityError as e:
+                 if "UNIQUE constraint failed: estudios.nombre_estudio" in str(e):
+                      raise ValueError(f"Ya existe un estudio con el nombre '{study_data['name']}'.")
+                 else:
+                      raise # Relanzar otros errores de integridad
 
             # Crear directorio para el estudio usando self.studies_base_dir
             try:
@@ -139,8 +145,8 @@ class StudyRepository:
                 'id': row[0],
                 'name': row[1],
                 'num_subjects': row[2],
-                'descriptores': row[3], # Usar columna 'descriptores'
-                'attempts_count': row[4] # El índice cambia
+                'descriptores': row[3],
+                'attempts_count': row[4]
             }
 
     def delete_study(self, study_id):
