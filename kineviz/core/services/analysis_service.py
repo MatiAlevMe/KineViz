@@ -88,22 +88,33 @@ class AnalysisService:
                  return None
             first_data_line_parts = data_lines[0].strip().split(';')
             num_data_cols = len(first_data_line_parts)
+            # Add debug for first data line content
+            logger.debug(f"Primera línea de datos: '{data_lines[0].strip()}'")
             logger.debug(f"Detectadas {num_data_cols} columnas en la primera línea de datos de {file_path.name}")
 
+            if num_data_cols == 0:
+                 logger.warning(f"No se detectaron columnas de datos en {file_path.name}")
+                 return None
+
             # --- Generar nombres de columna basados en la línea 3 y ajustar a num_data_cols ---
-            # Leer la tercera línea (índice 2) para obtener los nombres de columna base
-            raw_col_names_base = lines[2].strip().split(';')[2:] # Empezar desde el tercer elemento
+            # Leer la tercera línea COMPLETA (índice 2) para obtener los nombres de columna base
+            raw_col_names_line3 = lines[2].strip().split(';')
+            logger.debug(f"Nombres crudos de línea 3: {raw_col_names_line3}")
 
             # Sanear nombres de columna base para asegurar unicidad y no vacíos
             sanitized_base_names = []
             counts = {}
-            for i, name in enumerate(raw_col_names_base):
+            # Sanitize names from the full line 3
+            for i, name in enumerate(raw_col_names_line3):
                 clean_name = name.strip()
-                # Reemplazar nombres vacíos
+                # Handle empty names, potentially giving special names to first two meta columns
                 if not clean_name:
-                    clean_name = f"Unnamed_{i}"
+                    if i < 2: # First two columns are often empty/meta in original format
+                         clean_name = f"Meta_{i+1}"
+                    else:
+                         clean_name = f"Unnamed_{i}"
 
-                # Añadir sufijo si el nombre está duplicado
+                # Add suffix if the name is duplicated
                 if clean_name in counts:
                     counts[clean_name] += 1
                     unique_name = f"{clean_name}_{counts[clean_name]}"
@@ -111,20 +122,14 @@ class AnalysisService:
                     counts[clean_name] = 0
                     unique_name = clean_name
                 sanitized_base_names.append(unique_name)
+            logger.debug(f"Nombres base saneados ({len(sanitized_base_names)}): {sanitized_base_names}")
 
-            # Construir la lista final de nombres, ajustando al número real de columnas de datos
-            # Se asume que la primera columna de datos es 'Tiempo'
-            if num_data_cols > 0:
-                 final_col_names = ['Tiempo']
-                 # Añadir nombres saneados, hasta num_data_cols - 1
-                 final_col_names.extend(sanitized_base_names[:num_data_cols - 1])
-                 # Si aún faltan nombres (porque la línea 3 tenía menos o num_data_cols es mayor), añadir genéricos
-                 while len(final_col_names) < num_data_cols:
-                     final_col_names.append(f"Unnamed_{len(final_col_names)}")
-            else:
-                 # Si no hay columnas de datos, devolver DataFrame vacío o None
-                 logger.warning(f"No se detectaron columnas de datos en {file_path.name}")
-                 return None
+            # Construir la lista final de nombres, ajustando al número real de columnas de datos (num_data_cols)
+            # NO prependemos 'Tiempo'. Usamos los nombres saneados de la línea 3 como base.
+            final_col_names = sanitized_base_names[:num_data_cols] # Truncate if line 3 had more names than data columns
+            # Pad with generic names if line 3 had fewer names than data columns
+            while len(final_col_names) < num_data_cols:
+                final_col_names.append(f"Data_Col_{len(final_col_names)}") # Use a distinct name for padding
 
             logger.debug(f"Nombres de columna finales para {file_path.name} ({len(final_col_names)}): {final_col_names}")
             # --- Fin ajuste de nombres ---
