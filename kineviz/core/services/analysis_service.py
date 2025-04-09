@@ -743,7 +743,8 @@ class AnalysisService:
                             # Guardar CSV
                             output_filename = f"{calc}_{target_frequency}_{descriptor_key}.csv"
                             output_csv_path = output_base_dir / output_filename
-                            df.to_csv(output_csv_path, sep=',', decimal=',', encoding='utf-8') # Usar coma como separador decimal
+                            # No escribir el nombre del índice ('ARCHIVO') en la fila de datos
+                            df.to_csv(output_csv_path, sep=',', decimal=',', encoding='utf-8', index_label=None)
                             results['success'].append(str(output_csv_path))
                             logger.info(f"Tabla de resumen generada: {output_csv_path}")
 
