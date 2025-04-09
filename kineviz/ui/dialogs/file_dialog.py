@@ -20,18 +20,16 @@ class FileDialog(Toplevel):
         self.on_close_callback = on_close_callback
         self.selected_files = [] # Lista de rutas (Path objects)
 
-        # Obtener criterios del estudio para validación previa (opcional pero mejora UX)
+        # Obtener descriptores del estudio para validación previa
         self.study_details = None
-        self.valid_types = []
-        self.valid_periods = []
+        self.valid_descriptors = [] # Cambiado de types/periods a descriptors
         try:
             self.study_details = self.file_service.study_service.get_study_details(self.study_id)
-            types_str = self.study_details.get('test_types', '') or ''
-            periods_str = self.study_details.get('test_periods', '') or ''
-            self.valid_types = [t.strip() for t in types_str.split(',') if t.strip()]
-            self.valid_periods = [p.strip() for p in periods_str.split(',') if p.strip()]
+            # Cargar descriptores en lugar de tipos/periodos
+            descriptors_str = self.study_details.get('descriptores', '') or ''
+            self.valid_descriptors = [d.strip() for d in descriptors_str.split(',') if d.strip()]
         except Exception as e:
-            logger.error(f"No se pudieron cargar los detalles del estudio {self.study_id} en FileDialog: {e}", exc_info=True)
+            logger.error(f"No se pudieron cargar los descriptores del estudio {self.study_id} en FileDialog: {e}", exc_info=True)
             messagebox.showerror("Error", f"No se pudieron cargar los detalles del estudio: {e}", parent=parent)
             self.destroy()
             return
@@ -93,9 +91,9 @@ class FileDialog(Toplevel):
                 file_path = Path(filename)
                 # Evitar duplicados en la lista
                 if str(file_path) not in current_paths_in_list:
-                    # Validar nombre antes de añadir a la lista (feedback temprano)
+                    # Validar nombre usando descriptores antes de añadir a la lista
                     is_valid = validate_filename_for_study_criteria(
-                        file_path.name, self.valid_types, self.valid_periods
+                        file_path.name, self.valid_descriptors # Pasar descriptores
                     )
                     # Añadir a la lista visual y a la lista interna
                     # Marcar visualmente si es inválido
