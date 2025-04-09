@@ -98,8 +98,10 @@ class StudyView:
             # Construir string de alias
             alias_parts = []
             for desc in detected_descriptors:
-                alias = all_aliases.get(desc)
+                # Buscar alias usando la versión en minúsculas del descriptor
+                alias = all_aliases.get(desc.lower())
                 if alias:
+                    # Mostrar el descriptor original y su alias
                     alias_parts.append(f"{desc} ({alias})")
                 else:
                     alias_parts.append(desc) # Mostrar descriptor original si no hay alias
