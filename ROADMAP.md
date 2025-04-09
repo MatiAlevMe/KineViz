@@ -210,9 +210,9 @@ Esta funcionalidad está pensada para automatizar el análisis estadístico de d
 
 *   **1. Implementar detección automática de tipo de frecuencias basada en metadatos del archivo. (Completado - 91ffd0a)**
     *   **Detalle**: Modificada la lógica en `kineviz.core.data_processing.file_handlers.leer_seccion` y `kineviz.core.services.file_service._process_and_copy_file` para identificar Cinemática ("Model Outputs") y Cinética ("Force Plate").
-    *   **1.1 Implementación de identificador de archivo para Cinemática**: Hecho.
-    *   **1.2 Implementación de identificador de archivo para Cinética**: Hecho.
-    *   **1.3 Implementación de identificador de archivo para Electromiográfica**: Pendiente de confirmación del formato/identificador.
+    *   **1.1 Implementación de identificador de archivo para Cinemática**: (Hecho).
+    *   **1.2 Implementación de identificador de archivo para Cinética**: (Hecho).
+    *   **1.3 Implementación de identificador de archivo para Electromiográfica**: (Pendiente) de confirmación del formato/identificador.
 
 *   **2. Implementación para crear/editar estudio con descriptores extra. (Completado)**
     *   **Detalle**: Modificado `kineviz.ui.dialogs.study_dialog.py` para reemplazar los campos de entrada de "Tipos de Prueba" y "Periodos de Prueba" por una sección dinámica que permita añadir/eliminar campos de texto para "Descriptores".
@@ -223,7 +223,8 @@ Esta funcionalidad está pensada para automatizar el análisis estadístico de d
     *   **Detalle**: Añadir una nueva funcionalidad (posiblemente en `kineviz.ui.views.study_view.py` o un nuevo diálogo) que permita al usuario ver los descriptores *detectados* en los nombres de archivo de un estudio y asignarles un "alias" o "nombre descriptivo" (ej: "CMJ" -> "Salto Contra Movimiento"). Este alias se usaría para mostrar en gráficos y reportes. El almacenamiento de estos alias podría ser en `config.ini` o en la base de datos. *Nota: Inicialmente, esta modificación es solo visual.*
     *   **3.1 Añadir gestión de alias en `AppSettings`**: (Hecho) Métodos para leer/escribir sección `[DESCRIPTOR_ALIASES]` en `config.ini`.
     *   **3.2 Crear `DescriptorAliasDialog`**: (Hecho) Diálogo para ver descriptores detectados y asignar/guardar alias usando `AppSettings`.
-    *   **3.3 Añadir botón en `StudyView` para abrir el diálogo**: (Hecho)
+    *   **3.3 Añadir botón en `StudyView` para abrir el diálogo**: (Hecho).
+    *   **3.4 Mostrar alias en `StudyView`**: (Hecho).
 
 *   **4. Integrar con el resto del código. (Completado - Alias)**
     *   **Detalle**: Revisar y actualizar todos los módulos que dependían de `test_types` y `test_periods` (Hecho). **Adicionalmente**, integrar el uso de los alias de descriptores en:
@@ -235,6 +236,25 @@ Esta funcionalidad está pensada para automatizar el análisis estadístico de d
         *   `kineviz.core.services.analysis_service`: (Hecho) `get_analysis_parameters`, `_get_data_for_parameters`, `generate_report` actualizados para usar `descriptors`.
         *   `kineviz.ui.dialogs.analysis_dialog.py`: (Hecho) Actualizado para mostrar y usar selector de `descriptors`.
         *   Actualizar pruebas unitarias afectadas. (Hecho)
+
+**Fase 6: Análisis Estadístico Discreto y Reportes Avanzados**
+
+*   **1. Generación de Matrices:** (Pendiente) Crear tablas por tipo de cálculo y descriptor (ej: "máximo_cinemática_obesidad").
+*   **2. Selector de Variables y Etiquetas:** (Pendiente) Permitir que el usuario elija las variables a utilizar en el análisis.
+*   **3. Interacción sobre Datos Pareados:** (Pendiente) Preguntar si los datos son pareados o independientes.
+*   **4. Chequeo de Distribución:** (Pendiente) Permitir al usuario indicar si confía en que sus datos son normales o si se debe realizar una prueba automática (ej: Shapiro-Wilk).
+*   **5. Selección del Test Estadístico:** (Pendiente)
+    *   **5.1 Implementar t-test** (pareado o independiente) para comparación de dos descriptores.
+    *   **5.2 Implementar ANOVA** (o test no paramétrico) para tres o más descriptores.
+*   **6. Generación de Gráficos:** (Pendiente) Implementar gráficos de barra y boxplot.
+*   **7. Exportación y Reporte:** (Pendiente) Exportar tablas en CSV/Excel/txt y generar reportes en PDF.
+*   **8. Análisis Individual:** (Pendiente)
+    *   **8.1 Crear ventana/diálogo** para configuración de análisis individual (cálculo, descriptor fijo, descriptores variables, variable a graficar).
+    *   **8.2 Implementar guardado/carga** de configuraciones de análisis individual.
+    *   **8.3 Crear lista** de análisis guardados con búsqueda/filtrado.
+    *   **8.4 Añadir botón** para abrir carpetas de tablas/gráficos de análisis individuales.
+*   **9. Reporte General:** (Pendiente) Implementar generación automática de PDF con todas las combinaciones.
+*   **10. Integración y Pruebas:** (Pendiente) Integrar la funcionalidad en la plataforma y realizar pruebas de integración.
 
 ---
 
