@@ -98,17 +98,35 @@ def validate_filename_for_study_criteria(filename: str, descriptors: list[str]) 
     if not descriptors:
         return len(parts) == 2
 
-    # Si hay descriptores definidos, verificar las partes intermedias
-    valid_descriptors_set = set(descriptors)
-    intermediate_parts = parts[1:-1] # Partes entre PteXX y NN
+    # Si hay descriptores definidos para el estudio:
+    if descriptors:
+        valid_descriptors_set = set(descriptors)
+        intermediate_parts = parts[1:-1] # Partes entre PteXX y NN
 
-    # Si no hay partes intermedias pero se definieron descriptores, es inválido
-    if not intermediate_parts and descriptors:
-         return False
+        # 1. Debe haber al menos una parte intermedia si hay descriptores definidos
+        if not intermediate_parts:
+            return False
 
-    # Verificar que TODAS las partes intermedias sean descriptores válidos
-    all_intermediate_are_valid = all(part in valid_descriptors_set for part in intermediate_parts)
+        # 2. Todas las partes intermedias deben ser descriptores válidos definidos para el estudio
+        if not all(part in valid_descriptors_set for part in intermediate_parts):
+            return False
 
-    # Opcional: ¿Deberían estar *todos* los descriptores definidos presentes?
-    # Por ahora, solo validamos que las partes presentes sean válidas.
-    return all_intermediate_are_valid
+        # 3. Las partes intermedias deben mantener el orden relativo definido en 'descriptors'
+        last_index = -1
+        for part in intermediate_parts:
+            try:
+                # Encontrar el índice de esta parte en la lista original de descriptores (que mantiene el orden)
+                current_index = descriptors.index(part)
+                # Verificar si el índice actual es mayor que el anterior
+                if current_index <= last_index:
+                    return False # Error de orden
+                last_index = current_index
+            except ValueError:
+                 # Esto no debería ocurrir si la comprobación anterior (all) funcionó, pero por seguridad:
+                 return False # Descriptor no encontrado en la lista original
+
+        # Si todas las comprobaciones pasan
+        return True
+    else:
+        # Si no hay descriptores definidos para el estudio, solo validamos PteXX NN
+        return len(parts) == 2
