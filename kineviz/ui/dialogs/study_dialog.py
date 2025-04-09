@@ -108,7 +108,11 @@ class StudyDialog(Toplevel):
         # Botón inicial para añadir el primer descriptor (o más)
         add_button_frame = ttk.Frame(main_frame)
         add_button_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", padx=15)
-        ttk.Button(add_button_frame, text="+ Añadir Descriptor", command=self.add_descriptor_entry).pack()
+        self.add_descriptor_button = ttk.Button(add_button_frame, text="+ Añadir Descriptor", command=self.add_descriptor_entry)
+        self.add_descriptor_button.pack()
+        # Deshabilitar si estamos editando
+        if self.study_to_edit:
+            self.add_descriptor_button.config(state=tk.DISABLED)
         row_idx += 1
 
         # Cargar descriptores iniciales (si estamos editando o si queremos uno por defecto)
@@ -145,6 +149,11 @@ class StudyDialog(Toplevel):
         remove_button = ttk.Button(frame, text="🗑️", width=3,
                                    command=lambda f=frame, v=descriptor_var: self.remove_descriptor_entry(f, v))
         remove_button.pack(side=tk.LEFT, padx=5)
+
+        # Si estamos editando, deshabilitar la entrada y el botón de eliminar
+        if self.study_to_edit:
+            entry.config(state='readonly')
+            remove_button.config(state=tk.DISABLED)
 
         self.descriptor_vars.append(descriptor_var)
         self.descriptor_frames.append(frame)
