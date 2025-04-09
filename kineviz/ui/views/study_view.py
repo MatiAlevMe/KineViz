@@ -4,8 +4,9 @@ from tkinter import ttk, messagebox # Importar messagebox
 from kineviz.ui.widgets.file_browser import FileBrowser
 # Importar FileService para type hinting
 from kineviz.core.services.file_service import FileService
-# Importar el nuevo diálogo de archivos
+# Importar diálogos necesarios
 from kineviz.ui.dialogs.file_dialog import FileDialog
+from kineviz.ui.dialogs.descriptor_alias_dialog import DescriptorAliasDialog
 
 class StudyView:
     # Añadir file_service y aceptar config
@@ -44,6 +45,10 @@ class StudyView:
         ttk.Button(header_frame, text="Abrir Carpeta Estudio",
                    command=self.open_study_folder).pack(side=tk.LEFT, padx=(0, 10))
 
+        # Botón Gestionar Alias
+        ttk.Button(header_frame, text="Gestionar Alias Descriptores",
+                   command=self.manage_descriptor_aliases).pack(side=tk.LEFT, padx=(0, 10))
+
 
         # --- Detalles del estudio ---
         study_details = self.main_window.study_service.get_study_details(self.study_id)
@@ -63,6 +68,17 @@ class StudyView:
         files_per_page = self.main_window.files_per_page # Obtener de main_window
         self.file_browser = FileBrowser(self.frame, self.file_service, self.study_id, files_per_page)
         self.file_browser.pack(fill=tk.BOTH, expand=True, pady=(10, 0))
+
+    def manage_descriptor_aliases(self):
+        """Abre el diálogo para gestionar los alias de los descriptores."""
+        # Necesitamos pasar AppSettings, FileService y study_id
+        DescriptorAliasDialog(
+            self.frame, # Padre
+            self.main_window.settings, # AppSettings desde MainWindow
+            self.file_service,
+            self.study_id
+        )
+        # El diálogo se encarga de guardar. No se necesita callback aquí por ahora.
 
     def open_study_folder(self):
         """Abre la carpeta del estudio actual."""
