@@ -58,16 +58,52 @@ class StudyView:
         ttk.Label(details_frame, text=f"Nombre: {study_details['name']}").pack(anchor='w')
         ttk.Label(details_frame, text=f"Nombre: {study_details.get('name', 'N/A')}").pack(anchor='w', padx=5, pady=2)
         ttk.Label(details_frame, text=f"Número de Sujetos: {study_details.get('num_subjects', 'N/A')}").pack(anchor='w', padx=5, pady=2)
-        # Mostrar Descriptores en lugar de Tipos/Periodos
-        descriptors_str = study_details.get('descriptores', 'Ninguno') or 'Ninguno'
-        ttk.Label(details_frame, text=f"Descriptores: {descriptors_str}").pack(anchor='w', padx=5, pady=2)
+        # Mostrar Descriptores definidos en el estudio
+        defined_descriptors_str = study_details.get('descriptores', 'Ninguno') or 'Ninguno'
+        ttk.Label(details_frame, text=f"Descriptores Definidos: {defined_descriptors_str}").pack(anchor='w', padx=5, pady=2)
         ttk.Label(details_frame, text=f"Intentos: {study_details.get('attempts_count', 'N/A')}").pack(anchor='w', padx=5, pady=2)
+
+        # Mostrar Alias asignados a descriptores detectados
+        self.alias_label = ttk.Label(details_frame, text="Alias Asignados: Cargando...", wraplength=500) # Usar wraplength
+        self.alias_label.pack(anchor='w', padx=5, pady=2)
+        self.update_alias_display() # Llamar a método para cargar y mostrar alias
 
         # --- File browser ---
         # Pasar la instancia de file_service y files_per_page desde main_window
         files_per_page = self.main_window.files_per_page # Obtener de main_window
         self.file_browser = FileBrowser(self.frame, self.file_service, self.study_id, files_per_page)
         self.file_browser.pack(fill=tk.BOTH, expand=True, pady=(10, 0))
+
+    def update_alias_display(self):
+        """Obtiene y muestra los alias asignados a los descriptores detectados."""
+        try:
+            # Obtener descriptores detectados
+            params = self.file_service.get_unique_study_parameters(self.study_id)
+            detected_descriptors = sorted(list(params.get('descriptors', set())))
+
+            if not detected_descriptors:
+                self.alias_label.config(text="Alias Asignados: No se detectaron descriptores en archivos válidos.")
+                return
+
+            # Obtener alias de la configuración
+            all_aliases = self.main_window.settings.get_all_aliases()
+
+            # Construir string de alias
+            alias_parts = []
+            for desc in detected_descriptors:
+                alias = all_aliases.get(desc)
+                if alias:
+                    alias_parts.append(f"{desc} ({alias})")
+                else:
+                    alias_parts.append(desc) # Mostrar descriptor original si no hay alias
+
+            alias_display_text = "Alias Asignados: " + ", ".join(alias_parts)
+            self.alias_label.config(text=alias_display_text)
+
+        except Exception as e:
+            logger.error(f"Error actualizando display de alias para estudio {self.study_id}: {e}", exc_info=True)
+            self.alias_label.config(text="Alias Asignados: Error al cargar.")
+
 
     def manage_descriptor_aliases(self):
         """Abre el diálogo para gestionar los alias de los descriptores."""
@@ -78,7 +114,9 @@ class StudyView:
             self.file_service,
             self.study_id
         )
-        # El diálogo se encarga de guardar. No se necesita callback aquí por ahora.
+        # Esperar a que el diálogo se cierre y luego actualizar la etiqueta de alias
+        self.parent.wait_window(dialog) # Espera a que el Toplevel se cierre
+        self.update_alias_display() # Actualizar la información mostrada
 
     def open_study_folder(self):
         """Abre la carpeta del estudio actual."""
