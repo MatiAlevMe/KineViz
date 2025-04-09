@@ -3,13 +3,17 @@
 ## Introducción
 KineViz es una aplicación diseñada para la gestión y análisis de estudios kinesiológicos. Permite cargar archivos de estudio en formato CSV o TXT, crear estudios, gestionar archivos y exportar resultados en formato TXT o PDF.
 
-## Indicaciones Para el Formulario para Crear Estudio(s)
-1. Nombre del Estudio: Ingrese el nombre del estudio.
-2. Número de Sujetos de Prueba: Especifique el número de sujetos de prueba (ie. 4).
-4. Tipos de Prueba: Separar por comas (ie. CMJ,Saltos), en caso de que no exista, dejar vacio
-5. Periodos de Prueba: Separar por comas (ie. POST), en caso de que no exista, dejar vacio
-6. Intentos de Prueba: Especifique el número de intentos de prueba (ie. 1).
-7. Guardar: Haga clic en el botón "Guardar" para guardar el estudio. Si no se han completado todos los campos, se mostrará un mensaje de error y se solicitará que se vuelva a intentar.
+## Indicaciones Para el Formulario para Crear/Editar Estudio(s)
+1.  **Nombre del Estudio**: Ingrese un nombre único para el estudio (mínimo 3 caracteres).
+2.  **Número de Sujetos**: Especifique el número de sujetos de prueba (ej: 4). Debe ser un número entero positivo.
+3.  **Cantidad de Intentos por Prueba**: Especifique el número de intentos por prueba (ej: 1). Debe ser un número entero positivo.
+4.  **Descriptores**:
+    *   Utilice el botón "+ Añadir Descriptor" para agregar campos donde puede definir etiquetas descriptivas para los archivos de este estudio (ej: CMJ, PRE, Obesidad, GrupoControl).
+    *   Puede añadir tantos descriptores como necesite. El mínimo es cero.
+    *   Utilice el botón "🗑️" para eliminar un descriptor que no necesite.
+    *   Los descriptores no pueden estar vacíos y no pueden repetirse exactamente (sensible a mayúsculas/minúsculas). Ej: "CMJ" y "cmj" son válidos, pero "CMJ" y "CMJ" no.
+    *   Estos descriptores se usarán (en futuras versiones) para validar los nombres de los archivos que cargue.
+5.  **Guardar**: Haga clic en el botón "Guardar" para guardar el estudio. Si hay errores de validación (nombre duplicado, campos inválidos, descriptores duplicados), se mostrará un mensaje.
 
 ## Ventana Principal: Lista de Estudio(s)
 Muestra una lista de todos los estudios cargados al sistema.
@@ -17,12 +21,12 @@ Muestra una lista de todos los estudios cargados al sistema.
 2. Editar: Haga clic en el botón "Editar" para modificar los detalles del estudio.
 3. Eliminar: Haga clic en el botón "Eliminar" para eliminar un estudio.
 
-## Ventana: Lista de Archivos
-Muestra una lista de todos los archivos del Estudio especifico.
-1. Agregar Archivos: Haga clic en el botón "Agregar Archivos" para agregar archivos al estudio. Asegúrese de que los archivos estén en el formato especificado al crear el estudio.
-2. Formato de Archivo: Los archivos deben seguir el formato "P01 CMJ PRE 04.txt", donde se detalla el sujeto, tipo de prueba (opcional), periodo de prueba (opcional) e intento de prueba.
-3. Eliminar Archivos: Haga clic en el botón "Eliminar" junto a un archivo para eliminarlo del estudio.
-4. Ver Archivos: Haga clic en el botón "Ver" para abrir los detalles del estudio en una nueva pestaña.
+## Ventana: Vista del Estudio (Lista de Archivos)
+Muestra una lista de todos los archivos del Estudio específico.
+1.  **Agregar Archivos**: Haga clic en el botón "Agregar Archivos" para agregar archivos al estudio.
+2.  **Formato de Archivo**: Los nombres de archivo deben seguir un formato consistente que incluya el identificador del sujeto y, opcionalmente, los descriptores definidos para el estudio (ej: "P01 CMJ PRE 01.txt"). La validación exacta basada en descriptores se implementará en futuras versiones.
+3.  **Eliminar Archivos**: Haga clic en el botón "Eliminar" junto a un archivo para eliminarlo del estudio.
+4.  **Ver Archivos**: Haga clic en el botón "Ver" para abrir el archivo con la aplicación predeterminada del sistema.
 5. Abrir Carpeta de Estudio: Abre la carpeta que contiene el Estudio seleccionado.
 6. Exportar: Haga clic en el botón "Exportar" para entrar a la ventana de Exportar.
 

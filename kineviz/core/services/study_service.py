@@ -12,13 +12,14 @@ class StudyService:
         :param study_data: Diccionario con datos del estudio
         :return: ID del estudio creado
         """
-        # Validar datos antes de crear
-        if not validate_study_data(study_data):
-            raise ValueError("Datos de estudio inválidos")
-        
-        # Crear directorio para el estudio
+        # La validación ahora se hace en el diálogo antes de llamar al servicio,
+        # pero podríamos revalidar aquí por seguridad.
+        # is_valid, error_message = validate_study_data(study_data)
+        # if not is_valid:
+        #     raise ValueError(f"Datos de estudio inválidos: {error_message}")
+
+        # Llamar al repositorio para crear
         study_id = self.repo.create_study(study_data)
-        
         return study_id
     
     def get_studies(self):
@@ -86,10 +87,10 @@ class StudyService:
         :param study_id: ID del estudio a actualizar.
         :param study_data: Diccionario con los nuevos datos del estudio.
         """
-        # Validar datos antes de actualizar (reutilizar o crear validador específico)
-        is_valid, error_message = validate_study_data(study_data)
-        if not is_valid:
-            raise ValueError(f"Datos de estudio inválidos: {error_message}")
+        # La validación ahora se hace en el diálogo.
+        # is_valid, error_message = validate_study_data(study_data)
+        # if not is_valid:
+        #     raise ValueError(f"Datos de estudio inválidos: {error_message}")
 
         # Obtener nombre original para renombrar carpeta si es necesario
         original_study = self.repo.get_study_by_id(study_id)
