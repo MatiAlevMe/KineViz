@@ -575,6 +575,52 @@ class AnalysisService:
 
     # --- Métodos para Análisis Discreto (Fase 6) ---
 
+    def get_discrete_analysis_tables_path(self, study_id: int) -> Path | None:
+        """
+        Obtiene la ruta base donde se guardan las tablas de resumen discreto.
+
+        :param study_id: ID del estudio.
+        :return: Path al directorio de tablas o None si no se puede determinar.
+        """
+        try:
+            study_path = self.file_service._get_study_path(study_id)
+            if not study_path:
+                logger.warning(f"No se pudo obtener la ruta del estudio {study_id} para buscar tablas discretas.")
+                return None
+            # Asume la estructura definida en generate_discrete_summary_tables
+            # Nota: Podríamos hacerlo más robusto guardando esta ruta relativa en config o similar.
+            tables_path = study_path / "Analisis Discreto" / "Tablas"
+            return tables_path
+        except Exception as e:
+            logger.error(f"Error obteniendo la ruta de tablas discretas para estudio {study_id}: {e}", exc_info=True)
+            return None
+
+    def delete_discrete_summary_table(self, table_path_str: str):
+        """
+        Elimina un archivo de tabla de resumen discreto específico.
+
+        :param table_path_str: Ruta completa (string) del archivo CSV a eliminar.
+        :raises FileNotFoundError: Si el archivo no existe.
+        :raises ValueError: Si la ruta no es un archivo.
+        :raises OSError: Si ocurre un error al eliminar.
+        """
+        table_path = Path(table_path_str)
+        if not table_path.exists():
+            raise FileNotFoundError(f"El archivo de tabla no existe: {table_path}")
+        if not table_path.is_file():
+            raise ValueError(f"La ruta no es un archivo: {table_path}")
+        if not table_path.name.endswith('.csv'):
+             raise ValueError(f"El archivo no parece ser una tabla CSV: {table_path}")
+
+        try:
+            table_path.unlink()
+            logger.info(f"Tabla de resumen discreto eliminada: {table_path}")
+            # Opcional: Limpiar directorios vacíos (Frecuencia, Analisis Discreto) si es necesario.
+            # Esto requeriría lógica adicional para verificar si las carpetas padre están vacías.
+        except OSError as e:
+            logger.error(f"Error al eliminar la tabla {table_path}: {e}", exc_info=True)
+            raise
+
     def _extract_stats_from_processed_file(self, file_path: Path, calculation: str) -> list | None:
         """Lee las últimas líneas de un archivo procesado y extrae la fila de datos para el cálculo especificado."""
         try:
