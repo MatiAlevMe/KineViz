@@ -4,9 +4,12 @@ import logging
 import os
 import subprocess
 import sys
+import math # Para ceil en paginación
 from pathlib import Path
 from datetime import datetime
 from kineviz.core.services.analysis_service import AnalysisService
+# Importar AppSettings para leer configuración
+from kineviz.config.settings import AppSettings
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +22,19 @@ class DiscreteAnalysisView(ttk.Frame):
         self.main_window = main_window
         self.analysis_service = analysis_service
         self.study_id = study_id
-        self.tables_tree = None # Placeholder for the Treeview
+        self.settings = AppSettings() # Cargar configuración
+        self.tables_per_page = self.settings.discrete_tables_per_page
+
+        # Estado de UI y datos
+        self.tables_tree = None
+        self.all_table_files = [] # Lista completa de dicts {'path': Path, 'name': str, 'calc': str, 'desc': str, 'mtime': float, 'size': int}
+        self.current_page = 1
+        self.total_tables = 0
+        self.total_pages = 1
+
+        # Variables de control para filtros y búsqueda
+        self.search_var = tk.StringVar()
+        self.calc_filter_var = tk.StringVar()
 
         self.pack(fill=tk.BOTH, expand=True, padx=10, pady=10) # Empaquetar el frame principal
 
@@ -50,45 +65,83 @@ class DiscreteAnalysisView(ttk.Frame):
         # ttk.Button(action_frame, text="Abrir Carpeta de Tablas",
         #            command=self.open_tables_folder).pack(side=tk.LEFT, padx=5)
 
-        # --- Placeholder para la lista de tablas ---
-        # --- Lista de Tablas Generadas ---
-        list_frame = ttk.LabelFrame(self, text="Tablas Generadas")
-        list_frame.pack(fill=tk.BOTH, expand=True, pady=(10, 0))
-        list_frame.columnconfigure(0, weight=1) # Hacer que el Treeview se expanda horizontalmente
-        list_frame.rowconfigure(0, weight=1)    # Hacer que el Treeview se expanda verticalmente
+        # --- Filtros y Búsqueda ---
+        filter_frame = ttk.Frame(self)
+        filter_frame.pack(fill=tk.X, pady=(5, 5))
 
-        # Crear Treeview
+        ttk.Label(filter_frame, text="Buscar:").pack(side=tk.LEFT, padx=(0, 5))
+        search_entry = ttk.Entry(filter_frame, textvariable=self.search_var, width=30)
+        search_entry.pack(side=tk.LEFT, padx=5)
+        search_entry.bind("<Return>", self.search_tables) # Buscar al presionar Enter
+
+        ttk.Button(filter_frame, text="Buscar", command=self.search_tables).pack(side=tk.LEFT, padx=5)
+
+        ttk.Label(filter_frame, text="Cálculo:").pack(side=tk.LEFT, padx=(10, 5))
+        self.calc_filter_combo = ttk.Combobox(filter_frame, textvariable=self.calc_filter_var,
+                                              values=["Todos", "Maximo", "Minimo", "Rango"], state="readonly", width=10)
+        self.calc_filter_combo.set("Todos")
+        self.calc_filter_combo.pack(side=tk.LEFT, padx=5)
+        self.calc_filter_combo.bind("<<ComboboxSelected>>", self.apply_filters)
+
+        ttk.Button(filter_frame, text="Limpiar Filtros", command=self.clear_filters).pack(side=tk.LEFT, padx=10)
+
+
+        # --- Lista de Tablas Generadas (Treeview) ---
+        list_frame = ttk.LabelFrame(self, text="Tablas Generadas")
+        list_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 0)) # Reducir padding inferior
+        list_frame.columnconfigure(0, weight=1) # Treeview se expande
+        list_frame.rowconfigure(0, weight=1)    # Treeview se expande
+
+        # Crear Treeview con nuevas columnas
         self.tables_tree = ttk.Treeview(
             list_frame,
-            columns=("Tipo", "Fecha Modificación", "Tamaño"),
-            show="headings" # No mostrar la columna fantasma #0
+            columns=("Nombre Archivo", "Tipo Cálculo", "Descriptores", "Fecha Modificación", "Tamaño"),
+            show="headings"
         )
-        self.tables_tree.grid(row=0, column=0, sticky='nsew', padx=5, pady=5)
+        self.tables_tree.grid(row=0, column=0, sticky='nsew', padx=5, pady=(5,0)) # Reducir padding inferior
 
         # Definir cabeceras
-        self.tables_tree.heading("Tipo", text="Tipo Cálculo")
-        self.tables_tree.heading("Fecha Modificación", text="Fecha Modificación")
-        self.tables_tree.heading("Tamaño", text="Tamaño")
+        self.tables_tree.heading("Nombre Archivo", text="Nombre Archivo", command=lambda: self.sort_column("Nombre Archivo", False))
+        self.tables_tree.heading("Tipo Cálculo", text="Tipo Cálculo", command=lambda: self.sort_column("Tipo Cálculo", False))
+        self.tables_tree.heading("Descriptores", text="Descriptores", command=lambda: self.sort_column("Descriptores", False))
+        self.tables_tree.heading("Fecha Modificación", text="Fecha Modificación", command=lambda: self.sort_column("Fecha Modificación", False))
+        self.tables_tree.heading("Tamaño", text="Tamaño", command=lambda: self.sort_column("Tamaño", False))
 
-        # Definir ancho de columnas (ajustar según necesidad)
-        self.tables_tree.column("Tipo", width=150, anchor=tk.W)
+        # Definir ancho de columnas
+        self.tables_tree.column("Nombre Archivo", width=250, anchor=tk.W)
+        self.tables_tree.column("Tipo Cálculo", width=100, anchor=tk.W)
+        self.tables_tree.column("Descriptores", width=200, anchor=tk.W)
         self.tables_tree.column("Fecha Modificación", width=150, anchor=tk.CENTER)
         self.tables_tree.column("Tamaño", width=100, anchor=tk.E)
 
         # Scrollbars
         vsb = ttk.Scrollbar(list_frame, orient="vertical", command=self.tables_tree.yview)
-        vsb.grid(row=0, column=1, sticky='ns')
+        vsb.grid(row=0, column=1, sticky='ns', pady=(5,0))
         self.tables_tree.configure(yscrollcommand=vsb.set)
 
         hsb = ttk.Scrollbar(list_frame, orient="horizontal", command=self.tables_tree.xview)
-        hsb.grid(row=1, column=0, sticky='ew')
+        hsb.grid(row=1, column=0, sticky='ew', padx=5)
         self.tables_tree.configure(xscrollcommand=hsb.set)
+
+        # --- Controles de Paginación ---
+        pagination_frame = ttk.Frame(list_frame)
+        pagination_frame.grid(row=2, column=0, columnspan=2, sticky='ew', pady=(5, 5)) # Añadir padding inferior
+
+        self.prev_button = ttk.Button(pagination_frame, text="<< Anterior", command=lambda: self.go_to_page(self.current_page - 1), state=tk.DISABLED)
+        self.prev_button.pack(side=tk.LEFT, padx=5)
+
+        self.page_label = ttk.Label(pagination_frame, text="Página 1 de 1")
+        self.page_label.pack(side=tk.LEFT, padx=5)
+
+        self.next_button = ttk.Button(pagination_frame, text="Siguiente >>", command=lambda: self.go_to_page(self.current_page + 1), state=tk.DISABLED)
+        self.next_button.pack(side=tk.LEFT, padx=5)
 
         # --- Botones de Acción para Tablas ---
         table_action_frame = ttk.Frame(list_frame)
-        table_action_frame.grid(row=2, column=0, columnspan=2, sticky='ew', pady=(5, 0))
+        table_action_frame.grid(row=3, column=0, columnspan=2, sticky='ew', pady=(0, 5)) # Mover abajo, añadir padding inferior
 
-        ttk.Button(table_action_frame, text="Refrescar Lista", command=self.load_tables).pack(side=tk.LEFT, padx=5)
+        # Quitar botón Refrescar, se hace con filtros/búsqueda
+        # ttk.Button(table_action_frame, text="Refrescar Lista", command=self.load_tables).pack(side=tk.LEFT, padx=5)
         ttk.Button(table_action_frame, text="Ver Tabla", command=self.view_table).pack(side=tk.LEFT, padx=5)
         ttk.Button(table_action_frame, text="Eliminar Tabla", command=self.delete_table).pack(side=tk.LEFT, padx=5)
 
@@ -123,6 +176,8 @@ class DiscreteAnalysisView(ttk.Frame):
 
     def _format_size(self, size_bytes):
         """Formatea el tamaño en bytes a KB, MB, etc."""
+        if not isinstance(size_bytes, (int, float)) or size_bytes < 0:
+             return "N/A"
         if size_bytes < 1024:
             return f"{size_bytes} B"
         elif size_bytes < 1024**2:
@@ -132,57 +187,187 @@ class DiscreteAnalysisView(ttk.Frame):
         else:
             return f"{size_bytes / (1024**3):.1f} GB"
 
-    def load_tables(self):
-        """Carga la lista de tablas CSV generadas en el Treeview."""
-        if not self.tables_tree:
-            logger.warning("El Treeview de tablas aún no está inicializado.")
-            return
+    def _parse_table_filename(self, filename: str) -> tuple[str, str, str]:
+        """Extrae Cálculo, Frecuencia y Descriptores del nombre de archivo."""
+        # Formato esperado: CALCULO_FRECUENCIA_DESC1_DESC2...DESCn.csv
+        parts = filename.removesuffix('.csv').split('_')
+        if len(parts) < 2:
+            return "Desconocido", "Desconocido", "" # No se puede determinar
 
-        # Limpiar Treeview
-        for item in self.tables_tree.get_children():
-            self.tables_tree.delete(item)
+        calc_type = parts[0]
+        freq_type = parts[1] # Asumimos que siempre está presente después del cálculo
+        descriptors = parts[2:] # El resto son descriptores
 
+        # Unir descriptores con coma
+        descriptor_str = ", ".join(descriptors) if descriptors else "SinDescriptores"
+
+        return calc_type, freq_type, descriptor_str
+
+    def _fetch_all_table_files(self):
+        """Obtiene la lista completa de archivos CSV de tablas y sus metadatos."""
+        self.all_table_files = []
         try:
             tables_path = self.analysis_service.get_discrete_analysis_tables_path(self.study_id)
             if not tables_path or not tables_path.exists() or not tables_path.is_dir():
-                logger.info(f"Directorio de tablas discretas no encontrado o no es un directorio para estudio {self.study_id}: {tables_path}")
-                # Opcional: Mostrar mensaje en la UI
-                # self.tables_tree.insert("", tk.END, text="Directorio no encontrado", values=("", "", ""))
+                logger.info(f"Directorio de tablas discretas no encontrado para estudio {self.study_id}: {tables_path}")
                 return
 
-            found_files = False
-            # Iterar sobre subdirectorios (frecuencias) y luego archivos CSV
             for freq_dir in tables_path.iterdir():
                 if freq_dir.is_dir():
                     for file_path in freq_dir.glob("*.csv"):
                         if file_path.is_file():
                             try:
                                 stats = file_path.stat()
-                                mod_time = datetime.fromtimestamp(stats.st_mtime).strftime('%Y-%m-%d %H:%M:%S')
-                                size = self._format_size(stats.st_size)
-                                # Extraer tipo de cálculo del nombre (ej: Maximo_Cinematica_Desc1.csv -> Maximo)
-                                parts = file_path.name.split('_')
-                                calc_type = parts[0] if parts else "Desconocido"
-
-                                # Insertar en Treeview, guardando la ruta completa en 'text' (no visible)
-                                self.tables_tree.insert(
-                                    "", tk.END,
-                                    text=str(file_path), # Guardar ruta completa aquí
-                                    values=(calc_type, mod_time, size),
-                                    tags=(str(file_path),) # Usar ruta como tag para identificación
-                                )
-                                found_files = True
+                                calc_type, _, descriptor_str = self._parse_table_filename(file_path.name)
+                                self.all_table_files.append({
+                                    'path': file_path,
+                                    'name': file_path.name,
+                                    'calc': calc_type,
+                                    'desc': descriptor_str,
+                                    'mtime': stats.st_mtime,
+                                    'size': stats.st_size
+                                })
                             except Exception as e_file:
-                                logger.error(f"Error procesando archivo de tabla {file_path}: {e_file}", exc_info=True)
-
-            if not found_files:
-                 logger.info(f"No se encontraron archivos CSV en {tables_path} o sus subdirectorios.")
-                 # Opcional: Mostrar mensaje
-                 # self.tables_tree.insert("", tk.END, text="No hay tablas generadas", values=("", "", ""))
+                                logger.error(f"Error procesando metadatos de {file_path}: {e_file}", exc_info=True)
 
         except Exception as e:
-            logger.error(f"Error cargando lista de tablas discretas para estudio {self.study_id}: {e}", exc_info=True)
-            messagebox.showerror("Error", f"No se pudo cargar la lista de tablas:\n{e}", parent=self)
+            logger.error(f"Error buscando archivos de tablas discretas para estudio {self.study_id}: {e}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudo buscar la lista de tablas:\n{e}", parent=self)
+
+    def load_tables(self):
+        """Filtra, ordena y muestra la página actual de tablas en el Treeview."""
+        if not self.tables_tree:
+            logger.warning("El Treeview de tablas aún no está inicializado.")
+            return
+
+        # 1. Obtener la lista completa si aún no se ha hecho o si se fuerza recarga (opcional)
+        # Por ahora, asumimos que _fetch_all_table_files se llama al inicio y después de eliminar/generar
+        if not self.all_table_files:
+             self._fetch_all_table_files()
+
+        # 2. Aplicar Filtros y Búsqueda
+        search_term = self.search_var.get().lower()
+        selected_calc = self.calc_filter_var.get()
+
+        filtered_files = self.all_table_files
+
+        # Filtrar por cálculo
+        if selected_calc != "Todos":
+            filtered_files = [f for f in filtered_files if f['calc'] == selected_calc]
+
+        # Filtrar por término de búsqueda (nombre, cálculo, descriptores)
+        if search_term:
+            filtered_files = [
+                f for f in filtered_files
+                if search_term in f['name'].lower()
+                or search_term in f['calc'].lower()
+                or search_term in f['desc'].lower()
+            ]
+
+        # 3. Ordenar (Implementación básica, se puede mejorar con sort_column)
+        # Por defecto, ordenar por fecha de modificación descendente
+        filtered_files.sort(key=lambda x: x['mtime'], reverse=True)
+
+        # 4. Calcular Paginación
+        self.total_tables = len(filtered_files)
+        self.tables_per_page = self.settings.discrete_tables_per_page # Recargar por si cambió
+        self.total_pages = math.ceil(self.total_tables / self.tables_per_page) if self.tables_per_page > 0 else 1
+        self.total_pages = max(1, self.total_pages) # Asegurar al menos 1 página
+
+        # Ajustar página actual si está fuera de rango
+        self.current_page = max(1, min(self.current_page, self.total_pages))
+
+        # 5. Obtener la porción para la página actual
+        start_index = (self.current_page - 1) * self.tables_per_page
+        end_index = start_index + self.tables_per_page
+        page_files = filtered_files[start_index:end_index]
+
+        # 6. Limpiar y Poblar Treeview
+        for item in self.tables_tree.get_children():
+            self.tables_tree.delete(item)
+
+        if not page_files and self.total_tables > 0:
+             # Si no hay archivos en esta página pero sí hay en total (p.ej. página inválida), mostrar mensaje?
+             # O simplemente dejar vacío. Dejar vacío por ahora.
+             pass
+        elif not page_files and self.total_tables == 0:
+             # Mostrar mensaje si no hay tablas en absoluto (después de filtrar)
+             self.tables_tree.insert("", tk.END, text="NoMatch", values=("No se encontraron tablas que coincidan.", "", "", "", ""))
+        else:
+            for file_info in page_files:
+                mod_time_str = datetime.fromtimestamp(file_info['mtime']).strftime('%Y-%m-%d %H:%M:%S')
+                size_str = self._format_size(file_info['size'])
+
+                # Insertar en Treeview, usando la ruta como ID interno (text)
+                self.tables_tree.insert(
+                    "", tk.END,
+                    text=str(file_info['path']), # Guardar ruta completa aquí
+                    values=(
+                        file_info['name'],
+                        file_info['calc'],
+                        file_info['desc'],
+                        mod_time_str,
+                        size_str
+                    )
+                )
+
+        # 7. Actualizar Controles de Paginación
+        self.update_pagination_controls()
+
+    def update_pagination_controls(self):
+        """Actualiza el estado y texto de los botones y etiqueta de paginación."""
+        if not hasattr(self, 'page_label'): return # Si aún no se crearon los widgets
+
+        page_info = f"Página {self.current_page} de {self.total_pages} ({self.total_tables} tablas)"
+        self.page_label.config(text=page_info)
+
+        if self.current_page <= 1:
+            self.prev_button.config(state=tk.DISABLED)
+        else:
+            self.prev_button.config(state=tk.NORMAL)
+
+        if self.current_page >= self.total_pages:
+            self.next_button.config(state=tk.DISABLED)
+        else:
+            self.next_button.config(state=tk.NORMAL)
+
+    def go_to_page(self, page_number):
+        """Navega a una página específica."""
+        if 1 <= page_number <= self.total_pages:
+            self.current_page = page_number
+            self.load_tables()
+        else:
+             logger.warning(f"Intento de ir a página inválida: {page_number}")
+
+
+    def search_tables(self, event=None): # Aceptar event para bind <Return>
+        """Inicia la búsqueda y recarga la tabla."""
+        self.current_page = 1 # Volver a la primera página al buscar
+        self.load_tables()
+
+    def apply_filters(self, event=None): # Aceptar event para bind Combobox
+        """Aplica los filtros seleccionados y recarga la tabla."""
+        self.current_page = 1 # Volver a la primera página al filtrar
+        self.load_tables()
+
+    def clear_filters(self):
+        """Limpia los filtros y la búsqueda, y recarga la tabla."""
+        self.search_var.set("")
+        self.calc_filter_var.set("Todos")
+        self.current_page = 1
+        # Recargar la lista completa de archivos por si acaso
+        self._fetch_all_table_files()
+        self.load_tables()
+
+    # TODO: Implementar sort_column si se desea ordenar al hacer clic en cabeceras
+    def sort_column(self, col, reverse):
+         """Ordena el Treeview por la columna especificada."""
+         # Esta implementación requiere guardar los datos mostrados o re-ordenar
+         # self.all_table_files y luego llamar a load_tables.
+         # Por simplicidad, se omite por ahora. Se puede añadir después.
+         logger.info(f"Ordenar por {col}, reverso={reverse}. (Funcionalidad no implementada)")
+         pass
+
 
     def view_table(self):
         """Abre la tabla CSV seleccionada con la aplicación predeterminada."""
@@ -191,8 +376,12 @@ class DiscreteAnalysisView(ttk.Frame):
             messagebox.showwarning("Sin Selección", "Por favor, seleccione una tabla para ver.", parent=self)
             return
 
-        # Recuperar la ruta completa guardada en el tag o text (usamos text ahora)
+        # Recuperar la ruta completa guardada como 'text' en el item
         file_path_str = self.tables_tree.item(selected_item, "text")
+        if not file_path_str or file_path_str == "NoMatch": # Verificar si es el mensaje "No se encontraron..."
+             messagebox.showwarning("Sin Selección", "No hay una tabla válida seleccionada.", parent=self)
+             return
+
         file_path = Path(file_path_str)
 
         if not file_path.exists():
@@ -228,6 +417,10 @@ class DiscreteAnalysisView(ttk.Frame):
             return
 
         file_path_str = self.tables_tree.item(selected_item, "text")
+        if not file_path_str or file_path_str == "NoMatch":
+             messagebox.showwarning("Sin Selección", "No hay una tabla válida seleccionada.", parent=self)
+             return
+
         file_path = Path(file_path_str)
         file_name = file_path.name
 
@@ -239,10 +432,14 @@ class DiscreteAnalysisView(ttk.Frame):
         try:
             self.analysis_service.delete_discrete_summary_table(str(file_path))
             messagebox.showinfo("Eliminación Exitosa", f"La tabla '{file_name}' ha sido eliminada.", parent=self)
-            self.load_tables() # Refrescar la lista
+            # Eliminar de la lista en memoria y recargar la vista actual
+            self.all_table_files = [f for f in self.all_table_files if f['path'] != file_path]
+            self.load_tables() # Recalculará paginación y mostrará página actual
         except FileNotFoundError:
             messagebox.showerror("Error", f"El archivo seleccionado ya no existe:\n{file_path}", parent=self)
-            self.load_tables() # Refrescar de todas formas
+            # Eliminar de la lista en memoria y recargar
+            self.all_table_files = [f for f in self.all_table_files if f['path'] != file_path]
+            self.load_tables()
         except (OSError, ValueError) as e:
             logger.error(f"Error al eliminar la tabla {file_path}: {e}", exc_info=True)
             messagebox.showerror("Error al Eliminar", f"No se pudo eliminar la tabla '{file_name}'.\nError: {e}", parent=self)
