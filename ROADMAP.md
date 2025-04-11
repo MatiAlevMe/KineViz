@@ -241,7 +241,12 @@ Esta funcionalidad está pensada para automatizar el análisis estadístico de d
     *   **1.1 Servicio `generate_discrete_summary_tables`**: (Hecho) Lógica para agrupar archivos, leer stats, crear DataFrames y guardar CSVs (inicialmente para Cinemática).
     *   **1.2 Botón en `StudyView`**: (Hecho) Añadido botón "Análisis Discreto".
     *   **1.3 Vista `DiscreteAnalysisView`**: (Hecho) Creada vista básica con botón para generar tablas.
-    *   **1.4 Listar/Mostrar Tablas Generadas**: (Hecho) Implementado Treeview y lógica para mostrar/ver/eliminar archivos CSV en `DiscreteAnalysisView`.
+    *   **1.4 Listar/Mostrar Tablas Generadas**: (En Progreso)
+        *   (Hecho) Implementado Treeview básico y lógica para mostrar/ver/eliminar archivos CSV.
+        *   (Hecho) Añadidas columnas: Nombre Archivo, Tipo Cálculo, Descriptores, Fecha Modificación, Tamaño.
+        *   (Hecho) Añadida barra de búsqueda (por nombre, cálculo, descriptores).
+        *   (Hecho) Añadido filtro por Tipo de Cálculo.
+        *   (Hecho) Añadida paginación configurable (`discrete_tables_per_page` en `config.ini`).
 *   **2. Selector de Variables y Etiquetas:** (Pendiente) Permitir que el usuario elija las variables a utilizar en el análisis.
 *   **3. Interacción sobre Datos Pareados:** (Pendiente) Preguntar si los datos son pareados o independientes.
 *   **4. Chequeo de Distribución:** (Pendiente) Permitir al usuario indicar si confía en que sus datos son normales o si se debe realizar una prueba automática (ej: Shapiro-Wilk).

@@ -12,7 +12,8 @@ class AppSettings:
         'SETTINGS': {
             'estudios_por_pagina': '10',
             'files_per_page': '10',
-            'pdfs_per_page': '10'
+            'pdfs_per_page': '10',
+            'discrete_tables_per_page': '15' # Añadir valor por defecto
         },
         'DESCRIPTOR_ALIASES': {
             # Ejemplo:
@@ -107,6 +108,7 @@ class AppSettings:
 
     def set_setting(self, key: str, value: str):
         """Establece un valor de configuración en la sección [SETTINGS]."""
+        # Asegurarse de que la sección exista antes de establecer
         if 'SETTINGS' not in self.config:
             self.config['SETTINGS'] = {}
         self.config['SETTINGS'][key] = str(value) # Guardar como string
@@ -128,6 +130,7 @@ class AppSettings:
 
     def set_descriptor_alias(self, descriptor: str, alias: str):
         """Establece o actualiza el alias para un descriptor."""
+        # Asegurarse de que la sección exista antes de establecer
         if 'DESCRIPTOR_ALIASES' not in self.config:
             self.config['DESCRIPTOR_ALIASES'] = {}
         # Guardar el alias. Si el alias está vacío, eliminar la entrada.
@@ -164,6 +167,15 @@ class AppSettings:
     @pdfs_per_page.setter
     def pdfs_per_page(self, value: int):
         self.set_setting('pdfs_per_page', str(value))
+
+    @property
+    def discrete_tables_per_page(self) -> int:
+        """Número de tablas de análisis discreto a mostrar por página."""
+        return self.get_int_setting('discrete_tables_per_page', 15)
+
+    @discrete_tables_per_page.setter
+    def discrete_tables_per_page(self, value: int):
+        self.set_setting('discrete_tables_per_page', str(value))
 
     def reset_to_defaults(self):
          """Restablece las configuraciones en memoria a los valores por defecto."""
