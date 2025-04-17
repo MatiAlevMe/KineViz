@@ -755,10 +755,22 @@ class AnalysisService:
                                f"líneas de cabecera.")
                 return None
             # Líneas 1, 2, 3 (índices 1, 2, 3)
-            # Omitir Frame, SubFrame, Tiempo
-            atributos = lines[1].strip().split(';')[3:]
-            columnas = lines[2].strip().split(';')[3:]
-            unidades = lines[3].strip().split(';')[3:]
+            # Omitir Frame, SubFrame, Tiempo y limpiar prefijo PteXX:
+            atributos_raw = lines[1].strip().split(';')[3:]
+            columnas_raw = lines[2].strip().split(';')[3:]
+            unidades_raw = lines[3].strip().split(';')[3:]
+
+            # Función auxiliar para limpiar prefijo
+            def clean_prefix(name):
+                if ':' in name:
+                    return name.split(':', 1)[1]
+                return name
+
+            atributos = [clean_prefix(a) for a in atributos_raw]
+            columnas = [clean_prefix(c) for c in columnas_raw]
+            # Las unidades no deberían tener prefijo, pero aplicamos por si acaso
+            unidades = [clean_prefix(u) for u in unidades_raw]
+
 
             # Asegurar que todas las listas tengan la misma longitud
             max_len = max(len(atributos), len(columnas), len(unidades))
@@ -1089,16 +1101,11 @@ class AnalysisService:
                     try:
                         # Asegurar 3 elementos y convertir a string
                         if len(header_tuple) == 3:
+                            # Ya no necesitamos validar ':', asumimos que la generación es correcta
                             attr, col, unit = map(str, header_tuple)
-                            # Validar que no contenga ':' (indicador de error)
-                            if ':' not in attr and ':' not in col and ':' not in unit:
-                                current_columns.add(f"{attr}/{col}/{unit}")
-                            else:
-                                logger.warning(f"Cabecera con formato inesperado "
-                                               f"(contiene ':') en {table_filename}: "
-                                               f"{header_tuple}. Se omitirá.")
+                            current_columns.add(f"{attr}/{col}/{unit}")
                         else:
-                            logger.warning(f"Tupla de cabecera inesperada en "
+                            logger.warning(f"Tupla de cabecera con longitud inesperada en "
                                            f"{table_filename}: {header_tuple}. "
                                            f"Se omitirá.")
                     except Exception as e_header:
@@ -1392,14 +1399,24 @@ class AnalysisService:
                          f"{analysis_name}: {e}", exc_info=True)
             raise Exception(f"Error generando el gráfico: {e}")
 
-        # --- Guardar Configuración ---
+        # --- Guardar Configuración (incluyendo resultados estadísticos) ---
+        config_to_save = config.copy()
+        if stats_results:
+            # Guardar solo test y p-valor para evitar problemas de serialización
+            config_to_save['stats_results'] = {
+                'test_name': stats_results.get('test_name', 'N/A'),
+                'p_value': stats_results.get('p_value') # Puede ser NaN
+            }
+        else:
+             config_to_save['stats_results'] = None # Indicar que no hubo test
+
         try:
             with open(config_path, 'w', encoding='utf-8') as f:
-                json.dump(config, f, indent=4)
+                # Usar json.dump con manejo de NaN
+                json.dump(config_to_save, f, indent=4, allow_nan=True)
             logger.info(f"Configuración análisis guardada en: {config_path}")
         except Exception as e:
-            logger.error(f"Error guardando config análisis {analysis_name}: {e}",
-                         exc_info=True)
+            logger.error(f"Error guardando config análisis {analysis_name}: {e}", exc_info=True)
             # No relanzar necesariamente, el gráfico ya se generó
             # Considerar eliminar gráfico si falla guardado de config?
 
