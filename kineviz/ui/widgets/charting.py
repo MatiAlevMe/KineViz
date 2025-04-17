@@ -76,3 +76,66 @@ def create_barchart(data_dict: dict, title: str, xlabel: str, ylabel: str, outpu
     plt.tight_layout()
     plt.savefig(output_path, bbox_inches='tight', dpi=150)
     plt.close(fig)
+
+def create_comparison_boxplot(data_by_group: list, group_names: list[str], title: str, ylabel: str, output_path: Path, stats_results=None):
+    """
+    Genera un gráfico de caja comparando múltiples grupos.
+
+    :param data_by_group: Lista de listas/arrays, donde cada elemento interno
+                          contiene los datos numéricos para un grupo.
+    :param group_names: Lista de nombres para cada grupo (etiquetas eje X).
+    :param title: Título del gráfico.
+    :param ylabel: Etiqueta del eje Y.
+    :param output_path: Ruta (Path object) donde guardar el gráfico PNG.
+    :param stats_results: Diccionario opcional con resultados estadísticos para anotar. (No implementado aún)
+    """
+    if len(data_by_group) != len(group_names):
+        raise ValueError("La longitud de data_by_group debe coincidir con group_names.")
+
+    # Filtrar grupos sin datos válidos (solo NaNs o vacíos)
+    valid_data = []
+    valid_labels = []
+    for data, label in zip(data_by_group, group_names):
+        # Convertir a array numpy y quitar NaNs
+        numeric_data = np.array(data, dtype=float) # Asegurar tipo float
+        cleaned_data = numeric_data[~np.isnan(numeric_data)]
+        if cleaned_data.size > 0: # Verificar si quedan datos después de quitar NaNs
+            valid_data.append(cleaned_data)
+            valid_labels.append(label)
+        else:
+             logger.warning(f"Grupo '{label}' no contiene datos válidos para el boxplot comparativo '{title}'.")
+
+    if not valid_data:
+        logger.warning(f"No hay datos válidos en ningún grupo para generar boxplot comparativo: {title}")
+        # Crear gráfico vacío con mensaje
+        fig, ax = plt.subplots(figsize=(8, 6))
+        ax.text(0.5, 0.5, 'No hay datos válidos para comparar', horizontalalignment='center', verticalalignment='center', transform=ax.transAxes)
+        ax.set_title(title)
+        plt.savefig(output_path, bbox_inches='tight', dpi=150)
+        plt.close(fig)
+        return
+
+    fig, ax = plt.subplots(figsize=(max(8, len(valid_labels) * 1.5), 6)) # Ajustar ancho dinámicamente
+    bp = ax.boxplot(valid_data, labels=valid_labels, showfliers=False, patch_artist=True) # patch_artist para colorear
+
+    # Colorear cajas (opcional)
+    colors = plt.cm.get_cmap('Pastel1', len(valid_data))
+    for patch, color in zip(bp['boxes'], colors(range(len(valid_data)))):
+        patch.set_facecolor(color)
+
+    ax.set_title(title)
+    ax.set_ylabel(ylabel)
+    plt.xticks(rotation=30, ha="right") # Rotar etiquetas si son muchas/largas
+    plt.grid(axis='y', linestyle='--', alpha=0.7) # Añadir rejilla horizontal
+    plt.tight_layout()
+
+    # --- Anotaciones Estadísticas (Placeholder) ---
+    if stats_results:
+        # TODO: Implementar lógica para añadir p-values o marcadores de significancia
+        # basado en el contenido de stats_results.
+        # Esto puede requerir librerías adicionales como statannot.
+        logger.info("Anotaciones estadísticas solicitadas pero aún no implementadas.")
+        pass
+
+    plt.savefig(output_path, bbox_inches='tight', dpi=150)
+    plt.close(fig)
