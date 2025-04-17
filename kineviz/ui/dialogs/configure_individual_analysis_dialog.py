@@ -158,10 +158,10 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
                 # Usar alias para mostrar en la UI
                 raw_groups = self.analysis_service.get_discrete_analysis_groups(self.study_id, selected_freq)
                 self.available_groups = []
-               for g_key in raw_groups:
-                   parts = g_key.split('_')
-                   # Acceder a settings a través de analysis_service
-                   aliased_parts = [
+                for g_key in raw_groups:
+                    parts = g_key.split('_')
+                    # Acceder a settings a través de analysis_service
+                    aliased_parts = [
                        self.analysis_service.settings.get_descriptor_alias(p) or p
                        for p in parts
                    ]
