@@ -452,9 +452,9 @@ class DiscreteAnalysisView(ttk.Frame):
             logger.error(f"Error inesperado al eliminar {file_path}: {e}", exc_info=True)
             messagebox.showerror("Error Inesperado", f"Ocurrió un error inesperado al eliminar la tabla:\n{e}", parent=self)
 
-   def open_individual_analysis_manager(self):
-       """Abre el diálogo para gestionar análisis individuales."""
-       from kineviz.ui.dialogs.individual_analysis_manager_dialog import IndividualAnalysisManagerDialog # Import local
+    def open_individual_analysis_manager(self):
+        """Abre el diálogo para gestionar análisis individuales."""
+        from kineviz.ui.dialogs.individual_analysis_manager_dialog import IndividualAnalysisManagerDialog # Import local
        # Pasar self.analysis_service y self.study_id
        dialog = IndividualAnalysisManagerDialog(self, self.analysis_service, self.study_id)
        # dialog.grab_set() # Hacer modal si se desea
