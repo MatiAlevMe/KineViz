@@ -30,7 +30,10 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
         self.analysis_list = []  # Lista de dicts con info de análisis guardados
         self.analysis_tree = None
-        self.columns = () # Inicializar tupla de columnas
+        # Añadir "Valores Clave"
+        self.columns = ("Nombre", "Fecha", "Frecuencia", "Cálculo",
+                        "Columna Analizada", "Supuestos", "Valores Clave",
+                        "Grupos Comparados")
 
         self.create_widgets()
         self.load_analyses()
@@ -66,12 +69,10 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         tree_frame.rowconfigure(0, weight=1)
         tree_frame.columnconfigure(0, weight=1)
 
-        # Definir columnas fijas
-        self.columns = ("Nombre", "Fecha", "Frecuencia", "Cálculo",
-                        "Columna Analizada", "Supuestos", "Descriptores")
+        # Columnas definidas en __init__
         self.analysis_tree = ttk.Treeview(
             tree_frame,
-            columns=self.columns,
+            columns=self.columns, # Usar self.columns
             show="headings"
         )
         self.analysis_tree.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
@@ -83,7 +84,9 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.analysis_tree.heading("Cálculo", text="Cálculo")
         self.analysis_tree.heading("Columna Analizada", text="Columna")
         self.analysis_tree.heading("Supuestos", text="Supuestos")
-        self.analysis_tree.heading("Descriptores", text="Grupos Comparados")
+        # Añadir cabecera para Valores Clave
+        self.analysis_tree.heading("Valores Clave", text="Resultado Test")
+        self.analysis_tree.heading("Grupos Comparados", text="Grupos Comparados") # Renombrar Descriptores
 
         # Ancho columnas (ajustar según necesidad)
         self.analysis_tree.column("Nombre", width=150, anchor=tk.W)
@@ -92,7 +95,9 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.analysis_tree.column("Cálculo", width=80, anchor=tk.W)
         self.analysis_tree.column("Columna Analizada", width=150, anchor=tk.W)
         self.analysis_tree.column("Supuestos", width=140, anchor=tk.W)
-        self.analysis_tree.column("Descriptores", width=250, anchor=tk.W)
+        # Añadir ancho para Valores Clave
+        self.analysis_tree.column("Valores Clave", width=120, anchor=tk.W)
+        self.analysis_tree.column("Grupos Comparados", width=250, anchor=tk.W) # Renombrar Descriptores
 
         # Scrollbars
         vsb = ttk.Scrollbar(tree_frame, orient="vertical",
@@ -131,11 +136,12 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
         # Poblar Treeview
         if not self.analysis_list:
-            # Crear valores vacíos para todas las columnas fijas
-            empty_values = tuple(["No hay análisis individuales guardados."] +
-                                 [""] * (len(self.columns) - 1))
-            self.analysis_tree.insert("", tk.END, text="NoAnalyses",
-                                      values=empty_values)
+                # Crear valores vacíos para todas las columnas
+                # Ajustar el mensaje para que quepa en la primera columna
+                num_empty_cols = len(self.columns) - 1
+                empty_values = tuple(["No hay análisis guardados."] + [""] * num_empty_cols)
+                self.analysis_tree.insert("", tk.END, text="NoAnalyses",
+                                          values=empty_values)
         else:
             for analysis_info in self.analysis_list:
                 config = analysis_info.get('config', {})
@@ -172,8 +178,8 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                         if g_key != "SinDescriptores" else "Sin Descriptores"
                     group_display_names.append(display_name)
 
-                # Unir nombres de grupo para la columna "Descriptores"
-                descriptores_str = " vs ".join(group_display_names)
+                # Unir nombres de grupo para la columna "Grupos Comparados"
+                grupos_comparados_str = " vs ".join(group_display_names)
 
                 # Construir tupla de valores para insertar
                 values = (
@@ -183,7 +189,8 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                     calc,
                     col_full,
                     supuestos_str,
-                    descriptores_str  # Añadir string de descriptores
+                    valores_clave_str, # Añadir valores clave
+                    grupos_comparados_str # Añadir string de grupos
                 )
 
                 # Insertar en Treeview

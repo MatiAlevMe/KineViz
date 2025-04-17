@@ -2,11 +2,10 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import numpy as np  # Para manejar posibles NaN
 import pandas as pd # Necesario para formato de statannot/seaborn
-import logging  # Importar logging
-import seaborn as sns # Importar Seaborn
-from statannot import add_stat_annotation # Importar statannot
-
-# Asegurar que matplotlib no intente usar UI backend en entornos sin GUI
+import logging
+import seaborn as sns
+# Reintroducir statannot
+from statannot import add_stat_annotation
 import matplotlib
 matplotlib.use('Agg')  # Usar backend no interactivo
 
@@ -150,21 +149,46 @@ def create_comparison_boxplot(data_by_group: list, group_names: list[str],
     plt.xticks(rotation=30, ha="right")
     plt.grid(axis='y', linestyle='--', alpha=0.7)
 
-    # 3. Añadir p-valor como texto (reemplaza statannot)
-    if stats_results and 'p_value' in stats_results:
+    # 3. Añadir anotaciones estadísticas con statannot (si hay 2 grupos y p-valor)
+    if stats_results and 'p_value' in stats_results and len(group_order) == 2:
         p_value = stats_results['p_value']
-        test_name = stats_results.get('test_name', 'Test')
-        # Formatear p-valor
-        if p_value < 0.001:
-            p_text = "p < 0.001"
+        if not np.isnan(p_value): # Solo si el p-valor es válido
+            box_pairs = [(group_order[0], group_order[1])]
+            try:
+                add_stat_annotation(ax, data=df_long, x='Group', y='Value',
+                                    order=group_order,
+                                    box_pairs=box_pairs,
+                                    test=None,  # Ya tenemos el p-valor
+                                    text_format='star', # NS, *, **, ***
+                                    pvalues=[p_value],
+                                    loc='inside', verbose=0)
+                logger.debug(f"Anotación statannot añadida para {title} "
+                             f"con p={p_value}")
+            except Exception as e_annot:
+                # Si statannot falla, añadir texto simple como fallback
+                logger.warning(f"Error al usar statannot para {title}: {e_annot}. "
+                               f"Mostrando p-valor como texto.")
+                test_name = stats_results.get('test_name', 'Test')
+                if p_value < 0.001: p_text = "p < 0.001"
+                else: p_text = f"p = {p_value:.3f}"
+                plt.text(0.98, 0.98, f"{test_name}\n{p_text}",
+                         verticalalignment='top', horizontalalignment='right',
+                         transform=ax.transAxes, color='black', fontsize=9,
+                         bbox=dict(boxstyle='round,pad=0.3', fc='white', alpha=0.5))
         else:
-            p_text = f"p = {p_value:.3f}"
-        # Añadir texto en la esquina superior derecha del gráfico
-        plt.text(0.98, 0.98, f"{test_name}\n{p_text}",
-                 verticalalignment='top', horizontalalignment='right',
-                 transform=ax.transAxes, color='black', fontsize=9,
-                 bbox=dict(boxstyle='round,pad=0.3', fc='white', alpha=0.5))
-        # TODO: Implementar líneas y asteriscos si se requiere más adelante
+             logger.debug(f"P-valor no válido (NaN) para {title}, no se añaden anotaciones.")
+    elif stats_results and 'p_value' in stats_results:
+        # Si hay más de 2 grupos, mostrar p-valor general como texto (si es válido)
+        p_value = stats_results['p_value']
+        if not np.isnan(p_value):
+            test_name = stats_results.get('test_name', 'Test')
+            if p_value < 0.001: p_text = "p < 0.001"
+            else: p_text = f"p = {p_value:.3f}"
+            plt.text(0.98, 0.98, f"{test_name} (overall)\n{p_text}",
+                     verticalalignment='top', horizontalalignment='right',
+                     transform=ax.transAxes, color='black', fontsize=9,
+                     bbox=dict(boxstyle='round,pad=0.3', fc='white', alpha=0.5))
+
 
     # 4. Añadir Leyenda
     # Crear handles (patches de color) para la leyenda
