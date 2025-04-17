@@ -6,6 +6,7 @@ import os
 import sys
 import subprocess
 from datetime import datetime # Para formatear fecha
+import numpy as np # Importar numpy
 
 # Importar servicios y otros diálogos necesarios
 from kineviz.core.services.analysis_service import AnalysisService
