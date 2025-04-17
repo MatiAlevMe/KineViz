@@ -260,13 +260,16 @@ Esta funcionalidad está pensada para automatizar el análisis estadístico de d
  *   **5. Generación de Gráfico Boxplot Comparativo:** (Hecho)
      *   (Hecho) Añadida función `create_comparison_boxplot` en `charting.py`.
      *   (Hecho) `AnalysisService.perform_individual_analysis`: Implementada lógica básica para leer datos de tablas CSV, preparar datos por grupo y llamar a `create_comparison_boxplot`. Guarda gráfico y config.json.
- *   **6. Implementación de Tests Estadísticos:** (En Progreso)
-     *   (Hecho) Añadida lógica en `perform_individual_analysis` para ejecutar t-test/ANOVA/Wilcoxon/Kruskal-Wallis según configuración usando `scipy.stats`.
-     *   (Pendiente) Mostrar resultados estadísticos (p-valor) en el gráfico (requiere `statannot` u otra librería/lógica).
+ *   **6. Implementación de Tests Estadísticos y Mejoras Gráficas:** (En Progreso)
+     *   (Hecho) Añadida lógica en `perform_individual_analysis` para ejecutar tests principales (t-test/ANOVA/Wilcoxon/Kruskal/Friedman) usando `scipy.stats`.
+     *   (Hecho) Modificado `create_comparison_boxplot` para usar `seaborn` y `statannot`.
+     *   (Hecho) Añadidos puntos de datos individuales con jitter al boxplot.
+     *   (Hecho) Añadida leyenda de grupos al boxplot.
+     *   (Hecho) Añadidas anotaciones de significancia (NS, \*, \*\*, \*\*\*) usando `statannot` (con Mann-Whitney U para >2 grupos por ahora).
  *   **7. Gestión de Análisis Guardados:** (En Progreso)
-     *   (Hecho) Implementado `AnalysisService.list_individual_analyses` para leer archivos `config.json`.
-     *   (Hecho) Implementado `AnalysisService.delete_individual_analysis` para eliminar carpetas de análisis.
-     *   (Hecho) Conectada UI de `IndividualAnalysisManagerDialog` (cargar lista, ver gráfico, eliminar, abrir carpeta).
+     *   (Hecho) Implementado `AnalysisService.list_individual_analyses` y `delete_individual_analysis`.
+     *   (Hecho) Conectada UI de `IndividualAnalysisManagerDialog` (cargar, ver gráfico, eliminar, abrir carpeta).
+     *   (Hecho) Mejorada tabla en `IndividualAnalysisManagerDialog` con columnas: Frecuencia, Columna, Supuestos, Grupos.
  *   **8. Reporte General:** (Pendiente) Implementar generación automática de PDF con todas las combinaciones.
      *   **Nota**: Necesitará preguntar/configurar los supuestos (paramétrico/pareado) para aplicar las comparaciones correctas.
  *   **9. Integración y Pruebas:** (Pendiente) Integrar la funcionalidad en la plataforma y realizar pruebas de integración.

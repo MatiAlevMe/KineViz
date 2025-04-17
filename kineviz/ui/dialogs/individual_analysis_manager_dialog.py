@@ -57,25 +57,35 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         tree_frame.rowconfigure(0, weight=1)
         tree_frame.columnconfigure(0, weight=1)
 
+        # Definir columnas iniciales (Grupos se añadirán dinámicamente si es necesario)
+        self.columns = ("Nombre", "Fecha", "Frecuencia", "Cálculo",
+                        "Columna Analizada", "Supuestos")
         self.analysis_tree = ttk.Treeview(
             tree_frame,
-            columns=("Nombre", "Fecha", "Parámetros"), # Añadir más columnas si es útil
+            columns=self.columns,
             show="headings"
         )
         self.analysis_tree.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
 
-        # Cabeceras
-        self.analysis_tree.heading("Nombre", text="Nombre")
+        # Cabeceras iniciales
+        self.analysis_tree.heading("Nombre", text="Nombre Análisis")
         self.analysis_tree.heading("Fecha", text="Fecha Creación")
-        self.analysis_tree.heading("Parámetros", text="Parámetros Clave")
+        self.analysis_tree.heading("Frecuencia", text="Frecuencia")
+        self.analysis_tree.heading("Cálculo", text="Cálculo")
+        self.analysis_tree.heading("Columna Analizada", text="Columna Analizada")
+        self.analysis_tree.heading("Supuestos", text="Supuestos")
 
-        # Ancho columnas
-        self.analysis_tree.column("Nombre", width=200, anchor=tk.W)
-        self.analysis_tree.column("Fecha", width=150, anchor=tk.CENTER)
-        self.analysis_tree.column("Parámetros", width=350, anchor=tk.W)
+        # Ancho columnas iniciales (ajustar según necesidad)
+        self.analysis_tree.column("Nombre", width=180, anchor=tk.W)
+        self.analysis_tree.column("Fecha", width=140, anchor=tk.CENTER)
+        self.analysis_tree.column("Frecuencia", width=80, anchor=tk.W)
+        self.analysis_tree.column("Cálculo", width=80, anchor=tk.W)
+        self.analysis_tree.column("Columna Analizada", width=150, anchor=tk.W)
+        self.analysis_tree.column("Supuestos", width=150, anchor=tk.W)
 
         # Scrollbars
-        vsb = ttk.Scrollbar(tree_frame, orient="vertical", command=self.analysis_tree.yview)
+        vsb = ttk.Scrollbar(tree_frame, orient="vertical",
+                            command=self.analysis_tree.yview)
         vsb.grid(row=0, column=1, sticky='ns')
         self.analysis_tree.configure(yscrollcommand=vsb.set)
 
@@ -100,33 +110,79 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
              messagebox.showerror("Error", f"No se pudo cargar la lista de análisis:\n{e}", parent=self)
              self.analysis_list = []
 
+        # Determinar el número máximo de grupos para añadir columnas dinámicas
+        max_groups = 0
+        if self.analysis_list:
+            max_groups = max(len(a.get('config', {}).get('groups', [])) for a in self.analysis_list)
+            max_groups = max(2, max_groups) # Mínimo 2 grupos si hay análisis
+
+        # Añadir columnas de grupo dinámicamente si es necesario
+        group_cols = [f"Grupo {i+1}" for i in range(max_groups)]
+        current_cols = list(self.columns)
+        new_cols = tuple(current_cols + group_cols)
+        if self.analysis_tree["columns"] != new_cols:
+             self.analysis_tree["columns"] = new_cols
+             for i, g_col in enumerate(group_cols):
+                  self.analysis_tree.heading(g_col, text=g_col)
+                  self.analysis_tree.column(g_col, width=120, anchor=tk.W) # Ajustar ancho
+
+        # Poblar Treeview
         if not self.analysis_list:
+            # Crear valores vacíos para todas las columnas
+            num_cols = len(self.analysis_tree["columns"])
+            empty_values = tuple(["No hay análisis individuales guardados."] + [""] * (num_cols - 1))
             self.analysis_tree.insert("", tk.END, text="NoAnalyses",
-                                      values=("No hay análisis individuales guardados.", "", ""))
+                                      values=empty_values)
         else:
             for analysis_info in self.analysis_list:
-                # Extraer info relevante de config para mostrar
                 config = analysis_info.get('config', {})
-                col_name = config.get('column', '?').split('/')[1] # Mostrar solo nombre columna
-                params_str = (f"Calc: {config.get('calculation', '?')}, "
-                              f"Col: {col_name}, "
-                              f"Grupos: {len(config.get('groups', []))}")
-                # Usar mtime del archivo config.json
+                analysis_name = analysis_info.get('name', 'N/A')
+
+                # Fecha
                 date_str = "N/A"
                 if 'mtime' in analysis_info:
                     date_str = datetime.fromtimestamp(
                         analysis_info['mtime']
                     ).strftime('%Y-%m-%d %H:%M:%S')
 
-                # Usar el nombre del análisis como ID interno (text)
+                # Frecuencia, Cálculo, Columna
+                freq = config.get('frequency', '?')
+                calc = config.get('calculation', '?')
+                col_full = config.get('column', '?')
+
+                # Supuestos
+                parametric = config.get('parametric', True)
+                paired = config.get('paired', False)
+                supuestos_str = f"{'Pareado' if paired else 'No Pareado'}, {'Paramétrico' if parametric else 'No Paramétrico'}"
+
+                # Grupos (con alias)
+                group_keys = config.get('groups', [])
+                group_display_names = []
+                for g_key in group_keys:
+                    parts = g_key.split('_')
+                    aliased_parts = [self.analysis_service.settings.get_descriptor_alias(p) or p for p in parts]
+                    display_name = ', '.join(aliased_parts) if g_key != "SinDescriptores" else "Sin Descriptores"
+                    group_display_names.append(display_name)
+
+                # Rellenar con "" si hay menos grupos que max_groups
+                group_display_names.extend([""] * (max_groups - len(group_display_names)))
+
+                # Construir tupla de valores para insertar
+                values = (
+                    analysis_name,
+                    date_str,
+                    freq,
+                    calc,
+                    col_full,
+                    supuestos_str,
+                    *group_display_names # Desempaquetar nombres de grupo
+                )
+
+                # Insertar en Treeview
                 self.analysis_tree.insert(
                     "", tk.END,
-                    text=analysis_info['name'],  # Guardar nombre para identificar
-                    values=(
-                        analysis_info['name'],
-                        date_str,
-                        params_str
-                    )
+                    text=analysis_name,  # Guardar nombre para identificar
+                    values=values
                 )
 
     def open_new_analysis_dialog(self):
