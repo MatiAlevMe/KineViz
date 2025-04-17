@@ -13,7 +13,7 @@ if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
 # Configurar logging ANTES de cualquier otra cosa
-setup_logging() # Usar nivel por defecto (INFO)/ Para usar DEBUGG: setup_logging(log_level=logging.DEBUG)
+setup_logging(log_level=logging.DEBUG) # Usar nivel por defecto (INFO)/ Para usar DEBUGG: setup_logging(log_level=logging.DEBUG)
 logger = logging.getLogger(__name__) # Obtener logger para este módulo
 
 def main():
