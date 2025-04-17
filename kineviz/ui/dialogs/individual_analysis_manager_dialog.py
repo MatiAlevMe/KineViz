@@ -165,6 +165,26 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                 supuestos_str = (f"{'Pareado' if paired else 'No Pareado'}, "
                                  f"{'Paramétrico' if parametric else 'No Paramétrico'}")
 
+                # Resultado Test (Valores Clave)
+                stats_results = config.get('stats_results')
+                valores_clave_str = "N/A"
+                if stats_results:
+                    test_name = stats_results.get('test_name', 'Test')
+                    p_value = stats_results.get('p_value')
+                    # Usar isnan para verificar NaN de forma segura
+                    if p_value is not None and not isinstance(p_value, str) and not np.isnan(p_value): # Check for NaN
+                         # Formatear p-valor
+                        if p_value < 0.001: p_text = "p < 0.001"
+                        else: p_text = f"p = {p_value:.3f}"
+                        valores_clave_str = f"{test_name}: {p_text}"
+                    elif p_value is not None: # Podría ser NaN
+                         valores_clave_str = f"{test_name}: p=NaN"
+                    else: # p_value es None
+                         valores_clave_str = f"{test_name}: N/A"
+                elif 'test_name' in config: # Compatibilidad con configs antiguas sin p-valor
+                    valores_clave_str = f"{config.get('test_name', 'Test')}: ?"
+
+
                 # Grupos (con alias)
                 group_keys = config.get('groups', [])
                 group_display_names = []
