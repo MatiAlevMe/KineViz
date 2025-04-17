@@ -35,9 +35,8 @@ except ImportError:
     logger.warning("Scipy no está instalado. Las pruebas estadísticas no estarán disponibles.")
     stats = None
 
-
+# Define logger before it's potentially used in the except block
 logger = logging.getLogger(__name__)  # Logger para este módulo
-
 
 class AnalysisService:
     def __init__(self, study_service: StudyService, file_service: FileService, app_settings: AppSettings):
