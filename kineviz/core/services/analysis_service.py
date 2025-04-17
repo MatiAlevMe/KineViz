@@ -1420,10 +1420,11 @@ class AnalysisService:
         base_dir = self._get_individual_analysis_base_dir(study_id)
         if not base_dir:
             return None
-        # Validar nombre por si acaso (aunque ya se hizo al crear)
+        # Validar nombre por si acaso
         invalid_chars = r'<>:"/\|?*'
         if any(char in analysis_name for char in invalid_chars):
-            logger.error(f"Nombre de análisis inválido solicitado: {analysis_name}")
+            logger.error(f"Nombre de análisis inválido solicitado: "
+                         f"{analysis_name}")
             return None
         return base_dir / analysis_name
 
@@ -1432,8 +1433,9 @@ class AnalysisService:
         Lista los análisis individuales guardados para un estudio.
 
         :param study_id: ID del estudio.
-        :return: Lista de diccionarios, cada uno con:
-                {'name': str, 'path': Path, 'config': dict, 'mtime': float}
+        :return: Lista de diccionarios:
+                 {'name': str, 'path': Path, 'config': dict, 'mtime': float,
+                  'plot_path': Path}
         """
         analyses = []
         base_dir = self._get_individual_analysis_base_dir(study_id)
@@ -1457,14 +1459,19 @@ class AnalysisService:
                             'path': item_path,
                             'config': config_data,
                             'mtime': mtime,
-                            'plot_path': plot_path # Añadir ruta al gráfico
+                            'plot_path': plot_path  # Añadir ruta al gráfico
                         })
                     except json.JSONDecodeError:
-                        logger.error(f"Error leyendo config.json para análisis '{analysis_name}' en estudio {study_id}.")
+                        logger.error(f"Error leyendo config.json para análisis "
+                                     f"'{analysis_name}' en estudio {study_id}.")
                     except Exception as e:
-                        logger.error(f"Error procesando análisis '{analysis_name}' en estudio {study_id}: {e}", exc_info=True)
+                        logger.error(f"Error procesando análisis "
+                                     f"'{analysis_name}' en estudio {study_id}: {e}",
+                                     exc_info=True)
                 else:
-                    logger.warning(f"Directorio de análisis '{analysis_name}' encontrado sin config.json en estudio {study_id}.")
+                    logger.warning(f"Directorio análisis '{analysis_name}' "
+                                   f"encontrado sin config.json en estudio "
+                                   f"{study_id}.")
 
         # Ordenar por fecha de modificación (más reciente primero)
         analyses.sort(key=lambda x: x['mtime'], reverse=True)
@@ -1480,20 +1487,25 @@ class AnalysisService:
         :raises FileNotFoundError: Si el directorio del análisis no existe.
         :raises OSError: Si ocurre un error al eliminar el directorio.
         """
-        analysis_dir = self.get_individual_analysis_path(study_id, analysis_name)
+        analysis_dir = self.get_individual_analysis_path(study_id,
+                                                         analysis_name)
         if not analysis_dir:
-            # get_individual_analysis_path ya loggea el error si el nombre es inválido
-            raise ValueError(f"Nombre de análisis inválido o ruta de estudio no encontrada: {analysis_name}")
+            # get_individual_analysis_path ya loggea el error
+            raise ValueError(f"Nombre de análisis inválido o ruta de estudio "
+                             f"no encontrada: {analysis_name}")
 
         if not analysis_dir.exists():
-            raise FileNotFoundError(f"El directorio del análisis no existe: {analysis_dir}")
+            raise FileNotFoundError(f"El directorio del análisis no existe: "
+                                    f"{analysis_dir}")
         if not analysis_dir.is_dir():
-            raise ValueError(f"La ruta del análisis no es un directorio: {analysis_dir}")
+            raise ValueError(f"La ruta del análisis no es un directorio: "
+                             f"{analysis_dir}")
 
         try:
             shutil.rmtree(analysis_dir)
             logger.info(f"Análisis individual eliminado: {analysis_dir}")
-            # Opcional: Limpiar directorios padre si quedan vacíos ('Individual', 'Analisis Discreto')
+            # Opcional: Limpiar directorios padre si quedan vacíos
         except OSError as e:
-            logger.error(f"Error eliminando el directorio del análisis {analysis_dir}: {e}", exc_info=True)
+            logger.error(f"Error eliminando directorio análisis "
+                         f"{analysis_dir}: {e}", exc_info=True)
             raise
