@@ -455,13 +455,13 @@ class DiscreteAnalysisView(ttk.Frame):
     def open_individual_analysis_manager(self):
         """Abre el diálogo para gestionar análisis individuales."""
         from kineviz.ui.dialogs.individual_analysis_manager_dialog import IndividualAnalysisManagerDialog # Import local
-       # Pasar self.analysis_service y self.study_id
-       dialog = IndividualAnalysisManagerDialog(self, self.analysis_service, self.study_id)
-       # dialog.grab_set() # Hacer modal si se desea
+        # Pasar self.analysis_service y self.study_id
+        dialog = IndividualAnalysisManagerDialog(self, self.analysis_service, self.study_id)
+        # dialog.grab_set() # Hacer modal si se desea
 
-   # TODO: Implementar open_summary_tables_folder
-   # def open_summary_tables_folder(self): ...
+    # TODO: Implementar open_summary_tables_folder
+    # def open_summary_tables_folder(self): ...
 
-   def destroy(self):
+    def destroy(self):
        """Destruye el frame principal de esta vista."""
        super().destroy()
