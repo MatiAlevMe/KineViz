@@ -1080,9 +1080,9 @@ class AnalysisService:
                 test_name = "N/A"
                 p_value = np.nan
 
-               if n_groups == 2:
-                   group1_data = np.array(data_by_group[0])
-                   group2_data = np.array(data_by_group[1])
+                if n_groups == 2:
+                    group1_data = np.array(data_by_group[0])
+                    group2_data = np.array(data_by_group[1])
 
                    if is_paired:
                        # Asegurar misma longitud para tests pareados
