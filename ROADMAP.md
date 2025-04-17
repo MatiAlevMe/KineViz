@@ -247,25 +247,28 @@ Esta funcionalidad está pensada para automatizar el análisis estadístico de d
         *   (Hecho) Añadida barra de búsqueda (por nombre, cálculo, descriptores).
         *   (Hecho) Añadido filtro por Tipo de Cálculo.
         *   (Hecho) Añadida paginación configurable (`discrete_tables_per_page` en `config.ini`).
-*   **2. Identificación de Grupos y Columnas Comunes:** (En Progreso)
+*   **2. Identificación de Grupos y Columnas Comunes:** (Hecho)
     *   (Hecho) `AnalysisService._identify_study_groups`: Identifica grupos únicos por descriptores.
     *   (Hecho) `AnalysisService.get_discrete_analysis_groups`: Expone grupos a la UI.
     *   (Hecho) `AnalysisService.get_common_columns_for_groups`: Encuentra columnas comunes en tablas CSV.
-*   **3. Diálogo de Configuración de Análisis Individual:** (En Progreso)
+*   **3. Diálogo de Configuración de Análisis Individual:** (Hecho)
     *   (Hecho) Creado `ConfigureIndividualAnalysisDialog` con UI para seleccionar Frecuencia, Cálculo, Grupos (dinámico), Columna (dinámico), y supuestos (paramétrico/pareado).
     *   (Hecho) Lógica básica para cargar grupos y columnas disponibles.
-*   **4. Diálogo de Gestión de Análisis Individual:** (En Progreso)
+*   **4. Diálogo de Gestión de Análisis Individual:** (Hecho)
     *   (Hecho) Creado `IndividualAnalysisManagerDialog` con UI básica (lista placeholder, botones).
     *   (Hecho) Añadido botón "Análisis Individual" en `DiscreteAnalysisView` para abrir el gestor.
-*   **5. Generación de Gráfico Boxplot Comparativo:** (En Progreso)
+*   **5. Generación de Gráfico Boxplot Comparativo:** (Hecho)
     *   (Hecho) Añadida función `create_comparison_boxplot` en `charting.py`.
     *   (Hecho) `AnalysisService.perform_individual_analysis`: Implementada lógica básica para leer datos de tablas CSV, preparar datos por grupo y llamar a `create_comparison_boxplot`. Guarda gráfico y config.json.
-*   **6. Implementación de Tests Estadísticos:** (Pendiente) Añadir lógica en `perform_individual_analysis` para ejecutar t-test/ANOVA/Wilcoxon/Kruskal-Wallis según configuración.
-*   **7. Gestión de Análisis Guardados:** (Pendiente)
-    *   (Pendiente) Implementar `AnalysisService.list_individual_analyses` para leer archivos `config.json`.
-    *   (Pendiente) Implementar `AnalysisService.delete_individual_analysis` para eliminar carpetas de análisis.
-    *   (Pendiente) Conectar UI de `IndividualAnalysisManagerDialog` (cargar lista, ver gráfico, eliminar, abrir carpeta).
+*   **6. Implementación de Tests Estadísticos:** (En Progreso)
+    *   (Hecho) Añadida lógica en `perform_individual_analysis` para ejecutar t-test/ANOVA/Wilcoxon/Kruskal-Wallis según configuración usando `scipy.stats`.
+    *   (Pendiente) Mostrar resultados estadísticos (p-valor) en el gráfico (requiere `statannot` u otra librería/lógica).
+*   **7. Gestión de Análisis Guardados:** (En Progreso)
+    *   (Hecho) Implementado `AnalysisService.list_individual_analyses` para leer archivos `config.json`.
+    *   (Hecho) Implementado `AnalysisService.delete_individual_analysis` para eliminar carpetas de análisis.
+    *   (Hecho) Conectada UI de `IndividualAnalysisManagerDialog` (cargar lista, ver gráfico, eliminar, abrir carpeta).
 *   **8. Reporte General:** (Pendiente) Implementar generación automática de PDF con todas las combinaciones.
+    *   **Nota**: Necesitará preguntar/configurar los supuestos (paramétrico/pareado) para aplicar las comparaciones correctas.
 *   **9. Integración y Pruebas:** (Pendiente) Integrar la funcionalidad en la plataforma y realizar pruebas de integración.
 
 ---
