@@ -2,12 +2,18 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import logging
 from pathlib import Path
+import os
+import sys
+import subprocess
+from datetime import datetime # Para formatear fecha
 
 # Importar servicios y otros diálogos necesarios
 from kineviz.core.services.analysis_service import AnalysisService
 from kineviz.ui.dialogs.configure_individual_analysis_dialog import ConfigureIndividualAnalysisDialog
 
+
 logger = logging.getLogger(__name__)
+
 
 class IndividualAnalysisManagerDialog(tk.Toplevel):
     """Diálogo para gestionar (listar, crear, eliminar) análisis individuales."""
@@ -87,29 +93,35 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         for item in self.analysis_tree.get_children():
             self.analysis_tree.delete(item)
 
-        # TODO: Implementar self.analysis_service.list_individual_analyses(self.study_id)
-        # Esta función debería devolver una lista de diccionarios, cada uno con:
-        # {'name': str, 'path': Path (directorio del análisis), 'config': dict, 'mtime': float}
-        logger.warning("Funcionalidad 'load_analyses' aún no implementada en AnalysisService.")
-        self.analysis_list = [] # Placeholder
+        try:
+            self.analysis_list = self.analysis_service.list_individual_analyses(self.study_id)
+        except Exception as e:
+             logger.error(f"Error cargando lista de análisis individuales: {e}", exc_info=True)
+             messagebox.showerror("Error", f"No se pudo cargar la lista de análisis:\n{e}", parent=self)
+             self.analysis_list = []
 
         if not self.analysis_list:
-            self.analysis_tree.insert("", tk.END, text="NoAnalyses", values=("No hay análisis individuales guardados.", "", ""))
+            self.analysis_tree.insert("", tk.END, text="NoAnalyses",
+                                      values=("No hay análisis individuales guardados.", "", ""))
         else:
             for analysis_info in self.analysis_list:
                 # Extraer info relevante de config para mostrar
                 config = analysis_info.get('config', {})
-                params_str = f"Calc: {config.get('calculation', '?')}, Col: {config.get('column', '?')}, Grupos: {len(config.get('groups', []))}"
-                # Usar mtime del archivo config.json o del directorio
-                date_str = "N/A" # Placeholder
+                col_name = config.get('column', '?').split('/')[1] # Mostrar solo nombre columna
+                params_str = (f"Calc: {config.get('calculation', '?')}, "
+                              f"Col: {col_name}, "
+                              f"Grupos: {len(config.get('groups', []))}")
+                # Usar mtime del archivo config.json
+                date_str = "N/A"
                 if 'mtime' in analysis_info:
-                     from datetime import datetime
-                     date_str = datetime.fromtimestamp(analysis_info['mtime']).strftime('%Y-%m-%d %H:%M:%S')
+                    date_str = datetime.fromtimestamp(
+                        analysis_info['mtime']
+                    ).strftime('%Y-%m-%d %H:%M:%S')
 
                 # Usar el nombre del análisis como ID interno (text)
                 self.analysis_tree.insert(
                     "", tk.END,
-                    text=analysis_info['name'], # Guardar nombre para identificar selección
+                    text=analysis_info['name'],  # Guardar nombre para identificar
                     values=(
                         analysis_info['name'],
                         date_str,
@@ -122,120 +134,179 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         dialog = ConfigureIndividualAnalysisDialog(self, self.analysis_service, self.study_id)
         # Esperar a que el diálogo se cierre y luego refrescar la lista
         self.wait_window(dialog)
-        self.load_analyses() # Recargar por si se creó uno nuevo
+        self.load_analyses()  # Recargar por si se creó uno nuevo
 
-    def get_selected_analysis_name(self) -> str | None:
-        """Obtiene el nombre del análisis seleccionado en el Treeview."""
+    def get_selected_analysis_info(self) -> dict | None:
+        """Obtiene el diccionario de información del análisis seleccionado."""
         selected_item = self.analysis_tree.focus()
         if not selected_item:
-            messagebox.showwarning("Sin Selección", "Por favor, seleccione un análisis de la lista.", parent=self)
+            messagebox.showwarning("Sin Selección",
+                                   "Seleccione un análisis de la lista.",
+                                   parent=self)
             return None
         analysis_name = self.analysis_tree.item(selected_item, "text")
-        if analysis_name == "NoAnalyses": # Verificar si es el mensaje placeholder
-             messagebox.showwarning("Sin Selección", "No hay un análisis válido seleccionado.", parent=self)
-             return None
-        return analysis_name
+        if analysis_name == "NoAnalyses":  # Verificar si es el placeholder
+            messagebox.showwarning("Sin Selección",
+                                   "No hay un análisis válido seleccionado.",
+                                   parent=self)
+            return None
+
+        # Buscar la info completa en self.analysis_list
+        for analysis_info in self.analysis_list:
+            if analysis_info['name'] == analysis_name:
+                return analysis_info
+        logger.error(f"No se encontró la información para el análisis "
+                     f"seleccionado: {analysis_name}")
+        return None # No debería ocurrir si la lista está sincronizada
 
     def view_analysis_plot(self):
         """Abre el gráfico PNG del análisis seleccionado."""
-        analysis_name = self.get_selected_analysis_name()
-        if not analysis_name: return
+        analysis_info = self.get_selected_analysis_info()
+        if not analysis_info:
+            return
 
-        # TODO: Necesitamos la ruta al archivo PNG. Esto debería venir de list_individual_analyses
-        # o construirse a partir del nombre y la ruta base del estudio.
-        logger.warning("Funcionalidad 'view_analysis_plot' aún no implementada.")
-        messagebox.showinfo("Pendiente", "Abrir gráfico aún no implementado.", parent=self)
-        # Ejemplo futuro:
-        # try:
-        #     plot_path = self.analysis_service.get_individual_analysis_plot_path(self.study_id, analysis_name)
-        #     if plot_path and plot_path.exists():
-        #         # Usar lógica de apertura de archivo como en DiscreteAnalysisView.view_table
-        #         import os, sys, subprocess
-        #         if sys.platform == "win32": os.startfile(plot_path)
-        #         elif sys.platform == "darwin": subprocess.run(["open", plot_path], check=True)
-        #         else: subprocess.run(["xdg-open", plot_path], check=True)
-        #     else:
-        #         messagebox.showerror("Error", f"No se encontró el archivo de gráfico para '{analysis_name}'.", parent=self)
-        # except Exception as e:
-        #     logger.error(f"Error abriendo gráfico para {analysis_name}: {e}", exc_info=True)
-        #     messagebox.showerror("Error al Abrir", f"No se pudo abrir el gráfico:\n{e}", parent=self)
+        plot_path = analysis_info.get('plot_path') # Obtener ruta del gráfico
 
+        if not plot_path or not plot_path.exists():
+            messagebox.showerror("Error",
+                                   f"No se encontró el archivo de gráfico para "
+                                   f"'{analysis_info['name']}'.", parent=self)
+            return
+
+        try:
+            logger.info(f"Intentando abrir gráfico: {plot_path}")
+            if sys.platform == "win32":
+                os.startfile(plot_path)
+            elif sys.platform == "darwin":  # macOS
+                subprocess.run(["open", plot_path], check=True)
+            else:  # linux variants
+                subprocess.run(["xdg-open", plot_path], check=True)
+        except Exception as e:
+            logger.error(f"Error abriendo gráfico para {analysis_info['name']}: "
+                         f"{e}", exc_info=True)
+            messagebox.showerror("Error al Abrir",
+                                   f"No se pudo abrir el gráfico:\n{e}",
+                                   parent=self)
 
     def delete_analysis(self):
         """Elimina el análisis seleccionado (carpeta y contenido)."""
-        analysis_name = self.get_selected_analysis_name()
-        if not analysis_name: return
+        analysis_info = self.get_selected_analysis_info()
+        if not analysis_info:
+            return
+        analysis_name = analysis_info['name']
 
-        if not messagebox.askyesno("Confirmar Eliminación",
-                                   f"¿Está seguro de que desea eliminar permanentemente el análisis '{analysis_name}' y todos sus archivos?",
-                                   parent=self):
+        if not messagebox.askyesno(
+                "Confirmar Eliminación",
+                f"¿Está seguro de que desea eliminar permanentemente el "
+                f"análisis '{analysis_name}' y todos sus archivos?",
+                parent=self):
             return
 
-        # TODO: Implementar self.analysis_service.delete_individual_analysis(self.study_id, analysis_name)
-        logger.warning("Funcionalidad 'delete_analysis' aún no implementada en AnalysisService.")
-        messagebox.showinfo("Pendiente", "Eliminar análisis aún no implementado.", parent=self)
-        # Ejemplo futuro:
-        # try:
-        #     self.analysis_service.delete_individual_analysis(self.study_id, analysis_name)
-        #     messagebox.showinfo("Eliminación Exitosa", f"El análisis '{analysis_name}' ha sido eliminado.", parent=self)
-        #     self.load_analyses() # Recargar lista
-        # except Exception as e:
-        #     logger.error(f"Error eliminando análisis {analysis_name}: {e}", exc_info=True)
-        #     messagebox.showerror("Error al Eliminar", f"No se pudo eliminar el análisis:\n{e}", parent=self)
+        try:
+            self.analysis_service.delete_individual_analysis(self.study_id,
+                                                             analysis_name)
+            messagebox.showinfo("Eliminación Exitosa",
+                                f"El análisis '{analysis_name}' ha sido eliminado.",
+                                parent=self)
+            self.load_analyses()  # Recargar lista
+        except (ValueError, FileNotFoundError) as e:
+             logger.error(f"Error al intentar eliminar análisis {analysis_name}: {e}")
+             messagebox.showerror("Error al Eliminar", f"{e}", parent=self)
+             self.load_analyses() # Recargar por si el estado cambió
+        except Exception as e:
+            logger.error(f"Error eliminando análisis {analysis_name}: {e}",
+                         exc_info=True)
+            messagebox.showerror("Error al Eliminar",
+                                   f"No se pudo eliminar el análisis:\n{e}",
+                                   parent=self)
 
     def open_analysis_folder(self):
-        """Abre la carpeta que contiene los archivos del análisis seleccionado."""
-        analysis_name = self.get_selected_analysis_name()
-        if not analysis_name: return
+        """Abre la carpeta que contiene los archivos del análisis."""
+        analysis_info = self.get_selected_analysis_info()
+        if not analysis_info:
+            return
 
-        # TODO: Necesitamos la ruta a la carpeta del análisis.
-        logger.warning("Funcionalidad 'open_analysis_folder' aún no implementada.")
-        messagebox.showinfo("Pendiente", "Abrir carpeta de análisis aún no implementado.", parent=self)
-        # Ejemplo futuro:
-        # try:
-        #     analysis_dir = self.analysis_service.get_individual_analysis_path(self.study_id, analysis_name)
-        #     if analysis_dir and analysis_dir.exists():
-        #         # Usar lógica de apertura de carpeta
-        #         import os, sys, subprocess
-        #         if sys.platform == "win32": os.startfile(analysis_dir)
-        #         elif sys.platform == "darwin": subprocess.run(["open", analysis_dir], check=True)
-        #         else: subprocess.run(["xdg-open", analysis_dir], check=True)
-        #     else:
-        #         messagebox.showerror("Error", f"No se encontró la carpeta para el análisis '{analysis_name}'.", parent=self)
-        # except Exception as e:
-        #     logger.error(f"Error abriendo carpeta para {analysis_name}: {e}", exc_info=True)
-        #     messagebox.showerror("Error al Abrir", f"No se pudo abrir la carpeta:\n{e}", parent=self)
+        analysis_dir = analysis_info.get('path') # Obtener ruta del directorio
+
+        if not analysis_dir or not analysis_dir.exists():
+            messagebox.showerror("Error",
+                                   f"No se encontró la carpeta para el análisis "
+                                   f"'{analysis_info['name']}'.", parent=self)
+            return
+
+        try:
+            logger.info(f"Intentando abrir carpeta: {analysis_dir}")
+            if sys.platform == "win32":
+                os.startfile(analysis_dir)
+            elif sys.platform == "darwin":  # macOS
+                subprocess.run(["open", analysis_dir], check=True)
+            else:  # linux variants
+                subprocess.run(["xdg-open", analysis_dir], check=True)
+        except Exception as e:
+            logger.error(f"Error abriendo carpeta para {analysis_info['name']}: "
+                         f"{e}", exc_info=True)
+            messagebox.showerror("Error al Abrir",
+                                   f"No se pudo abrir la carpeta:\n{e}",
+                                   parent=self)
+
 
 # Para pruebas rápidas
 if __name__ == '__main__':
+    # Necesitamos Path para el dummy
+    from pathlib import Path
     root = tk.Tk()
-    root.withdraw() # Ocultar ventana principal
+    root.withdraw()  # Ocultar ventana principal
 
     # --- Dummies ---
     class DummyAnalysisService:
+        # Añadir settings dummy para get_discrete_analysis_groups
+        def __init__(self):
+            class DummySettings:
+                def get_descriptor_alias(self, desc):
+                    return {'CMJ': 'Salto CM', 'PRE': 'Antes',
+                            'POST': 'Despues'}.get(desc)
+            self.settings = DummySettings()
+
         def list_individual_analyses(self, study_id):
             print(f"Dummy: list_individual_analyses({study_id})")
-            # Simular algunos análisis
+            # Simular algunos análisis con plot_path
+            base = Path(f'/fake/study_{study_id}/Analisis Discreto/Individual')
+            analysis1_path = base / 'Comp_CMJ_PRE_POST'
+            analysis2_path = base / 'Comp_SJ_Tipos'
             return [
-                {'name': 'Comp_CMJ_PRE_POST', 'path': Path(f'/fake/study_{study_id}/Analisis Discreto/Individual/Comp_CMJ_PRE_POST'),
-                 'config': {'calculation': 'Maximo', 'column': 'H Salto', 'groups': ['CMJ_PRE', 'CMJ_POST']}, 'mtime': 1678886400.0},
-                {'name': 'Comp_SJ_Tipos', 'path': Path(f'/fake/study_{study_id}/Analisis Discreto/Individual/Comp_SJ_Tipos'),
-                 'config': {'calculation': 'Rango', 'column': 'V Max', 'groups': ['SJ_TipoA', 'SJ_TipoB', 'SJ_TipoC']}, 'mtime': 1678972800.0},
+                {'name': 'Comp_CMJ_PRE_POST', 'path': analysis1_path,
+                 'config': {'calculation': 'Maximo', 'column': 'H Salto/Alt/cm',
+                            'groups': ['CMJ_PRE', 'CMJ_POST']},
+                 'mtime': 1678886400.0, 'plot_path': analysis1_path / 'boxplot.png'},
+                {'name': 'Comp_SJ_Tipos', 'path': analysis2_path,
+                 'config': {'calculation': 'Rango', 'column': 'Art1/VelX/m/s',
+                            'groups': ['SJ_TipoA', 'SJ_TipoB', 'SJ_TipoC']},
+                 'mtime': 1678972800.0, 'plot_path': analysis2_path / 'boxplot.png'},
             ]
+
         def get_discrete_analysis_groups(self, study_id, frequency):
-             print(f"Dummy: get_discrete_analysis_groups({study_id}, {frequency})")
-             return ['CMJ_PRE', 'CMJ_POST', 'SJ_TipoA', 'SJ_TipoB', 'SJ_TipoC', 'SinDescriptores']
-        def get_common_columns_for_groups(self, study_id, frequency, calculation, group_keys):
-             print(f"Dummy: get_common_columns_for_groups({study_id}, {frequency}, {calculation}, {group_keys})")
-             return ['Art1/PosX/mm', 'Art1/PosY/mm', 'Art2/VelX/m/s', 'H Salto/Alt/cm']
+            print(f"Dummy: get_discrete_analysis_groups({study_id}, {frequency})")
+            return ['CMJ_PRE', 'CMJ_POST', 'SJ_TipoA', 'SJ_TipoB', 'SJ_TipoC',
+                    'SinDescriptores']
+        def get_common_columns_for_groups(self, study_id, frequency,
+                                          calculation, group_keys):
+            print(f"Dummy: get_common_columns_for_groups({study_id}, "
+                  f"{frequency}, {calculation}, {group_keys})")
+            return ['Art1/PosX/mm', 'Art1/PosY/mm', 'Art2/VelX/m/s',
+                    'H Salto/Alt/cm']
+
         def perform_individual_analysis(self, study_id, config):
-             print(f"Dummy: perform_individual_analysis({study_id}, {config})")
-             # Simular éxito
-             fake_path = Path(f'/fake/study_{study_id}/Analisis Discreto/Individual/{config["name"]}')
-             return {'plot_path': str(fake_path / 'boxplot.png'), 'config_path': str(fake_path / 'config.json')}
+            print(f"Dummy: perform_individual_analysis({study_id}, {config})")
+            # Simular éxito
+            fake_path = Path(f'/fake/study_{study_id}/Analisis Discreto/'
+                             f'Individual/{config["name"]}')
+            return {'plot_path': str(fake_path / 'boxplot.png'),
+                    'config_path': str(fake_path / 'config.json')}
+
         def delete_individual_analysis(self, study_id, analysis_name):
-             print(f"Dummy: delete_individual_analysis({study_id}, {analysis_name})")
-             # Simular éxito
+            print(f"Dummy: delete_individual_analysis({study_id}, "
+                  f"{analysis_name})")
+            # Simular éxito
 
     # --- Ejecutar Diálogo ---
     dummy_service = DummyAnalysisService()

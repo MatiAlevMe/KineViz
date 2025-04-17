@@ -23,11 +23,21 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Tabl
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
-from reportlab.lib.units import inch # Para tamaños
-import itertools # Para combinaciones de descriptores
-import json # Para guardar/cargar configuraciones de análisis
+from reportlab.lib.units import inch  # Para tamaños
+import itertools  # Para combinaciones de descriptores
+import json  # Para guardar/cargar configuraciones de análisis
+import shutil  # Para eliminar directorios
 
-logger = logging.getLogger(__name__) # Logger para este módulo
+# Importar scipy para tests estadísticos
+try:
+    from scipy import stats
+except ImportError:
+    logger.warning("Scipy no está instalado. Las pruebas estadísticas no estarán disponibles.")
+    stats = None
+
+
+logger = logging.getLogger(__name__)  # Logger para este módulo
+
 
 class AnalysisService:
     def __init__(self, study_service: StudyService, file_service: FileService, app_settings: AppSettings):
@@ -1058,15 +1068,101 @@ class AnalysisService:
 
         # Verificar si tenemos datos para graficar
         if not any(data_by_group):
-             raise ValueError("No se encontraron datos válidos en ninguna de las tablas para los grupos y columna seleccionados.")
+            raise ValueError("No se encontraron datos válidos en ninguna de las tablas para los grupos y columna seleccionados.")
 
-        # --- Realizar Análisis Estadístico (Placeholder) ---
-        # TODO: Implementar tests (t-test, ANOVA, Wilcoxon, Kruskal-Wallis)
-        stats_results = None # Placeholder para resultados estadísticos
-        logger.info(f"Análisis estadístico para {analysis_name} (Parametric={config['parametric']}, Paired={config['paired']}) - NO IMPLEMENTADO")
-        # Ejemplo futuro:
-        # if len(group_names) == 2:
-        #     if config['paired']:
+       # --- Realizar Análisis Estadístico ---
+       stats_results = None
+       if stats: # Verificar si scipy.stats está disponible
+           try:
+               n_groups = len(data_by_group)
+               is_paired = config['paired']
+               is_parametric = config['parametric']
+               test_name = "N/A"
+               p_value = np.nan
+
+               if n_groups == 2:
+                   group1_data = np.array(data_by_group[0])
+                   group2_data = np.array(data_by_group[1])
+
+                   if is_paired:
+                       # Asegurar misma longitud para tests pareados
+                       min_len = min(len(group1_data), len(group2_data))
+                       if min_len < 1:
+                            raise ValueError("Datos insuficientes para test pareado.")
+                       group1_data = group1_data[:min_len]
+                       group2_data = group2_data[:min_len]
+
+                       if is_parametric:
+                           test_name = "T-test relacionado"
+                           stat, p_value = stats.ttest_rel(group1_data, group2_data, nan_policy='omit')
+                       else:
+                           test_name = "Wilcoxon signed-rank"
+                           # Wilcoxon requiere > 0 diferencias, y maneja NaNs internamente si se usa la versión más reciente
+                           try:
+                                stat, p_value = stats.wilcoxon(group1_data, group2_data, nan_policy='omit')
+                           except ValueError as e:
+                                logger.warning(f"No se pudo ejecutar Wilcoxon para {analysis_name}: {e}")
+                                p_value = np.nan # Marcar como no calculable
+                   else: # Independiente
+                       if is_parametric:
+                           test_name = "T-test independiente"
+                           stat, p_value = stats.ttest_ind(group1_data, group2_data, equal_var=False, nan_policy='omit') # Welch's t-test por defecto
+                       else:
+                           test_name = "Mann-Whitney U"
+                           stat, p_value = stats.mannwhitneyu(group1_data, group2_data, alternative='two-sided', nan_policy='omit')
+
+               elif n_groups > 2:
+                   # Filtrar grupos vacíos antes de pasar a ANOVA/Kruskal
+                   valid_data_for_test = [np.array(g) for g in data_by_group if len(g) > 0]
+                   if len(valid_data_for_test) < 2:
+                        raise ValueError("Se necesitan al menos dos grupos con datos para comparar.")
+
+                   if is_paired: # ANOVA de medidas repetidas / Friedman
+                       # Nota: ANOVA de medidas repetidas es más complejo y requiere paquetes como statsmodels o pingouin.
+                       # Implementaremos Friedman como alternativa no paramétrica.
+                       if is_parametric:
+                            test_name = "ANOVA medidas repetidas (NO IMPLEMENTADO)"
+                            logger.warning(f"{test_name} para {analysis_name}. Usando Friedman en su lugar.")
+                            # Intentar Friedman de todas formas
+                            try:
+                                stat, p_value = stats.friedmanchisquare(*valid_data_for_test)
+                                test_name = "Friedman (usado como fallback)"
+                            except ValueError as e:
+                                logger.warning(f"No se pudo ejecutar Friedman para {analysis_name}: {e}")
+                                p_value = np.nan
+                       else:
+                            test_name = "Friedman"
+                            try:
+                                stat, p_value = stats.friedmanchisquare(*valid_data_for_test)
+                            except ValueError as e:
+                                logger.warning(f"No se pudo ejecutar Friedman para {analysis_name}: {e}")
+                                p_value = np.nan
+                   else: # ANOVA de un factor / Kruskal-Wallis
+                       if is_parametric:
+                           test_name = "ANOVA (un factor)"
+                           stat, p_value = stats.f_oneway(*valid_data_for_test)
+                       else:
+                           test_name = "Kruskal-Wallis"
+                           stat, p_value = stats.kruskal(*valid_data_for_test, nan_policy='omit')
+
+               if not np.isnan(p_value):
+                   stats_results = {'test_name': test_name, 'p_value': p_value}
+                   logger.info(f"Análisis estadístico para {analysis_name}: {test_name}, p-valor = {p_value:.4f}")
+               else:
+                    logger.warning(f"No se pudo calcular p-valor para {analysis_name} con test {test_name}.")
+
+           except ValueError as ve:
+                logger.error(f"Error en datos para análisis estadístico de {analysis_name}: {ve}")
+                # stats_results permanece None
+           except Exception as e_stat:
+               logger.error(f"Error inesperado durante análisis estadístico de {analysis_name}: {e_stat}", exc_info=True)
+               # stats_results permanece None
+       else:
+            logger.warning("Scipy no encontrado. Omitiendo pruebas estadísticas.")
+
+
+        # --- Generar Gráfico ---
+        try:
         #         if config['parametric']:
         #             # stats_results = scipy.stats.ttest_rel(...)
         #         else:
@@ -1120,10 +1216,97 @@ class AnalysisService:
         except Exception as e:
             logger.error(f"Error guardando la configuración del análisis {analysis_name}: {e}", exc_info=True)
             # No relanzar necesariamente, el gráfico ya se generó
-            # Podríamos intentar eliminar el gráfico si falla el guardado de config?
+           # Podríamos intentar eliminar el gráfico si falla el guardado de config?
 
-        return {'plot_path': str(plot_path), 'config_path': str(config_path)}
+       return {'plot_path': str(plot_path), 'config_path': str(config_path)}
 
-    # TODO: Añadir métodos para listar, cargar y eliminar análisis individuales
-    # def list_individual_analyses(self, study_id: int) -> list[dict]: ...
-    # def delete_individual_analysis(self, study_id: int, analysis_name: str): ...
+   def _get_individual_analysis_base_dir(self, study_id: int) -> Path | None:
+       """Obtiene el directorio base para los análisis individuales de un estudio."""
+       study_path = self.file_service._get_study_path(study_id)
+       if not study_path:
+           logger.error(f"No se pudo encontrar la ruta del estudio {study_id} para análisis individual.")
+           return None
+       return study_path / "Analisis Discreto" / "Individual"
+
+   def get_individual_analysis_path(self, study_id: int, analysis_name: str) -> Path | None:
+       """Obtiene la ruta completa al directorio de un análisis individual específico."""
+       base_dir = self._get_individual_analysis_base_dir(study_id)
+       if not base_dir:
+           return None
+       # Validar nombre por si acaso (aunque ya se hizo al crear)
+       invalid_chars = r'<>:"/\|?*'
+       if any(char in analysis_name for char in invalid_chars):
+            logger.error(f"Nombre de análisis inválido solicitado: {analysis_name}")
+            return None
+       return base_dir / analysis_name
+
+   def list_individual_analyses(self, study_id: int) -> list[dict]:
+       """
+       Lista los análisis individuales guardados para un estudio.
+
+       :param study_id: ID del estudio.
+       :return: Lista de diccionarios, cada uno con:
+                {'name': str, 'path': Path, 'config': dict, 'mtime': float}
+       """
+       analyses = []
+       base_dir = self._get_individual_analysis_base_dir(study_id)
+       if not base_dir or not base_dir.exists():
+           return []
+
+       for item_path in base_dir.iterdir():
+           if item_path.is_dir():
+               analysis_name = item_path.name
+               config_path = item_path / "config.json"
+               plot_path = item_path / "boxplot.png" # Asumir nombre fijo
+
+               if config_path.exists() and config_path.is_file():
+                   try:
+                       with open(config_path, 'r', encoding='utf-8') as f:
+                           config_data = json.load(f)
+                       # Usar mtime del config.json como referencia
+                       mtime = config_path.stat().st_mtime
+                       analyses.append({
+                           'name': analysis_name,
+                           'path': item_path,
+                           'config': config_data,
+                           'mtime': mtime,
+                           'plot_path': plot_path # Añadir ruta al gráfico
+                       })
+                   except json.JSONDecodeError:
+                       logger.error(f"Error leyendo config.json para análisis '{analysis_name}' en estudio {study_id}.")
+                   except Exception as e:
+                       logger.error(f"Error procesando análisis '{analysis_name}' en estudio {study_id}: {e}", exc_info=True)
+               else:
+                    logger.warning(f"Directorio de análisis '{analysis_name}' encontrado sin config.json en estudio {study_id}.")
+
+       # Ordenar por fecha de modificación (más reciente primero)
+       analyses.sort(key=lambda x: x['mtime'], reverse=True)
+       return analyses
+
+   def delete_individual_analysis(self, study_id: int, analysis_name: str):
+       """
+       Elimina la carpeta y contenido de un análisis individual específico.
+
+       :param study_id: ID del estudio.
+       :param analysis_name: Nombre del análisis a eliminar.
+       :raises ValueError: Si el nombre del análisis es inválido.
+       :raises FileNotFoundError: Si el directorio del análisis no existe.
+       :raises OSError: Si ocurre un error al eliminar el directorio.
+       """
+       analysis_dir = self.get_individual_analysis_path(study_id, analysis_name)
+       if not analysis_dir:
+            # get_individual_analysis_path ya loggea el error si el nombre es inválido
+            raise ValueError(f"Nombre de análisis inválido o ruta de estudio no encontrada: {analysis_name}")
+
+       if not analysis_dir.exists():
+           raise FileNotFoundError(f"El directorio del análisis no existe: {analysis_dir}")
+       if not analysis_dir.is_dir():
+            raise ValueError(f"La ruta del análisis no es un directorio: {analysis_dir}")
+
+       try:
+           shutil.rmtree(analysis_dir)
+           logger.info(f"Análisis individual eliminado: {analysis_dir}")
+           # Opcional: Limpiar directorios padre si quedan vacíos ('Individual', 'Analisis Discreto')
+       except OSError as e:
+           logger.error(f"Error eliminando el directorio del análisis {analysis_dir}: {e}", exc_info=True)
+           raise
