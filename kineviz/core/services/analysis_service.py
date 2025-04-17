@@ -1070,11 +1070,11 @@ class AnalysisService:
         if not any(data_by_group):
             raise ValueError("No se encontraron datos válidos en ninguna de las tablas para los grupos y columna seleccionados.")
 
-       # --- Realizar Análisis Estadístico ---
-       stats_results = None
-       if stats: # Verificar si scipy.stats está disponible
-           try:
-               n_groups = len(data_by_group)
+        # --- Realizar Análisis Estadístico ---
+        stats_results = None
+        if stats:  # Verificar si scipy.stats está disponible
+            try:
+                n_groups = len(data_by_group)
                is_paired = config['paired']
                is_parametric = config['parametric']
                test_name = "N/A"
@@ -1159,28 +1159,6 @@ class AnalysisService:
                # stats_results permanece None
        else:
             logger.warning("Scipy no encontrado. Omitiendo pruebas estadísticas.")
-
-
-        # --- Generar Gráfico ---
-        try:
-        #         if config['parametric']:
-        #             # stats_results = scipy.stats.ttest_rel(...)
-        #         else:
-        #             # stats_results = scipy.stats.wilcoxon(...)
-        #     else: # Independent
-        #         if config['parametric']:
-        #             # stats_results = scipy.stats.ttest_ind(...)
-        #         else:
-        #             # stats_results = scipy.stats.mannwhitneyu(...)
-        # elif len(group_names) > 2:
-        #      if config['paired']: # Repeated measures ANOVA / Friedman
-        #          # ...
-        #      else: # One-way ANOVA / Kruskal-Wallis
-        #          if config['parametric']:
-        #              # stats_results = scipy.stats.f_oneway(...)
-        #          else:
-        #              # stats_results = scipy.stats.kruskal(...)
-
 
         # --- Generar Gráfico ---
         try:
