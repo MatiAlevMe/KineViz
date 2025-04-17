@@ -28,6 +28,9 @@ import itertools  # Para combinaciones de descriptores
 import json  # Para guardar/cargar configuraciones de análisis
 import shutil  # Para eliminar directorios
 
+# Define logger before it's potentially used in the except block below
+logger = logging.getLogger(__name__)  # Logger para este módulo
+
 # Importar scipy para tests estadísticos
 try:
     from scipy import stats
@@ -35,8 +38,6 @@ except ImportError:
     logger.warning("Scipy no está instalado. Las pruebas estadísticas no estarán disponibles.")
     stats = None
 
-# Define logger before it's potentially used in the except block
-logger = logging.getLogger(__name__)  # Logger para este módulo
 
 class AnalysisService:
     def __init__(self, study_service: StudyService, file_service: FileService, app_settings: AppSettings):
