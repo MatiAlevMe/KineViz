@@ -162,15 +162,15 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
                     parts = g_key.split('_')
                     # Acceder a settings a través de analysis_service
                     aliased_parts = [
-                       self.analysis_service.settings.get_descriptor_alias(p) or p
-                       for p in parts
-                   ]
-                   display_name = ', '.join(aliased_parts) \
-                       if g_key != "SinDescriptores" else "Sin Descriptores"
-                   # Guardar tupla (display_name, original_key)
-                   self.available_groups.append((display_name, g_key))
-               # Ordenar por nombre visible
-               self.available_groups.sort()
+                        self.analysis_service.settings.get_descriptor_alias(p) or p
+                        for p in parts
+                    ]
+                    display_name = ', '.join(aliased_parts) \
+                        if g_key != "SinDescriptores" else "Sin Descriptores"
+                    # Guardar tupla (display_name, original_key)
+                    self.available_groups.append((display_name, g_key))
+                # Ordenar por nombre visible
+                self.available_groups.sort()
 
             except Exception as e:
                 logger.error(f"Error obteniendo grupos para frecuencia {selected_freq}: {e}", exc_info=True)
