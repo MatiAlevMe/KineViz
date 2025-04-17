@@ -262,17 +262,20 @@ Esta funcionalidad está pensada para automatizar el análisis estadístico de d
      *   (Hecho) `AnalysisService.perform_individual_analysis`: Implementada lógica básica para leer datos de tablas CSV, preparar datos por grupo y llamar a `create_comparison_boxplot`. Guarda gráfico y config.json.
  *   **6. Implementación de Tests Estadísticos y Mejoras Gráficas:** (En Progreso)
      *   (Hecho) Añadida lógica en `perform_individual_analysis` para ejecutar tests principales (t-test/ANOVA/Wilcoxon/Kruskal/Friedman) usando `scipy.stats`.
-     *   (Hecho) Modificado `create_comparison_boxplot` para usar `seaborn` y `statannot`.
-     *   (Hecho) Añadidos puntos de datos individuales con jitter al boxplot.
+     *   (Hecho) Modificado `create_comparison_boxplot` para usar `seaborn`.
+     *   (Hecho) Reemplazado `stripplot` con `swarmplot` para mejor visualización de puntos.
      *   (Hecho) Añadida leyenda de grupos al boxplot.
-     *   (Hecho) Añadidas anotaciones de significancia (NS, \*, \*\*, \*\*\*) usando `statannot` (con Mann-Whitney U para >2 grupos por ahora).
+     *   (En Progreso) Añadido texto con p-valor al gráfico (reemplaza `statannot` temporalmente).
+     *   (Pendiente) Implementar anotaciones completas (líneas y asteriscos) si es necesario.
  *   **7. Gestión de Análisis Guardados:** (En Progreso)
      *   (Hecho) Implementado `AnalysisService.list_individual_analyses` y `delete_individual_analysis`.
      *   (Hecho) Conectada UI de `IndividualAnalysisManagerDialog` (cargar, ver gráfico, eliminar, abrir carpeta).
-     *   (Hecho) Mejorada tabla en `IndividualAnalysisManagerDialog` con columnas: Frecuencia, Columna, Supuestos, Grupos.
+     *   (Hecho) Modificada tabla en `IndividualAnalysisManagerDialog`: reemplazadas columnas "Grupo X" por columna "Descriptores". Corregido bug de encabezados.
  *   **8. Reporte General:** (Pendiente) Implementar generación automática de PDF con todas las combinaciones.
      *   **Nota**: Necesitará preguntar/configurar los supuestos (paramétrico/pareado) para aplicar las comparaciones correctas.
- *   **9. Integración y Pruebas:** (Pendiente) Integrar la funcionalidad en la plataforma y realizar pruebas de integración.
+ *   **9. Corrección de Errores:** (En Progreso)
+     *   (En Progreso) Investigando error "Formato de columna inválido" al seleccionar columnas cinéticas (añadido logging en `get_common_columns_for_groups`).
+ *   **10. Integración y Pruebas:** (Pendiente) Integrar la funcionalidad en la plataforma y realizar pruebas de integración.
 
 
 ---

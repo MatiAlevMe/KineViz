@@ -38,17 +38,25 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         """Crea los widgets del diálogo."""
         main_frame = ttk.Frame(self, padding="10")
         main_frame.pack(fill=tk.BOTH, expand=True)
-        main_frame.rowconfigure(1, weight=1) # Permitir que el treeview se expanda
+        main_frame.rowconfigure(1, weight=1)  # Permitir que el treeview se expanda
         main_frame.columnconfigure(0, weight=1)
 
         # --- Acciones ---
         action_frame = ttk.Frame(main_frame)
         action_frame.grid(row=0, column=0, sticky="ew", pady=(0, 10))
 
-        ttk.Button(action_frame, text="Nuevo Análisis...", command=self.open_new_analysis_dialog).pack(side=tk.LEFT, padx=5)
-        ttk.Button(action_frame, text="Ver/Abrir Gráfico", command=self.view_analysis_plot).pack(side=tk.LEFT, padx=5)
-        ttk.Button(action_frame, text="Eliminar Análisis", command=self.delete_analysis).pack(side=tk.LEFT, padx=5)
-        ttk.Button(action_frame, text="Abrir Carpeta", command=self.open_analysis_folder).pack(side=tk.LEFT, padx=5)
+        ttk.Button(action_frame, text="Nuevo Análisis...",
+                   command=self.open_new_analysis_dialog) \
+            .pack(side=tk.LEFT, padx=5)
+        ttk.Button(action_frame, text="Ver/Abrir Gráfico",
+                   command=self.view_analysis_plot) \
+            .pack(side=tk.LEFT, padx=5)
+        ttk.Button(action_frame, text="Eliminar Análisis",
+                   command=self.delete_analysis) \
+            .pack(side=tk.LEFT, padx=5)
+        ttk.Button(action_frame, text="Abrir Carpeta",
+                   command=self.open_analysis_folder) \
+            .pack(side=tk.LEFT, padx=5)
         # TODO: Añadir búsqueda/filtrado si es necesario
 
         # --- Lista de Análisis (Treeview) ---
@@ -57,9 +65,9 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         tree_frame.rowconfigure(0, weight=1)
         tree_frame.columnconfigure(0, weight=1)
 
-        # Definir columnas iniciales (Grupos se añadirán dinámicamente si es necesario)
+        # Definir columnas fijas
         self.columns = ("Nombre", "Fecha", "Frecuencia", "Cálculo",
-                        "Columna Analizada", "Supuestos")
+                        "Columna Analizada", "Supuestos", "Descriptores")
         self.analysis_tree = ttk.Treeview(
             tree_frame,
             columns=self.columns,
@@ -72,16 +80,18 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.analysis_tree.heading("Fecha", text="Fecha Creación")
         self.analysis_tree.heading("Frecuencia", text="Frecuencia")
         self.analysis_tree.heading("Cálculo", text="Cálculo")
-        self.analysis_tree.heading("Columna Analizada", text="Columna Analizada")
+        self.analysis_tree.heading("Columna Analizada", text="Columna")
         self.analysis_tree.heading("Supuestos", text="Supuestos")
+        self.analysis_tree.heading("Descriptores", text="Grupos Comparados")
 
-        # Ancho columnas iniciales (ajustar según necesidad)
-        self.analysis_tree.column("Nombre", width=180, anchor=tk.W)
+        # Ancho columnas (ajustar según necesidad)
+        self.analysis_tree.column("Nombre", width=150, anchor=tk.W)
         self.analysis_tree.column("Fecha", width=140, anchor=tk.CENTER)
         self.analysis_tree.column("Frecuencia", width=80, anchor=tk.W)
         self.analysis_tree.column("Cálculo", width=80, anchor=tk.W)
         self.analysis_tree.column("Columna Analizada", width=150, anchor=tk.W)
-        self.analysis_tree.column("Supuestos", width=150, anchor=tk.W)
+        self.analysis_tree.column("Supuestos", width=140, anchor=tk.W)
+        self.analysis_tree.column("Descriptores", width=250, anchor=tk.W)
 
         # Scrollbars
         vsb = ttk.Scrollbar(tree_frame, orient="vertical",
@@ -90,12 +100,12 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.analysis_tree.configure(yscrollcommand=vsb.set)
 
         hsb = ttk.Scrollbar(tree_frame, orient="horizontal", command=self.analysis_tree.xview)
-        hsb.grid(row=1, column=0, sticky='ew')
+        hsb.grid(row=1, column=0, sticky='ew', padx=5) # Añadir padx
         self.analysis_tree.configure(xscrollcommand=hsb.set)
 
         # --- Botón Cerrar ---
-        ttk.Button(main_frame, text="Cerrar", command=self.destroy).grid(row=2, column=0, sticky="e", pady=(10, 0))
-
+        ttk.Button(main_frame, text="Cerrar", command=self.destroy) \
+            .grid(row=2, column=0, sticky="e", pady=(10, 0))
 
     def load_analyses(self):
         """Carga la lista de análisis individuales guardados."""
@@ -110,27 +120,19 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
              messagebox.showerror("Error", f"No se pudo cargar la lista de análisis:\n{e}", parent=self)
              self.analysis_list = []
 
-        # Determinar el número máximo de grupos para añadir columnas dinámicas
-        max_groups = 0
-        if self.analysis_list:
-            max_groups = max(len(a.get('config', {}).get('groups', [])) for a in self.analysis_list)
-            max_groups = max(2, max_groups) # Mínimo 2 grupos si hay análisis
-
-        # Añadir columnas de grupo dinámicamente si es necesario
-        group_cols = [f"Grupo {i+1}" for i in range(max_groups)]
-        current_cols = list(self.columns)
-        new_cols = tuple(current_cols + group_cols)
-        if self.analysis_tree["columns"] != new_cols:
-             self.analysis_tree["columns"] = new_cols
-             for i, g_col in enumerate(group_cols):
-                  self.analysis_tree.heading(g_col, text=g_col)
-                  self.analysis_tree.column(g_col, width=120, anchor=tk.W) # Ajustar ancho
+        # Asegurar que todos los encabezados estén definidos
+        # (Importante si se reabre el diálogo y las columnas cambiaron)
+        self.analysis_tree["columns"] = self.columns
+        for col in self.columns:
+            # Usar el texto del encabezado ya definido si existe, si no, usar el ID
+            header_text = self.analysis_tree.heading(col, 'text') or col
+            self.analysis_tree.heading(col, text=header_text)
 
         # Poblar Treeview
         if not self.analysis_list:
-            # Crear valores vacíos para todas las columnas
-            num_cols = len(self.analysis_tree["columns"])
-            empty_values = tuple(["No hay análisis individuales guardados."] + [""] * (num_cols - 1))
+            # Crear valores vacíos para todas las columnas fijas
+            empty_values = tuple(["No hay análisis individuales guardados."] +
+                                 [""] * (len(self.columns) - 1))
             self.analysis_tree.insert("", tk.END, text="NoAnalyses",
                                       values=empty_values)
         else:
@@ -153,19 +155,24 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                 # Supuestos
                 parametric = config.get('parametric', True)
                 paired = config.get('paired', False)
-                supuestos_str = f"{'Pareado' if paired else 'No Pareado'}, {'Paramétrico' if parametric else 'No Paramétrico'}"
+                supuestos_str = (f"{'Pareado' if paired else 'No Pareado'}, "
+                                 f"{'Paramétrico' if parametric else 'No Paramétrico'}")
 
                 # Grupos (con alias)
                 group_keys = config.get('groups', [])
                 group_display_names = []
                 for g_key in group_keys:
                     parts = g_key.split('_')
-                    aliased_parts = [self.analysis_service.settings.get_descriptor_alias(p) or p for p in parts]
-                    display_name = ', '.join(aliased_parts) if g_key != "SinDescriptores" else "Sin Descriptores"
+                    aliased_parts = [
+                        self.analysis_service.settings.get_descriptor_alias(p) or p
+                        for p in parts
+                    ]
+                    display_name = ', '.join(aliased_parts) \
+                        if g_key != "SinDescriptores" else "Sin Descriptores"
                     group_display_names.append(display_name)
 
-                # Rellenar con "" si hay menos grupos que max_groups
-                group_display_names.extend([""] * (max_groups - len(group_display_names)))
+                # Unir nombres de grupo para la columna "Descriptores"
+                descriptores_str = " vs ".join(group_display_names)
 
                 # Construir tupla de valores para insertar
                 values = (
@@ -175,7 +182,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                     calc,
                     col_full,
                     supuestos_str,
-                    *group_display_names # Desempaquetar nombres de grupo
+                    descriptores_str  # Añadir string de descriptores
                 )
 
                 # Insertar en Treeview
@@ -211,9 +218,9 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         for analysis_info in self.analysis_list:
             if analysis_info['name'] == analysis_name:
                 return analysis_info
-        logger.error(f"No se encontró la información para el análisis "
-                     f"seleccionado: {analysis_name}")
-        return None # No debería ocurrir si la lista está sincronizada
+        logger.error(f"No se encontró información para análisis seleccionado: "
+                     f"{analysis_name}")
+        return None  # No debería ocurrir si la lista está sincronizada
 
     def view_analysis_plot(self):
         """Abre el gráfico PNG del análisis seleccionado."""
@@ -221,11 +228,11 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         if not analysis_info:
             return
 
-        plot_path = analysis_info.get('plot_path') # Obtener ruta del gráfico
+        plot_path = analysis_info.get('plot_path')  # Obtener ruta del gráfico
 
         if not plot_path or not plot_path.exists():
             messagebox.showerror("Error",
-                                   f"No se encontró el archivo de gráfico para "
+                                   f"No se encontró archivo de gráfico para "
                                    f"'{analysis_info['name']}'.", parent=self)
             return
 
@@ -266,9 +273,10 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                                 parent=self)
             self.load_analyses()  # Recargar lista
         except (ValueError, FileNotFoundError) as e:
-             logger.error(f"Error al intentar eliminar análisis {analysis_name}: {e}")
-             messagebox.showerror("Error al Eliminar", f"{e}", parent=self)
-             self.load_analyses() # Recargar por si el estado cambió
+            logger.error(f"Error al intentar eliminar análisis "
+                         f"{analysis_name}: {e}")
+            messagebox.showerror("Error al Eliminar", f"{e}", parent=self)
+            self.load_analyses()  # Recargar por si el estado cambió
         except Exception as e:
             logger.error(f"Error eliminando análisis {analysis_name}: {e}",
                          exc_info=True)
@@ -282,11 +290,11 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         if not analysis_info:
             return
 
-        analysis_dir = analysis_info.get('path') # Obtener ruta del directorio
+        analysis_dir = analysis_info.get('path')  # Obtener ruta del directorio
 
         if not analysis_dir or not analysis_dir.exists():
             messagebox.showerror("Error",
-                                   f"No se encontró la carpeta para el análisis "
+                                   f"No se encontró carpeta para análisis "
                                    f"'{analysis_info['name']}'.", parent=self)
             return
 
@@ -327,17 +335,23 @@ if __name__ == '__main__':
             print(f"Dummy: list_individual_analyses({study_id})")
             # Simular algunos análisis con plot_path
             base = Path(f'/fake/study_{study_id}/Analisis Discreto/Individual')
-            analysis1_path = base / 'Comp_CMJ_PRE_POST'
+            analysis1_path = base / 'Comp_Costo_Mortal_Antes_Despues' # Usar alias
             analysis2_path = base / 'Comp_SJ_Tipos'
             return [
-                {'name': 'Comp_CMJ_PRE_POST', 'path': analysis1_path,
-                 'config': {'calculation': 'Maximo', 'column': 'H Salto/Alt/cm',
-                            'groups': ['CMJ_PRE', 'CMJ_POST']},
-                 'mtime': 1678886400.0, 'plot_path': analysis1_path / 'boxplot.png'},
+                {'name': 'Comp_Costo_Mortal_Antes_Despues', 'path': analysis1_path,
+                 'config': {'calculation': 'Maximo',
+                            'column': 'H Salto/Alt/cm',
+                            'groups': ['CMJ_PRE', 'CMJ_POST'],
+                            'parametric': True, 'paired': True},
+                 'mtime': 1678886400.0,
+                 'plot_path': analysis1_path / 'boxplot.png'},
                 {'name': 'Comp_SJ_Tipos', 'path': analysis2_path,
-                 'config': {'calculation': 'Rango', 'column': 'Art1/VelX/m/s',
-                            'groups': ['SJ_TipoA', 'SJ_TipoB', 'SJ_TipoC']},
-                 'mtime': 1678972800.0, 'plot_path': analysis2_path / 'boxplot.png'},
+                 'config': {'calculation': 'Rango',
+                            'column': 'Art1/VelX/m/s',
+                            'groups': ['SJ_TipoA', 'SJ_TipoB', 'SJ_TipoC'],
+                            'parametric': False, 'paired': False},
+                 'mtime': 1678972800.0,
+                 'plot_path': analysis2_path / 'boxplot.png'},
             ]
 
         def get_discrete_analysis_groups(self, study_id, frequency):
