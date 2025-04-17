@@ -1075,10 +1075,10 @@ class AnalysisService:
         if stats:  # Verificar si scipy.stats está disponible
             try:
                 n_groups = len(data_by_group)
-               is_paired = config['paired']
-               is_parametric = config['parametric']
-               test_name = "N/A"
-               p_value = np.nan
+                is_paired = config['paired']
+                is_parametric = config['parametric']
+                test_name = "N/A"
+                p_value = np.nan
 
                if n_groups == 2:
                    group1_data = np.array(data_by_group[0])
