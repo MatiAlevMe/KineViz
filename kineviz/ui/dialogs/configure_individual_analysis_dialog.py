@@ -27,7 +27,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.frequency_var = tk.StringVar()
         self.calculation_var = tk.StringVar()
         self.column_var = tk.StringVar()
-        self.parametric_var = tk.BooleanVar(value=True) # Asumir paramétrico por defecto
+        self.parametric_var = tk.BooleanVar(value=True)  # Asumir paramétrico
         self.paired_var = tk.BooleanVar(value=False)  # Asumir independiente
 
         # Listas para selectores dinámicos
@@ -39,7 +39,6 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         # Gestión de grupos seleccionados
         # Lista de StringVars para grupos seleccionados
         self.selected_group_vars = []
-        # Lista de frames para cada fila de grupo
         self.group_selector_frames = []
 
         self.create_widgets()
@@ -51,8 +50,10 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         main_frame.pack(fill=tk.BOTH, expand=True)
 
         # --- Nombre del Análisis ---
-        ttk.Label(main_frame, text="Nombre del Análisis:").grid(row=0, column=0, sticky="w", pady=(0, 5))
-        ttk.Entry(main_frame, textvariable=self.analysis_name_var, width=40).grid(row=0, column=1, columnspan=2, sticky="ew", pady=(0, 5))
+        ttk.Label(main_frame, text="Nombre del Análisis:") \
+            .grid(row=0, column=0, sticky="w", pady=(0, 5))
+        ttk.Entry(main_frame, textvariable=self.analysis_name_var, width=40) \
+            .grid(row=0, column=1, columnspan=2, sticky="ew", pady=(0, 5))
 
         # --- Selección de Parámetros Base ---
         param_frame = ttk.LabelFrame(main_frame, text="Parámetros Base")
@@ -62,20 +63,21 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         ttk.Label(param_frame, text="Frecuencia:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
         self.freq_combo = ttk.Combobox(
             param_frame, textvariable=self.frequency_var,
-            values=self.available_frequencies, state="readonly"
-        )
+            values=self.available_frequencies, state="readonly")
         self.freq_combo.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
         # Actualizar grupos al cambiar frecuencia
-        self.freq_combo.bind("<<ComboboxSelected>>", self.update_available_groups)
+        self.freq_combo.bind("<<ComboboxSelected>>",
+                             self.update_available_groups)
 
-        ttk.Label(param_frame, text="Cálculo:").grid(row=1, column=0, sticky="w", padx=5, pady=5)
+        ttk.Label(param_frame, text="Cálculo:") \
+            .grid(row=1, column=0, sticky="w", padx=5, pady=5)
         self.calc_combo = ttk.Combobox(
             param_frame, textvariable=self.calculation_var,
-            values=self.available_calculations, state="readonly"
-        )
+            values=self.available_calculations, state="readonly")
         self.calc_combo.grid(row=1, column=1, sticky="ew", padx=5, pady=5)
         # Actualizar columnas al cambiar cálculo
-        self.calc_combo.bind("<<ComboboxSelected>>", self.update_available_columns)
+        self.calc_combo.bind("<<ComboboxSelected>>",
+                             self.update_available_columns)
 
         # --- Selección de Grupos ---
         group_frame = ttk.LabelFrame(main_frame,
@@ -85,7 +87,8 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
 
         # Frame contenedor para las entradas de grupo (se añadirá dinámicamente)
         self.group_entries_frame = ttk.Frame(group_frame)
-        self.group_entries_frame.grid(row=0, column=0, columnspan=2, sticky="ew")
+        self.group_entries_frame.grid(row=0, column=0, columnspan=2,
+                                      sticky="ew")
         self.group_entries_frame.columnconfigure(0, weight=1)
 
         # Botón para añadir más grupos
@@ -96,29 +99,33 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         # --- Selección de Columna ---
         col_frame = ttk.LabelFrame(main_frame,
                                    text="Variable a Analizar")
-        col_frame.grid(row=3, column=0, columnspan=3, sticky="ew", pady=10)
+        col_frame.grid(row=3, column=0, columnspan=3, sticky="ew",
+                       pady=10)
         col_frame.columnconfigure(1, weight=1)
 
-        ttk.Label(col_frame, text="Columna:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
-        self.col_combo = ttk.Combobox(col_frame, textvariable=self.column_var,
+        ttk.Label(col_frame, text="Columna:") \
+            .grid(row=0, column=0, sticky="w", padx=5, pady=5)
+        self.col_combo = ttk.Combobox(col_frame,
+                                      textvariable=self.column_var,
                                       values=[], state="readonly", width=50)
         self.col_combo.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
 
         # --- Opciones Estadísticas ---
         stats_frame = ttk.LabelFrame(main_frame,
                                      text="Supuestos Estadísticos")
-        stats_frame.grid(row=4, column=0, columnspan=3, sticky="ew", pady=10)
+        stats_frame.grid(row=4, column=0, columnspan=3, sticky="ew",
+                       pady=10)
 
         ttk.Checkbutton(
             stats_frame,
             text="Asumir Datos Paramétricos (distribución normal)",
-            variable=self.parametric_var
-        ).pack(side=tk.LEFT, padx=10, pady=5)
+            variable=self.parametric_var) \
+            .pack(side=tk.LEFT, padx=10, pady=5)
         ttk.Checkbutton(
             stats_frame,
             text="Datos Pareados (misma unidad de muestreo en todos los grupos)",
-            variable=self.paired_var
-        ).pack(side=tk.LEFT, padx=10, pady=5)
+            variable=self.paired_var) \
+            .pack(side=tk.LEFT, padx=10, pady=5)
 
         # --- Botones de Acción ---
         action_button_frame = ttk.Frame(main_frame)
@@ -173,14 +180,17 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
                 self.available_groups.sort()
 
             except Exception as e:
-                logger.error(f"Error obteniendo grupos para frecuencia {selected_freq}: {e}", exc_info=True)
-                messagebox.showerror("Error", f"No se pudieron cargar los grupos disponibles:\n{e}", parent=self)
+                logger.error(f"Error obteniendo grupos para frecuencia "
+                             f"{selected_freq}: {e}", exc_info=True)
+                messagebox.showerror("Error", f"No se pudieron cargar los grupos "
+                                   f"disponibles:\n{e}", parent=self)
                 self.available_groups = []
 
         # Actualizar los combobox de grupo existentes
         display_names = [g[0] for g in self.available_groups]
         for frame in self.group_selector_frames:
-            combo = frame.winfo_children()[0] # Asumiendo que el Combobox es el primer hijo
+            # Asumiendo que el Combobox es el primer hijo
+            combo = frame.winfo_children()[0]
             combo['values'] = display_names
             # Intentar mantener la selección si aún es válida
             current_display_selection = combo.get()
@@ -192,7 +202,6 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.col_combo['values'] = []
         self.available_columns = []
 
-
     def add_group_selector(self, initial_value=""):
         """Añade una nueva fila para seleccionar un grupo."""
         row_index = len(self.group_selector_frames)
@@ -202,8 +211,8 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
 
         group_var = tk.StringVar()
         display_names = [g[0] for g in self.available_groups]
-        combo = ttk.Combobox(frame, textvariable=group_var,
-                             values=display_names, state="readonly", width=35)
+        combo = ttk.Combobox(frame, textvariable=group_var, values=display_names,
+                             state="readonly", width=35)
         combo.grid(row=0, column=0, sticky="ew", padx=(0, 5))
         # Actualizar columnas al cambiar grupo
         combo.bind("<<ComboboxSelected>>", self.update_available_columns)
@@ -232,8 +241,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             return
 
         try:
-            index = self.group_selector_frames.index(frame_to_remove)
-            frame_to_remove.destroy()
+            # La doble llamada a index/destroy era un error, corregido:
             index = self.group_selector_frames.index(frame_to_remove)
             frame_to_remove.destroy()
             self.group_selector_frames.pop(index)
@@ -279,7 +287,8 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
                 selected_keys.append(original_key)
             else:
                 # Esto no debería pasar si la UI funciona bien
-                logger.error(f"No se encontró clave original para: {display_name}")
+                logger.error("No se encontró clave original para: "
+                             f"{display_name}")
                 valid = False
                 break
 
@@ -287,7 +296,6 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             return []  # Devolver vacío si no es válido o no hay suficientes
 
         return selected_keys
-
 
     def update_available_columns(self, event=None):
         """Actualiza la lista de columnas comunes basada en los grupos seleccionados."""
@@ -321,7 +329,8 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             except Exception as e:
                 logger.error(f"Error obteniendo columnas comunes: {e}",
                              exc_info=True)
-                messagebox.showerror("Error", f"No se pudieron cargar las columnas comunes:\n{e}", parent=self)
+                messagebox.showerror("Error", f"No se pudieron cargar las "
+                                   f"columnas comunes:\n{e}", parent=self)
                 self.available_columns = []
 
     def generate_analysis(self):
@@ -346,7 +355,8 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             messagebox.showerror(
                 "Error de Validación",
                 f"El nombre del análisis contiene caracteres inválidos: "
-                f"{invalid_chars}", parent=self)
+                f"{invalid_chars}",
+                parent=self)
             return
 
         if not selected_freq or not selected_calc:
@@ -393,7 +403,8 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         except (ValueError, FileNotFoundError) as e:
             logger.warning(f"Error de validación o datos al generar análisis "
                            f"'{analysis_name}': {e}")
-            messagebox.showerror("Error al Generar Análisis", f"{e}", parent=self)
+            messagebox.showerror("Error al Generar Análisis", f"{e}",
+                                   parent=self)
         except Exception as e:
             logger.critical(f"Error inesperado al generar análisis "
                             f"'{analysis_name}': {e}", exc_info=True)
@@ -421,8 +432,8 @@ if __name__ == '__main__':
         def get_discrete_analysis_groups(self, study_id, frequency):
             print(f"Dummy: get_discrete_analysis_groups({study_id}, "
                   f"{frequency})")
-            return ['CMJ_PRE', 'CMJ_POST', 'SJ_TipoA', 'SJ_TipoB', 'SJ_TipoC',
-                    'SinDescriptores']
+            return ['CMJ_PRE', 'CMJ_POST', 'SJ_TipoA', 'SJ_TipoB',
+                    'SJ_TipoC', 'SinDescriptores']
 
         def get_common_columns_for_groups(self, study_id, frequency,
                                           calculation, group_keys):
