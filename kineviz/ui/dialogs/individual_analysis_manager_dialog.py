@@ -26,10 +26,11 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
         self.title(f"Gestor de Análisis Individuales - Estudio {study_id}")
         self.geometry("800x500")
-        # self.grab_set() # Hacer modal
+        self.grab_set()  # Hacer modal
 
-        self.analysis_list = [] # Lista de dicts con info de análisis guardados
+        self.analysis_list = []  # Lista de dicts con info de análisis guardados
         self.analysis_tree = None
+        self.columns = () # Inicializar tupla de columnas
 
         self.create_widgets()
         self.load_analyses()
