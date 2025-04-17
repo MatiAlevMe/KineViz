@@ -135,12 +135,14 @@ def create_comparison_boxplot(data_by_group: list, group_names: list[str],
 
     # Boxplot
     sns.boxplot(data=df_long, x='Group', y='Value', order=group_order,
-                palette=palette, showfliers=False, ax=ax, legend=False)
+                palette=palette, showfliers=False, ax=ax, legend=False,
+                boxprops=dict(alpha=.7)) # Añadir transparencia a cajas
 
-    # Puntos individuales con jitter
-    sns.stripplot(data=df_long, x='Group', y='Value', order=group_order,
-                  palette=palette, jitter=True, dodge=True, alpha=0.7,
-                  legend=False, ax=ax, size=5) # Ajustar tamaño y alpha
+    # Puntos individuales con swarmplot para mejor distribución
+    sns.swarmplot(data=df_long, x='Group', y='Value', order=group_order,
+                  palette=palette, # Usar misma paleta
+                  edgecolor='gray', linewidth=0.5, # Contorno ligero
+                  legend=False, ax=ax, size=4) # Ajustar tamaño
 
     ax.set_title(title)
     ax.set_ylabel(ylabel)
@@ -148,61 +150,23 @@ def create_comparison_boxplot(data_by_group: list, group_names: list[str],
     plt.xticks(rotation=30, ha="right")
     plt.grid(axis='y', linestyle='--', alpha=0.7)
 
-    # 3. Añadir anotaciones estadísticas con Statannot
-    if stats_results and 'p_value' in stats_results and len(group_order) >= 2:
+    # 3. Añadir p-valor como texto (reemplaza statannot)
+    if stats_results and 'p_value' in stats_results:
         p_value = stats_results['p_value']
         test_name = stats_results.get('test_name', 'Test')
+        # Formatear p-valor
+        if p_value < 0.001:
+            p_text = "p < 0.001"
+        else:
+            p_text = f"p = {p_value:.3f}"
+        # Añadir texto en la esquina superior derecha del gráfico
+        plt.text(0.98, 0.98, f"{test_name}\n{p_text}",
+                 verticalalignment='top', horizontalalignment='right',
+                 transform=ax.transAxes, color='black', fontsize=9,
+                 bbox=dict(boxstyle='round,pad=0.3', fc='white', alpha=0.5))
+        # TODO: Implementar líneas y asteriscos si se requiere más adelante
 
-        # Definir pares de comparación (todos los pares posibles por ahora)
-        box_pairs = [(group_order[i], group_order[j])
-                     for i in range(len(group_order))
-                     for j in range(i + 1, len(group_order))]
-
-        if box_pairs:
-            try:
-                # Nota: statannot usualmente recalcula el test, pero podemos pasarle
-                # p-valores precalculados si tuviéramos todos los pares.
-                # Por ahora, le dejamos calcular (usará Mann-Whitney U por defecto
-                # si no especificamos el test).
-                # OJO: Esto puede ser inconsistente si el test original fue otro.
-                # Una solución más robusta sería calcular todos los pares en
-                # AnalysisService o usar una librería que haga post-hoc.
-                # Por simplicidad visual ahora, solo mostramos la anotación
-                # si el test principal fue significativo (p < 0.05) y
-                # dejamos que statannot use Mann-Whitney U para los pares.
-                # O, mejor aún, pasamos el p-valor principal si solo hay 2 grupos.
-
-                if len(group_order) == 2:
-                     # Si solo hay dos grupos, usar el p-valor calculado
-                     custom_p_values = [p_value]
-                     add_stat_annotation(ax, data=df_long, x='Group', y='Value',
-                                         order=group_order,
-                                         box_pairs=box_pairs,
-                                         perform_stat_test=False, # No recalcular
-                                         pvalues=custom_p_values,
-                                         test=None, # No necesita test si damos pval
-                                         text_format='star', # NS, *, **, ***, ****
-                                         loc='inside', verbose=0)
-                elif len(group_order) > 2:
-                     # Para >2 grupos, dejamos que statannot haga Mann-Whitney U
-                     # entre pares por ahora, ya que no tenemos post-hoc.
-                     # Podríamos añadir una nota indicando esto.
-                     add_stat_annotation(ax, data=df_long, x='Group', y='Value',
-                                         order=group_order,
-                                         box_pairs=box_pairs,
-                                         test='Mann-Whitney', # Test por defecto
-                                         text_format='star',
-                                         loc='inside', verbose=0)
-                     # Añadir nota sobre el test usado para anotaciones
-                     plt.text(0.99, 0.01, 'Anotaciones: Mann-Whitney U (pares)',
-                              verticalalignment='bottom', horizontalalignment='right',
-                              transform=ax.transAxes, color='gray', fontsize=8)
-
-
-            except Exception as e_annot:
-                logger.error(f"Error añadiendo anotaciones estadísticas: {e_annot}")
-
-    # 4. Añadir Leyenda (similar al ejemplo H Salto.png)
+    # 4. Añadir Leyenda
     # Crear handles (patches de color) para la leyenda
     handles = [plt.Rectangle((0,0),1,1, color=palette[i])
                for i in range(len(group_order))]

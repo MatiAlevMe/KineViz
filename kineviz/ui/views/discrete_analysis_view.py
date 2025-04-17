@@ -120,7 +120,7 @@ class DiscreteAnalysisView(ttk.Frame):
         # Reducir padding inferior
         list_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 0))
         list_frame.columnconfigure(0, weight=1)  # Treeview se expande
-        list_frame.rowconfigure(0, weight=1)  # Treeview se expande
+        list_frame.rowconfigure(0, weight=1)     # Treeview se expande
 
         # Crear Treeview con nuevas columnas
         self.tables_tree = ttk.Treeview(
@@ -130,8 +130,7 @@ class DiscreteAnalysisView(ttk.Frame):
             show="headings"
         )
         # Reducir padding inferior
-        self.tables_tree.grid(row=0, column=0, sticky='nsew', padx=5,
-                              pady=(5, 0))
+        self.tables_tree.grid(row=0, column=0, sticky='nsew', padx=5, pady=(5, 0))
 
         # Definir cabeceras y comando de ordenación
         cols = ("Nombre Archivo", "Tipo Cálculo", "Descriptores",
@@ -190,7 +189,7 @@ class DiscreteAnalysisView(ttk.Frame):
         table_action_frame.grid(row=3, column=0, columnspan=2, sticky='ew',
                                 pady=(0, 5))
 
-        # Quitar botón Refrescar, se hace con filtros/búsqueda
+        # Quitar botón Refrescar
         # ttk.Button(table_action_frame, text="Refrescar Lista",
         #            command=self.load_tables).pack(side=tk.LEFT, padx=5)
         ttk.Button(table_action_frame, text="Ver Tabla",
@@ -320,8 +319,7 @@ class DiscreteAnalysisView(ttk.Frame):
 
         # 1. Obtener lista completa si es necesario
         # Se llama al inicio y después de eliminar/generar
-        if not self.all_table_files:
-            self._fetch_all_table_files()
+        self._fetch_all_table_files() # Siempre refrescar la lista completa
 
         # 2. Aplicar Filtros y Búsqueda
         search_term = self.search_var.get().lower()
@@ -380,8 +378,7 @@ class DiscreteAnalysisView(ttk.Frame):
             # Mostrar mensaje si no hay tablas en absoluto (después de filtrar)
             self.tables_tree.insert(
                 "", tk.END, text="NoMatch",
-                values=("No se encontraron tablas que coincidan.", "", "", "", "")
-            )
+                values=("No se encontraron tablas que coincidan.", "", "", "", ""))
         else:
             for file_info in page_files:
                 mod_time_str = datetime.fromtimestamp(
@@ -418,8 +415,8 @@ class DiscreteAnalysisView(ttk.Frame):
             state=tk.DISABLED if self.current_page <= 1 else tk.NORMAL
         )
         self.next_button.config(
-            state=tk.DISABLED if self.current_page >= self.total_pages else tk.NORMAL
-        )
+            state=tk.DISABLED if self.current_page >= self.total_pages
+            else tk.NORMAL)
 
     def go_to_page(self, page_number):
         """Navega a una página específica."""
@@ -444,8 +441,7 @@ class DiscreteAnalysisView(ttk.Frame):
         self.search_var.set("")
         self.calc_filter_var.set("Todos")
         self.current_page = 1
-        # Recargar la lista completa de archivos por si acaso
-        self._fetch_all_table_files()
+        # No es necesario _fetch_all_table_files aquí, load_tables lo hará
         self.load_tables()
 
     # TODO: Implementar sort_column si se desea ordenar al hacer clic
@@ -453,7 +449,7 @@ class DiscreteAnalysisView(ttk.Frame):
         """Ordena el Treeview por la columna especificada."""
         # Esta implementación requiere guardar los datos mostrados o re-ordenar
         # self.all_table_files y luego llamar a load_tables.
-        # Por simplicidad, se omite por ahora. Se puede añadir después.
+        # Por simplicidad, se omite por ahora.
         logger.info(f"Ordenar por {col}, reverso={reverse}. "
                     "(Funcionalidad no implementada)")
         pass
@@ -494,6 +490,7 @@ class DiscreteAnalysisView(ttk.Frame):
             else:  # linux variants
                 subprocess.run(["xdg-open", file_path], check=True)
         except FileNotFoundError:
+            # Este caso ya se verifica arriba, pero por si acaso
             messagebox.showerror("Error",
                                    f"No se pudo encontrar el archivo:\n{file_path}",
                                    parent=self)
@@ -583,11 +580,10 @@ class DiscreteAnalysisView(ttk.Frame):
         from kineviz.ui.dialogs.individual_analysis_manager_dialog \
             import IndividualAnalysisManagerDialog
         # Pasar self.analysis_service y self.study_id
-        dialog = IndividualAnalysisManagerDialog(self, self.analysis_service,
-                                                 self.study_id)
-        # dialog.grab_set()  # Hacer modal si se desea
-        # La variable 'dialog' se usa para crear la instancia, F841 es falso positivo
-        pass  # Evitar F841 si no se usa 'dialog' después
+        _dialog = IndividualAnalysisManagerDialog(self, self.analysis_service,
+                                                  self.study_id)
+        # _dialog.grab_set()  # Hacer modal si se desea
+        # Se usa _dialog para evitar F841, aunque no se use después
 
     # TODO: Implementar open_summary_tables_folder
     # def open_summary_tables_folder(self): ...
