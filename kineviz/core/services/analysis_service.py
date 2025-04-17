@@ -25,6 +25,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.lib.units import inch # Para tamaños
 import itertools # Para combinaciones de descriptores
+import json # Para guardar/cargar configuraciones de análisis
 
 logger = logging.getLogger(__name__) # Logger para este módulo
 
@@ -808,3 +809,321 @@ class AnalysisService:
 
         logger.info(f"Generación de tablas discretas finalizada para estudio {study_id}. Éxitos: {len(results['success'])}, Errores: {len(results['errors'])}")
         return results
+
+    # --- Métodos para Análisis Individual (Fase 6) ---
+
+    def _identify_study_groups(self, study_id: int, frequency: str = "Cinematica") -> tuple[dict[str, str], set[str]]:
+        """
+        Identifica los grupos únicos basados en descriptores de archivos procesados.
+
+        :param study_id: ID del estudio.
+        :param frequency: Frecuencia a considerar (por defecto 'Cinematica').
+        :return: Tupla:
+                 - Diccionario mapeando nombre base de archivo a su clave de grupo (ej: {'Pte01_Intento1': 'Desc1_Desc2'}).
+                 - Set de claves de grupo únicas encontradas (ej: {'Desc1_Desc2', 'Desc1_Desc3'}).
+        :raises ValueError: Si no se pueden obtener detalles del estudio o archivos.
+        """
+        logger.debug(f"Identificando grupos para estudio {study_id}, frecuencia {frequency}")
+        groups_by_file_base = {}
+        unique_group_keys = set()
+
+        try:
+            study_details = self.study_service.get_study_details(study_id)
+            if not study_details:
+                raise ValueError(f"No se pudieron obtener detalles del estudio {study_id}")
+            defined_descriptors = [d.strip() for d in (study_details.get('descriptores', '') or '').split(',') if d.strip()]
+
+            processed_files, _ = self.file_service.get_study_files(
+                study_id=study_id,
+                page=1,
+                per_page=10000, # Obtener todos
+                file_type='Processed',
+                frequency=frequency
+            )
+
+            if not processed_files:
+                logger.warning(f"No se encontraron archivos procesados de '{frequency}' para identificar grupos en estudio {study_id}.")
+                return {}, set()
+
+            for file_info in processed_files:
+                file_path = file_info['path']
+                filename = file_path.name
+
+                if not validate_filename_for_study_criteria(filename, defined_descriptors):
+                    continue
+
+                # Extraer nombre base y descriptores
+                try:
+                    base_name = filename.split(f'_{frequency}')[0]
+                    parts = base_name.replace('_', ' ').split()
+                    # Asumiendo formato PteXX_Desc1_Desc2_..._IntentoNN
+                    # O PteXX_IntentoNN si no hay descriptores
+                    patient_id = parts[0]
+                    attempt_suffix = parts[-1]
+                    # Los descriptores son lo que queda en medio
+                    file_descriptors = sorted(parts[1:-1])
+                    descriptor_key = "_".join(file_descriptors) if file_descriptors else "SinDescriptores"
+
+                    # Usar nombre base sin frecuencia ni extensión como clave
+                    file_base_key = file_path.stem.split(f'_{frequency}')[0]
+
+                    groups_by_file_base[file_base_key] = descriptor_key
+                    unique_group_keys.add(descriptor_key)
+                except IndexError:
+                    logger.warning(f"No se pudo parsear el nombre de archivo para extraer grupo: {filename}")
+                    continue
+
+            logger.debug(f"Grupos identificados ({len(unique_group_keys)}): {unique_group_keys}")
+            return groups_by_file_base, unique_group_keys
+
+        except Exception as e:
+            logger.error(f"Error identificando grupos para estudio {study_id}: {e}", exc_info=True)
+            raise ValueError(f"Error identificando grupos: {e}")
+
+
+    def get_discrete_analysis_groups(self, study_id: int, frequency: str = "Cinematica") -> list[str]:
+        """
+        Obtiene la lista de claves de grupos únicos para análisis discreto.
+
+        :param study_id: ID del estudio.
+        :param frequency: Frecuencia a considerar.
+        :return: Lista ordenada de claves de grupo únicas (ej: ['Desc1_Desc2', 'SinDescriptores']).
+        """
+        try:
+            _, unique_group_keys = self._identify_study_groups(study_id, frequency)
+            # Devolver lista ordenada para consistencia en la UI
+            return sorted(list(unique_group_keys))
+        except ValueError as e:
+            logger.warning(f"No se pudieron obtener grupos para estudio {study_id}: {e}")
+            return [] # Devolver vacío si hay error
+
+    def get_common_columns_for_groups(self, study_id: int, frequency: str, calculation: str, group_keys: list[str]) -> list[str]:
+        """
+        Encuentra las columnas de datos comunes presentes en las tablas de resumen
+        discreto para una combinación específica de frecuencia, cálculo y grupos.
+
+        :param study_id: ID del estudio.
+        :param frequency: Frecuencia (ej: 'Cinematica').
+        :param calculation: Cálculo (ej: 'Maximo').
+        :param group_keys: Lista de claves de grupo (ej: ['CMJ_PRE', 'CMJ_POST']).
+        :return: Lista de nombres de columnas comunes (formato 'Atributo/Columna/Unidad').
+                 Retorna lista vacía si no hay columnas comunes o si algún archivo no existe.
+        """
+        logger.debug(f"Buscando columnas comunes para estudio {study_id}, freq={frequency}, calc={calculation}, grupos={group_keys}")
+        common_columns = None
+        tables_path = self.get_discrete_analysis_tables_path(study_id)
+
+        if not tables_path or not group_keys:
+            return []
+
+        freq_path = tables_path / frequency
+        if not freq_path.exists():
+            logger.warning(f"Directorio de frecuencia no encontrado: {freq_path}")
+            return []
+
+        for group_key in group_keys:
+            table_filename = f"{calculation}_{frequency}_{group_key}.csv"
+            table_path = freq_path / table_filename
+
+            if not table_path.exists():
+                logger.warning(f"Tabla de resumen no encontrada: {table_path}")
+                return [] # Si falta una tabla, no hay columnas comunes
+
+            try:
+                # Leer solo las cabeceras para obtener columnas
+                # Asumiendo que las primeras 3 filas son Atributo, Columna, Unidad después de la columna índice
+                df_header = pd.read_csv(table_path, sep=',', decimal=',', encoding='utf-8', header=[0, 1, 2], index_col=0, nrows=0)
+                # Crear nombres combinados 'Atributo/Columna/Unidad'
+                current_columns = set([f"{attr}/{col}/{unit}" for attr, col, unit in df_header.columns])
+
+                if common_columns is None:
+                    common_columns = current_columns
+                else:
+                    common_columns.intersection_update(current_columns)
+
+                if not common_columns:
+                    logger.warning(f"No se encontraron columnas comunes después de procesar {table_filename}")
+                    return [] # Si la intersección es vacía, terminar
+
+            except Exception as e:
+                logger.error(f"Error leyendo cabeceras de {table_path}: {e}", exc_info=True)
+                return [] # Error al leer una tabla
+
+        if common_columns is None:
+            return []
+
+        # Devolver lista ordenada
+        return sorted(list(common_columns))
+
+    def perform_individual_analysis(self, study_id: int, config: dict):
+        """
+        Realiza un análisis individual basado en la configuración, genera un gráfico
+        y guarda la configuración.
+
+        :param study_id: ID del estudio.
+        :param config: Diccionario con la configuración del análisis:
+                       {'name': str, 'frequency': str, 'calculation': str,
+                        'column': str, 'groups': list[str],
+                        'parametric': bool, 'paired': bool}
+        :return: Diccionario con rutas al gráfico y archivo de config generados.
+                 {'plot_path': str, 'config_path': str}
+        :raises ValueError: Si la configuración es inválida o faltan datos/archivos.
+        :raises Exception: Si ocurre un error durante el análisis o graficación.
+        """
+        logger.info(f"Iniciando análisis individual para estudio {study_id}: {config.get('name', 'N/A')}")
+
+        # --- Validación de Configuración ---
+        required_keys = ['name', 'frequency', 'calculation', 'column', 'groups', 'parametric', 'paired']
+        if not all(key in config for key in required_keys):
+            raise ValueError("Configuración de análisis incompleta.")
+        if len(config['groups']) < 2:
+            raise ValueError("Se requieren al menos dos grupos para la comparación.")
+        if not config['name'] or not config['name'].strip():
+             raise ValueError("El nombre del análisis no puede estar vacío.")
+        # Validar caracteres inválidos en el nombre para usarlo en rutas
+        analysis_name = config['name'].strip()
+        invalid_chars = r'<>:"/\|?*'
+        if any(char in analysis_name for char in invalid_chars):
+            raise ValueError(f"El nombre del análisis contiene caracteres inválidos: {invalid_chars}")
+
+
+        # --- Preparar Rutas ---
+        study_path = self.file_service._get_study_path(study_id)
+        if not study_path:
+            raise ValueError(f"No se pudo encontrar la ruta del estudio {study_id}.")
+
+        analysis_output_dir = study_path / "Analisis Discreto" / "Individual" / analysis_name
+        try:
+            analysis_output_dir.mkdir(parents=True, exist_ok=True)
+        except OSError as e:
+            raise OSError(f"No se pudo crear el directorio de salida para el análisis: {analysis_output_dir}\n{e}")
+
+        plot_path = analysis_output_dir / "boxplot.png"
+        config_path = analysis_output_dir / "config.json"
+
+        # --- Leer Datos ---
+        frequency = config['frequency']
+        calculation = config['calculation']
+        target_column_parts = config['column'].split('/') # Atributo/Columna/Unidad
+        if len(target_column_parts) != 3:
+             raise ValueError(f"Formato de columna inválido: {config['column']}. Se esperaba 'Atributo/Columna/Unidad'.")
+        target_multi_index_col = tuple(target_column_parts) # (Atributo, Columna, Unidad)
+
+        data_by_group = []
+        group_names = config['groups']
+        tables_path = self.get_discrete_analysis_tables_path(study_id)
+        freq_path = tables_path / frequency
+
+        # Identificar mapeo archivo -> grupo
+        files_to_groups, _ = self._identify_study_groups(study_id, frequency)
+
+        for group_key in group_names:
+            table_filename = f"{calculation}_{frequency}_{group_key}.csv"
+            table_path = freq_path / table_filename
+            if not table_path.exists():
+                raise FileNotFoundError(f"No se encontró la tabla de resumen requerida: {table_path}")
+
+            try:
+                df = pd.read_csv(table_path, sep=',', decimal=',', encoding='utf-8', header=[0, 1, 2], index_col=0)
+                # Verificar si la columna existe
+                if target_multi_index_col not in df.columns:
+                     raise ValueError(f"La columna '{config['column']}' no se encontró en la tabla {table_filename}")
+
+                # Extraer la serie de datos para la columna y grupo actual
+                # Filtrar NaNs
+                group_data = df[target_multi_index_col].dropna().tolist()
+
+                # --- Manejo de Datos Pareados ---
+                # Si es pareado, necesitamos asegurarnos de que los datos estén alineados por paciente/intento
+                # Esto es complejo si los intentos no son consistentes entre grupos.
+                # Por ahora, si es pareado, asumimos que el índice (ARCHIVO) representa la unidad de emparejamiento
+                # y que todas las tablas tienen los mismos índices en el mismo orden.
+                # Una implementación más robusta requeriría un merge explícito.
+                if config['paired']:
+                     # TODO: Implementar lógica de emparejamiento robusta si es necesario.
+                     # Por ahora, simplemente añadimos los datos asumiendo orden consistente.
+                     logger.warning("El manejo de datos pareados asume índices consistentes entre tablas. Se requiere verificación.")
+                     pass # Continuar con group_data tal cual
+
+                if not group_data:
+                     logger.warning(f"No se encontraron datos válidos para el grupo '{group_key}' y columna '{config['column']}' en {table_filename}")
+                     # Añadir lista vacía para mantener correspondencia con group_names
+                     data_by_group.append([])
+                else:
+                     data_by_group.append(group_data)
+
+            except Exception as e:
+                logger.error(f"Error procesando la tabla {table_path} para el grupo {group_key}: {e}", exc_info=True)
+                raise ValueError(f"Error leyendo datos para el grupo {group_key}: {e}")
+
+        # Verificar si tenemos datos para graficar
+        if not any(data_by_group):
+             raise ValueError("No se encontraron datos válidos en ninguna de las tablas para los grupos y columna seleccionados.")
+
+        # --- Realizar Análisis Estadístico (Placeholder) ---
+        # TODO: Implementar tests (t-test, ANOVA, Wilcoxon, Kruskal-Wallis)
+        stats_results = None # Placeholder para resultados estadísticos
+        logger.info(f"Análisis estadístico para {analysis_name} (Parametric={config['parametric']}, Paired={config['paired']}) - NO IMPLEMENTADO")
+        # Ejemplo futuro:
+        # if len(group_names) == 2:
+        #     if config['paired']:
+        #         if config['parametric']:
+        #             # stats_results = scipy.stats.ttest_rel(...)
+        #         else:
+        #             # stats_results = scipy.stats.wilcoxon(...)
+        #     else: # Independent
+        #         if config['parametric']:
+        #             # stats_results = scipy.stats.ttest_ind(...)
+        #         else:
+        #             # stats_results = scipy.stats.mannwhitneyu(...)
+        # elif len(group_names) > 2:
+        #      if config['paired']: # Repeated measures ANOVA / Friedman
+        #          # ...
+        #      else: # One-way ANOVA / Kruskal-Wallis
+        #          if config['parametric']:
+        #              # stats_results = scipy.stats.f_oneway(...)
+        #          else:
+        #              # stats_results = scipy.stats.kruskal(...)
+
+
+        # --- Generar Gráfico ---
+        try:
+            # Usar alias para nombres de grupo si están disponibles
+            group_display_names = []
+            for g_key in group_names:
+                 parts = g_key.split('_')
+                 aliased_parts = [self.settings.get_descriptor_alias(p) or p for p in parts]
+                 display_name = ', '.join(aliased_parts) if g_key != "SinDescriptores" else "Sin Descriptores"
+                 group_display_names.append(display_name)
+
+            chart_title = f"{config['calculation']} - {config['column']}\n({analysis_name})"
+            chart_ylabel = f"{config['calculation']} ({target_column_parts[2]})" # Usar unidad de la columna
+
+            charting.create_comparison_boxplot(
+                data_by_group=data_by_group,
+                group_names=group_display_names, # Usar nombres con alias
+                title=chart_title,
+                ylabel=chart_ylabel,
+                output_path=plot_path,
+                stats_results=stats_results # Pasar resultados estadísticos (None por ahora)
+            )
+            logger.info(f"Gráfico boxplot generado en: {plot_path}")
+        except Exception as e:
+            logger.error(f"Error generando el gráfico para el análisis {analysis_name}: {e}", exc_info=True)
+            raise Exception(f"Error generando el gráfico: {e}")
+
+        # --- Guardar Configuración ---
+        try:
+            with open(config_path, 'w', encoding='utf-8') as f:
+                json.dump(config, f, indent=4)
+            logger.info(f"Configuración de análisis guardada en: {config_path}")
+        except Exception as e:
+            logger.error(f"Error guardando la configuración del análisis {analysis_name}: {e}", exc_info=True)
+            # No relanzar necesariamente, el gráfico ya se generó
+            # Podríamos intentar eliminar el gráfico si falla el guardado de config?
+
+        return {'plot_path': str(plot_path), 'config_path': str(config_path)}
+
+    # TODO: Añadir métodos para listar, cargar y eliminar análisis individuales
+    # def list_individual_analyses(self, study_id: int) -> list[dict]: ...
+    # def delete_individual_analysis(self, study_id: int, analysis_name: str): ...
