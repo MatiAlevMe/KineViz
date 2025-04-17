@@ -247,21 +247,26 @@ Esta funcionalidad está pensada para automatizar el análisis estadístico de d
         *   (Hecho) Añadida barra de búsqueda (por nombre, cálculo, descriptores).
         *   (Hecho) Añadido filtro por Tipo de Cálculo.
         *   (Hecho) Añadida paginación configurable (`discrete_tables_per_page` en `config.ini`).
-*   **2. Selector de Variables y Etiquetas:** (Pendiente) Permitir que el usuario elija las variables a utilizar en el análisis.
-*   **3. Interacción sobre Datos Pareados:** (Pendiente) Preguntar si los datos son pareados o independientes.
-*   **4. Chequeo de Distribución:** (Pendiente) Permitir al usuario indicar si confía en que sus datos son normales o si se debe realizar una prueba automática (ej: Shapiro-Wilk).
-*   **5. Selección del Test Estadístico:** (Pendiente)
-    *   **5.1 Implementar t-test** (pareado o independiente) para comparación de dos descriptores.
-    *   **5.2 Implementar ANOVA** (o test no paramétrico) para tres o más descriptores.
-*   **6. Generación de Gráficos:** (Pendiente) Implementar gráficos de barra y boxplot.
-*   **7. Exportación y Reporte:** (Pendiente) Exportar tablas en CSV/Excel/txt y generar reportes en PDF.
-*   **8. Análisis Individual:** (Pendiente)
-    *   **8.1 Crear ventana/diálogo** para configuración de análisis individual (cálculo, descriptor fijo, descriptores variables, variable a graficar).
-    *   **8.2 Implementar guardado/carga** de configuraciones de análisis individual.
-    *   **8.3 Crear lista** de análisis guardados con búsqueda/filtrado.
-    *   **8.4 Añadir botón** para abrir carpetas de tablas/gráficos de análisis individuales.
-*   **9. Reporte General:** (Pendiente) Implementar generación automática de PDF con todas las combinaciones.
-*   **10. Integración y Pruebas:** (Pendiente) Integrar la funcionalidad en la plataforma y realizar pruebas de integración.
+*   **2. Identificación de Grupos y Columnas Comunes:** (En Progreso)
+    *   (Hecho) `AnalysisService._identify_study_groups`: Identifica grupos únicos por descriptores.
+    *   (Hecho) `AnalysisService.get_discrete_analysis_groups`: Expone grupos a la UI.
+    *   (Hecho) `AnalysisService.get_common_columns_for_groups`: Encuentra columnas comunes en tablas CSV.
+*   **3. Diálogo de Configuración de Análisis Individual:** (En Progreso)
+    *   (Hecho) Creado `ConfigureIndividualAnalysisDialog` con UI para seleccionar Frecuencia, Cálculo, Grupos (dinámico), Columna (dinámico), y supuestos (paramétrico/pareado).
+    *   (Hecho) Lógica básica para cargar grupos y columnas disponibles.
+*   **4. Diálogo de Gestión de Análisis Individual:** (En Progreso)
+    *   (Hecho) Creado `IndividualAnalysisManagerDialog` con UI básica (lista placeholder, botones).
+    *   (Hecho) Añadido botón "Análisis Individual" en `DiscreteAnalysisView` para abrir el gestor.
+*   **5. Generación de Gráfico Boxplot Comparativo:** (En Progreso)
+    *   (Hecho) Añadida función `create_comparison_boxplot` en `charting.py`.
+    *   (Hecho) `AnalysisService.perform_individual_analysis`: Implementada lógica básica para leer datos de tablas CSV, preparar datos por grupo y llamar a `create_comparison_boxplot`. Guarda gráfico y config.json.
+*   **6. Implementación de Tests Estadísticos:** (Pendiente) Añadir lógica en `perform_individual_analysis` para ejecutar t-test/ANOVA/Wilcoxon/Kruskal-Wallis según configuración.
+*   **7. Gestión de Análisis Guardados:** (Pendiente)
+    *   (Pendiente) Implementar `AnalysisService.list_individual_analyses` para leer archivos `config.json`.
+    *   (Pendiente) Implementar `AnalysisService.delete_individual_analysis` para eliminar carpetas de análisis.
+    *   (Pendiente) Conectar UI de `IndividualAnalysisManagerDialog` (cargar lista, ver gráfico, eliminar, abrir carpeta).
+*   **8. Reporte General:** (Pendiente) Implementar generación automática de PDF con todas las combinaciones.
+*   **9. Integración y Pruebas:** (Pendiente) Integrar la funcionalidad en la plataforma y realizar pruebas de integración.
 
 ---
 

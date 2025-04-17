@@ -58,12 +58,17 @@ class DiscreteAnalysisView(ttk.Frame):
         action_frame = ttk.Frame(self)
         action_frame.pack(fill=tk.X, pady=10)
 
-        ttk.Button(action_frame, text="Generar/Actualizar Tablas Resumen (Cinemática)",
+        ttk.Button(action_frame, text="Generar/Actualizar Tablas Resumen",
                    command=self.generate_tables).pack(side=tk.LEFT, padx=5)
 
-        # Botón para abrir carpeta (se implementará después)
-        # ttk.Button(action_frame, text="Abrir Carpeta de Tablas",
-        #            command=self.open_tables_folder).pack(side=tk.LEFT, padx=5)
+        ttk.Button(action_frame, text="Análisis Individual",
+                   command=self.open_individual_analysis_manager).pack(side=tk.LEFT, padx=5)
+
+        # TODO: Añadir botón "Reporte General" (Fase 6)
+
+        # TODO: Añadir botón "Abrir Carpeta de Tablas"
+        # ttk.Button(action_frame, text="Abrir Carpeta de Tablas Resumen",
+        #            command=self.open_summary_tables_folder).pack(side=tk.LEFT, padx=5)
 
         # --- Filtros y Búsqueda ---
         filter_frame = ttk.Frame(self)
@@ -447,6 +452,16 @@ class DiscreteAnalysisView(ttk.Frame):
             logger.error(f"Error inesperado al eliminar {file_path}: {e}", exc_info=True)
             messagebox.showerror("Error Inesperado", f"Ocurrió un error inesperado al eliminar la tabla:\n{e}", parent=self)
 
-    def destroy(self):
-        """Destruye el frame principal de esta vista."""
-        super().destroy()
+   def open_individual_analysis_manager(self):
+       """Abre el diálogo para gestionar análisis individuales."""
+       from kineviz.ui.dialogs.individual_analysis_manager_dialog import IndividualAnalysisManagerDialog # Import local
+       # Pasar self.analysis_service y self.study_id
+       dialog = IndividualAnalysisManagerDialog(self, self.analysis_service, self.study_id)
+       # dialog.grab_set() # Hacer modal si se desea
+
+   # TODO: Implementar open_summary_tables_folder
+   # def open_summary_tables_folder(self): ...
+
+   def destroy(self):
+       """Destruye el frame principal de esta vista."""
+       super().destroy()
