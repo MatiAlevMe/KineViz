@@ -262,19 +262,19 @@ Esta funcionalidad está pensada para automatizar el análisis estadístico de d
      *   (Hecho) `AnalysisService.perform_individual_analysis`: Implementada lógica básica para leer datos de tablas CSV, preparar datos por grupo y llamar a `create_comparison_boxplot`. Guarda gráfico y config.json.
  *   **6. Implementación de Tests Estadísticos y Mejoras Gráficas:** (En Progreso)
      *   (Hecho) Añadida lógica en `perform_individual_analysis` para ejecutar tests principales (t-test/ANOVA/Wilcoxon/Kruskal/Friedman) usando `scipy.stats`.
-     *   (Hecho) Modificado `create_comparison_boxplot` para usar `seaborn`.
-     *   (Hecho) Reemplazado `stripplot` con `swarmplot` para mejor visualización de puntos.
+     *   (Hecho) Modificado `create_comparison_boxplot` para usar `seaborn` y `swarmplot`.
      *   (Hecho) Añadida leyenda de grupos al boxplot.
-     *   (En Progreso) Añadido texto con p-valor al gráfico (reemplaza `statannot` temporalmente).
-     *   (Pendiente) Implementar anotaciones completas (líneas y asteriscos) si es necesario.
+     *   (Hecho) Reintroducido `statannot` para mostrar significancia (NS, *, **) en comparaciones de 2 grupos. P-valor general mostrado como texto para >2 grupos.
+     *   (Pendiente) Considerar tests post-hoc y anotaciones pairwise para >2 grupos si es necesario.
  *   **7. Gestión de Análisis Guardados:** (En Progreso)
      *   (Hecho) Implementado `AnalysisService.list_individual_analyses` y `delete_individual_analysis`.
      *   (Hecho) Conectada UI de `IndividualAnalysisManagerDialog` (cargar, ver gráfico, eliminar, abrir carpeta).
-     *   (Hecho) Modificada tabla en `IndividualAnalysisManagerDialog`: reemplazadas columnas "Grupo X" por columna "Descriptores". Corregido bug de encabezados.
+     *   (Hecho) Modificada tabla en `IndividualAnalysisManagerDialog`: reemplazada columna "Grupo X" por "Grupos Comparados". Corregido bug de encabezados.
+     *   (Hecho) Añadida columna "Valores Clave" para mostrar resultado del test (p-valor). Guardado p-valor en `config.json`.
  *   **8. Reporte General:** (Pendiente) Implementar generación automática de PDF con todas las combinaciones.
      *   **Nota**: Necesitará preguntar/configurar los supuestos (paramétrico/pareado) para aplicar las comparaciones correctas.
  *   **9. Corrección de Errores:** (En Progreso)
-     *   (En Progreso) Investigando error "Formato de columna inválido" al seleccionar columnas cinéticas (añadido logging en `get_common_columns_for_groups`).
+     *   (Hecho) Corregido error de reconocimiento de columnas (prefijo `PteXX:`) modificando la generación de tablas resumen y la lectura de cabeceras.
  *   **10. Integración y Pruebas:** (Pendiente) Integrar la funcionalidad en la plataforma y realizar pruebas de integración.
 
 
