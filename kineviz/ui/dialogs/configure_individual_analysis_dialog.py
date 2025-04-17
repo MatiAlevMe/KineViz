@@ -343,6 +343,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
 
 # Para pruebas rápidas
 if __name__ == '__main__':
+    from pathlib import Path # Importar Path para el dummy
     root = tk.Tk()
     root.withdraw() # Ocultar ventana principal
 
