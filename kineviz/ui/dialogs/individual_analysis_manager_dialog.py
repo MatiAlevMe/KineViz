@@ -61,7 +61,10 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                    command=self.delete_analysis) \
             .pack(side=tk.LEFT, padx=5)
         ttk.Button(action_frame, text="Abrir Carpeta",
-                   command=self.open_analysis_folder) \
+                    command=self.open_analysis_folder) \
+             .pack(side=tk.LEFT, padx=5)
+        ttk.Button(action_frame, text="Ver Gráfico Interactivo",
+                   command=self.view_interactive_plot) \
             .pack(side=tk.LEFT, padx=5)
         # TODO: Añadir búsqueda/filtrado si es necesario
 
@@ -249,8 +252,37 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
             if analysis_info['name'] == analysis_name:
                 return analysis_info
         logger.error(f"No se encontró información para análisis seleccionado: "
-                     f"{analysis_name}")
+                      f"{analysis_name}")
         return None  # No debería ocurrir si la lista está sincronizada
+
+    def view_interactive_plot(self):
+        """Abre el gráfico HTML interactivo del análisis seleccionado."""
+        analysis_info = self.get_selected_analysis_info()
+        if not analysis_info:
+            return
+
+        # Buscar la ruta interactiva en la info cargada
+        interactive_plot_path_obj = analysis_info.get('interactive_plot_path')
+
+        if not interactive_plot_path_obj or not interactive_plot_path_obj.exists():
+            messagebox.showwarning("No Disponible",
+                                   f"No se encontró archivo de gráfico interactivo "
+                                   f"para '{analysis_info['name']}'.\n"
+                                   f"(Es posible que Plotly no esté instalado o "
+                                   f"haya fallado la generación).", parent=self)
+            return
+
+        try:
+            # Convertir Path a string y luego a URL file://
+            interactive_plot_url = interactive_plot_path_obj.as_uri()
+            logger.info(f"Intentando abrir gráfico interactivo: {interactive_plot_url}")
+            webbrowser.open(interactive_plot_url, new=2) # new=2: nueva pestaña si es posible
+        except Exception as e:
+            logger.error(f"Error abriendo gráfico interactivo para {analysis_info['name']}: "
+                         f"{e}", exc_info=True)
+            messagebox.showerror("Error al Abrir",
+                                   f"No se pudo abrir el gráfico interactivo:\n{e}",
+                                   parent=self)
 
     def view_analysis_plot(self):
         """Abre el gráfico PNG del análisis seleccionado."""

@@ -13,3 +13,4 @@ setuptools>=65.5.0
 scipy
 seaborn 
 statannot
+plotly                                                                                                                               
