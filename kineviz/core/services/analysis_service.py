@@ -927,19 +927,64 @@ class AnalysisService:
 
                             # Convertir a numérico, forzando errores a NaN
                             for col in df_data.columns:
-                                # Intentar reemplazar coma por punto ANTES
-                                if df[col].dtype == 'object':
-                                    df[col] = df[col].str.replace(',', '.',
-                                                                  regex=False)
-                                df[col] = pd.to_numeric(df[col], errors='coerce')
+                                # Intentar reemplazar coma por punto ANTES de convertir
+                                if df_data[col].dtype == 'object':
+                                    # Usar regex=False para reemplazo literal
+                                    df_data[col] = df_data[col].str.replace(',', '.', regex=False)
+                                # Convertir a numérico, errores a NaN
+                                df_data[col] = pd.to_numeric(df_data[col], errors='coerce')
 
-                            # Guardar CSV
-                            output_filename = f"{calc}_{target_frequency}_{descriptor_key}.csv"
-                            output_csv_path = output_base_dir / output_filename
-                            df.to_csv(output_csv_path, sep=',', decimal=',',
-                                      encoding='utf-8')
-                            results['success'].append(str(output_csv_path))
-                            logger.info(f"Tabla resumen generada: {output_csv_path}")
+                            # Crear DataFrame para las columnas de índice
+                            index_columns = [f"Index_{i}" for i in range(max_index_parts)]
+                            df_index = pd.DataFrame(index_parts_list, columns=index_columns)
+                            # Rellenar NaNs si alguna fila tenía menos partes
+                            df_index = df_index.fillna('')
+
+                            # Combinar DataFrame de índice y datos
+                            df_final = pd.concat([df_index, df_data], axis=1)
+
+                            # --- Preparar para guardar en formato TSV ---
+                            output_filename = f"{calc}_{target_frequency}_{descriptor_key}.tsv" # Cambiar extensión
+                            output_tsv_path = output_base_dir / output_filename
+
+                            # --- Construir Cabeceras Manualmente ---
+                            header_lines = []
+                            # Fila 1: Caracteristica (Atributo)
+                            row1 = [''] * max_index_parts # Celdas vacías para índice
+                            last_attr = None
+                            for attr, _, _ in column_multi_index:
+                                if attr == last_attr:
+                                    row1.append('') # Simular celda combinada
+                                else:
+                                    row1.append(attr if attr else '')
+                                    last_attr = attr
+                            header_lines.append('\t'.join(row1))
+
+                            # Fila 2: Espacio (Columna)
+                            row2 = [''] * max_index_parts
+                            for _, col, _ in column_multi_index:
+                                row2.append(col if col else '')
+                            header_lines.append('\t'.join(row2))
+
+                            # Fila 3: Unidad
+                            row3 = [''] * max_index_parts
+                            for _, _, unit in column_multi_index:
+                                row3.append(unit if unit else '')
+                            header_lines.append('\t'.join(row3))
+
+                            # --- Guardar TSV ---
+                            with open(output_tsv_path, 'w', encoding='utf-8') as f:
+                                # Escribir cabeceras manuales
+                                for line in header_lines:
+                                    f.write(line + '\n')
+                                # Escribir datos del DataFrame
+                                df_final.to_csv(f, sep='\t', decimal=',',
+                                                header=False, index=False,
+                                                encoding='utf-8',
+                                                float_format='%.4f') # Formato con 4 decimales
+
+                            results['success'].append(str(output_tsv_path))
+                            logger.info(f"Tabla resumen TSV generada: {output_tsv_path}")
 
                         except Exception as e_df:
                             error_msg = (f"Error creando/guardando DataFrame TSV para "
