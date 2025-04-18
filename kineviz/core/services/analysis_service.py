@@ -1048,14 +1048,23 @@ class AnalysisService:
                                             # openpyxl es 1-based index
                                             ws.append(header_row_list)
 
-                                        # Escribir los datos del DataFrame debajo de las cabeceras
-                                        # Empezar desde la fila después de las cabeceras (len(header_rows_list))
-                                        # Pandas to_excel startrow es 0-based, openpyxl append es secuencial
-                                        # Escribir con header=False e index=False porque ya están en las cabeceras manuales
-                                        df_data_export.to_excel(
+                                        # --- Aplanar columnas para evitar error de pandas ---
+                                        # Crear copia para no modificar el original usado en TSV/SCSV
+                                        df_data_export_flat = df_data_export.copy()
+                                        # Crear nombres simples: 'ARCHIVO' y 'Attr/Col/Unit'
+                                        flat_column_names = [df_data_export_flat.columns[0]] # Mantener 'ARCHIVO'
+                                        flat_column_names.extend([
+                                            '/'.join(map(str, col_tuple))
+                                            for col_tuple in df_data_export_flat.columns[1:] # Iterar sobre el MultiIndex
+                                        ])
+                                        df_data_export_flat.columns = flat_column_names
+
+                                        # --- Escribir datos con columnas aplanadas ---
+                                        # Empezar desde la fila después de las cabeceras
+                                        df_data_export_flat.to_excel(
                                             writer,
                                             sheet_name='Data',
-                                            startrow=len(header_rows_list), # Fila donde empiezan los datos
+                                            startrow=len(header_rows_list), # Fila donde empiezan los datos (0-based)
                                             header=False, # No escribir cabecera de pandas
                                             index=False   # No escribir índice de pandas
                                         )
