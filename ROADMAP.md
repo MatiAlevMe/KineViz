@@ -264,18 +264,24 @@ Esta funcionalidad está pensada para automatizar el análisis estadístico de d
      *   (Hecho) Añadida lógica en `perform_individual_analysis` para ejecutar tests principales (t-test/ANOVA/Wilcoxon/Kruskal/Friedman) usando `scipy.stats`.
      *   (Hecho) Modificado `create_comparison_boxplot` para usar `seaborn` y `swarmplot`.
      *   (Hecho) Añadida leyenda de grupos al boxplot.
-     *   (Hecho) Reintroducido `statannot` para mostrar significancia (NS, *, **) en comparaciones de 2 grupos. P-valor general mostrado como texto para >2 grupos.
-     *   (Pendiente) Considerar tests post-hoc y anotaciones pairwise para >2 grupos si es necesario.
- *   **7. Gestión de Análisis Guardados:** (En Progreso)
+     *   (Hecho) Reintroducido `statannot` para mostrar significancia (NS, *, **) en comparaciones de 2 grupos en gráfico estático (PNG). P-valor general mostrado como texto para >2 grupos.
+     *   (Pendiente) Considerar tests post-hoc y anotaciones pairwise para >2 grupos si es necesario (en gráfico estático).
+ *   **7. Generación de Gráfico Interactivo (Plotly):** (En Progreso)
+     *   (Hecho) Añadida dependencia `plotly`.
+     *   (Hecho) Creada función `create_interactive_comparison_boxplot` en `charting.py` para generar HTML con Plotly (sin anotaciones de significancia).
+     *   (Hecho) Modificado `perform_individual_analysis` para generar y guardar `boxplot_interactive.html`.
+     *   (Pendiente) Implementar lógica personalizada para añadir anotaciones de significancia en Plotly (complejo, Fase B).
+ *   **8. Gestión de Análisis Guardados:** (En Progreso)
      *   (Hecho) Implementado `AnalysisService.list_individual_analyses` y `delete_individual_analysis`.
-     *   (Hecho) Conectada UI de `IndividualAnalysisManagerDialog` (cargar, ver gráfico, eliminar, abrir carpeta).
+     *   (Hecho) Conectada UI de `IndividualAnalysisManagerDialog` (cargar, ver gráfico PNG, eliminar, abrir carpeta).
+     *   (Hecho) Añadido botón "Ver Gráfico Interactivo" en `IndividualAnalysisManagerDialog` para abrir HTML en navegador.
      *   (Hecho) Modificada tabla en `IndividualAnalysisManagerDialog`: reemplazada columna "Grupo X" por "Grupos Comparados". Corregido bug de encabezados.
      *   (Hecho) Añadida columna "Valores Clave" para mostrar resultado del test (p-valor). Guardado p-valor en `config.json`.
- *   **8. Reporte General:** (Pendiente) Implementar generación automática de PDF con todas las combinaciones.
+ *   **9. Reporte General:** (Pendiente) Implementar generación automática de PDF con todas las combinaciones.
      *   **Nota**: Necesitará preguntar/configurar los supuestos (paramétrico/pareado) para aplicar las comparaciones correctas.
- *   **9. Corrección de Errores:** (En Progreso)
+ *   **10. Corrección de Errores:** (En Progreso)
      *   (Hecho) Corregido error de reconocimiento de columnas (prefijo `PteXX:`) modificando la generación de tablas resumen y la lectura de cabeceras.
- *   **10. Integración y Pruebas:** (Pendiente) Integrar la funcionalidad en la plataforma y realizar pruebas de integración.
+ *   **11. Integración y Pruebas:** (Pendiente) Integrar la funcionalidad en la plataforma y realizar pruebas de integración.
 
 
 ---

@@ -9,6 +9,17 @@ from statannot import add_stat_annotation
 import matplotlib
 matplotlib.use('Agg')  # Usar backend no interactivo
 
+# Importar Plotly
+try:
+    import plotly.graph_objects as go
+    import plotly.io as pio
+    # Configurar tema por defecto para Plotly (opcional)
+    pio.templates.default = "plotly_white"
+    PLOTLY_AVAILABLE = True
+except ImportError:
+    PLOTLY_AVAILABLE = False
+
+
 logger = logging.getLogger(__name__)  # Logger para este módulo
 
 
@@ -79,6 +90,94 @@ def create_barchart(data_dict: dict, title: str, xlabel: str, ylabel: str, outpu
     plt.tight_layout()
     plt.savefig(output_path, bbox_inches='tight', dpi=150)
     plt.close(fig)
+
+
+def create_interactive_comparison_boxplot(data_by_group: list, group_names: list[str],
+                                          title: str, ylabel: str, output_path: Path):
+    """
+    Genera un gráfico de caja comparativo interactivo usando Plotly y lo guarda como HTML.
+    NOTA: Actualmente no incluye anotaciones de significancia (NS, *, **).
+
+    :param data_by_group: Lista de listas/arrays con datos numéricos por grupo.
+    :param group_names: Lista de nombres para cada grupo (etiquetas eje X).
+    :param title: Título del gráfico.
+    :param ylabel: Etiqueta del eje Y.
+    :param output_path: Ruta (Path object) donde guardar el gráfico HTML.
+    """
+    if not PLOTLY_AVAILABLE:
+        logger.error("Plotly no está instalado. No se puede generar gráfico interactivo.")
+        # Opcional: Crear un archivo HTML con un mensaje de error
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write("<html><body><p>Error: La biblioteca Plotly no está instalada. "
+                    "No se pudo generar el gráfico interactivo.</p></body></html>")
+        return
+
+    if len(data_by_group) != len(group_names):
+        raise ValueError("Longitud de data_by_group y group_names no coinciden.")
+
+    fig = go.Figure()
+
+    # Colores consistentes con Seaborn Pastel1 si es posible
+    try:
+        palette = sns.color_palette("Pastel1", n_colors=len(group_names)).as_hex()
+    except NameError: # Si seaborn no está disponible (poco probable aquí)
+        palette = None
+
+    valid_groups_exist = False
+    for i, (group_name, group_data) in enumerate(zip(group_names, data_by_group)):
+        # Convertir a array numpy y quitar NaNs
+        numeric_data = np.array(group_data, dtype=float)
+        cleaned_data = numeric_data[~np.isnan(numeric_data)]
+
+        if cleaned_data.size > 0:
+            valid_groups_exist = True
+            fig.add_trace(go.Box(
+                y=cleaned_data,
+                name=group_name,
+                boxpoints='all',  # Mostrar todos los puntos (similar a swarmplot)
+                jitter=0.3,      # Añadir algo de dispersión horizontal
+                pointpos=-1.8,   # Posicionar puntos a la izquierda
+                marker_size=4,
+                marker_color=palette[i] if palette else None,
+                line_width=1
+            ))
+        else:
+            logger.warning(f"Grupo '{group_name}' sin datos válidos para boxplot interactivo.")
+
+    if not valid_groups_exist:
+        logger.warning(f"No hay datos válidos para generar boxplot interactivo: {title}")
+        # Crear un HTML vacío con mensaje
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write(f"<html><body><h3>{title}</h3><p>No hay datos válidos para comparar.</p></body></html>")
+        return
+
+    # Actualizar layout
+    fig.update_layout(
+        title=title,
+        yaxis_title=ylabel,
+        xaxis_title="Grupos Comparados",
+        showlegend=True, # Mostrar leyenda por defecto
+        legend_title_text='Grupos',
+        boxmode='group', # Agrupar boxplots
+        xaxis=dict(
+            tickangle=30 # Rotar etiquetas eje X
+        ),
+        yaxis=dict(
+            gridcolor='lightgrey', # Color de la cuadrícula Y
+            zerolinecolor='grey'
+        ),
+        margin=dict(l=40, r=40, t=80, b=80), # Ajustar márgenes
+    )
+
+    # Guardar como HTML
+    try:
+        fig.write_html(output_path, include_plotlyjs='cdn') # Usar CDN para Plotly.js
+        logger.info(f"Gráfico interactivo guardado en: {output_path}")
+    except Exception as e:
+        logger.error(f"Error guardando gráfico interactivo en {output_path}: {e}", exc_info=True)
+        # Crear un archivo HTML con un mensaje de error si falla el guardado
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write(f"<html><body><p>Error al guardar el gráfico interactivo: {e}</p></body></html>")
 
 
 def create_comparison_boxplot(data_by_group: list, group_names: list[str],
