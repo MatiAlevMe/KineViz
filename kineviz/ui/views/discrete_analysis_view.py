@@ -225,7 +225,7 @@ class DiscreteAnalysisView(ttk.Frame):
             else:
                 messagebox.showinfo("Resultado Generación", message, parent=self)
 
-            # Refrescar la lista de tablas
+            # Refrescar la lista de tablas después de mostrar el mensaje
             self.load_tables()
 
         except Exception as e:
