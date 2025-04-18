@@ -960,16 +960,17 @@ class AnalysisService:
 
                             # --- Construir Cabeceras Manualmente (para TSV, XLSX, SCSV) ---
                             header_lines = []
-                            # Fila 1: Caracteristica (Atributo)
-                            row1 = [''] * max_index_parts # Celdas vacías para índice
+                            # Fila 1: Caracteristica (Atributo) - Sin prefijo vacío
+                            row1 = []
                             last_attr = None
                             for attr, _, _ in column_multi_index:
-                                if attr == last_attr:
+                                if attr == last_attr and last_attr is not None: # Evitar '' inicial si el primero está vacío
                                     row1.append('') # Simular celda combinada
                                 else:
                                     row1.append(attr if attr else '')
                                     last_attr = attr
-                            header_lines.append('\t'.join(row1))
+                            # Guardar como lista por ahora, se unirá con el separador correcto después
+                            header_lines.append(row1)
 
                             # Fila 2: Espacio (Columna) - Con 'ARCHIVO' al inicio
                             row2 = ['ARCHIVO']
@@ -1046,9 +1047,10 @@ class AnalysisService:
                             logger.error(error_msg, exc_info=True)
                             results['errors'].append(error_msg)
                     else:
+                        # Mensaje genérico ya que se generan múltiples formatos
                         logger.warning(f"No se encontraron datos válidos para "
-                                       f"generar tabla TSV "
-                                       f"{calc}_{target_frequency}_{descriptor_key}.tsv")
+                                       f"generar tablas resumen para "
+                                       f"{calc}_{target_frequency}_{descriptor_key}")
 
         except Exception as e:
             error_msg = (f"Error inesperado durante generación tablas discretas "
