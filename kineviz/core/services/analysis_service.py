@@ -1491,7 +1491,7 @@ class AnalysisService:
                interactive_plot_path = item_path / "boxplot_interactive.html" # Asumir nombre fijo HTML
 
                if config_path.exists() and config_path.is_file():
-                   try:
+                    try:
                         with open(config_path, 'r', encoding='utf-8') as f:
                             config_data = json.load(f)
                         # Usar mtime del config.json como referencia
@@ -1505,15 +1505,15 @@ class AnalysisService:
                            # Añadir ruta interactiva si existe
                            'interactive_plot_path': interactive_plot_path if interactive_plot_path.exists() else None
                        })
-                   except json.JSONDecodeError:
+                    except json.JSONDecodeError:
                         logger.error(f"Error leyendo config.json para análisis "
                                      f"'{analysis_name}' en estudio {study_id}.")
                     except Exception as e:
                         logger.error(f"Error procesando análisis "
                                      f"'{analysis_name}' en estudio {study_id}: {e}",
                                      exc_info=True)
-                else:
-                    logger.warning(f"Directorio análisis '{analysis_name}' "
+                    else:
+                        logger.warning(f"Directorio análisis '{analysis_name}' "
                                    f"encontrado sin config.json en estudio "
                                    f"{study_id}.")
 
