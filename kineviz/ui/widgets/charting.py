@@ -234,13 +234,15 @@ def create_comparison_boxplot(data_by_group: list, group_names: list[str],
 
     # Boxplot
     sns.boxplot(data=df_long, x='Group', y='Value', order=group_order,
+                hue='Group', # Asignar x a hue
                 palette=palette, showfliers=False, ax=ax, legend=False,
                 boxprops=dict(alpha=.7)) # Añadir transparencia a cajas
 
     # Puntos individuales con swarmplot para mejor distribución
     sns.swarmplot(data=df_long, x='Group', y='Value', order=group_order,
+                  hue='Group', # Asignar x a hue
                   palette=palette, # Usar misma paleta
-                  edgecolor='gray', linewidth=0.5, # Contorno ligero
+                  edgecolor='auto', linewidth=0.5, # Usar 'auto' para color borde
                   legend=False, ax=ax, size=4) # Ajustar tamaño
 
     ax.set_title(title)
