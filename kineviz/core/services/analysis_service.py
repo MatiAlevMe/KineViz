@@ -1,5 +1,5 @@
 import tempfile
-import shutil
+import shutil # Añadir para borrar directorio
 import logging
 from pathlib import Path
 from datetime import datetime
@@ -38,6 +38,14 @@ try:
 except ImportError:
     logger.warning("Scipy no está instalado. Las pruebas estadísticas no estarán disponibles.")
     stats = None
+
+# Importar openpyxl para Excel (opcional)
+try:
+    import openpyxl
+    OPENPYXL_AVAILABLE = True
+except ImportError:
+    OPENPYXL_AVAILABLE = False
+    logger.info("openpyxl no está instalado. La exportación a .xlsx no estará disponible.")
 
 
 class AnalysisService:
@@ -861,11 +869,23 @@ class AnalysisService:
                                          f"'{target_frequency}'.")
                 return results
 
-            # 2. Generar tabla para cada combinación de descriptores y cálculo
+            # 2. Preparar directorio de salida (limpiar si existe)
             output_base_dir = (study_path / "Analisis Discreto" / "Tablas" /
                                target_frequency)
-            output_base_dir.mkdir(parents=True, exist_ok=True)
+            if output_base_dir.exists():
+                logger.info(f"Limpiando directorio de salida existente: {output_base_dir}")
+                try:
+                    for item in output_base_dir.iterdir():
+                        if item.is_dir():
+                            shutil.rmtree(item)
+                        else:
+                            item.unlink()
+                except OSError as e:
+                    logger.error(f"Error limpiando directorio {output_base_dir}: {e}", exc_info=True)
+                    # Continuar de todos modos, puede que solo fallen algunos archivos
+            output_base_dir.mkdir(parents=True, exist_ok=True) # Asegurar que exista
 
+            # 3. Generar tabla para cada combinación de descriptores y cálculo
             for descriptor_key, file_paths in files_by_descriptor_combo.items():
                 if not file_paths:
                     continue
@@ -897,57 +917,48 @@ class AnalysisService:
 
                 for calc in calculations:
                     table_data = []
-                    # Almacenar partes del nombre de archivo para el índice
-                    index_parts_list = []
-                    max_index_parts = 0 # Para determinar columnas de índice
+                    # Almacenar nombres base completos para el índice
+                    index_names = []
 
                     for file_path in file_paths:
                         stats_row = self._extract_stats_from_processed_file(
                             file_path, calc
                         )
-                        # Parsear nombre base para índice
+                        # Obtener nombre base completo para índice
                         base_name = file_path.stem.split(f'_{target_frequency}')[0]
-                        # Dividir por espacio (como en el ejemplo "Pte05 CMJ 01")
-                        current_index_parts = base_name.split(' ')
-                        max_index_parts = max(max_index_parts, len(current_index_parts))
 
                         if stats_row and len(stats_row) == num_value_cols:
                             table_data.append(stats_row)
-                            index_parts_list.append(current_index_parts)
+                            index_names.append(base_name) # Guardar nombre base completo
                         else:
                             logger.warning(f"Datos de '{calc}' inconsistentes o "
                                            f"faltantes en {file_path.name}. Se "
-                                           f"omitirá del archivo TSV.")
-                            # No añadir a index_parts_list si se omite la fila
+                                           f"omitirá de las tablas resumen.")
+                            # No añadir a index_names si se omite la fila
 
                     if table_data:
                         try:
-                            # Crear DataFrame principal con datos numéricos
-                            df_data = pd.DataFrame(table_data, columns=column_multi_index)
+                            # --- Crear y Guardar CSV Interno (para lógica posterior) ---
+                            df_csv_internal = pd.DataFrame(table_data, columns=column_multi_index, index=index_names)
+                            df_csv_internal.index.name = "ARCHIVO" # Nombre del índice
 
-                            # Convertir a numérico, forzando errores a NaN
-                            for col in df_data.columns:
-                                # Intentar reemplazar coma por punto ANTES de convertir
-                                if df_data[col].dtype == 'object':
-                                    # Usar regex=False para reemplazo literal
-                                    df_data[col] = df_data[col].str.replace(',', '.', regex=False)
-                                # Convertir a numérico, errores a NaN
-                                df_data[col] = pd.to_numeric(df_data[col], errors='coerce')
+                            # Convertir CSV interno a numérico (punto decimal)
+                            for col in df_csv_internal.columns:
+                                if df_csv_internal[col].dtype == 'object':
+                                    df_csv_internal[col] = df_csv_internal[col].str.replace(',', '.', regex=False)
+                                df_csv_internal[col] = pd.to_numeric(df_csv_internal[col], errors='coerce')
 
-                            # Crear DataFrame para las columnas de índice
-                            index_columns = [f"Index_{i}" for i in range(max_index_parts)]
-                            df_index = pd.DataFrame(index_parts_list, columns=index_columns)
-                            # Rellenar NaNs si alguna fila tenía menos partes
-                            df_index = df_index.fillna('')
+                            output_csv_internal_path = output_base_dir / f"{calc}_{target_frequency}_{descriptor_key}.csv"
+                            df_csv_internal.to_csv(output_csv_internal_path, sep=',', decimal='.', # Punto decimal para CSV interno
+                                                   encoding='utf-8', header=True, index=True)
+                            results['success'].append(str(output_csv_internal_path))
+                            logger.info(f"Tabla CSV interna generada: {output_csv_internal_path}")
 
-                            # Combinar DataFrame de índice y datos
-                            df_final = pd.concat([df_index, df_data], axis=1)
+                            # --- Preparar DataFrame para formatos de exportación (TSV, XLSX, SCSV) ---
+                            # Usar los mismos datos numéricos pero con índice como columna 'ARCHIVO'
+                            df_data_export = df_csv_internal.reset_index() # Mover índice 'ARCHIVO' a columna
 
-                            # --- Preparar para guardar en formato TSV ---
-                            output_filename = f"{calc}_{target_frequency}_{descriptor_key}.tsv" # Cambiar extensión
-                            output_tsv_path = output_base_dir / output_filename
-
-                            # --- Construir Cabeceras Manualmente ---
+                            # --- Construir Cabeceras Manualmente (para TSV, XLSX, SCSV) ---
                             header_lines = []
                             # Fila 1: Caracteristica (Atributo)
                             row1 = [''] * max_index_parts # Celdas vacías para índice
@@ -960,34 +971,77 @@ class AnalysisService:
                                     last_attr = attr
                             header_lines.append('\t'.join(row1))
 
-                            # Fila 2: Espacio (Columna)
-                            row2 = [''] * max_index_parts
+                            # Fila 2: Espacio (Columna) - Con 'ARCHIVO' al inicio
+                            row2 = ['ARCHIVO']
                             for _, col, _ in column_multi_index:
                                 row2.append(col if col else '')
-                            header_lines.append('\t'.join(row2))
+                            header_lines.append(row2) # Guardar como lista por ahora
 
-                            # Fila 3: Unidad
-                            row3 = [''] * max_index_parts
+                            # Fila 3: Unidad - Con celda vacía para 'ARCHIVO'
+                            row3 = ['']
                             for _, _, unit in column_multi_index:
                                 row3.append(unit if unit else '')
-                            header_lines.append('\t'.join(row3))
+                            header_lines.append(row3) # Guardar como lista
 
-                            # --- Guardar TSV ---
-                            with open(output_tsv_path, 'w', encoding='utf-8') as f:
-                                # Escribir cabeceras manuales
-                                for line in header_lines:
-                                    f.write(line + '\n')
-                                # Escribir datos del DataFrame
-                                df_final.to_csv(f, sep='\t', decimal=',',
-                                                header=False, index=False,
-                                                encoding='utf-8',
-                                                float_format='%.4f') # Formato con 4 decimales
+                            # --- Guardar Formatos de Exportación ---
 
-                            results['success'].append(str(output_tsv_path))
-                            logger.info(f"Tabla resumen TSV generada: {output_tsv_path}")
+                            # 1. Formato TSV (Tab Separated, Comma Decimal)
+                            output_tsv_path = output_base_dir / f"{calc}_{target_frequency}_{descriptor_key}.tsv"
+                            try:
+                                with open(output_tsv_path, 'w', encoding='utf-8') as f:
+                                    for header_row_list in header_lines:
+                                        f.write('\t'.join(header_row_list) + '\n')
+                                    # Escribir datos, coma decimal
+                                    df_data_export.to_csv(f, sep='\t', decimal=',', header=False, index=False,
+                                                          encoding='utf-8', float_format='%.4f')
+                                results['success'].append(str(output_tsv_path))
+                                logger.info(f"Tabla TSV generada: {output_tsv_path}")
+                            except Exception as e_tsv:
+                                error_msg = f"Error guardando TSV {output_tsv_path.name}: {e_tsv}"
+                                logger.error(error_msg, exc_info=True)
+                                results['errors'].append(error_msg)
+
+                            # 2. Formato SCSV (Semicolon Separated, Comma Decimal)
+                            output_scsv_path = output_base_dir / f"{calc}_{target_frequency}_{descriptor_key}.scsv"
+                            try:
+                                with open(output_scsv_path, 'w', encoding='utf-8') as f:
+                                    for header_row_list in header_lines:
+                                        f.write(';'.join(header_row_list) + '\n')
+                                    # Escribir datos, coma decimal
+                                    df_data_export.to_csv(f, sep=';', decimal=',', header=False, index=False,
+                                                          encoding='utf-8', float_format='%.4f')
+                                results['success'].append(str(output_scsv_path))
+                                logger.info(f"Tabla SCSV generada: {output_scsv_path}")
+                            except Exception as e_scsv:
+                                error_msg = f"Error guardando SCSV {output_scsv_path.name}: {e_scsv}"
+                                logger.error(error_msg, exc_info=True)
+                                results['errors'].append(error_msg)
+
+                            # 3. Formato XLSX (Excel, Comma Decimal via Locale?) - openpyxl requerido
+                            if OPENPYXL_AVAILABLE:
+                                output_xlsx_path = output_base_dir / f"{calc}_{target_frequency}_{descriptor_key}.xlsx"
+                                try:
+                                    with pd.ExcelWriter(output_xlsx_path, engine='openpyxl') as writer:
+                                        # Crear DataFrame temporal para cabeceras
+                                        df_header_export = pd.DataFrame(header_lines)
+                                        # Escribir cabeceras sin índice ni cabecera propia
+                                        df_header_export.to_excel(writer, sheet_name='Data', startrow=0, header=False, index=False)
+                                        # Escribir datos debajo de las cabeceras
+                                        # Nota: Excel usará el separador decimal del sistema, forzar coma es complejo.
+                                        df_data_export.to_excel(writer, sheet_name='Data', startrow=len(header_lines), header=False, index=False)
+                                    results['success'].append(str(output_xlsx_path))
+                                    logger.info(f"Tabla XLSX generada: {output_xlsx_path}")
+                                except Exception as e_xlsx:
+                                    error_msg = f"Error guardando XLSX {output_xlsx_path.name}: {e_xlsx}"
+                                    logger.error(error_msg, exc_info=True)
+                                    results['errors'].append(error_msg)
+                            else:
+                                logger.warning(f"Omitiendo generación XLSX para {descriptor_key}/{calc} (openpyxl no disponible).")
+
 
                         except Exception as e_df:
-                            error_msg = (f"Error creando/guardando DataFrame TSV para "
+                            # Error general al procesar este cálculo/descriptor
+                            error_msg = (f"Error procesando datos para "
                                          f"{calc}_{target_frequency}_{descriptor_key}: {e_df}")
                             logger.error(error_msg, exc_info=True)
                             results['errors'].append(error_msg)
