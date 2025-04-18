@@ -4,8 +4,9 @@ import numpy as np  # Para manejar posibles NaN
 import pandas as pd # Necesario para formato de statannot/seaborn
 import logging
 import seaborn as sns
-# Reintroducir statannot
-from statannot import add_stat_annotation
+# Usar statannotations en lugar de statannot
+# from statannot import add_stat_annotation # Ya no se usa
+from statannotations.Annotator import Annotator # Importar Annotator
 import matplotlib
 matplotlib.use('Agg')  # Usar backend no interactivo
 
@@ -254,19 +255,19 @@ def create_comparison_boxplot(data_by_group: list, group_names: list[str],
         if not np.isnan(p_value): # Solo si el p-valor es válido
             box_pairs = [(group_order[0], group_order[1])]
             try:
-                add_stat_annotation(ax, data=df_long, x='Group', y='Value',
-                                    order=group_order,
-                                    box_pairs=box_pairs,
-                                    test=None,  # Ya tenemos el p-valor
-                                    perform_stat_test=False, # Indicar que no ejecute test
-                                    text_format='star', # NS, *, **, ***
-                                    pvalues=[p_value],
-                                    loc='inside', verbose=0)
-                logger.debug(f"Anotación statannot añadida para {title} "
+                # Configurar Annotator con los datos y parámetros del plot
+                annotator = Annotator(ax, box_pairs, data=df_long,
+                                      x='Group', y='Value', order=group_order)
+                # Configurar cómo mostrar los p-valores (formato estrella)
+                annotator.configure(text_format='star', loc='inside', verbose=0)
+                # Aplicar las anotaciones usando los p-valores precalculados
+                annotator.set_pvalues_and_annotate([p_value])
+
+                logger.debug(f"Anotación statannotations añadida para {title} "
                              f"con p={p_value}")
             except Exception as e_annot:
-                # Si statannot falla, añadir texto simple como fallback
-                logger.warning(f"Error al usar statannot para {title}: {e_annot}. "
+                # Si statannotations falla, añadir texto simple como fallback
+                logger.warning(f"Error al usar statannotations para {title}: {e_annot}. "
                                f"Mostrando p-valor como texto.")
                 test_name = stats_results.get('test_name', 'Test')
                 if p_value < 0.001: p_text = "p < 0.001"
