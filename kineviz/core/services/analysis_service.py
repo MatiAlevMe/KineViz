@@ -761,17 +761,22 @@ class AnalysisService:
             columnas_raw = lines[2].strip().split(';')[3:]
             unidades_raw = lines[3].strip().split(';')[3:]
 
-            # Función auxiliar para limpiar prefijo
-            def clean_prefix(name):
+            # Función auxiliar para limpiar prefijo "PteXX:"
+            def clean_prefix(name: str) -> str:
+                name = name.strip()
                 if ':' in name:
-                    return name.split(':', 1)[1]
+                    # Intentar dividir y tomar la segunda parte
+                    parts = name.split(':', 1)
+                    if len(parts) > 1:
+                        return parts[1].strip()
+                # Si no hay ':' o la división falla, devolver el nombre original (limpio)
                 return name
 
+            # Limpiar prefijos de atributos y columnas
             atributos = [clean_prefix(a) for a in atributos_raw]
             columnas = [clean_prefix(c) for c in columnas_raw]
-            # Las unidades no deberían tener prefijo, pero aplicamos por si acaso
-            unidades = [clean_prefix(u) for u in unidades_raw]
-
+            # Limpiar espacios en unidades (no deberían tener prefijo)
+            unidades = [u.strip() for u in unidades_raw]
 
             # Asegurar que todas las listas tengan la misma longitud
             max_len = max(len(atributos), len(columnas), len(unidades))
@@ -892,35 +897,36 @@ class AnalysisService:
 
                 for calc in calculations:
                     table_data = []
-                    file_basenames = []
+                    # Almacenar partes del nombre de archivo para el índice
+                    index_parts_list = []
+                    max_index_parts = 0 # Para determinar columnas de índice
 
                     for file_path in file_paths:
                         stats_row = self._extract_stats_from_processed_file(
                             file_path, calc
                         )
+                        # Parsear nombre base para índice
+                        base_name = file_path.stem.split(f'_{target_frequency}')[0]
+                        # Dividir por espacio (como en el ejemplo "Pte05 CMJ 01")
+                        current_index_parts = base_name.split(' ')
+                        max_index_parts = max(max_index_parts, len(current_index_parts))
+
                         if stats_row and len(stats_row) == num_value_cols:
                             table_data.append(stats_row)
-                            # Nombre base sin frecuencia
-                            file_basenames.append(
-                                file_path.stem.split(f'_{target_frequency}')[0]
-                            )
+                            index_parts_list.append(current_index_parts)
                         else:
                             logger.warning(f"Datos de '{calc}' inconsistentes o "
                                            f"faltantes en {file_path.name}. Se "
-                                           f"omitirá del archivo "
-                                           f"{calc}_{target_frequency}_{descriptor_key}.csv")
-                            # Opcional: añadir fila de NaNs?
-                            # table_data.append([np.nan] * num_value_cols)
-                            # file_basenames.append(file_path.stem.split(f'_{target_frequency}')[0] + " (Error)")
+                                           f"omitirá del archivo TSV.")
+                            # No añadir a index_parts_list si se omite la fila
 
                     if table_data:
                         try:
-                            # Crear DataFrame
-                            df = pd.DataFrame(table_data, columns=column_multi_index, index=file_basenames)
-                            df.index.name = "ARCHIVO"
+                            # Crear DataFrame principal con datos numéricos
+                            df_data = pd.DataFrame(table_data, columns=column_multi_index)
 
                             # Convertir a numérico, forzando errores a NaN
-                            for col in df.columns:
+                            for col in df_data.columns:
                                 # Intentar reemplazar coma por punto ANTES
                                 if df[col].dtype == 'object':
                                     df[col] = df[col].str.replace(',', '.',
@@ -936,14 +942,14 @@ class AnalysisService:
                             logger.info(f"Tabla resumen generada: {output_csv_path}")
 
                         except Exception as e_df:
-                            error_msg = (f"Error creando/guardando DataFrame para "
+                            error_msg = (f"Error creando/guardando DataFrame TSV para "
                                          f"{calc}_{target_frequency}_{descriptor_key}: {e_df}")
                             logger.error(error_msg, exc_info=True)
                             results['errors'].append(error_msg)
                     else:
                         logger.warning(f"No se encontraron datos válidos para "
-                                       f"generar tabla "
-                                       f"{calc}_{target_frequency}_{descriptor_key}.csv")
+                                       f"generar tabla TSV "
+                                       f"{calc}_{target_frequency}_{descriptor_key}.tsv")
 
         except Exception as e:
             error_msg = (f"Error inesperado durante generación tablas discretas "
