@@ -7,6 +7,7 @@ import sys
 import subprocess
 from datetime import datetime # Para formatear fecha
 import numpy as np # Importar numpy
+import webbrowser # Para abrir HTML
 
 # Importar servicios y otros diálogos necesarios
 from kineviz.core.services.analysis_service import AnalysisService
@@ -362,25 +363,39 @@ if __name__ == '__main__':
 
         def list_individual_analyses(self, study_id):
             print(f"Dummy: list_individual_analyses({study_id})")
-            # Simular algunos análisis con plot_path
+            # Simular algunos análisis con plot_path e interactive_plot_path
             base = Path(f'/fake/study_{study_id}/Analisis Discreto/Individual')
             analysis1_path = base / 'Comp_Costo_Mortal_Antes_Despues' # Usar alias
             analysis2_path = base / 'Comp_SJ_Tipos'
+            analysis3_path = base / 'Sin_Plotly' # Simular uno sin HTML
             return [
                 {'name': 'Comp_Costo_Mortal_Antes_Despues', 'path': analysis1_path,
                  'config': {'calculation': 'Maximo',
                             'column': 'H Salto/Alt/cm',
                             'groups': ['CMJ_PRE', 'CMJ_POST'],
-                            'parametric': True, 'paired': True},
+                            'parametric': True, 'paired': True,
+                            'stats_results': {'test_name': 'T-test rel.', 'p_value': 0.0005}},
                  'mtime': 1678886400.0,
-                 'plot_path': analysis1_path / 'boxplot.png'},
+                 'plot_path': analysis1_path / 'boxplot.png',
+                 'interactive_plot_path': analysis1_path / 'boxplot_interactive.html'}, # Añadir HTML
                 {'name': 'Comp_SJ_Tipos', 'path': analysis2_path,
                  'config': {'calculation': 'Rango',
                             'column': 'Art1/VelX/m/s',
                             'groups': ['SJ_TipoA', 'SJ_TipoB', 'SJ_TipoC'],
-                            'parametric': False, 'paired': False},
+                            'parametric': False, 'paired': False,
+                            'stats_results': {'test_name': 'Kruskal', 'p_value': 0.06}},
                  'mtime': 1678972800.0,
-                 'plot_path': analysis2_path / 'boxplot.png'},
+                 'plot_path': analysis2_path / 'boxplot.png',
+                 'interactive_plot_path': analysis2_path / 'boxplot_interactive.html'}, # Añadir HTML
+                 {'name': 'Sin_Plotly', 'path': analysis3_path,
+                 'config': {'calculation': 'Minimo',
+                            'column': 'Art2/PosY/mm',
+                            'groups': ['PRE', 'POST'],
+                            'parametric': True, 'paired': False,
+                            'stats_results': {'test_name': 'T-test indep.', 'p_value': 0.87}},
+                 'mtime': 1678999999.0,
+                 'plot_path': analysis3_path / 'boxplot.png',
+                 'interactive_plot_path': None}, # Simular que no existe
             ]
 
         def get_discrete_analysis_groups(self, study_id, frequency):
@@ -396,11 +411,14 @@ if __name__ == '__main__':
 
         def perform_individual_analysis(self, study_id, config):
             print(f"Dummy: perform_individual_analysis({study_id}, {config})")
-            # Simular éxito
+            # Simular éxito y devolver ambas rutas
             fake_path = Path(f'/fake/study_{study_id}/Analisis Discreto/'
                              f'Individual/{config["name"]}')
+            # Asegurarse que el dummy devuelva la ruta interactiva
             return {'plot_path': str(fake_path / 'boxplot.png'),
-                    'config_path': str(fake_path / 'config.json')}
+                    'config_path': str(fake_path / 'config.json'),
+                    'interactive_plot_path': str(fake_path / 'boxplot_interactive.html')}
+
 
         def delete_individual_analysis(self, study_id, analysis_name):
             print(f"Dummy: delete_individual_analysis({study_id}, "
