@@ -1032,12 +1032,19 @@ class AnalysisService:
                                 try:
                                     # Usar ExcelWriter para acceder al objeto worksheet
                                     with pd.ExcelWriter(output_xlsx_path, engine='openpyxl') as writer:
-                                        # Obtener la hoja de trabajo activa
-                                        ws = writer.book.active # O crearla si es necesario
-                                        ws.title = 'Data'
+                                        # Asegurar que la hoja 'Data' exista
+                                        # Si el libro está vacío, crea una hoja activa
+                                        if not writer.book.sheetnames:
+                                            ws = writer.book.create_sheet(title='Data')
+                                        else:
+                                            # Si ya hay hojas, intenta obtener 'Data' o la activa
+                                            ws = writer.book.get_sheet_by_name('Data') \
+                                                 if 'Data' in writer.book.sheetnames \
+                                                 else writer.book.active
+                                            ws.title = 'Data' # Asegurar nombre
 
                                         # Escribir las 4 filas de cabecera manualmente
-                                        for r_idx, header_row_list in enumerate(header_rows_list):
+                                        for header_row_list in header_rows_list:
                                             # openpyxl es 1-based index
                                             ws.append(header_row_list)
 

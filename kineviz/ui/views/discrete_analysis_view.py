@@ -31,7 +31,7 @@ class DiscreteAnalysisView(ttk.Frame):
         # Estado de UI y datos
         self.tables_tree = None
         # Lista completa de dicts:
-        # {'path': Path, 'name': str, 'calc': str, 'desc': str,
+        # {'path': Path, 'name': str, 'calc': str, 'desc': str, 'format': str,
         #  'mtime': float, 'size': int}
         self.all_table_files = []
         self.current_page = 1
@@ -41,6 +41,7 @@ class DiscreteAnalysisView(ttk.Frame):
         # Variables de control para filtros y búsqueda
         self.search_var = tk.StringVar()
         self.calc_filter_var = tk.StringVar()
+        self.format_filter_var = tk.StringVar() # Para filtro de formato
 
         # Empaquetar el frame principal
         self.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
@@ -111,6 +112,19 @@ class DiscreteAnalysisView(ttk.Frame):
         self.calc_filter_combo.set("Todos")
         self.calc_filter_combo.pack(side=tk.LEFT, padx=5)
         self.calc_filter_combo.bind("<<ComboboxSelected>>", self.apply_filters)
+
+        # Filtro por Formato
+        ttk.Label(filter_frame, text="Formato:").pack(side=tk.LEFT,
+                                                      padx=(10, 5))
+        self.format_filter_combo = ttk.Combobox(
+            filter_frame, textvariable=self.format_filter_var,
+            values=["Todos", ".csv", ".tsv", ".xlsx", ".scsv"],
+            state="readonly", width=6
+        )
+        self.format_filter_combo.set("Todos")
+        self.format_filter_combo.pack(side=tk.LEFT, padx=5)
+        self.format_filter_combo.bind("<<ComboboxSelected>>", self.apply_filters)
+
 
         ttk.Button(filter_frame, text="Limpiar Filtros",
                    command=self.clear_filters).pack(side=tk.LEFT, padx=10)
@@ -254,8 +268,15 @@ class DiscreteAnalysisView(ttk.Frame):
 
     def _parse_table_filename(self, filename: str) -> tuple[str, str, str]:
         """Extrae Cálculo, Frecuencia y Descriptores del nombre de archivo."""
-        # Formato: CALCULO_FRECUENCIA_DESC1_DESC2...DESCn.csv
-        parts = filename.removesuffix('.csv').split('_')
+        # Formato: CALCULO_FRECUENCIA_DESC1_DESC2...DESCn.[csv|tsv|xlsx|scsv]
+        # Remover cualquier extensión conocida
+        base_name = filename
+        for ext in ['.csv', '.tsv', '.xlsx', '.scsv']:
+            if base_name.lower().endswith(ext):
+                base_name = base_name[:-len(ext)]
+                break # Salir después de encontrar la extensión
+
+        parts = base_name.split('_')
         if len(parts) < 2:
             return "Desconocido", "Desconocido", ""  # No se puede determinar
 
@@ -283,10 +304,14 @@ class DiscreteAnalysisView(ttk.Frame):
                             f"para estudio {self.study_id}: {tables_path}")
                 return
 
+            # Definir extensiones válidas
+            valid_extensions = {'.csv', '.tsv', '.xlsx', '.scsv'}
+
             for freq_dir in tables_path.iterdir():
                 if freq_dir.is_dir():
-                    for file_path in freq_dir.glob("*.csv"):
-                        if file_path.is_file():
+                    # Buscar cualquier archivo y luego filtrar por extensión
+                    for file_path in freq_dir.iterdir():
+                        if file_path.is_file() and file_path.suffix.lower() in valid_extensions:
                             try:
                                 stats = file_path.stat()
                                 calc_type, _, descriptor_str = \
@@ -296,6 +321,7 @@ class DiscreteAnalysisView(ttk.Frame):
                                     'name': file_path.name,
                                     'calc': calc_type,
                                     'desc': descriptor_str,
+                                    'format': file_path.suffix.lower(), # Guardar formato
                                     'mtime': stats.st_mtime,
                                     'size': stats.st_size
                                 })
@@ -324,8 +350,14 @@ class DiscreteAnalysisView(ttk.Frame):
         # 2. Aplicar Filtros y Búsqueda
         search_term = self.search_var.get().lower()
         selected_calc = self.calc_filter_var.get()
+        selected_format = self.format_filter_var.get() # Obtener formato
 
         filtered_files = self.all_table_files
+
+        # Filtrar por formato
+        if selected_format != "Todos":
+            filtered_files = [f for f in filtered_files
+                              if f['path'].suffix.lower() == selected_format]
 
         # Filtrar por cálculo
         if selected_calc != "Todos":
@@ -440,6 +472,7 @@ class DiscreteAnalysisView(ttk.Frame):
         """Limpia los filtros y la búsqueda, y recarga la tabla."""
         self.search_var.set("")
         self.calc_filter_var.set("Todos")
+        self.format_filter_var.set("Todos") # Resetear filtro formato
         self.current_page = 1
         # No es necesario _fetch_all_table_files aquí, load_tables lo hará
         self.load_tables()
