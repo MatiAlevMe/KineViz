@@ -1431,6 +1431,8 @@ class AnalysisService:
             with open(config_path, 'w', encoding='utf-8') as f:
                 # Usar json.dump con manejo de NaN
                 json.dump(config_to_save, f, indent=4, allow_nan=True)
+            # Pequeña pausa para asegurar visibilidad del archivo
+            time.sleep(0.1)
             logger.info(f"Configuración análisis guardada en: {config_path}")
         except Exception as e:
             logger.error(f"Error guardando config análisis {analysis_name}: {e}", exc_info=True)
@@ -1512,10 +1514,12 @@ class AnalysisService:
                         logger.error(f"Error procesando análisis "
                                      f"'{analysis_name}' en estudio {study_id}: {e}",
                                      exc_info=True)
-                    else:
-                        logger.warning(f"Directorio análisis '{analysis_name}' "
-                                   f"encontrado sin config.json en estudio "
-                                   f"{study_id}.")
+               # Mover la advertencia aquí, fuera del try-except de lectura JSON
+               # Solo advertir si el archivo config no existe o no es un archivo
+               elif not config_path.exists() or not config_path.is_file():
+                   logger.warning(f"Directorio análisis '{analysis_name}' "
+                                  f"encontrado sin archivo config.json válido en "
+                                  f"estudio {study_id}.")
 
         # Ordenar por fecha de modificación (más reciente primero)
         analyses.sort(key=lambda x: x['mtime'], reverse=True)

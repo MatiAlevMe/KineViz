@@ -258,6 +258,7 @@ def create_comparison_boxplot(data_by_group: list, group_names: list[str],
                                     order=group_order,
                                     box_pairs=box_pairs,
                                     test=None,  # Ya tenemos el p-valor
+                                    perform_stat_test=False, # Indicar que no ejecute test
                                     text_format='star', # NS, *, **, ***
                                     pvalues=[p_value],
                                     loc='inside', verbose=0)
