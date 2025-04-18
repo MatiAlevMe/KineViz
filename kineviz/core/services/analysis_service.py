@@ -26,6 +26,7 @@ from reportlab.lib import colors
 from reportlab.lib.units import inch
 # import itertools # No usado directamente aquí
 import json
+import time # Añadir import
 
 
 # Define logger before it's potentially used in the except block below
