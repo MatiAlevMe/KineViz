@@ -1234,8 +1234,8 @@ class AnalysisService:
 
             try:
                 # Leer solo las cabeceras para obtener columnas
-                # Asumiendo MultiIndex [0, 1, 2] después de index_col=0
-                df_header = pd.read_csv(table_path, sep=',', decimal=',',
+                # Usar punto decimal '.' para el CSV interno
+                df_header = pd.read_csv(table_path, sep=',', decimal='.',
                                         encoding='utf-8', header=[0, 1, 2],
                                         index_col=0, nrows=0)
                 logger.debug(f"Cabeceras leídas de {table_filename}: "
@@ -1372,7 +1372,8 @@ class AnalysisService:
                                         f"{table_path}")
 
             try:
-                df = pd.read_csv(table_path, sep=',', decimal=',', encoding='utf-8', header=[0, 1, 2], index_col=0)
+                # Usar punto decimal '.' para leer el CSV interno
+                df = pd.read_csv(table_path, sep=',', decimal='.', encoding='utf-8', header=[0, 1, 2], index_col=0)
                 # Verificar si la columna existe
                 if target_multi_index_col not in df.columns:
                     raise ValueError(f"La columna '{config['column']}' no se "
