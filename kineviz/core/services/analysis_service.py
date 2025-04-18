@@ -1399,6 +1399,23 @@ class AnalysisService:
                          f"{analysis_name}: {e}", exc_info=True)
             raise Exception(f"Error generando el gráfico: {e}")
 
+        # --- Guardar Gráfico Interactivo (HTML) ---
+        interactive_plot_path = analysis_output_dir / "boxplot_interactive.html"
+        try:
+            charting.create_interactive_comparison_boxplot(
+                data_by_group=data_by_group,
+                group_names=group_display_names, # Usar nombres con alias
+                title=chart_title,
+                ylabel=chart_ylabel,
+                output_path=interactive_plot_path
+            )
+        except Exception as e_plotly:
+            logger.error(f"Error generando gráfico interactivo para análisis "
+                         f"{analysis_name}: {e_plotly}", exc_info=True)
+            # No relanzar, el estático ya se generó, pero marcar como no disponible
+            interactive_plot_path = None
+
+
         # --- Guardar Configuración (incluyendo resultados estadísticos) ---
         config_to_save = config.copy()
         if stats_results:
@@ -1420,7 +1437,14 @@ class AnalysisService:
             # No relanzar necesariamente, el gráfico ya se generó
             # Considerar eliminar gráfico si falla guardado de config?
 
-        return {'plot_path': str(plot_path), 'config_path': str(config_path)}
+        result_paths = {
+            'plot_path': str(plot_path),
+            'config_path': str(config_path)
+        }
+        if interactive_plot_path and interactive_plot_path.exists():
+            result_paths['interactive_plot_path'] = str(interactive_plot_path)
+
+        return result_paths
 
     def _get_individual_analysis_base_dir(self, study_id: int) -> Path | None:
         """Obtiene el directorio base para los análisis individuales."""
@@ -1452,7 +1476,7 @@ class AnalysisService:
         :param study_id: ID del estudio.
         :return: Lista de diccionarios:
                  {'name': str, 'path': Path, 'config': dict, 'mtime': float,
-                  'plot_path': Path}
+                  'plot_path': Path, 'interactive_plot_path': Path | None}
         """
         analyses = []
         base_dir = self._get_individual_analysis_base_dir(study_id)
@@ -1461,12 +1485,13 @@ class AnalysisService:
 
         for item_path in base_dir.iterdir():
             if item_path.is_dir():
-                analysis_name = item_path.name
-                config_path = item_path / "config.json"
-                plot_path = item_path / "boxplot.png" # Asumir nombre fijo
+               analysis_name = item_path.name
+               config_path = item_path / "config.json"
+               plot_path = item_path / "boxplot.png" # Asumir nombre fijo PNG
+               interactive_plot_path = item_path / "boxplot_interactive.html" # Asumir nombre fijo HTML
 
-                if config_path.exists() and config_path.is_file():
-                    try:
+               if config_path.exists() and config_path.is_file():
+                   try:
                         with open(config_path, 'r', encoding='utf-8') as f:
                             config_data = json.load(f)
                         # Usar mtime del config.json como referencia
@@ -1474,11 +1499,13 @@ class AnalysisService:
                         analyses.append({
                             'name': analysis_name,
                             'path': item_path,
-                            'config': config_data,
-                            'mtime': mtime,
-                            'plot_path': plot_path  # Añadir ruta al gráfico
-                        })
-                    except json.JSONDecodeError:
+                           'config': config_data,
+                           'mtime': mtime,
+                           'plot_path': plot_path,
+                           # Añadir ruta interactiva si existe
+                           'interactive_plot_path': interactive_plot_path if interactive_plot_path.exists() else None
+                       })
+                   except json.JSONDecodeError:
                         logger.error(f"Error leyendo config.json para análisis "
                                      f"'{analysis_name}' en estudio {study_id}.")
                     except Exception as e:
