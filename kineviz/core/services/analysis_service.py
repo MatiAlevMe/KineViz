@@ -959,30 +959,36 @@ class AnalysisService:
                             df_data_export = df_csv_internal.reset_index() # Mover índice 'ARCHIVO' a columna
 
                             # --- Construir Cabeceras Manualmente (para TSV, XLSX, SCSV) ---
-                            header_lines = []
-                            # Fila 1: Caracteristica (Atributo) - Sin prefijo vacío
-                            row1 = []
+                            # 4 filas de cabecera según el ejemplo TSV
+                            header_rows_list = []
+                            num_data_cols = len(column_multi_index)
+                            total_cols = 1 + num_data_cols # ARCHIVO + datos
+
+                            # Fila 0: Vacía (solo separadores)
+                            header_rows_list.append([''] * total_cols)
+
+                            # Fila 1: Caracteristica (Atributo) - Empieza vacía
+                            row1 = [''] # Celda vacía para columna ARCHIVO
                             last_attr = None
                             for attr, _, _ in column_multi_index:
-                                if attr == last_attr and last_attr is not None: # Evitar '' inicial si el primero está vacío
+                                if attr == last_attr and last_attr is not None:
                                     row1.append('') # Simular celda combinada
                                 else:
                                     row1.append(attr if attr else '')
                                     last_attr = attr
-                            # Guardar como lista por ahora, se unirá con el separador correcto después
-                            header_lines.append(row1)
+                            header_rows_list.append(row1)
 
-                            # Fila 2: Espacio (Columna) - Con 'ARCHIVO' al inicio
+                            # Fila 2: Espacio (Columna) - Empieza con 'ARCHIVO'
                             row2 = ['ARCHIVO']
                             for _, col, _ in column_multi_index:
                                 row2.append(col if col else '')
-                            header_lines.append(row2) # Guardar como lista por ahora
+                            header_rows_list.append(row2)
 
-                            # Fila 3: Unidad - Con celda vacía para 'ARCHIVO'
-                            row3 = ['']
+                            # Fila 3: Unidad - Empieza vacía
+                            row3 = [''] # Celda vacía para columna ARCHIVO
                             for _, _, unit in column_multi_index:
                                 row3.append(unit if unit else '')
-                            header_lines.append(row3) # Guardar como lista
+                            header_rows_list.append(row3)
 
                             # --- Guardar Formatos de Exportación ---
 
@@ -990,7 +996,8 @@ class AnalysisService:
                             output_tsv_path = output_base_dir / f"{calc}_{target_frequency}_{descriptor_key}.tsv"
                             try:
                                 with open(output_tsv_path, 'w', encoding='utf-8') as f:
-                                    for header_row_list in header_lines:
+                                    # Escribir las 4 filas de cabecera
+                                    for header_row_list in header_rows_list:
                                         f.write('\t'.join(header_row_list) + '\n')
                                     # Escribir datos, coma decimal
                                     df_data_export.to_csv(f, sep='\t', decimal=',', header=False, index=False,
@@ -1006,7 +1013,8 @@ class AnalysisService:
                             output_scsv_path = output_base_dir / f"{calc}_{target_frequency}_{descriptor_key}.scsv"
                             try:
                                 with open(output_scsv_path, 'w', encoding='utf-8') as f:
-                                    for header_row_list in header_lines:
+                                    # Escribir las 4 filas de cabecera
+                                    for header_row_list in header_rows_list:
                                         f.write(';'.join(header_row_list) + '\n')
                                     # Escribir datos, coma decimal
                                     df_data_export.to_csv(f, sep=';', decimal=',', header=False, index=False,
@@ -1022,17 +1030,32 @@ class AnalysisService:
                             if OPENPYXL_AVAILABLE:
                                 output_xlsx_path = output_base_dir / f"{calc}_{target_frequency}_{descriptor_key}.xlsx"
                                 try:
+                                    # Usar ExcelWriter para acceder al objeto worksheet
                                     with pd.ExcelWriter(output_xlsx_path, engine='openpyxl') as writer:
-                                        # Crear DataFrame temporal para cabeceras
-                                        df_header_export = pd.DataFrame(header_lines)
-                                        # Escribir cabeceras sin índice ni cabecera propia
-                                        df_header_export.to_excel(writer, sheet_name='Data', startrow=0, header=False, index=False)
-                                        # Escribir datos debajo de las cabeceras
-                                        # Nota: Excel usará el separador decimal del sistema, forzar coma es complejo.
-                                        df_data_export.to_excel(writer, sheet_name='Data', startrow=len(header_lines), header=False, index=False)
+                                        # Obtener la hoja de trabajo activa
+                                        ws = writer.book.active # O crearla si es necesario
+                                        ws.title = 'Data'
+
+                                        # Escribir las 4 filas de cabecera manualmente
+                                        for r_idx, header_row_list in enumerate(header_rows_list):
+                                            # openpyxl es 1-based index
+                                            ws.append(header_row_list)
+
+                                        # Escribir los datos del DataFrame debajo de las cabeceras
+                                        # Empezar desde la fila después de las cabeceras (len(header_rows_list))
+                                        # Pandas to_excel startrow es 0-based, openpyxl append es secuencial
+                                        # Escribir con header=False e index=False porque ya están en las cabeceras manuales
+                                        df_data_export.to_excel(
+                                            writer,
+                                            sheet_name='Data',
+                                            startrow=len(header_rows_list), # Fila donde empiezan los datos
+                                            header=False, # No escribir cabecera de pandas
+                                            index=False   # No escribir índice de pandas
+                                        )
                                     results['success'].append(str(output_xlsx_path))
                                     logger.info(f"Tabla XLSX generada: {output_xlsx_path}")
                                 except Exception as e_xlsx:
+                                    # Capturar el error específico si aún ocurre, o errores generales
                                     error_msg = f"Error guardando XLSX {output_xlsx_path.name}: {e_xlsx}"
                                     logger.error(error_msg, exc_info=True)
                                     results['errors'].append(error_msg)
