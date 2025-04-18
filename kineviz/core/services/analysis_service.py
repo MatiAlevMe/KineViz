@@ -1192,13 +1192,23 @@ class AnalysisService:
         # --- Leer Datos ---
         frequency = config['frequency']
         calculation = config['calculation']
-        # Re-validar formato columna por si acaso
-        if '/' not in config['column'] or len(config['column'].split('/')) != 3:
+        column_str = config['column']
+
+        # --- Validación y Parseo de Columna (maneja '/' en unidad) ---
+        try:
+            # Dividir en máximo 3 partes: Atributo, Columna, Unidad (puede contener '/')
+            target_column_parts = column_str.split('/', 2)
+            if len(target_column_parts) != 3:
+                # Si no hay 3 partes, el formato es incorrecto (faltan al menos dos '/')
+                raise ValueError("Formato incorrecto, faltan separadores '/'")
+            # La tupla para buscar en el DataFrame sigue siendo (attr, col, unit)
+            target_multi_index_col = tuple(target_column_parts)
+            logger.debug(f"Columna parseada para análisis: {target_multi_index_col}")
+        except Exception as e:
+             # Captura el ValueError de arriba u otros errores inesperados
              raise ValueError(f"Formato de columna inválido recibido: "
-                              f"{config['column']}. Se esperaba "
-                              f"'Atributo/Columna/Unidad'.")
-        target_column_parts = config['column'].split('/')
-        target_multi_index_col = tuple(target_column_parts)
+                              f"'{column_str}'. Se esperaba "
+                              f"'Atributo/Columna/Unidad'. Error: {e}")
 
         data_by_group = []
         group_names = config['groups']
