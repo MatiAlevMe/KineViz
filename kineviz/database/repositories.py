@@ -34,9 +34,9 @@ class StudyRepository:
                     id_estudio INTEGER PRIMARY KEY AUTOINCREMENT,
                     nombre_estudio TEXT NOT NULL UNIQUE,
                     num_sujetos INTEGER NOT NULL,
+                    cantidad_intentos_prueba INTEGER NOT NULL,
                     independent_variables TEXT, -- Almacenará JSON con estructura de VIs y Descriptores
-                    aliases TEXT, -- Almacenará JSON con mapeo descriptor -> alias para este estudio
-                    cantidad_intentos_prueba INTEGER NOT NULL
+                    aliases TEXT -- Almacenará JSON con mapeo descriptor -> alias para este estudio
                 )
             ''')
             # --- Migración Simple ---
@@ -86,14 +86,14 @@ class StudyRepository:
             try:
                 cursor.execute('''
                     INSERT INTO estudios
-                    (nombre_estudio, num_sujetos, independent_variables, aliases, cantidad_intentos_prueba)
+                    (nombre_estudio, num_sujetos, cantidad_intentos_prueba, independent_variables, aliases)
                     VALUES (?, ?, ?, ?, ?)
                 ''', (
                     study_data['name'],
                     int(study_data['num_subjects']),
+                    int(study_data['attempts_count']),
                     study_data.get('independent_variables', '[]'), # Guardar JSON string
-                    study_data.get('aliases', '{}'), # Guardar JSON string
-                    int(study_data['attempts_count'])
+                    study_data.get('aliases', '{}') # Guardar JSON string
                 ))
                 conn.commit()
                 study_id = cursor.lastrowid
@@ -141,11 +141,12 @@ class StudyRepository:
         :return: Diccionario con detalles del estudio
         """
         with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row # Devolver filas como diccionarios
             cursor = conn.cursor()
             # Seleccionar las columnas nuevas
             cursor.execute('''
-                SELECT id_estudio, nombre_estudio, num_sujetos,
-                       independent_variables, aliases, cantidad_intentos_prueba
+                SELECT id_estudio, nombre_estudio, num_sujetos, cantidad_intentos_prueba,
+                       independent_variables, aliases
                 FROM estudios WHERE id_estudio = ?
             ''', (study_id,))
             row = cursor.fetchone()
@@ -154,12 +155,13 @@ class StudyRepository:
                 raise ValueError(f"Estudio con ID {study_id} no encontrado")
 
             return {
-                'id': row[0],
-                'name': row[1],
-                'num_subjects': row[2],
-                'independent_variables': row[3], # Devolver como string JSON
-                'aliases': row[4], # Devolver como string JSON
-                'attempts_count': row[5]
+                # Acceder por nombre de columna
+                'id': row['id_estudio'],
+                'name': row['nombre_estudio'],
+                'num_subjects': row['num_sujetos'],
+                'attempts_count': row['cantidad_intentos_prueba'],
+                'independent_variables': row['independent_variables'], # Devolver como string JSON
+                'aliases': row['aliases'] # Devolver como string JSON
             }
 
     def delete_study(self, study_id):
@@ -276,16 +278,16 @@ class StudyRepository:
                     UPDATE estudios
                     SET nombre_estudio = ?,
                         num_sujetos = ?,
+                        cantidad_intentos_prueba = ?,
                         independent_variables = ?,
-                        aliases = ?,
-                        cantidad_intentos_prueba = ?
+                        aliases = ?
                     WHERE id_estudio = ?
                 ''', (
                     study_data['name'],
                     int(study_data['num_subjects']),
+                    int(study_data['attempts_count']),
                     study_data.get('independent_variables', '[]'), # Guardar JSON string
                     study_data.get('aliases', '{}'), # Guardar JSON string
-                    int(study_data['attempts_count']),
                     study_id
                 ))
                 conn.commit()
