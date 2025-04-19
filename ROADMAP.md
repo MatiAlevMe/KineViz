@@ -149,10 +149,10 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
     * **6.1 Mostrar VIs**: (Pendiente) Añadir label para mostrar nombres de VIs.
     * **6.2 Mostrar Descriptores (Tooltip/Popup)**: (Pendiente) Añadir botón `ℹ️` que muestra Descriptores por VI (con alias).
     * **6.3 Botón Ayuda General**: (Pendiente) Añadir botón `(?)` que abre `kineviz/docs/help/study_view_help.txt`.
-* **7. Refactorizar Gestión de Alias:** (Pendiente)
-    * **7.1 Mover a DB**: (Pendiente) Implementar carga/guardado de alias por estudio en `StudyRepository` y `StudyService`.
-    * **7.2 Adaptar `DescriptorAliasDialog`**: (Pendiente) Cargar/guardar alias vía `StudyService`.
-    * **7.3 Limpiar `AppSettings`**: (Pendiente) Eliminar métodos de alias globales.
+* **7. Refactorizar Gestión de Alias:** (Hecho)
+    * **7.1 Mover a DB**: (Hecho) Implementado carga/guardado de alias por estudio en `StudyRepository` y `StudyService`.
+    * **7.2 Adaptar `DescriptorAliasDialog`**: (Hecho) Carga/guarda alias vía `StudyService`.
+    * **7.3 Limpiar `AppSettings`**: (Hecho) Eliminados métodos de alias globales.
 * **8. Adaptar Servicios y UI de Análisis:** (Pendiente)
     * **8.1 `AnalysisService._identify_study_groups`**: (Pendiente) Crear claves de grupo combinadas (ej: "VI1:DescA_VI2:DescB").
     * **8.2 `AnalysisService` (Resto)**: (Pendiente) Adaptar `get_discrete_analysis_groups`, `generate_discrete_summary_tables`, `perform_individual_analysis`, `get_common_columns_for_groups`, `generate_report` para usar claves combinadas y mostrar nombres de VI/alias en leyendas/ejes.
