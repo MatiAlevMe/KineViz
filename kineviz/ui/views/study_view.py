@@ -56,6 +56,12 @@ class StudyView:
         ttk.Button(header_frame, text="Análisis Discreto",
                    command=lambda: self.main_window.show_discrete_analysis_view(self.study_id)).pack(side=tk.LEFT, padx=(0, 10))
 
+        # Botón Ayuda General (a la derecha)
+        style = ttk.Style() # Asegurar que style exista
+        style.configure("HelpView.TButton", foreground="white", background="green") # Estilo diferente para ayuda general
+        help_button_general = ttk.Button(header_frame, text="?", width=3, style="HelpView.TButton", command=self.show_study_view_help)
+        help_button_general.pack(side=tk.RIGHT, padx=(10, 0))
+
 
         # --- Detalles del estudio ---
         study_details = self.main_window.study_service.get_study_details(self.study_id)
