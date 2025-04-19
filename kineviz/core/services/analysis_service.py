@@ -1458,13 +1458,24 @@ class AnalysisService:
                         else:  # Independiente
                             if is_parametric:
                                 test_name = "T-test independiente"
+                                # Log data before test
+                                logger.debug(f"Datos para {test_name} (Grupo 1, n={len(group1_data)}): {group1_data[:10]}...") # Muestra primeros 10
+                                logger.debug(f"Datos para {test_name} (Grupo 2, n={len(group2_data)}): {group2_data[:10]}...") # Muestra primeros 10
                                 # Welch's t-test por defecto
-                                _, p_value = stats.ttest_ind(
-                                    group1_data, group2_data, equal_var=False,
-                                    nan_policy='omit'
-                                )
+                                try:
+                                    stat_result, p_value = stats.ttest_ind(
+                                        group1_data, group2_data, equal_var=False,
+                                        nan_policy='omit'
+                                    )
+                                    logger.debug(f"{test_name} resultado: stat={stat_result}, p={p_value}")
+                                except Exception as ttest_e:
+                                    logger.warning(f"Error ejecutando {test_name} para {analysis_name_log}: {ttest_e}")
+                                    p_value = np.nan # Marcar como no calculable si falla
                             else:
                                 test_name = "Mann-Whitney U"
+                                # Log data before test
+                                logger.debug(f"Datos para {test_name} (Grupo 1, n={len(group1_data)}): {group1_data[:10]}...")
+                                logger.debug(f"Datos para {test_name} (Grupo 2, n={len(group2_data)}): {group2_data[:10]}...")
                                 _, p_value = stats.mannwhitneyu(
                                     group1_data, group2_data,
                                     alternative='two-sided', nan_policy='omit'
