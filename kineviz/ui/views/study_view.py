@@ -66,51 +66,51 @@ class StudyView:
         details_frame = ttk.LabelFrame(self.frame, text="Detalles del Estudio")
         details_frame.pack(fill='x', padx=10, pady=10)
 
-       # Corregido: Mostrar solo una vez el nombre
-       ttk.Label(details_frame, text=f"Nombre: {study_details.get('name', 'N/A')}").pack(anchor='w', padx=5, pady=2)
-       ttk.Label(details_frame, text=f"Número de Sujetos: {study_details.get('num_subjects', 'N/A')}").pack(anchor='w', padx=5, pady=2)
-       ttk.Label(details_frame, text=f"Intentos: {study_details.get('attempts_count', 'N/A')}").pack(anchor='w', padx=5, pady=2)
+        # Corregido: Mostrar solo una vez el nombre
+        ttk.Label(details_frame, text=f"Nombre: {study_details.get('name', 'N/A')}").pack(anchor='w', padx=5, pady=2)
+        ttk.Label(details_frame, text=f"Número de Sujetos: {study_details.get('num_subjects', 'N/A')}").pack(anchor='w', padx=5, pady=2)
+        ttk.Label(details_frame, text=f"Intentos: {study_details.get('attempts_count', 'N/A')}").pack(anchor='w', padx=5, pady=2)
 
-       # Mostrar Variables Independientes y Descriptores
-       vi_frame = ttk.Frame(details_frame)
-       vi_frame.pack(anchor='w', padx=5, pady=2)
-       ttk.Label(vi_frame, text="Variables Independientes: ").pack(side=tk.LEFT)
-       self.vi_label = ttk.Label(vi_frame, text="Cargando...")
-       self.vi_label.pack(side=tk.LEFT)
-       self.info_vi_button = ttk.Label(vi_frame, text="ℹ️", cursor="question_arrow", foreground="blue")
-       self.info_vi_button.pack(side=tk.LEFT, padx=5)
-       self.info_vi_tooltip = ToolTip(self.info_vi_button, "") # Tooltip se llenará después
+        # Mostrar Variables Independientes y Descriptores
+        vi_frame = ttk.Frame(details_frame)
+        vi_frame.pack(anchor='w', padx=5, pady=2)
+        ttk.Label(vi_frame, text="Variables Independientes: ").pack(side=tk.LEFT)
+        self.vi_label = ttk.Label(vi_frame, text="Cargando...")
+        self.vi_label.pack(side=tk.LEFT)
+        self.info_vi_button = ttk.Label(vi_frame, text="ℹ️", cursor="question_arrow", foreground="blue")
+        self.info_vi_button.pack(side=tk.LEFT, padx=5)
+        self.info_vi_tooltip = ToolTip(self.info_vi_button, "") # Tooltip se llenará después
 
-       self.load_and_display_vi_structure(study_details)
+        self.load_and_display_vi_structure(study_details)
 
-       # --- File browser ---
-       # Pasar la instancia de file_service y files_per_page desde main_window
+        # --- File browser ---
+        # Pasar la instancia de file_service y files_per_page desde main_window
         files_per_page = self.main_window.files_per_page # Obtener de main_window
         self.file_browser = FileBrowser(self.frame, self.file_service, self.study_id, files_per_page)
         self.file_browser.pack(fill=tk.BOTH, expand=True, pady=(10, 0))
 
-    def load_and_display_vi_structure(self, study_details):
-        """Carga la estructura VI y actualiza la UI."""
-        vi_structure = study_details.get('independent_variables_struct', [])
-        if not vi_structure:
-            self.vi_label.config(text="No definidas")
-            self.info_vi_button.pack_forget() # Ocultar botón info si no hay VIs
-            return
+        def load_and_display_vi_structure(self, study_details):
+            """Carga la estructura VI y actualiza la UI."""
+            vi_structure = study_details.get('independent_variables_struct', [])
+            if not vi_structure:
+                self.vi_label.config(text="No definidas")
+                self.info_vi_button.pack_forget() # Ocultar botón info si no hay VIs
+                return
 
-        vi_names = [vi.get('name', f'VI {i+1}') for i, vi in enumerate(vi_structure)]
-        self.vi_label.config(text=", ".join(vi_names))
+            vi_names = [vi.get('name', f'VI {i+1}') for i, vi in enumerate(vi_structure)]
+            self.vi_label.config(text=", ".join(vi_names))
 
-        # Crear texto para el tooltip
-        tooltip_text = ""
-        for i, vi in enumerate(vi_structure):
-            name = vi.get('name', f'VI {i+1}')
-            descriptors = vi.get('descriptors', [])
-            tooltip_text += f"{name}:\n  " + ", ".join(descriptors) + "\n\n"
+            # Crear texto para el tooltip
+            tooltip_text = ""
+            for i, vi in enumerate(vi_structure):
+                name = vi.get('name', f'VI {i+1}')
+                descriptors = vi.get('descriptors', [])
+                tooltip_text += f"{name}:\n  " + ", ".join(descriptors) + "\n\n"
 
-        self.info_vi_tooltip.text = tooltip_text.strip()
-        self.info_vi_button.pack(side=tk.LEFT, padx=5) # Asegurar que esté visible
+            self.info_vi_tooltip.text = tooltip_text.strip()
+            self.info_vi_button.pack(side=tk.LEFT, padx=5) # Asegurar que esté visible
 
-    # Eliminar manage_descriptor_aliases y update_alias_display
+        # Eliminar manage_descriptor_aliases y update_alias_display
 
     def open_study_folder(self):
         """Abre la carpeta del estudio actual."""
