@@ -411,24 +411,69 @@ if __name__ == '__main__':
     # --- Dummies (igual que en el manager) ---
     class DummyAnalysisService:
         def __init__(self):
-            # Simular StudyService anidado para alias
+            # Simular StudyService anidado para alias y VIs
             class DummyStudyService:
+                 def get_study_details(self, study_id):
+                     print(f"DummyStudyService: get_study_details({study_id})")
+                     # Simular VIs para _identify_study_groups
+                     return {'independent_variables': [
+                                 {'name': 'Tipo', 'descriptors': ['CMJ', 'SJ']},
+                                 {'name': 'Cond', 'descriptors': ['PRE', 'POST', 'TipoA', 'TipoB', 'TipoC']}
+                             ]}
                  def get_study_aliases(self, study_id):
                      print(f"DummyStudyService: get_study_aliases({study_id})")
                      return {'CMJ': 'Salto CM', 'PRE': 'Antes', 'POST': 'Despues'}
             self.study_service = DummyStudyService()
+            # Simular FileService mínimo
+            class DummyFileService:
+                def _get_study_path(self, study_id): return Path(f'/fake/study_{study_id}')
+                def get_study_files(self, study_id, page, per_page, file_type, frequency):
+                    # Simular algunos archivos válidos
+                    return ([
+                        {'path': Path('/fake/study_1/Pte01/Cinematica/Pte01_CMJ_PRE_01_Cinematica.txt')},
+                        {'path': Path('/fake/study_1/Pte01/Cinematica/Pte01_CMJ_POST_01_Cinematica.txt')},
+                        {'path': Path('/fake/study_1/Pte02/Cinematica/Pte02_SJ_TipoA_01_Cinematica.txt')},
+                        {'path': Path('/fake/study_1/Pte02/Cinematica/Pte02_SJ_TipoB_01_Cinematica.txt')},
+                    ], 4)
+            self.file_service = DummyFileService()
+
+        # Reimplementar _identify_study_groups aquí para el dummy
+        def _identify_study_groups(self, study_id: int, frequency: str = "Cinematica") -> tuple[dict[str, str], set[str]]:
+            groups_by_file_base = {}
+            unique_group_keys = set()
+            study_details = self.study_service.get_study_details(study_id)
+            independent_variables = study_details.get('independent_variables', [])
+            processed_files, _ = self.file_service.get_study_files(study_id, 1, 1000, 'Processed', frequency)
+            for file_info in processed_files:
+                filename = file_info['path'].name
+                is_valid, extracted = validate_filename_for_study_criteria(filename, independent_variables)
+                if is_valid:
+                    group_parts = []
+                    for i, desc in enumerate(extracted):
+                        vi_name = independent_variables[i].get('name', f'VI{i+1}')
+                        value = desc if desc is not None else "Nulo"
+                        group_parts.append(f"{vi_name}={value}")
+                    group_key = ";".join(group_parts) if group_parts else "SinGrupo"
+                    file_base_key = file_info['path'].stem.split(f'_{frequency}')[0]
+                    groups_by_file_base[file_base_key] = group_key
+                    unique_group_keys.add(group_key)
+            return groups_by_file_base, unique_group_keys
 
         def get_discrete_analysis_groups(self, study_id, frequency):
             print(f"Dummy: get_discrete_analysis_groups({study_id}, {frequency})")
-            # Devolver tuplas (display_name, key)
-            raw_keys = ['CMJ_PRE', 'CMJ_POST', 'SJ_TipoA', 'SJ_TipoB', 'SJ_TipoC', 'SinDescriptores']
+            # Usar _identify_study_groups del dummy
+            _, unique_group_keys = self._identify_study_groups(study_id, frequency)
             aliases = self.study_service.get_study_aliases(study_id)
             groups = []
-            for key in raw_keys:
-                parts = key.split('_')
-                aliased_parts = [aliases.get(p, p) for p in parts]
-                display = ', '.join(aliased_parts) if key != "SinDescriptores" else "Sin Descriptores"
-                groups.append((display, key))
+            for group_key in unique_group_keys:
+                display_parts = []
+                if group_key != "SinGrupo":
+                    for part in group_key.split(';'):
+                        vi_name, desc_value = part.split('=', 1)
+                        alias = aliases.get(desc_value, desc_value)
+                        display_parts.append(f"{vi_name}: {alias}")
+                display_name = ", ".join(display_parts) if display_parts else "Grupo General"
+                groups.append((display_name, group_key))
             groups.sort()
             return groups
 

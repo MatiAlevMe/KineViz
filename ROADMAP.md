@@ -100,7 +100,7 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
     * **2.3 `AnalysisService.get_common_columns_for_groups`**: (Hecho) Encuentra columnas comunes en tablas CSV internas para grupos combinados.
 * **3. Diálogo de Configuración de Análisis Individual:** (Hecho)
     * **3.1 Crear `ConfigureIndividualAnalysisDialog`**: (Hecho) UI para seleccionar Frecuencia, Cálculo, Grupos combinados (dinámico), Columna (dinámico), y supuestos (paramétrico/pareado).
-    * **3.2 Integración con VIs**: (Pendiente - Fase 3) Para Grupos combinados faltaría integrar con fase 3 con las variables independientes, es decir por ejemplo CMJ pertenece a Tipo de Salto y Obeso pertenece a Peso, entonces al comparar grupos, Dira por ejemplo "[VARIABLE_INDEPENDIENTE]:[ALIAS_DESCRIPTOR]" ejemplo para dos variables independientes "Grupo 1 - Tipo de Salto: CMJ, Peso: Obeso" y un "Grupo 2 - Tipo de Salto: DL, Peso: BajoPeso"
+    * **3.2 Integración con VIs**: (Hecho) Grupos combinados ahora usan formato "VI: Alias" y se seleccionan correctamente.
 * **4. Diálogo de Gestión de Análisis Individual:** (Hecho)
     * **4.1 Crear `IndividualAnalysisManagerDialog`**: (Hecho) UI para listar, ver (gráfico estático/interactivo), eliminar análisis guardados y abrir carpeta.
     * **4.2 Botón en `DiscreteAnalysisView`**: (Hecho) Añadir botón para abrir el gestor.
@@ -110,8 +110,8 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 * **6. Implementación de Tests Estadísticos y Mejoras Gráficas:** (Hecho)
     * **6.1 Lógica en `perform_individual_analysis`**: (Hecho) Ejecutar tests (t-test/ANOVA/Wilcoxon/Kruskal/Friedman) usando `scipy.stats`.
     * **6.2 Mejorar `create_comparison_boxplot`**: (Hecho) Usar `swarmplot`, añadir leyenda, mostrar significancia (statannot para 2 grupos, p-valor general para >2).
-    * **6.3 Integrar LEYENDAS con VIs**: (Pendiente - Fase 3) Falta integrar las leyendas en los gráficos con las variables independientes, es decir en vez de las leyendas ser los descriptores utilizados, sería algo como "Grupo 1 - Tipo de Salto: CMJ, Peso: Obeso" y un "Grupo 2 - Tipo de Salto: DL, Peso: BajoPeso".
-    * **6.4 Integrar EL EJE HORIZONTAL con VIs**: (Pendiente - Fase 3): Falta integrar el eje horizontal, en vez de mostrar el descriptor debería mostrar el Grupo al que pertenece y en la leyenda el usuario puede revisar su detalle.
+    * **6.3 Integrar LEYENDAS con VIs**: (Hecho) Leyendas eliminadas, nombres de grupo completos en eje X.
+    * **6.4 Integrar EL EJE HORIZONTAL con VIs**: (Hecho) Eje X ahora muestra nombres de grupo legibles ("VI: Alias").
     * **6.5 Tests post-hoc**: (Pendiente) Considerar y añadir si es necesario.
 * **7. Generación de Gráfico Interactivo (Plotly):** (Hecho)
     * **7.1 Añadir dependencia `plotly`**: (Hecho).
@@ -153,11 +153,11 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
     * **7.1 Mover a DB**: (Hecho) Implementado carga/guardado de alias por estudio en `StudyRepository` y `StudyService`.
     * **7.2 Adaptar `DescriptorAliasDialog`**: (Hecho) Carga/guarda alias vía `StudyService`.
     * **7.3 Limpiar `AppSettings`**: (Hecho) Eliminados métodos de alias globales.
-* **8. Adaptar Servicios y UI de Análisis:** (Pendiente)
-    * **8.1 `AnalysisService._identify_study_groups`**: (Pendiente) Crear claves de grupo combinadas (ej: "VI1:DescA_VI2:DescB").
-    * **8.2 `AnalysisService` (Resto)**: (Pendiente) Adaptar `get_discrete_analysis_groups`, `generate_discrete_summary_tables`, `perform_individual_analysis`, `get_common_columns_for_groups`, `generate_report` para usar claves combinadas y mostrar nombres de VI/alias en leyendas/ejes.
-    * **8.3 `ConfigureIndividualAnalysisDialog`**: (Pendiente) Mostrar/seleccionar claves de grupo combinadas.
-    * **8.4 `IndividualAnalysisManagerDialog`**: (Pendiente) Mostrar claves de grupo combinadas.
+* **8. Adaptar Servicios y UI de Análisis:** (Hecho)
+    * **8.1 `AnalysisService._identify_study_groups`**: (Hecho) Crea claves de grupo combinadas (ej: "VI1=DescA;VI2=DescB").
+    * **8.2 `AnalysisService` (Resto)**: (Hecho) Adaptados `get_discrete_analysis_groups`, `_get_data_for_parameters`, `perform_analysis`, `perform_individual_analysis`, `generate_report` para usar claves combinadas y mostrar nombres de VI/alias. (Nota: `generate_discrete_summary_tables` y `get_common_columns_for_groups` aún usan claves antiguas, se adaptarán si es necesario).
+    * **8.3 `ConfigureIndividualAnalysisDialog`**: (Hecho) Muestra/selecciona nombres de grupo legibles, guarda claves originales.
+    * **8.4 `IndividualAnalysisManagerDialog`**: (Hecho) Muestra nombres de grupo legibles.
 * **9. Pruebas:** (Pendiente) Añadir/actualizar pruebas unitarias y de integración para validadores, servicios, UI refactorizada y lógica de agrupación/análisis.
 * **10. Crear Archivos de Ayuda:** (Hecho)
     * **10.1 `docs/help/study_dialog_iv_help.txt`**: (Hecho)
