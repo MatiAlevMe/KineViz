@@ -190,21 +190,10 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                     valores_clave_str = f"{config.get('test_name', 'Test')}: ?"
 
 
-                # Grupos (con alias)
-                group_keys = config.get('groups', [])
-                group_display_names = []
-                for g_key in group_keys:
-                    parts = g_key.split('_')
-                    aliased_parts = [
-                        self.analysis_service.settings.get_descriptor_alias(p) or p
-                        for p in parts
-                    ]
-                    display_name = ', '.join(aliased_parts) \
-                        if g_key != "SinDescriptores" else "Sin Descriptores"
-                    group_display_names.append(display_name)
-
-                # Unir nombres de grupo para la columna "Grupos Comparados"
-                grupos_comparados_str = " vs ".join(group_display_names)
+                # Grupos (mostrar claves combinadas directamente)
+                group_keys = config.get('groups', []) # Claves combinadas ej: "CMJ_Normal"
+                # Unir claves combinadas para la columna "Grupos Comparados"
+                grupos_comparados_str = " vs ".join(group_keys)
 
                 # Construir tupla de valores para insertar
                 values = (
@@ -432,8 +421,8 @@ if __name__ == '__main__':
 
         def get_discrete_analysis_groups(self, study_id, frequency):
             print(f"Dummy: get_discrete_analysis_groups({study_id}, {frequency})")
-            return ['CMJ_PRE', 'CMJ_POST', 'SJ_TipoA', 'SJ_TipoB', 'SJ_TipoC',
-                    'SinDescriptores']
+            # Devolver claves combinadas de ejemplo
+            return ['CMJ_Normal', 'CMJ_Obeso', 'SJ_Normal', 'SJ_BajoPeso', 'Nulo_Normal']
         def get_common_columns_for_groups(self, study_id, frequency,
                                           calculation, group_keys):
             print(f"Dummy: get_common_columns_for_groups({study_id}, "

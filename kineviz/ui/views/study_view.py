@@ -7,7 +7,10 @@ from kineviz.ui.widgets.file_browser import FileBrowser
 from kineviz.core.services.file_service import FileService
 # Importar diálogos necesarios
 from kineviz.ui.dialogs.file_dialog import FileDialog
-from kineviz.ui.dialogs.descriptor_alias_dialog import DescriptorAliasDialog
+# DescriptorAliasDialog ya no se usa con la nueva estructura VI
+# from kineviz.ui.dialogs.descriptor_alias_dialog import DescriptorAliasDialog
+from kineviz.ui.widgets.tooltip import ToolTip # Para mostrar descriptores
+import json # Para parsear estructura VI
 
 logger = logging.getLogger(__name__) # Logger para este módulo
 
@@ -49,8 +52,9 @@ class StudyView:
                    command=self.open_study_folder).pack(side=tk.LEFT, padx=(0, 10))
 
         # Botón Gestionar Alias
-        ttk.Button(header_frame, text="Gestionar Alias Descriptores",
-                   command=self.manage_descriptor_aliases).pack(side=tk.LEFT, padx=(0, 10))
+        # Botón Gestionar Alias Descriptores (Eliminado - ya no aplica directamente)
+        # ttk.Button(header_frame, text="Gestionar Alias Descriptores",
+        #            command=self.manage_descriptor_aliases).pack(side=tk.LEFT, padx=(0, 10))
 
         # Botón Análisis Discreto (Fase 6)
         ttk.Button(header_frame, text="Análisis Discreto",
@@ -62,21 +66,25 @@ class StudyView:
         details_frame = ttk.LabelFrame(self.frame, text="Detalles del Estudio")
         details_frame.pack(fill='x', padx=10, pady=10)
 
-        # Corregido: Mostrar solo una vez el nombre
-        ttk.Label(details_frame, text=f"Nombre: {study_details.get('name', 'N/A')}").pack(anchor='w', padx=5, pady=2)
-        ttk.Label(details_frame, text=f"Número de Sujetos: {study_details.get('num_subjects', 'N/A')}").pack(anchor='w', padx=5, pady=2)
-        # Mostrar Descriptores definidos en el estudio
-        defined_descriptors_str = study_details.get('descriptores', 'Ninguno') or 'Ninguno'
-        ttk.Label(details_frame, text=f"Descriptores Definidos: {defined_descriptors_str}").pack(anchor='w', padx=5, pady=2)
-        ttk.Label(details_frame, text=f"Intentos: {study_details.get('attempts_count', 'N/A')}").pack(anchor='w', padx=5, pady=2)
+       # Corregido: Mostrar solo una vez el nombre
+       ttk.Label(details_frame, text=f"Nombre: {study_details.get('name', 'N/A')}").pack(anchor='w', padx=5, pady=2)
+       ttk.Label(details_frame, text=f"Número de Sujetos: {study_details.get('num_subjects', 'N/A')}").pack(anchor='w', padx=5, pady=2)
+       ttk.Label(details_frame, text=f"Intentos: {study_details.get('attempts_count', 'N/A')}").pack(anchor='w', padx=5, pady=2)
 
-        # Mostrar Alias asignados a descriptores detectados
-        self.alias_label = ttk.Label(details_frame, text="Alias Asignados: Cargando...", wraplength=500) # Usar wraplength
-        self.alias_label.pack(anchor='w', padx=5, pady=2)
-        self.update_alias_display() # Llamar a método para cargar y mostrar alias
+       # Mostrar Variables Independientes y Descriptores
+       vi_frame = ttk.Frame(details_frame)
+       vi_frame.pack(anchor='w', padx=5, pady=2)
+       ttk.Label(vi_frame, text="Variables Independientes: ").pack(side=tk.LEFT)
+       self.vi_label = ttk.Label(vi_frame, text="Cargando...")
+       self.vi_label.pack(side=tk.LEFT)
+       self.info_vi_button = ttk.Label(vi_frame, text="ℹ️", cursor="question_arrow", foreground="blue")
+       self.info_vi_button.pack(side=tk.LEFT, padx=5)
+       self.info_vi_tooltip = ToolTip(self.info_vi_button, "") # Tooltip se llenará después
 
-        # --- File browser ---
-        # Pasar la instancia de file_service y files_per_page desde main_window
+       self.load_and_display_vi_structure(study_details)
+
+       # --- File browser ---
+       # Pasar la instancia de file_service y files_per_page desde main_window
         files_per_page = self.main_window.files_per_page # Obtener de main_window
         self.file_browser = FileBrowser(self.frame, self.file_service, self.study_id, files_per_page)
         self.file_browser.pack(fill=tk.BOTH, expand=True, pady=(10, 0))

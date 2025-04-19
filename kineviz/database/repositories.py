@@ -31,40 +31,38 @@ class StudyRepository:
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS estudios (
                     id_estudio INTEGER PRIMARY KEY AUTOINCREMENT,
-                    nombre_estudio TEXT NOT NULL UNIQUE, -- Añadir UNIQUE constraint
+                    nombre_estudio TEXT NOT NULL UNIQUE,
                     num_sujetos INTEGER NOT NULL,
-                    descriptores TEXT, -- Nueva columna para descriptores (separados por coma)
+                    independent_variables TEXT, -- Nueva columna para estructura VI/Descriptores (JSON)
                     cantidad_intentos_prueba INTEGER NOT NULL
                 )
             ''')
-            # Manejar posible error si la tabla ya existe con la estructura vieja
-            # Esto es simplificado, una migración real sería más robusta
+            # --- Migración Simplificada ---
+            # Intentar añadir la nueva columna si no existe
             try:
-                # Intentar añadir la nueva columna si no existe
-                cursor.execute("ALTER TABLE estudios ADD COLUMN descriptores TEXT")
-                logger.info("Columna 'descriptores' añadida a la tabla 'estudios'.")
+                cursor.execute("ALTER TABLE estudios ADD COLUMN independent_variables TEXT")
+                logger.info("Columna 'independent_variables' añadida a la tabla 'estudios'.")
             except sqlite3.OperationalError as e:
                 if "duplicate column name" in str(e):
-                    pass # La columna ya existe, ignorar
+                    pass # La columna ya existe
                 else:
                     raise # Otro error
-            # Intentar eliminar las columnas viejas si existen (ignorar errores si no existen)
-            try:
-                cursor.execute("ALTER TABLE estudios DROP COLUMN tipos_prueba")
-                logger.info("Columna 'tipos_prueba' eliminada de la tabla 'estudios'.")
-            except sqlite3.OperationalError as e:
-                 if "no such column" in str(e):
-                     pass
-                 else:
-                     logger.warning(f"No se pudo eliminar la columna 'tipos_prueba': {e}") # Advertir pero continuar
-            try:
-                cursor.execute("ALTER TABLE estudios DROP COLUMN periodos_prueba")
-                logger.info("Columna 'periodos_prueba' eliminada de la tabla 'estudios'.")
-            except sqlite3.OperationalError as e:
-                 if "no such column" in str(e):
-                     pass
-                 else:
-                     logger.warning(f"No se pudo eliminar la columna 'periodos_prueba': {e}") # Advertir pero continuar
+
+            # Intentar eliminar columnas antiguas (ignorar errores si no existen)
+            old_columns = ['descriptores', 'tipos_prueba', 'periodos_prueba']
+            for col in old_columns:
+                try:
+                    # Usar IF EXISTS si la versión de SQLite lo soporta (>= 3.3)
+                    # cursor.execute(f"ALTER TABLE estudios DROP COLUMN IF EXISTS {col}")
+                    # Fallback para versiones antiguas:
+                    cursor.execute(f"ALTER TABLE estudios DROP COLUMN {col}")
+                    logger.info(f"Columna antigua '{col}' eliminada de la tabla 'estudios'.")
+                except sqlite3.OperationalError as e:
+                    # Ignorar error "no such column" u otros relacionados con la inexistencia
+                    if "no such column" in str(e) or "Cannot drop column" in str(e):
+                        pass
+                    else:
+                        logger.warning(f"No se pudo eliminar la columna antigua '{col}': {e}")
             conn.commit()
     
     def create_study(self, study_data):
@@ -78,15 +76,16 @@ class StudyRepository:
             cursor = conn.cursor()
             # Intentar insertar, manejar error de unicidad de nombre
             try:
+                # Insertar usando la nueva columna 'independent_variables'
                 cursor.execute('''
                     INSERT INTO estudios
-                    (nombre_estudio, num_sujetos, descriptores, cantidad_intentos_prueba)
+                    (nombre_estudio, num_sujetos, independent_variables, cantidad_intentos_prueba)
                     VALUES (?, ?, ?, ?)
                 ''', (
                     study_data['name'],
                     int(study_data['num_subjects']),
-                    study_data.get('descriptores', ''), # Correcto: descriptores
-                    int(study_data['attempts_count'])  # Correcto: attempts_count
+                    study_data.get('independent_variables', '[]'), # Espera JSON string
+                    int(study_data['attempts_count'])
                 ))
                 conn.commit()
                 study_id = cursor.lastrowid
@@ -145,7 +144,7 @@ class StudyRepository:
                 'id': row[0],
                 'name': row[1],
                 'num_subjects': row[2],
-                'descriptores': row[3],
+                'independent_variables': row[3], # Devolver la nueva columna
                 'attempts_count': row[4]
             }
 
@@ -263,14 +262,14 @@ class StudyRepository:
                     UPDATE estudios
                     SET nombre_estudio = ?,
                         num_sujetos = ?,
-                        descriptores = ?,
+                        independent_variables = ?,
                         cantidad_intentos_prueba = ?
                     WHERE id_estudio = ?
                 ''', (
                     study_data['name'],
                     int(study_data['num_subjects']),
-                    study_data.get('descriptores', ''), # Correcto: descriptores
-                    int(study_data['attempts_count']),  # Correcto: attempts_count
+                    study_data.get('independent_variables', '[]'), # Espera JSON string
+                    int(study_data['attempts_count']),
                     study_id
                 ))
                 conn.commit()

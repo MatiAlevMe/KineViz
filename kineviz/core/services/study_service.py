@@ -1,5 +1,7 @@
+import json # Importar json
 from kineviz.database.repositories import StudyRepository
-from kineviz.ui.utils.validators import validate_study_data
+# El validador se usará en el diálogo, no directamente aquí
+# from kineviz.ui.utils.validators import validate_study_data
 
 class StudyService:
     def __init__(self):
@@ -18,6 +20,16 @@ class StudyService:
         # if not is_valid:
         #     raise ValueError(f"Datos de estudio inválidos: {error_message}")
 
+        # Convertir estructura VI a JSON antes de pasar al repo
+        if 'independent_variables_struct' in study_data:
+            try:
+                study_data['independent_variables'] = json.dumps(
+                    study_data['independent_variables_struct']
+                )
+                del study_data['independent_variables_struct'] # No pasar la estructura
+            except TypeError as e:
+                raise ValueError(f"Error convirtiendo estructura VI a JSON: {e}")
+
         # Llamar al repositorio para crear
         study_id = self.repo.create_study(study_data)
         return study_id
@@ -35,9 +47,20 @@ class StudyService:
         Obtiene los detalles de un estudio específico
         
         :param study_id: ID del estudio
-        :return: Diccionario con detalles del estudio
+        :return: Diccionario con detalles del estudio (con VI struct parseada si es posible)
         """
-        return self.repo.get_study_by_id(study_id)
+        details = self.repo.get_study_by_id(study_id)
+        # Parsear JSON de VIs si existe
+        if details and 'independent_variables' in details:
+            try:
+                details['independent_variables_struct'] = json.loads(
+                    details['independent_variables'] or '[]' # Default a lista vacía si es None o ""
+                )
+            except json.JSONDecodeError:
+                # Si falla el parseo, dejar el string original y añadir struct vacío
+                details['independent_variables_struct'] = []
+                # Podríamos loggear un warning aquí
+        return details
     
     def delete_study(self, study_id):
         """
@@ -95,6 +118,16 @@ class StudyService:
         # Obtener nombre original para renombrar carpeta si es necesario
         original_study = self.repo.get_study_by_id(study_id)
         original_name = original_study['name']
+
+        # Convertir estructura VI a JSON si se proporciona
+        if 'independent_variables_struct' in study_data:
+            try:
+                study_data['independent_variables'] = json.dumps(
+                    study_data['independent_variables_struct']
+                )
+                del study_data['independent_variables_struct']
+            except TypeError as e:
+                raise ValueError(f"Error convirtiendo estructura VI a JSON para actualizar: {e}")
 
         # Llamar al repositorio para actualizar
         self.repo.update_study(study_id, study_data)
