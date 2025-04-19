@@ -853,7 +853,7 @@ class AnalysisService:
             output_base_dir.mkdir(parents=True, exist_ok=True)
 
             # 3. Generar tabla para cada grupo y cálculo
-            for group_key, file_paths in files_by_group_key.items(): # Usar group_key
+            for group_key, file_paths in files_by_group_key.items():
                 if not file_paths:
                     continue
 
