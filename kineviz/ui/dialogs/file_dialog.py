@@ -19,18 +19,19 @@ class FileDialog(Toplevel):
         self.study_id = study_id
         self.on_close_callback = on_close_callback
         self.selected_files = [] # Lista de rutas (Path objects)
+        # Mapeo de display_name en listbox a Path object
+        self.listbox_item_to_path = {}
 
-        # Obtener descriptores del estudio para validación previa
+        # Obtener estructura de VIs del estudio para validación previa
         self.study_details = None
-        self.valid_descriptors = [] # Cambiado de types/periods a descriptors
+        self.independent_variables = [] # Estructura de VIs
         try:
             self.study_details = self.file_service.study_service.get_study_details(self.study_id)
-            # Cargar descriptores, asegurándose de que sea una cadena antes de split
-            descriptors_value = self.study_details.get('descriptores') # Obtener valor
-            descriptors_str = str(descriptors_value) if descriptors_value is not None else '' # Convertir a str, manejar None
-            self.valid_descriptors = [d.strip() for d in descriptors_str.split(',') if d.strip()]
+            # Obtener la estructura de VIs (ya es una lista de dicts)
+            self.independent_variables = self.study_details.get('independent_variables', [])
+            logger.debug(f"Estructura VIs cargada en FileDialog para estudio {self.study_id}: {self.independent_variables}")
         except Exception as e:
-            logger.error(f"No se pudieron cargar los descriptores del estudio {self.study_id} en FileDialog: {e}", exc_info=True)
+            logger.error(f"No se pudieron cargar los detalles/VIs del estudio {self.study_id} en FileDialog: {e}", exc_info=True)
             messagebox.showerror("Error", f"No se pudieron cargar los detalles del estudio: {e}", parent=parent)
             self.destroy()
             return
@@ -86,85 +87,71 @@ class FileDialog(Toplevel):
 
         if filenames:
             new_files_added = False
-            current_paths_in_list = {self.listbox.get(i) for i in range(self.listbox.size())}
+            # Usar self.listbox_item_to_path para verificar duplicados
+            current_display_names_in_list = set(self.listbox_item_to_path.keys())
 
             for filename in filenames:
                 file_path = Path(filename)
-                # Evitar duplicados en la lista
-                if str(file_path) not in current_paths_in_list:
-                    # Validar nombre usando descriptores antes de añadir a la lista
-                    is_valid = validate_filename_for_study_criteria(
-                        file_path.name, self.valid_descriptors # Pasar descriptores
-                    )
-                    # Añadir a la lista visual y a la lista interna
-                    # Marcar visualmente si es inválido
-                    display_name = f"{file_path.name}{'' if is_valid else ' (Nombre Inválido)'}"
+                file_name_str = file_path.name # Nombre del archivo
+
+                # Validar nombre usando la estructura de VIs
+                is_valid, _ = validate_filename_for_study_criteria(
+                    file_name_str, self.independent_variables # Pasar estructura VIs
+                )
+
+                # Crear nombre para mostrar en la lista
+                display_name = f"{file_name_str}{'' if is_valid else ' (Nombre Inválido)'}"
+
+                # Evitar duplicados en la lista visual
+                if display_name not in current_display_names_in_list:
                     self.listbox.insert(tk.END, display_name)
                     self.listbox.itemconfig(tk.END, {'fg': 'black' if is_valid else 'red'})
-                    self.selected_files.append(file_path) # Guardar Path object
+                    # Guardar mapeo display_name -> Path
+                    self.listbox_item_to_path[display_name] = file_path
                     new_files_added = True
+                else:
+                    logger.debug(f"Archivo '{file_name_str}' ya está en la lista (o tiene el mismo estado de validez).")
+
 
             if new_files_added:
-                self.process_button.config(state=tk.NORMAL) # Habilitar botón si hay archivos
+                # Habilitar botón solo si hay al menos un archivo válido en la lista
+                has_valid_files = any('(Nombre Inválido)' not in item for item in self.listbox_item_to_path.keys())
+                self.process_button.config(state=tk.NORMAL if has_valid_files else tk.DISABLED)
 
     def remove_selected(self):
-        """Quita los archivos seleccionados de la listbox y de self.selected_files."""
+        """Quita los archivos seleccionados de la listbox y del mapeo."""
         selected_indices = self.listbox.curselection()
-        # Iterar en reversa para evitar problemas con índices cambiantes
-        for i in reversed(selected_indices):
-            # Encontrar el Path correspondiente en self.selected_files
-            # Esto es un poco ineficiente si la lista es muy grande.
-            # Podríamos almacenar el Path en el tag del item o usar un diccionario.
-            display_name_with_status = self.listbox.get(i)
-            # Extraer nombre base para buscar
-            base_name = display_name_with_status.split(' (')[0]
-            path_to_remove = None
-            for p in self.selected_files:
-                if p.name == base_name:
-                    path_to_remove = p
-                    break
-            if path_to_remove:
-                self.selected_files.remove(path_to_remove)
+        items_to_remove = [self.listbox.get(i) for i in selected_indices]
 
+        # Eliminar del mapeo
+        for item_display_name in items_to_remove:
+            if item_display_name in self.listbox_item_to_path:
+                del self.listbox_item_to_path[item_display_name]
+
+        # Eliminar de la listbox (iterar en reversa)
+        for i in reversed(selected_indices):
             self.listbox.delete(i)
 
-        if not self.selected_files:
-            self.process_button.config(state=tk.DISABLED)
+        # Actualizar estado del botón
+        has_valid_files = any('(Nombre Inválido)' not in item for item in self.listbox_item_to_path.keys())
+        self.process_button.config(state=tk.NORMAL if has_valid_files else tk.DISABLED)
 
     def process_files(self):
-        """Llama al FileService para procesar los archivos seleccionados."""
-        if not self.selected_files:
-            messagebox.showwarning("Sin Archivos", "No hay archivos seleccionados para procesar.", parent=self)
-            return
-
-        # Filtrar solo los archivos cuyo nombre fue validado previamente
-        # (Podríamos revalidar aquí por si acaso, pero confiamos en la validación inicial)
+        """Llama al FileService para procesar los archivos seleccionados válidos."""
+        # Obtener solo los archivos válidos del mapeo
         valid_files_to_process = []
         invalid_names_skipped = []
-        for i in range(self.listbox.size()):
-             display_name = self.listbox.get(i)
-             # Asumimos que el Path correspondiente está en self.selected_files[i]
-             # ¡CUIDADO! Esto falla si se eliminan items. Necesitamos una mejor forma de mapear.
-             # Mejor reconstruir la lista de Paths válidos desde la listbox
-             if '(Nombre Inválido)' not in display_name:
-                 # Buscar el Path correspondiente
-                 base_name = display_name.split(' (')[0]
-                 found_path = None
-                 for p in self.selected_files:
-                     if p.name == base_name:
-                         found_path = p
-                         break
-                 if found_path:
-                     valid_files_to_process.append(found_path)
-             else:
-                 invalid_names_skipped.append(display_name.split(' (')[0])
-
+        for display_name, file_path in self.listbox_item_to_path.items():
+            if '(Nombre Inválido)' not in display_name:
+                valid_files_to_process.append(file_path)
+            else:
+                invalid_names_skipped.append(file_path.name)
 
         if not valid_files_to_process:
-             messagebox.showwarning("Sin Archivos Válidos", "No hay archivos con nombres válidos seleccionados para procesar.", parent=self)
-             return
+            messagebox.showwarning("Sin Archivos Válidos", "No hay archivos con nombres válidos en la lista para procesar.", parent=self)
+            return
 
-        # Convertir Paths a strings para el servicio (o asegurarse que el servicio acepte Paths)
+        # Convertir Paths a strings para el servicio
         file_path_strings = [str(p) for p in valid_files_to_process]
 
         try:
