@@ -4,6 +4,7 @@ import logging
 from pathlib import Path
 from tkinter import messagebox
 import json # Importar json
+import json # Importar json
 # Importar validador a nivel de módulo
 from kineviz.ui.utils.validators import validate_filename_for_study_criteria
 
