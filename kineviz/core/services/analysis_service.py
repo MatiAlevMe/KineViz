@@ -1362,11 +1362,20 @@ class AnalysisService:
         # files_to_groups, _ = self._identify_study_groups(study_id, frequency)
 
         for group_key in group_names:
-            table_filename = f"{calculation}_{frequency}_{group_key}.csv"
+            # --- Usar la misma lógica de nombre seguro que en generate_tables ---
+            safe_group_key_part = group_key.replace('=', '_').replace(';', '__')
+            table_filename = f"{calculation}_{frequency}_{safe_group_key_part}.csv"
             table_path = freq_path / table_filename
             if not table_path.exists():
-                raise FileNotFoundError(f"No se encontró tabla resumen requerida: "
-                                        f"{table_path}")
+                # Log detallado del archivo buscado y el error
+                logger.error(f"No se encontró tabla resumen requerida. Buscando: {table_path}")
+                # Intentar listar archivos en el directorio para depuración
+                try:
+                    existing_files = [f.name for f in freq_path.iterdir() if f.is_file()]
+                    logger.debug(f"Archivos existentes en {freq_path}: {existing_files}")
+                except Exception as list_e:
+                    logger.debug(f"No se pudo listar archivos en {freq_path}: {list_e}")
+                raise FileNotFoundError(f"No se encontró tabla resumen requerida: {table_path}")
 
             try:
                 # Usar punto decimal '.' para leer el CSV interno
