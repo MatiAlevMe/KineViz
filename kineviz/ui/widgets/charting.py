@@ -156,11 +156,14 @@ def create_interactive_comparison_boxplot(data_by_group: list, group_names: list
     fig.update_layout(
         title=title,
         yaxis_title=ylabel,
-        xaxis_title="Grupos Comparados",
-        showlegend=True, # Mostrar leyenda por defecto
-        legend_title_text='Grupos',
+        xaxis_title="", # Quitar título eje X
+        showlegend=False, # Ocultar leyenda (nombres en eje X)
+        # legend_title_text='Grupos', # Ya no necesario
         boxmode='group', # Agrupar boxplots
         xaxis=dict(
+            tickmode='array', # Usar array para ticks
+            tickvals=list(range(len(group_names))), # Posiciones numéricas
+            ticktext=group_names, # Nombres legibles
             tickangle=30 # Rotar etiquetas eje X
         ),
         yaxis=dict(
@@ -247,8 +250,10 @@ def create_comparison_boxplot(data_by_group: list, group_names: list[str],
 
     ax.set_title(title)
     ax.set_ylabel(ylabel)
-    ax.set_xlabel("Grupos Comparados") # Etiqueta genérica para X
-    plt.xticks(rotation=30, ha="right")
+    ax.set_xlabel("") # Quitar etiqueta X, los nombres de grupo van en ticks
+    # Usar group_names directamente como etiquetas del eje X
+    ax.set_xticks(range(len(group_order))) # Asegurar ticks numéricos
+    ax.set_xticklabels(group_order, rotation=30, ha="right") # Usar nombres legibles
     plt.grid(axis='y', linestyle='--', alpha=0.7)
 
     # 3. Añadir anotaciones estadísticas con statannot (si hay 2 grupos y p-valor)
@@ -294,15 +299,16 @@ def create_comparison_boxplot(data_by_group: list, group_names: list[str],
 
 
     # 4. Añadir Leyenda
-    # Crear handles (patches de color) para la leyenda
-    handles = [plt.Rectangle((0,0),1,1, color=palette[i])
-               for i in range(len(group_order))]
-    # Colocar leyenda fuera del área del gráfico, a la derecha
-    plt.legend(handles, group_order, title="Grupos",
-               bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0.)
+    # Ya no se necesita leyenda separada si los nombres están en el eje X
+    # # Crear handles (patches de color) para la leyenda
+    # handles = [plt.Rectangle((0,0),1,1, color=palette[i])
+    #            for i in range(len(group_order))]
+    # # Colocar leyenda fuera del área del gráfico, a la derecha
+    # plt.legend(handles, group_order, title="Grupos",
+    #            bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0.)
 
 
-    # Ajustar layout para asegurar que todo quepa (incluida leyenda)
+    # Ajustar layout para asegurar que todo quepa
     plt.tight_layout(rect=[0, 0, 0.85, 1]) # Ajustar rect para dejar espacio a la derecha
 
     plt.savefig(output_path, bbox_inches='tight', dpi=150)
