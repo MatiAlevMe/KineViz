@@ -13,5 +13,5 @@ setuptools>=65.5.0
 scipy
 seaborn 
 statannotations
-plotly                     
-openpyxl                                                                                                          
+plotly                                                                                                                               
+openpyxl

@@ -1,6 +1,8 @@
 import tkinter as tk # Importar tk para fill/expand
 from tkinter import ttk, messagebox # Importar messagebox
 import logging # Importar logging
+import webbrowser # Para abrir archivo de ayuda                                                                                     
+from pathlib import Path # Para construir ruta de ayuda  
 # Ya no se necesita PaginatedTable aquí
 from kineviz.ui.widgets.file_browser import FileBrowser
 # Importar FileService para type hinting
@@ -60,6 +62,12 @@ class StudyView:
         ttk.Button(header_frame, text="Análisis Discreto",
                    command=lambda: self.main_window.show_discrete_analysis_view(self.study_id)).pack(side=tk.LEFT, padx=(0, 10))
 
+        # Botón Ayuda General (a la derecha)
+        style = ttk.Style() # Asegurar que style exista
+        style.configure("HelpView.TButton", foreground="white", background="green") # Estilo diferente para ayuda general
+        help_button_general = ttk.Button(header_frame, text="?", width=3, style="HelpView.TButton", command=self.show_study_view_help)
+        help_button_general.pack(side=tk.RIGHT, padx=(10, 0))
+
 
         # --- Detalles del estudio ---
         study_details = self.main_window.study_service.get_study_details(self.study_id)
@@ -71,17 +79,27 @@ class StudyView:
         ttk.Label(details_frame, text=f"Número de Sujetos: {study_details.get('num_subjects', 'N/A')}").pack(anchor='w', padx=5, pady=2)
         ttk.Label(details_frame, text=f"Intentos: {study_details.get('attempts_count', 'N/A')}").pack(anchor='w', padx=5, pady=2)
 
-        # Mostrar Variables Independientes y Descriptores
+        # --- Mostrar Variables Independientes y Botón Info ---
         vi_frame = ttk.Frame(details_frame)
-        vi_frame.pack(anchor='w', padx=5, pady=2)
-        ttk.Label(vi_frame, text="Variables Independientes: ").pack(side=tk.LEFT)
-        self.vi_label = ttk.Label(vi_frame, text="Cargando...")
-        self.vi_label.pack(side=tk.LEFT)
-        self.info_vi_button = ttk.Label(vi_frame, text="ℹ️", cursor="question_arrow", foreground="blue")
-        self.info_vi_button.pack(side=tk.LEFT, padx=5)
-        self.info_vi_tooltip = ToolTip(self.info_vi_button, "") # Tooltip se llenará después
+        vi_frame.pack(anchor='w', padx=5, pady=2, fill='x')
 
-        self.load_and_display_vi_structure(study_details)
+        # Extraer nombres de VIs
+        independent_variables = study_details.get('independent_variables', [])
+        vi_names = [iv.get('name', 'N/A') for iv in independent_variables]
+        vi_display_text = "Variables Independientes: " + (", ".join(vi_names) if vi_names else "Ninguna")
+        ttk.Label(vi_frame, text=vi_display_text).pack(side=tk.LEFT, anchor='w')
+
+        # Botón Info (si hay VIs)
+        if vi_names:
+            info_button = ttk.Button(vi_frame, text="ℹ️", width=3, command=self.show_vi_descriptor_info)
+            info_button.pack(side=tk.LEFT, padx=(5, 0))
+        # --- Fin VIs ---
+
+        # Mostrar Alias asignados a descriptores definidos
+        self.alias_label = ttk.Label(details_frame, text="Alias Asignados: Cargando...", wraplength=500) # Usar wraplength
+        self.alias_label.pack(anchor='w', padx=5, pady=2)
+        # No llamar aquí, se llama después de obtener detalles
+        # self.update_alias_display()
 
         # --- File browser ---
         # Pasar la instancia de file_service y files_per_page desde main_window
@@ -89,28 +107,94 @@ class StudyView:
         self.file_browser = FileBrowser(self.frame, self.file_service, self.study_id, files_per_page)
         self.file_browser.pack(fill=tk.BOTH, expand=True, pady=(10, 0))
 
-        def load_and_display_vi_structure(self, study_details):
-            """Carga la estructura VI y actualiza la UI."""
-            vi_structure = study_details.get('independent_variables_struct', [])
-            if not vi_structure:
-                self.vi_label.config(text="No definidas")
-                self.info_vi_button.pack_forget() # Ocultar botón info si no hay VIs
+        # Llamar a update_alias_display después de que todo esté creado
+        self.update_alias_display()
+
+    def update_alias_display(self):
+        """Obtiene y muestra los alias asignados a los descriptores definidos."""
+        logger.debug(f"Actualizando display de alias para estudio {self.study_id}")
+        try:
+            # Obtener detalles del estudio (incluye VIs y alias)
+            study_details = self.main_window.study_service.get_study_details(self.study_id)
+            independent_variables = study_details.get('independent_variables', [])
+            study_aliases = study_details.get('aliases', {}) # Alias específicos del estudio
+            logger.debug(f"Aliases cargados para estudio {self.study_id}: {study_aliases}")
+
+            # Extraer todos los descriptores definidos
+            defined_descriptors = set()
+            for iv in independent_variables:
+                if isinstance(iv, dict) and 'descriptors' in iv and isinstance(iv['descriptors'], list):
+                    for desc in iv['descriptors']:
+                        if isinstance(desc, str) and desc.strip():
+                            defined_descriptors.add(desc.strip())
+
+            if not defined_descriptors:
+                self.alias_label.config(text="Alias Asignados: No hay descriptores definidos en este estudio.")
+                logger.debug("Display de alias actualizado: Sin descriptores definidos.")
                 return
 
-            vi_names = [vi.get('name', f'VI {i+1}') for i, vi in enumerate(vi_structure)]
-            self.vi_label.config(text=", ".join(vi_names))
+            # Construir string de alias para descriptores definidos
+            alias_parts = []
+            # Ordenar para consistencia
+            for desc in sorted(list(defined_descriptors)):
+                alias = study_aliases.get(desc) # Obtener alias específico del estudio
+                if alias:
+                    alias_parts.append(f"{desc} ({alias})")
+                else:
+                    alias_parts.append(desc) # Mostrar descriptor original si no hay alias
 
-            # Crear texto para el tooltip
-            tooltip_text = ""
-            for i, vi in enumerate(vi_structure):
-                name = vi.get('name', f'VI {i+1}')
-                descriptors = vi.get('descriptors', [])
-                tooltip_text += f"{name}:\n  " + ", ".join(descriptors) + "\n\n"
+            alias_display_text = "Alias Asignados: " + ", ".join(alias_parts)
+            self.alias_label.config(text=alias_display_text)
+            logger.debug(f"Display de alias actualizado a: '{alias_display_text}'")
 
-            self.info_vi_tooltip.text = tooltip_text.strip()
-            self.info_vi_button.pack(side=tk.LEFT, padx=5) # Asegurar que esté visible
+        except Exception as e:
+            logger.error(f"Error actualizando display de alias para estudio {self.study_id}: {e}", exc_info=True)
+            self.alias_label.config(text="Alias Asignados: Error al cargar.")
 
-        # Eliminar manage_descriptor_aliases y update_alias_display
+
+    def manage_descriptor_aliases(self):
+        """Abre el diálogo para gestionar los alias de los descriptores."""
+        # Pasar StudyService y study_id
+        dialog = DescriptorAliasDialog(
+            self.frame, # Padre
+            self.main_window.study_service, # Pasar StudyService
+            self.study_id
+        )
+        # Esperar a que el diálogo se cierre y luego actualizar la etiqueta de alias
+        self.parent.wait_window(dialog) # Espera a que el Toplevel se cierre
+        self.update_alias_display() # Actualizar la información mostrada
+
+    def show_vi_descriptor_info(self):
+        """Muestra un popup con los descriptores y alias de cada VI."""
+        try:
+            study_details = self.main_window.study_service.get_study_details(self.study_id)
+            independent_variables = study_details.get('independent_variables', [])
+            study_aliases = study_details.get('aliases', {})
+
+            if not independent_variables:
+                messagebox.showinfo("Información VIs", "No hay Variables Independientes definidas para este estudio.", parent=self.frame)
+                return
+
+            info_text = "Variables Independientes y sus Descriptores (Alias):\n\n"
+            for iv in independent_variables:
+                vi_name = iv.get('name', 'VI Sin Nombre')
+                descriptors = iv.get('descriptors', [])
+                info_text += f"▶ {vi_name}:\n"
+                if descriptors:
+                    for desc in sorted(descriptors):
+                        alias = study_aliases.get(desc)
+                        display = f"{desc} ({alias})" if alias else desc
+                        info_text += f"    - {display}\n"
+                else:
+                    info_text += "    (Sin descriptores definidos)\n"
+                info_text += "\n" # Espacio entre VIs
+
+            messagebox.showinfo("Detalle Variables Independientes", info_text.strip(), parent=self.frame)
+
+        except Exception as e:
+            logger.error(f"Error mostrando información de VIs para estudio {self.study_id}: {e}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudo mostrar la información de las VIs:\n{e}", parent=self.frame)
+
 
     def open_study_folder(self):
         """Abre la carpeta del estudio actual."""
@@ -139,3 +223,17 @@ class StudyView:
         if self.frame and self.frame.winfo_exists():
              self.frame.destroy()
         self.frame = None # Limpiar referencia
+
+    def show_study_view_help(self):
+        """Muestra el archivo de ayuda para la vista de estudio."""
+        try:
+            # Construir ruta relativa al archivo actual
+            help_file_path = Path(__file__).parent.parent.parent / "docs" / "help" / "study_view_help.txt"
+            if help_file_path.exists():
+                # Usar webbrowser para abrir el archivo (más portable)
+                webbrowser.open(help_file_path.as_uri()) # as_uri() para formato file:///
+            else:
+                messagebox.showerror("Error", f"No se encontró el archivo de ayuda:\n{help_file_path}", parent=self.frame)
+        except Exception as e:
+            logger.error(f"Error al abrir archivo de ayuda de StudyView: {e}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudo abrir el archivo de ayuda:\n{e}", parent=self.frame)

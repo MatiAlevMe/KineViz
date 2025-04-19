@@ -1,9 +1,10 @@
 import sqlite3
 import os
-import logging # Importar logging
-from pathlib import Path # Importar Path
+import logging
+import json # Importar json
+from pathlib import Path
 
-logger = logging.getLogger(__name__) # Logger para este módulo
+logger = logging.getLogger(__name__)
 
 class StudyRepository:
     def __init__(self, db_path='kineviz.db', studies_base_dir=None):
@@ -32,60 +33,69 @@ class StudyRepository:
                 CREATE TABLE IF NOT EXISTS estudios (
                     id_estudio INTEGER PRIMARY KEY AUTOINCREMENT,
                     nombre_estudio TEXT NOT NULL UNIQUE,
+                    nombre_estudio TEXT NOT NULL UNIQUE,
                     num_sujetos INTEGER NOT NULL,
-                    independent_variables TEXT, -- Nueva columna para estructura VI/Descriptores (JSON)
-                    cantidad_intentos_prueba INTEGER NOT NULL
+                    cantidad_intentos_prueba INTEGER NOT NULL,
+                    independent_variables TEXT, -- Almacenará JSON con estructura de VIs y Descriptores
+                    aliases TEXT -- Almacenará JSON con mapeo descriptor -> alias para este estudio
                 )
             ''')
-            # --- Migración Simplificada ---
-            # Intentar añadir la nueva columna si no existe
+            # --- Migración Simple ---
+            # Intentar añadir las nuevas columnas si no existen
             try:
                 cursor.execute("ALTER TABLE estudios ADD COLUMN independent_variables TEXT")
                 logger.info("Columna 'independent_variables' añadida a la tabla 'estudios'.")
             except sqlite3.OperationalError as e:
-                if "duplicate column name" in str(e):
-                    pass # La columna ya existe
-                else:
-                    raise # Otro error
+                if "duplicate column name" in str(e): pass
+                else: raise
+            try:
+                cursor.execute("ALTER TABLE estudios ADD COLUMN aliases TEXT")
+                logger.info("Columna 'aliases' añadida a la tabla 'estudios'.")
+            except sqlite3.OperationalError as e:
+                if "duplicate column name" in str(e): pass
+                else: raise
 
-            # Intentar eliminar columnas antiguas (ignorar errores si no existen)
+            # Intentar eliminar las columnas antiguas si existen (ignorar errores)
             old_columns = ['descriptores', 'tipos_prueba', 'periodos_prueba']
             for col in old_columns:
                 try:
-                    # Usar IF EXISTS si la versión de SQLite lo soporta (>= 3.3)
+                    # Usar IF EXISTS para simplificar (requiere SQLite >= 3.3)
+                    # Si no, mantener el try/except
                     # cursor.execute(f"ALTER TABLE estudios DROP COLUMN IF EXISTS {col}")
-                    # Fallback para versiones antiguas:
                     cursor.execute(f"ALTER TABLE estudios DROP COLUMN {col}")
                     logger.info(f"Columna antigua '{col}' eliminada de la tabla 'estudios'.")
                 except sqlite3.OperationalError as e:
-                    # Ignorar error "no such column" u otros relacionados con la inexistencia
-                    if "no such column" in str(e) or "Cannot drop column" in str(e):
+                    if "no such column" in str(e) or "Cannot drop column" in str(e): # Manejar error si no existe
                         pass
                     else:
                         logger.warning(f"No se pudo eliminar la columna antigua '{col}': {e}")
+
             conn.commit()
-    
+
     def create_study(self, study_data):
         """
-        Crea un nuevo estudio en la base de datos
-        
-        :param study_data: Diccionario con datos del estudio
-        :return: ID del estudio creado
+        Crea un nuevo estudio en la base de datos.
+
+        :param study_data: Diccionario con datos del estudio, incluyendo
+                           'independent_variables' y 'aliases' como strings JSON.
+        :return: ID del estudio creado.
+        :raises ValueError: Si el nombre del estudio ya existe.
+        :raises sqlite3.Error: Para otros errores de base de datos.
         """
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
-            # Intentar insertar, manejar error de unicidad de nombre
             try:
                 # Insertar usando la nueva columna 'independent_variables'
                 cursor.execute('''
                     INSERT INTO estudios
-                    (nombre_estudio, num_sujetos, independent_variables, cantidad_intentos_prueba)
-                    VALUES (?, ?, ?, ?)
+                    (nombre_estudio, num_sujetos, cantidad_intentos_prueba, independent_variables, aliases)
+                    VALUES (?, ?, ?, ?, ?)
                 ''', (
                     study_data['name'],
                     int(study_data['num_subjects']),
-                    study_data.get('independent_variables', '[]'), # Espera JSON string
-                    int(study_data['attempts_count'])
+                    int(study_data['attempts_count']),
+                    study_data.get('independent_variables', '[]'), # Guardar JSON string
+                    study_data.get('aliases', '{}') # Guardar JSON string
                 ))
                 conn.commit()
                 study_id = cursor.lastrowid
@@ -133,19 +143,27 @@ class StudyRepository:
         :return: Diccionario con detalles del estudio
         """
         with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row # Devolver filas como diccionarios
             cursor = conn.cursor()
-            cursor.execute('SELECT * FROM estudios WHERE id_estudio = ?', (study_id,))
+            # Seleccionar las columnas nuevas
+            cursor.execute('''
+                SELECT id_estudio, nombre_estudio, num_sujetos, cantidad_intentos_prueba,
+                       independent_variables, aliases
+                FROM estudios WHERE id_estudio = ?
+            ''', (study_id,))
             row = cursor.fetchone()
-            
+
             if not row:
                 raise ValueError(f"Estudio con ID {study_id} no encontrado")
-            
+
             return {
-                'id': row[0],
-                'name': row[1],
-                'num_subjects': row[2],
-                'independent_variables': row[3], # Devolver la nueva columna
-                'attempts_count': row[4]
+                # Acceder por nombre de columna
+                'id': row['id_estudio'],
+                'name': row['nombre_estudio'],
+                'num_subjects': row['num_sujetos'],
+                'attempts_count': row['cantidad_intentos_prueba'],
+                'independent_variables': row['independent_variables'], # Devolver como string JSON
+                'aliases': row['aliases'] # Devolver como string JSON
             }
 
     def delete_study(self, study_id):
@@ -262,14 +280,16 @@ class StudyRepository:
                     UPDATE estudios
                     SET nombre_estudio = ?,
                         num_sujetos = ?,
+                        cantidad_intentos_prueba = ?,
                         independent_variables = ?,
-                        cantidad_intentos_prueba = ?
+                        aliases = ?
                     WHERE id_estudio = ?
                 ''', (
                     study_data['name'],
                     int(study_data['num_subjects']),
-                    study_data.get('independent_variables', '[]'), # Espera JSON string
                     int(study_data['attempts_count']),
+                    study_data.get('independent_variables', '[]'), # Guardar JSON string
+                    study_data.get('aliases', '{}'), # Guardar JSON string
                     study_id
                 ))
                 conn.commit()

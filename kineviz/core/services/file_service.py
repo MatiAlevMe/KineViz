@@ -285,20 +285,18 @@ class FileService:
             results['errors'].append(f"No se pudo encontrar la ruta para el estudio ID {study_id}.")
             return results
 
-        # Obtener la estructura de VIs del estudio para validación
+        # Obtener detalles del estudio (incluyendo VIs) para validación
         try:
             study_details = self.study_service.get_study_details(study_id)
-            # StudyService ya debería devolver 'independent_variables_struct' parseado
-            vi_structure = study_details.get('independent_variables_struct')
-            if vi_structure is None: # Podría ser None si hay error o no está definida
-                 raise ValueError("Estructura de Variables Independientes no encontrada o inválida para el estudio.")
-            # No es necesario parsear JSON aquí si el servicio lo hace
-            # vi_structure = json.loads(vi_structure_json or '[]')
-            # if not isinstance(vi_structure, list):
-            #      raise ValueError("Formato de Variables Independientes inválido.")
-
+            # Obtener la estructura de VIs
+            independent_variables = study_details.get('independent_variables', [])
+            if not independent_variables:
+                 # Si no hay VIs definidas, la validación debería fallar para cualquier archivo con descriptores
+                 logger.warning(f"Estudio {study_id} no tiene Variables Independientes definidas. No se validarán nombres de archivo con descriptores.")
+                 # O podríamos permitir archivos sin descriptores intermedios si num_vis_defined es 0 en el validador?
+                 # Por ahora, mantenemos la estructura vacía, el validador manejará la lógica.
         except Exception as e:
-            error_msg = f"Error al obtener la estructura de VIs del estudio {study_id}: {e}"
+            error_msg = f"Error al obtener detalles/VIs del estudio {study_id}: {e}"
             logger.error(error_msg, exc_info=True)
             results['errors'].append(error_msg)
             return results
@@ -309,18 +307,20 @@ class FileService:
             file_name = source_file_path.name
             logger.debug(f"Intentando agregar archivo: '{file_name}' al estudio {study_id}")
             try:
-                # 1. Validar nombre de archivo usando la estructura VI
-                logger.debug(f"Validando '{file_name}' con estructura VI: {vi_structure}")
-                # El validador ahora devuelve (bool, list | None)
-                is_valid_name, _ = validate_filename_for_study_criteria(file_name, vi_structure)
-                logger.debug(f"Resultado validación para '{file_name}': {is_valid_name}")
-
+                # 1. Validar nombre de archivo usando la estructura de VIs
+                logger.debug(f"Validando '{file_name}' con VIs: {independent_variables}")
+                # Pasar la estructura de VIs al validador
+                is_valid_name, extracted_descriptors = validate_filename_for_study_criteria(
+                    file_name, independent_variables
+                )
+                logger.debug(f"Resultado validación para '{file_name}': {is_valid_name}, Extraído: {extracted_descriptors}")
                 if not is_valid_name:
                     # Lanzar ValueError si la validación falla
-                    # El validador ya debería haber loggeado la razón específica
                     raise ValueError(f"Nombre de archivo '{file_name}' no cumple con la estructura de Variables Independientes definida para el estudio.")
 
                 # 2. Procesar y copiar el archivo (Solo si la validación fue exitosa)
+                # Nota: _process_and_copy_file NO necesita los descriptores extraídos,
+                # solo necesita saber que el nombre es válido para proceder.
                 self._process_and_copy_file(study_path, source_file_path)
                 results['success'] += 1
                 logger.info(f"Archivo '{file_name}' procesado y agregado exitosamente al estudio {study_id}.")
@@ -345,33 +345,43 @@ class FileService:
 
     def get_unique_study_parameters(self, study_id: int) -> dict:
         """
-        Obtiene conjuntos de parámetros únicos (pacientes, frecuencias, tipos, periodos)
+        Obtiene conjuntos de parámetros únicos (pacientes, frecuencias, descriptores por VI)
         basados en los archivos procesados válidos de un estudio.
 
         :param study_id: ID del estudio.
-        :return: Diccionario {'patients': set(), 'frequencies': set(), 'descriptors': set()}
+        :return: Diccionario {'patients': set(), 'frequencies': set(), 'descriptors_by_vi': dict{int: set()}}
                  o un diccionario vacío si hay error o no hay archivos.
+                 'descriptors_by_vi' mapea el índice de la VI (0-based) a un set de descriptores únicos encontrados para esa posición.
         """
-        from kineviz.core.data_processing.file_handlers import obtener_nombre_paciente # Necesitamos esta función
+        # Ya no se necesita obtener_nombre_paciente aquí
+        # from kineviz.core.data_processing.file_handlers import obtener_nombre_paciente
 
         study_path = self._get_study_path(study_id)
         if not study_path:
-            return {'patients': set(), 'frequencies': set(), 'types': set(), 'periods': set()}
+            # Devolver estructura vacía esperada
+            return {'patients': set(), 'frequencies': set(), 'descriptors_by_vi': {}}
 
-        # Obtener descriptores definidos para el estudio (para validación y referencia)
+        # Obtener estructura de VIs para validación y referencia
         try:
             study_details = self.study_service.get_study_details(study_id)
-            descriptors_str = study_details.get('descriptores', '') or ''
-            defined_descriptors = [d.strip() for d in descriptors_str.split(',') if d.strip()]
+            # Obtener la estructura de VIs
+            independent_variables = study_details.get('independent_variables', [])
+            num_vis = len(independent_variables)
         except Exception as e:
-            logger.error(f"Error al obtener descriptores del estudio {study_id} para parámetros: {e}", exc_info=True)
-            return {'patients': set(), 'frequencies': set(), 'descriptors': set()}
+            logger.error(f"Error al obtener VIs del estudio {study_id} para parámetros: {e}", exc_info=True)
+            # Devolver estructura vacía esperada
+            return {'patients': set(), 'frequencies': set(), 'descriptors_by_vi': {}}
 
-        parameters = {'patients': set(), 'frequencies': set(), 'descriptors': set()}
-        logger.debug(f"Buscando parámetros únicos para estudio {study_id} en {study_path}")
+        # Inicializar estructura de parámetros
+        parameters = {
+            'patients': set(),
+            'frequencies': set(),
+            'descriptors_by_vi': {i: set() for i in range(num_vis)} # Inicializar sets por posición de VI
+        }
+        logger.debug(f"Buscando parámetros únicos para estudio {study_id} en {study_path} con {num_vis} VIs")
         processed_folders = ["Cinematica", "Cinetica", "Electromiografica"]
 
-        # 1. Iterar para encontrar pacientes y frecuencias existentes (basado en carpetas)
+        # 1. Iterar para encontrar pacientes existentes (basado en carpetas)
         for patient_dir in study_path.iterdir():
             # Ignorar carpetas especiales y archivos a nivel de estudio
             if patient_dir.is_dir() and not patient_dir.name.lower() in ["reportes", "temp", "og"]:
@@ -385,21 +395,20 @@ class FileService:
                 #         has_any_freq_folder = True
                 # Añadir paciente si la carpeta del paciente existe (simplificado)
                 # La lógica de si tiene archivos válidos se maneja en el paso 2
-                if patient_dir.exists() and patient_dir.is_dir(): # Asegurar que es un directorio
+                if patient_dir.exists() and patient_dir.is_dir():
                     parameters['patients'].add(patient_name)
 
-        # 2. Iterar de nuevo para encontrar frecuencias y descriptores *solo* de archivos válidos
-        #    Iterar sobre pacientes encontrados y carpetas de frecuencia *potenciales*.
-        patients_found_step1 = list(parameters['patients']) # Copiar para evitar modificar mientras se itera
-        parameters['patients'] = set() # Resetear pacientes, se añadirán solo si tienen archivos válidos
-        parameters['frequencies'] = set() # Asegurar que frecuencias esté vacío antes de llenarlo
+        # 2. Iterar de nuevo para encontrar frecuencias y descriptores por posición *solo* de archivos válidos
+        patients_found_step1 = list(parameters['patients'])
+        parameters['patients'] = set() # Resetear, se añadirán solo si tienen archivos válidos
+        parameters['frequencies'] = set() # Resetear
 
         logger.debug(f"Paso 2: Validando archivos para pacientes {patients_found_step1} en frecuencias {processed_folders}")
         for patient_name in patients_found_step1:
             patient_dir = study_path / patient_name
-            if not patient_dir.is_dir(): continue # Saltar si la carpeta del paciente no existe
+            if not patient_dir.is_dir(): continue
 
-            for freq_folder_name in processed_folders: # Iterar sobre carpetas de frecuencia POTENCIALES
+            for freq_folder_name in processed_folders:
                  freq_folder_path = patient_dir / freq_folder_name
                  if freq_folder_path.exists() and freq_folder_path.is_dir():
                      logger.debug(f"Escaneando carpeta: {freq_folder_path}")
@@ -407,42 +416,30 @@ class FileService:
                          if file_path.is_file() and file_path.suffix.lower() in ['.txt', '.csv']:
                              filename = file_path.name
                              logger.debug(f"Validando archivo: {filename}")
-                             # Validar nombre usando la lógica actualizada
-                             is_valid_name = validate_filename_for_study_criteria(filename, defined_descriptors)
-                             logger.debug(f"Resultado validación para '{filename}': {is_valid_name}")
+                             # Validar nombre usando la estructura de VIs
+                             is_valid_name, extracted_descriptors = validate_filename_for_study_criteria(
+                                 filename, independent_variables
+                             )
+                             logger.debug(f"Resultado validación para '{filename}': {is_valid_name}, Extraído: {extracted_descriptors}")
 
                              if is_valid_name:
-                                 # Si el archivo es válido, AHORA añadimos paciente y frecuencia
+                                 # Si el archivo es válido, añadir paciente y frecuencia
                                  logger.debug(f"Archivo válido encontrado: {filename}. Añadiendo paciente '{patient_name}' y frecuencia '{freq_folder_name}'.")
                                  parameters['patients'].add(patient_name)
                                  parameters['frequencies'].add(freq_folder_name)
 
-                                 # Extraer descriptores del nombre de archivo válido
-                                 try:
-                                     # --- Lógica mejorada para extraer base_name ---
-                                     # 1. Quitar extensión
-                                     name_without_ext = file_path.stem
-                                     # 2. Quitar sufijo de frecuencia (_Cinematica, etc.) usando rsplit
-                                     base_name_parts = name_without_ext.rsplit('_', 1)
-                                     # Verificar si el split funcionó y si la última parte es una frecuencia conocida
-                                     if len(base_name_parts) == 2 and base_name_parts[1] in processed_folders:
-                                         base_name = base_name_parts[0]
-                                     else:
-                                         # Si no hay sufijo de frecuencia o no es conocido, usar el nombre sin extensión
-                                         base_name = name_without_ext
-                                         logger.debug(f"'{filename}' no tiene sufijo de frecuencia esperado. Usando '{base_name}' como base.")
-                                     # --- Fin lógica mejorada ---
-
-                                     parts = base_name.replace('_', ' ').split()
-                                     if len(parts) > 2: # Asegurar que hay partes intermedias potenciales
-                                         intermediate_parts = parts[1:-1]
-                                         logger.debug(f"Descriptores extraídos de '{filename}': {intermediate_parts}")
-                                         for desc in intermediate_parts:
-                                             parameters['descriptors'].add(desc)
-                                     else:
-                                          logger.debug(f"No se encontraron descriptores intermedios en '{base_name}'")
-                                 except Exception as parse_err:
-                                     logger.warning(f"Error parseando descriptores de nombre de archivo válido '{filename}': {parse_err}", exc_info=True) # Añadir exc_info
+                                 # Añadir descriptores extraídos (no None) a su posición correspondiente
+                                 if len(extracted_descriptors) == num_vis:
+                                     for vi_index, descriptor_value in enumerate(extracted_descriptors):
+                                         if descriptor_value is not None: # Ignorar los 'Nulo' (representados por None)
+                                             if vi_index in parameters['descriptors_by_vi']:
+                                                 parameters['descriptors_by_vi'][vi_index].add(descriptor_value)
+                                             else:
+                                                 # Esto no debería ocurrir si se inicializó correctamente
+                                                 logger.warning(f"Índice de VI {vi_index} no encontrado en estructura de parámetros para archivo {filename}.")
+                                 else:
+                                     # Esto tampoco debería ocurrir si la validación es correcta
+                                     logger.warning(f"Número de descriptores extraídos ({len(extracted_descriptors)}) no coincide con número de VIs ({num_vis}) para archivo válido {filename}.")
 
         logger.debug(f"Parámetros únicos encontrados: {parameters}")
         return parameters

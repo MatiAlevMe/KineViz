@@ -14,8 +14,8 @@ from kineviz.ui.widgets import charting  # Importar nuestro módulo de gráficos
 # Importar el validador de nombres de archivo
 from kineviz.ui.utils.validators import validate_filename_for_study_criteria
 
-# Importar AppSettings para type hinting
-from kineviz.config.settings import AppSettings
+# Ya no se necesita AppSettings
+# from kineviz.config.settings import AppSettings
 
 # Importar reportlab
 from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer, Image,
@@ -49,17 +49,17 @@ except ImportError:
 
 
 class AnalysisService:
-    def __init__(self, study_service: StudyService, file_service: FileService, app_settings: AppSettings):
+    # Eliminar app_settings de la inicialización
+    def __init__(self, study_service: StudyService, file_service: FileService):
         """
         Inicializa el AnalysisService.
 
         :param study_service: Instancia de StudyService.
         :param file_service: Instancia de FileService.
-        :param app_settings: Instancia de AppSettings para acceder a alias.
         """
         self.study_service = study_service
         self.file_service = file_service
-        self.settings = app_settings  # Guardar referencia a AppSettings
+        # self.settings = app_settings # Ya no se guarda referencia a AppSettings
 
     def get_analysis_parameters(self, study_id: int) -> dict:
         """
@@ -67,18 +67,17 @@ class AnalysisService:
 
         :param study_id: ID del estudio.
         :return: Diccionario con sets de parámetros disponibles
-                 {'patients': set(), 'frequencies': set(), 'descriptors': set(), 'calculations': set()}
+                 {'patients': set(), 'frequencies': set(), 'descriptors_by_vi': dict, 'calculations': set()}
                  Retorna sets vacíos si no se encuentran parámetros o hay error.
         """
         try:
-            # Obtener parámetros únicos del FileService
-            # Obtener parámetros únicos del FileService (ahora incluye 'descriptors')
+            # Obtener parámetros únicos del FileService (ahora devuelve 'descriptors_by_vi')
             params = self.file_service.get_unique_study_parameters(study_id)
             # Añadir cálculos fijos
             params['calculations'] = {'Maximo', 'Minimo', 'Rango'}
-            # Asegurar que 'descriptors' exista aunque esté vacío
-            if 'descriptors' not in params:
-                params['descriptors'] = set()
+            # Asegurar que 'descriptors_by_vi' exista aunque esté vacío
+            if 'descriptors_by_vi' not in params:
+                params['descriptors_by_vi'] = {}
             return params
         except Exception as e:
             logger.error(f"Error obteniendo parámetros de análisis para estudio {study_id}: {e}", exc_info=True)
@@ -234,16 +233,14 @@ class AnalysisService:
 
         selected_patients = parameters.get('patients', [])
         selected_frequencies = parameters.get('frequencies', [])
-        selected_descriptors = parameters.get('descriptors', [])  # Usar 'descriptors'
+        # selected_descriptors ya no se usa directamente aquí, se usa la estructura VI
 
-        # Obtener descriptores definidos del estudio para validación
+        # Obtener estructura de VIs del estudio para validación
         try:
             study_details = self.study_service.get_study_details(study_id)
-            descriptors_str = study_details.get('descriptores', '') or ''
-            defined_descriptors = [d.strip() for d in descriptors_str.split(',')
-                                   if d.strip()]
+            independent_variables = study_details.get('independent_variables', [])
         except Exception as e:
-            logger.error(f"Error obteniendo descriptores estudio {study_id}: {e}",
+            logger.error(f"Error obteniendo VIs estudio {study_id}: {e}",
                          exc_info=True)
             return {}
 
@@ -265,51 +262,43 @@ class AnalysisService:
                 for file_path in freq_path.glob('*.txt'):
                     filename = file_path.name
 
-                    # Validar nombre de archivo ANTES de procesar
-                    if not validate_filename_for_study_criteria(
-                            filename, defined_descriptors):
-                        continue  # Omitir archivo si no cumple criterios
+                    # Validar nombre de archivo usando VIs
+                    is_valid_name, extracted_descriptors = validate_filename_for_study_criteria(
+                        filename, independent_variables
+                    )
+                    if not is_valid_name:
+                        continue # Omitir archivo si no cumple criterios
 
-                    # Extraer descriptores del nombre de archivo
-                    base_name = filename.split(f'_{freq}')[0]
-                    parts = base_name.replace('_', ' ').split()
-                    # Descriptores están entre PteXX y NN
-                    file_descriptors = parts[1:-1]
+                    # Crear clave de grupo combinada basada en VIs y descriptores extraídos
+                    # Formato: "VI1=DescA;VI2=DescB" o "VI1=Nulo;VI2=DescC"
+                    group_parts = []
+                    for i, desc in enumerate(extracted_descriptors):
+                        vi_name = independent_variables[i].get('name', f'VI{i+1}') # Usar nombre VI
+                        value = desc if desc is not None else "Nulo" # Usar "Nulo" si es None
+                        group_parts.append(f"{vi_name}={value}")
 
-                    # Comprobar si descriptores del archivo coinciden
-                    # Si no se seleccionaron descriptores, incluir todos.
-                    # Si se seleccionaron, el archivo debe contener TODOS.
-                    descriptors_match = (not selected_descriptors) or \
-                                        all(desc in file_descriptors
-                                            for desc in selected_descriptors)
+                    # Usar ';' como separador para evitar conflictos con nombres
+                    group_key = ";".join(group_parts) if group_parts else "SinGrupo"
 
-                    if descriptors_match:
-                        # Crear clave combinada para descriptores encontrados,
-                        # ordenados alfabéticamente para consistencia.
-                        descriptor_key = "_".join(sorted(file_descriptors)) \
-                                         if file_descriptors else "NoDesc"
+                    if group_key not in structured_data[freq]:
+                        structured_data[freq][group_key] = {}
 
-                        if descriptor_key not in structured_data[freq]:
-                            structured_data[freq][descriptor_key] = {}
-
-                        # Leer datos del archivo
-                        df_data = self._read_processed_file_data(file_path)
-                        if df_data is not None and not df_data.empty:
-                            # Acumular datos si ya existe una entrada para este paciente/freq/descriptor_key
-                            if patient not in structured_data[freq][descriptor_key]:
-                                structured_data[freq][descriptor_key][patient] = \
-                                    df_data
-                            else:
-                                # Concatenar DataFrames
-                                structured_data[freq][descriptor_key][patient] = \
-                                    pd.concat(
-                                        [structured_data[freq][descriptor_key][patient],
-                                         df_data],
-                                        ignore_index=True
-                                    )
+                    # Leer datos del archivo
+                    # (La lógica de lectura y concatenación permanece igual)
+                    df_data = self._read_processed_file_data(file_path)
+                    if df_data is not None and not df_data.empty:
+                        # Acumular datos si ya existe una entrada para este paciente/freq/group_key
+                        if patient not in structured_data[freq][group_key]:
+                            structured_data[freq][group_key][patient] = df_data
                         else:
-                            logger.warning(f"No se pudieron leer datos válidos "
-                                           f"de {filename}")
+                            # Concatenar DataFrames
+                            structured_data[freq][group_key][patient] = \
+                                pd.concat(
+                                    [structured_data[freq][group_key][patient], df_data],
+                                    ignore_index=True
+                                )
+                    else:
+                        logger.warning(f"No se pudieron leer datos válidos de {filename}")
 
         return structured_data
 
@@ -358,16 +347,16 @@ class AnalysisService:
                            f"seleccionados en estudio {study_id}.")
             return {}
 
-        for freq, descriptor_data in structured_data.items():
+        for freq, group_data in structured_data.items(): # Cambiar descriptor_data a group_data
             analysis_results[freq] = {}
-            for descriptor_key, patient_data in descriptor_data.items():
-                analysis_results[freq][descriptor_key] = {}
+            for group_key, patient_data in group_data.items(): # Cambiar descriptor_key a group_key
+                analysis_results[freq][group_key] = {}
                 for calc in selected_calculations:
-                    analysis_results[freq][descriptor_key][calc] = {}
+                    analysis_results[freq][group_key][calc] = {}
                     for patient, df in patient_data.items():
                         stats = self._calculate_statistic(df, calc)
                         if stats is not None:
-                            analysis_results[freq][descriptor_key][calc][patient] = stats
+                            analysis_results[freq][group_key][calc][patient] = stats
 
         logger.info(f"Análisis completado para estudio {study_id}.")
         return analysis_results
@@ -432,19 +421,17 @@ class AnalysisService:
             # Parámetros Usados
             story.append(Paragraph("<b>Parámetros Seleccionados:</b>",
                                    styles['h3']))
-            # Mostrar alias para descriptores seleccionados
-            selected_descriptors_orig = parameters.get('descriptors', [])
-            selected_descriptors_display = [
-                self.settings.get_descriptor_alias(d) or d
-                for d in selected_descriptors_orig
-            ]
+            # Obtener alias del estudio
+            study_aliases = self.study_service.get_study_aliases(study_id)
+            # Mostrar parámetros seleccionados (ya no incluye 'descriptors' directamente)
             param_text = (
                 f"<b>Pacientes:</b> {', '.join(parameters.get('patients', []))}<br/>"
                 f"<b>Frecuencias:</b> {', '.join(parameters.get('frequencies', []))}<br/>"
-                f"<b>Descriptores:</b> {', '.join(selected_descriptors_display or ['Todos'])}<br/>"
+                # Podríamos añadir VIs/Descriptores si se seleccionaron explícitamente,
+                # pero por ahora omitimos esa parte ya que el análisis agrupa por todas las combinaciones.
                 f"<b>Cálculos:</b> {', '.join(parameters.get('calculations', []))}"
             )
-            story.append(Paragraph(param_text, styles['BodyText'])) # Usar BodyText
+            story.append(Paragraph(param_text, styles['BodyText']))
             story.append(Spacer(1, 0.3*inch))
 
             # --- Iterar y Generar Contenido ---
@@ -454,17 +441,17 @@ class AnalysisService:
                                        styles['h2']))
                 story.append(Spacer(1, 0.1*inch))
 
-                for descriptor_key, patient_data in descriptor_data.items():
-                    # Obtener alias para cada parte de la clave de descriptor
-                    descriptor_parts = descriptor_key.split('_')
-                    descriptor_display_parts = [
-                        self.settings.get_descriptor_alias(part) or part
-                        for part in descriptor_parts
-                    ]
-                    descriptor_display = ', '.join(descriptor_display_parts) \
-                        if descriptor_key != "NoDesc" else "Sin Descriptores"
-                    story.append(Paragraph(f"Descriptores: {descriptor_display}",
-                                           styles['h3']))
+                for group_key, patient_data in descriptor_data.items(): # Usar descriptor_data
+                    # Convertir group_key a formato legible con alias
+                    group_display_parts = []
+                    if group_key != "SinGrupo":
+                        for part in group_key.split(';'):
+                            vi_name, desc_value = part.split('=', 1)
+                            alias = study_aliases.get(desc_value, desc_value) # Aplicar alias
+                            group_display_parts.append(f"{vi_name}: {alias}")
+                    group_display = ", ".join(group_display_parts) if group_display_parts else "Grupo General"
+
+                    story.append(Paragraph(f"Grupo: {group_display}", styles['h3']))
                     story.append(Spacer(1, 0.1*inch))
 
                     # --- Boxplot General por Paciente ---
@@ -482,11 +469,10 @@ class AnalysisService:
                     if boxplot_data:
                         plot_counter += 1
                         boxplot_filename = temp_dir / f"boxplot_{plot_counter}.png"
-                        # Usar descriptor_display (con alias) en el título del gráfico
+                        # Usar group_display (con alias) en el título del gráfico
                         charting.create_boxplot(
                             data_dict=boxplot_data,
-                            title=f"Distribución General - {freq} "
-                                  f"({descriptor_display})",
+                            title=f"Distribución General - {freq} ({group_display})",
                             ylabel="Valor Medición",
                             output_path=boxplot_filename
                         )
@@ -535,11 +521,10 @@ class AnalysisService:
                             if valid_avg_calc:
                                 plot_counter += 1
                                 barchart_filename = temp_dir / f"barchart_{plot_counter}.png"
-                                # Usar descriptor_display (con alias) en el título del gráfico
+                                # Usar group_display (con alias) en el título del gráfico
                                 charting.create_barchart(
                                     data_dict=valid_avg_calc,
-                                    title=f"{calc} Promedio - {freq} "
-                                          f"({descriptor_display})",
+                                    title=f"{calc} Promedio - {freq} ({group_display})",
                                     xlabel="Paciente",
                                     ylabel=f"{calc} Promedio",
                                     output_path=barchart_filename
@@ -828,45 +813,36 @@ class AnalysisService:
             # 1. Encontrar y agrupar archivos procesados de Cinemática
             # { 'Desc1_Desc2': [path1, path2,...], ... }
             files_by_descriptor_combo = {}
-            processed_files, _ = self.file_service.get_study_files(
+            processed_files_info, _ = self.file_service.get_study_files( # Corregir nombre variable
                 study_id=study_id,
-                page=1,
-                per_page=10000,  # Obtener todos los archivos
-                file_type='Processed',
-                frequency=target_frequency
+                page=1, # Eliminar el 'page=1' duplicado
+                per_page=10000, file_type='Processed', frequency=target_frequency
             )
+            path_map = {f_info['path'].stem.split(f'_{target_frequency}')[0]: f_info['path']
+                        for f_info in processed_files_info}
 
-            if not processed_files:
-                results['errors'].append(f"No se encontraron archivos procesados "
-                                         f"de '{target_frequency}' para el "
-                                         f"estudio {study_id}.")
+            # --- Identificar grupos y mapear archivos ---
+            # Usar _identify_study_groups para obtener el mapeo archivo_base -> group_key
+            try:
+                files_to_groups, _ = self._identify_study_groups(study_id, target_frequency)
+            except ValueError as e_group:
+                results['errors'].append(f"Error identificando grupos para {target_frequency}: {e_group}")
                 return results
 
-            for file_info in processed_files:
-                file_path = file_info['path']
-                filename = file_path.name
+            files_by_group_key = {} # Inicializar aquí
+            for file_base_key, group_key in files_to_groups.items():
+                if group_key not in files_by_group_key:
+                    files_by_group_key[group_key] = []
+                # Buscar la ruta completa usando el file_base_key
+                full_path = path_map.get(file_base_key)
+                if full_path:
+                    files_by_group_key[group_key].append(full_path)
+                else:
+                    logger.warning(f"No se encontró la ruta completa para el archivo base '{file_base_key}' del grupo '{group_key}'.")
 
-                # Validar nombre (ya filtrado por frecuencia, pero re-validar por si acaso)
-                if not validate_filename_for_study_criteria(filename, defined_descriptors):
-                    logger.warning(f"Omitiendo archivo con nombre inválido: {filename}")
-                    continue
 
-                # Extraer descriptores del nombre base
-                base_name = filename.split(f'_{target_frequency}')[0]
-                parts = base_name.replace('_', ' ').split()
-                # Descriptores ordenados
-                file_descriptors = sorted(parts[1:-1])
-                descriptor_key = "_".join(file_descriptors) \
-                                 if file_descriptors else "SinDescriptores"
-
-                if descriptor_key not in files_by_descriptor_combo:
-                    files_by_descriptor_combo[descriptor_key] = []
-                files_by_descriptor_combo[descriptor_key].append(file_path)
-
-            if not files_by_descriptor_combo:
-                results['errors'].append(f"No se encontraron archivos válidos "
-                                         f"agrupables por descriptores para "
-                                         f"'{target_frequency}'.")
+            if not files_by_group_key:
+                results['errors'].append(f"No se encontraron archivos válidos agrupables por VIs para '{target_frequency}'.")
                 return results
 
             # 2. Preparar directorio de salida (limpiar si existe)
@@ -883,17 +859,20 @@ class AnalysisService:
                 except OSError as e:
                     logger.error(f"Error limpiando directorio {output_base_dir}: {e}", exc_info=True)
                     # Continuar de todos modos, puede que solo fallen algunos archivos
-            output_base_dir.mkdir(parents=True, exist_ok=True) # Asegurar que exista
+            output_base_dir.mkdir(parents=True, exist_ok=True)
 
-            # 3. Generar tabla para cada combinación de descriptores y cálculo
-            for descriptor_key, file_paths in files_by_descriptor_combo.items():
+            # 3. Generar tabla para cada grupo y cálculo
+            for group_key, file_paths in files_by_group_key.items():
                 if not file_paths:
                     continue
+
+                # Crear nombre de archivo seguro reemplazando caracteres inválidos
+                safe_group_key_part = group_key.replace('=', '_').replace(';', '__')
 
                 # Leer cabeceras desde el primer archivo del grupo
                 headers = self._parse_processed_file_headers(file_paths[0])
                 if not headers:
-                    results['errors'].append(f"No se pudieron leer las cabeceras para el grupo '{descriptor_key}'.")
+                    results['errors'].append(f"No se pudieron leer las cabeceras para el grupo '{group_key}'.")
                     continue
                 atributos, columnas, unidades = headers
                 # Número de columnas de datos (sin Frame, Sub, Tiempo)
@@ -940,7 +919,7 @@ class AnalysisService:
                         try:
                             # --- Crear y Guardar CSV Interno (para lógica posterior) ---
                             df_csv_internal = pd.DataFrame(table_data, columns=column_multi_index, index=index_names)
-                            df_csv_internal.index.name = "ARCHIVO" # Nombre del índice
+                            df_csv_internal.index.name = "ARCHIVO"
 
                             # Convertir CSV interno a numérico (punto decimal)
                             for col in df_csv_internal.columns:
@@ -948,8 +927,9 @@ class AnalysisService:
                                     df_csv_internal[col] = df_csv_internal[col].str.replace(',', '.', regex=False)
                                 df_csv_internal[col] = pd.to_numeric(df_csv_internal[col], errors='coerce')
 
-                            output_csv_internal_path = output_base_dir / f"{calc}_{target_frequency}_{descriptor_key}.csv"
-                            df_csv_internal.to_csv(output_csv_internal_path, sep=',', decimal='.', # Punto decimal para CSV interno
+                            # Usar safe_group_key_part para el nombre de archivo
+                            output_csv_internal_path = output_base_dir / f"{calc}_{target_frequency}_{safe_group_key_part}.csv"
+                            df_csv_internal.to_csv(output_csv_internal_path, sep=',', decimal='.',
                                                    encoding='utf-8', header=True, index=True)
                             results['success'].append(str(output_csv_internal_path))
                             logger.info(f"Tabla CSV interna generada: {output_csv_internal_path}")
@@ -990,10 +970,10 @@ class AnalysisService:
                                 row3.append(unit if unit else '')
                             header_rows_list.append(row3)
 
-                            # --- Guardar Formatos de Exportación ---
+                            # --- Guardar Formatos de Exportación (usando safe_group_key_part) ---
 
                             # 1. Formato TSV (Tab Separated, Comma Decimal)
-                            output_tsv_path = output_base_dir / f"{calc}_{target_frequency}_{descriptor_key}.tsv"
+                            output_tsv_path = output_base_dir / f"{calc}_{target_frequency}_{safe_group_key_part}.tsv"
                             try:
                                 with open(output_tsv_path, 'w', encoding='utf-8') as f:
                                     # Escribir las 4 filas de cabecera
@@ -1010,7 +990,7 @@ class AnalysisService:
                                 results['errors'].append(error_msg)
 
                             # 2. Formato SCSV (Semicolon Separated, Comma Decimal)
-                            output_scsv_path = output_base_dir / f"{calc}_{target_frequency}_{descriptor_key}.scsv"
+                            output_scsv_path = output_base_dir / f"{calc}_{target_frequency}_{safe_group_key_part}.scsv"
                             try:
                                 with open(output_scsv_path, 'w', encoding='utf-8') as f:
                                     # Escribir las 4 filas de cabecera
@@ -1028,7 +1008,7 @@ class AnalysisService:
 
                             # 3. Formato XLSX (Excel, Comma Decimal via Locale?) - openpyxl requerido
                             if OPENPYXL_AVAILABLE:
-                                output_xlsx_path = output_base_dir / f"{calc}_{target_frequency}_{descriptor_key}.xlsx"
+                                output_xlsx_path = output_base_dir / f"{calc}_{target_frequency}_{safe_group_key_part}.xlsx"
                                 try:
                                     # Usar ExcelWriter para acceder al objeto worksheet
                                     with pd.ExcelWriter(output_xlsx_path, engine='openpyxl') as writer:
@@ -1076,20 +1056,20 @@ class AnalysisService:
                                     logger.error(error_msg, exc_info=True)
                                     results['errors'].append(error_msg)
                             else:
-                                logger.warning(f"Omitiendo generación XLSX para {descriptor_key}/{calc} (openpyxl no disponible).")
+                                logger.warning(f"Omitiendo generación XLSX para {group_key}/{calc} (openpyxl no disponible).")
 
 
                         except Exception as e_df:
-                            # Error general al procesar este cálculo/descriptor
+                            # Error general al procesar este cálculo/grupo
                             error_msg = (f"Error procesando datos para "
-                                         f"{calc}_{target_frequency}_{descriptor_key}: {e_df}")
+                                         f"{calc}_{target_frequency}_{group_key}: {e_df}")
                             logger.error(error_msg, exc_info=True)
                             results['errors'].append(error_msg)
                     else:
                         # Mensaje genérico ya que se generan múltiples formatos
                         logger.warning(f"No se encontraron datos válidos para "
                                        f"generar tablas resumen para "
-                                       f"{calc}_{target_frequency}_{descriptor_key}")
+                                       f"{calc}_{target_frequency}_{group_key}")
 
         except Exception as e:
             error_msg = (f"Error inesperado durante generación tablas discretas "
@@ -1111,23 +1091,20 @@ class AnalysisService:
         :param study_id: ID del estudio.
         :param frequency: Frecuencia a considerar (por defecto 'Cinematica').
         :return: Tupla:
-                 - Dict mapeando nombre base archivo a clave grupo.
+                 - Dict mapeando nombre base archivo a clave grupo (formato VI=Desc).
                  - Set de claves de grupo únicas encontradas.
         :raises ValueError: Si no se pueden obtener detalles o archivos.
         """
-        logger.debug(f"Identificando grupos para estudio {study_id}, "
-                     f"frecuencia {frequency}")
+        logger.debug(f"Identificando grupos para estudio {study_id}, frecuencia {frequency}")
         groups_by_file_base = {}
         unique_group_keys = set()
 
         try:
             study_details = self.study_service.get_study_details(study_id)
             if not study_details:
-                raise ValueError(f"No se pudieron obtener detalles del estudio "
-                                 f"{study_id}")
-            defined_descriptors = [d.strip() for d in
-                                   (study_details.get('descriptores', '') or '')
-                                   .split(',') if d.strip()]
+                raise ValueError(f"No se pudieron obtener detalles del estudio {study_id}")
+            # Obtener estructura VI
+            independent_variables = study_details.get('independent_variables', [])
 
             processed_files, _ = self.file_service.get_study_files(
                 study_id=study_id,
@@ -1147,30 +1124,29 @@ class AnalysisService:
                 file_path = file_info['path']
                 filename = file_path.name
 
-                if not validate_filename_for_study_criteria(filename, defined_descriptors):
+                # Validar nombre usando VIs
+                is_valid_name, extracted_descriptors = validate_filename_for_study_criteria(
+                    filename, independent_variables
+                )
+                if not is_valid_name:
                     continue
 
-                # Extraer nombre base y descriptores
+                # Crear clave de grupo combinada (VI=Desc;...)
                 try:
-                    base_name = filename.split(f'_{frequency}')[0]
-                    parts = base_name.replace('_', ' ').split()
-                    # Asumiendo formato PteXX_Desc1_Desc2..._IntentoNN
-                    # O PteXX_IntentoNN si no hay descriptores
-                    patient_id = parts[0]  # No usado, pero extraído
-                    attempt_suffix = parts[-1]  # No usado, pero extraído
-                    # Los descriptores son lo que queda en medio
-                    file_descriptors = sorted(parts[1:-1])
-                    descriptor_key = "_".join(file_descriptors) \
-                                     if file_descriptors else "SinDescriptores"
+                    group_parts = []
+                    for i, desc in enumerate(extracted_descriptors):
+                        vi_name = independent_variables[i].get('name', f'VI{i+1}')
+                        value = desc if desc is not None else "Nulo"
+                        group_parts.append(f"{vi_name}={value}")
+                    group_key = ";".join(group_parts) if group_parts else "SinGrupo"
 
-                    # Usar nombre base sin frecuencia ni extensión como clave
+                    # Usar nombre base sin frecuencia ni extensión como clave del dict
                     file_base_key = file_path.stem.split(f'_{frequency}')[0]
 
-                    groups_by_file_base[file_base_key] = descriptor_key
-                    unique_group_keys.add(descriptor_key)
-                except IndexError:
-                    logger.warning(f"No se pudo parsear nombre archivo para "
-                                   f"extraer grupo: {filename}")
+                    groups_by_file_base[file_base_key] = group_key
+                    unique_group_keys.add(group_key)
+                except IndexError: # Si extracted_descriptors no coincide con VIs
+                    logger.warning(f"Discrepancia VIs/Descriptores al extraer grupo de: {filename}")
                     continue
 
             logger.debug(f"Grupos identificados ({len(unique_group_keys)}): "
@@ -1188,13 +1164,32 @@ class AnalysisService:
 
         :param study_id: ID del estudio.
         :param frequency: Frecuencia a considerar.
-        :return: Lista ordenada de claves de grupo únicas.
+        :return: Lista ordenada de tuplas (display_name, original_key).
         """
         try:
-            _, unique_group_keys = self._identify_study_groups(study_id,
-                                                               frequency)
-            # Devolver lista ordenada para consistencia en la UI
-            return sorted(list(unique_group_keys))
+            _, unique_group_keys = self._identify_study_groups(study_id, frequency)
+            study_aliases = self.study_service.get_study_aliases(study_id)
+
+            # Crear tuplas ("Grupo X - Display Name", original_key)
+            groups_with_display_names = []
+            # Ordenar claves originales para numeración consistente
+            sorted_group_keys = sorted(list(unique_group_keys))
+            for i, group_key in enumerate(sorted_group_keys):
+                display_parts = []
+                if group_key != "SinGrupo":
+                    for part in group_key.split(';'):
+                        vi_name, desc_value = part.split('=', 1)
+                        alias = study_aliases.get(desc_value, desc_value) # Aplicar alias
+                        display_parts.append(f"{vi_name}: {alias}") # Formato "VI: Alias"
+                base_display_name = ", ".join(display_parts) if display_parts else "Grupo General"
+                # Añadir prefijo "Grupo X - "
+                full_display_name = f"Grupo {i+1} - {base_display_name}"
+                groups_with_display_names.append((full_display_name, group_key)) # Guardar clave original
+
+            # Ordenar por el nombre completo visible (ya incluye número)
+            groups_with_display_names.sort()
+            return groups_with_display_names
+
         except ValueError as e:
             logger.warning(f"No se pudieron obtener grupos para estudio {study_id}: {e}")
             return [] # Devolver vacío si hay error
@@ -1225,7 +1220,9 @@ class AnalysisService:
             return []
 
         for group_key in group_keys:
-            table_filename = f"{calculation}_{frequency}_{group_key}.csv"
+            # Usar la misma lógica de nombre de archivo seguro que en generate_tables
+            safe_group_key_part = group_key.replace('=', '_').replace(';', '__')
+            table_filename = f"{calculation}_{frequency}_{safe_group_key_part}.csv"
             table_path = freq_path / table_filename
 
             if not table_path.exists():
@@ -1365,11 +1362,20 @@ class AnalysisService:
         # files_to_groups, _ = self._identify_study_groups(study_id, frequency)
 
         for group_key in group_names:
-            table_filename = f"{calculation}_{frequency}_{group_key}.csv"
+            # --- Usar la misma lógica de nombre seguro que en generate_tables ---
+            safe_group_key_part = group_key.replace('=', '_').replace(';', '__')
+            table_filename = f"{calculation}_{frequency}_{safe_group_key_part}.csv"
             table_path = freq_path / table_filename
             if not table_path.exists():
-                raise FileNotFoundError(f"No se encontró tabla resumen requerida: "
-                                        f"{table_path}")
+                # Log detallado del archivo buscado y el error
+                logger.error(f"No se encontró tabla resumen requerida. Buscando: {table_path}")
+                # Intentar listar archivos en el directorio para depuración
+                try:
+                    existing_files = [f.name for f in freq_path.iterdir() if f.is_file()]
+                    logger.debug(f"Archivos existentes en {freq_path}: {existing_files}")
+                except Exception as list_e:
+                    logger.debug(f"No se pudo listar archivos en {freq_path}: {list_e}")
+                raise FileNotFoundError(f"No se encontró tabla resumen requerida: {table_path}")
 
             try:
                 # Usar punto decimal '.' para leer el CSV interno
@@ -1452,13 +1458,24 @@ class AnalysisService:
                         else:  # Independiente
                             if is_parametric:
                                 test_name = "T-test independiente"
+                                # Log data before test
+                                logger.debug(f"Datos para {test_name} (Grupo 1, n={len(group1_data)}): {group1_data[:10]}...") # Muestra primeros 10
+                                logger.debug(f"Datos para {test_name} (Grupo 2, n={len(group2_data)}): {group2_data[:10]}...") # Muestra primeros 10
                                 # Welch's t-test por defecto
-                                _, p_value = stats.ttest_ind(
-                                    group1_data, group2_data, equal_var=False,
-                                    nan_policy='omit'
-                                )
+                                try:
+                                    stat_result, p_value = stats.ttest_ind(
+                                        group1_data, group2_data, equal_var=False,
+                                        nan_policy='omit'
+                                    )
+                                    logger.debug(f"{test_name} resultado: stat={stat_result}, p={p_value}")
+                                except Exception as ttest_e:
+                                    logger.warning(f"Error ejecutando {test_name} para {analysis_name_log}: {ttest_e}")
+                                    p_value = np.nan # Marcar como no calculable si falla
                             else:
                                 test_name = "Mann-Whitney U"
+                                # Log data before test
+                                logger.debug(f"Datos para {test_name} (Grupo 1, n={len(group1_data)}): {group1_data[:10]}...")
+                                logger.debug(f"Datos para {test_name} (Grupo 2, n={len(group2_data)}): {group2_data[:10]}...")
                                 _, p_value = stats.mannwhitneyu(
                                     group1_data, group2_data,
                                     alternative='two-sided', nan_policy='omit'
@@ -1528,24 +1545,37 @@ class AnalysisService:
 
         # --- Generar Gráfico ---
         try:
-            # Usar alias para nombres de grupo si están disponibles
-            group_display_names = []
-            for g_key in group_names:
-                parts = g_key.split('_')
-                aliased_parts = [self.settings.get_descriptor_alias(p) or p
-                                 for p in parts]
-                display_name = ', '.join(aliased_parts) \
-                    if g_key != "SinDescriptores" else "Sin Descriptores"
-                group_display_names.append(display_name)
+            # Obtener alias del estudio
+            study_aliases = self.study_service.get_study_aliases(study_id)
+            # Generar nombres de grupo legibles (con prefijo) y etiquetas eje X
+            group_legend_names = [] # Nombres completos para la leyenda
+            group_xaxis_labels = [] # Nombres cortos para el eje X
+            # Ordenar claves originales para numeración consistente
+            sorted_group_keys = sorted(config['groups'])
+            for i, group_key in enumerate(sorted_group_keys):
+                display_parts = []
+                if group_key != "SinGrupo":
+                    for part in group_key.split(';'):
+                        vi_name, desc_value = part.split('=', 1)
+                        alias = study_aliases.get(desc_value, desc_value)
+                        display_parts.append(f"{vi_name}: {alias}")
+                base_display_name = ", ".join(display_parts) if display_parts else "General"
+                # Nombre completo para leyenda
+                full_legend_name = f"Grupo {i+1} - {base_display_name}"
+                group_legend_names.append(full_legend_name)
+                # Nombre corto para eje X
+                group_xaxis_labels.append(f"Grupo {i+1}")
 
             chart_title = (f"{config['calculation']} - {config['column']}\n"
                            f"({analysis_name})")
             # Usar unidad de la columna
             chart_ylabel = f"{config['calculation']} ({target_column_parts[2]})"
 
+            # Pasar ambos tipos de nombres a la función de charting
             charting.create_comparison_boxplot(
                 data_by_group=data_by_group,
-                group_names=group_display_names,  # Usar nombres con alias
+                group_xaxis_labels=group_xaxis_labels, # Para eje X
+                group_legend_names=group_legend_names, # Para leyenda
                 title=chart_title,
                 ylabel=chart_ylabel,
                 output_path=plot_path,
@@ -1560,9 +1590,11 @@ class AnalysisService:
         # --- Guardar Gráfico Interactivo (HTML) ---
         interactive_plot_path = analysis_output_dir / "boxplot_interactive.html"
         try:
+            # Pasar ambos tipos de nombres a la función de charting interactivo
             charting.create_interactive_comparison_boxplot(
                 data_by_group=data_by_group,
-                group_names=group_display_names, # Usar nombres con alias
+                group_xaxis_labels=group_xaxis_labels, # Para eje X
+                group_legend_names=group_legend_names, # Para leyenda (hover)
                 title=chart_title,
                 ylabel=chart_ylabel,
                 output_path=interactive_plot_path

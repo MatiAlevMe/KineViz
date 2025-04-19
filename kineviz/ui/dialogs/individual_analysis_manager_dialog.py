@@ -190,10 +190,27 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                     valores_clave_str = f"{config.get('test_name', 'Test')}: ?"
 
 
-                # Grupos (mostrar claves combinadas directamente)
-                group_keys = config.get('groups', []) # Claves combinadas ej: "CMJ_Normal"
-                # Unir claves combinadas para la columna "Grupos Comparados"
-                grupos_comparados_str = " vs ".join(group_keys)
+                # Grupos (con alias, usando claves nuevas)
+                group_keys = config.get('groups', []) # Claves originales "VI=Desc;..."
+                group_display_names = []
+                # Obtener alias una vez
+                study_aliases = self.analysis_service.study_service.get_study_aliases(self.study_id)
+                # Ordenar claves originales para numeración consistente
+                sorted_group_keys = sorted(group_keys)
+                for i, group_key in enumerate(sorted_group_keys):
+                    display_parts = []
+                    if group_key != "SinGrupo":
+                        for part in group_key.split(';'):
+                            vi_name, desc_value = part.split('=', 1)
+                            alias = study_aliases.get(desc_value, desc_value)
+                            display_parts.append(f"{vi_name}: {alias}")
+                    base_display_name = ", ".join(display_parts) if display_parts else "General"
+                    # Añadir prefijo "Grupo X - "
+                    full_display_name = f"Grupo {i+1} - {base_display_name}"
+                    group_display_names.append(full_display_name)
+
+                # Unir nombres de grupo completos para la columna "Grupos Comparados"
+                grupos_comparados_str = " vs ".join(group_display_names)
 
                 # Construir tupla de valores para insertar
                 values = (
@@ -374,13 +391,14 @@ if __name__ == '__main__':
 
     # --- Dummies ---
     class DummyAnalysisService:
-        # Añadir settings dummy para get_discrete_analysis_groups
+        # Añadir study_service dummy para get_study_aliases
         def __init__(self):
-            class DummySettings:
-                def get_descriptor_alias(self, desc):
-                    return {'CMJ': 'Salto CM', 'PRE': 'Antes',
-                            'POST': 'Despues'}.get(desc)
-            self.settings = DummySettings()
+            class DummyStudyService:
+                 def get_study_aliases(self, study_id):
+                     print(f"DummyStudyService: get_study_aliases({study_id})")
+                     return {'CMJ': 'Salto CM', 'PRE': 'Antes', 'POST': 'Despues',
+                             'SJ_TipoA': 'SJ A', 'SJ_TipoB': 'SJ B', 'SJ_TipoC': 'SJ C'}
+            self.study_service = DummyStudyService()
 
         def list_individual_analyses(self, study_id):
             print(f"Dummy: list_individual_analyses({study_id})")
@@ -389,46 +407,46 @@ if __name__ == '__main__':
             analysis1_path = base / 'Comp_Costo_Mortal_Antes_Despues' # Usar alias
             analysis2_path = base / 'Comp_SJ_Tipos'
             analysis3_path = base / 'Sin_Plotly' # Simular uno sin HTML
+            # Simular claves de grupo con formato VI=Desc
             return [
-                {'name': 'Comp_Costo_Mortal_Antes_Despues', 'path': analysis1_path,
+                {'name': 'Comp_SaltoCM_Cond', 'path': analysis1_path,
                  'config': {'calculation': 'Maximo',
                             'column': 'H Salto/Alt/cm',
-                            'groups': ['CMJ_PRE', 'CMJ_POST'],
+                            'groups': ['Tipo=CMJ;Cond=PRE', 'Tipo=CMJ;Cond=POST'], # Claves nuevas
                             'parametric': True, 'paired': True,
                             'stats_results': {'test_name': 'T-test rel.', 'p_value': 0.0005}},
                  'mtime': 1678886400.0,
                  'plot_path': analysis1_path / 'boxplot.png',
-                 'interactive_plot_path': analysis1_path / 'boxplot_interactive.html'}, # Añadir HTML
+                 'interactive_plot_path': analysis1_path / 'boxplot_interactive.html'},
                 {'name': 'Comp_SJ_Tipos', 'path': analysis2_path,
                  'config': {'calculation': 'Rango',
                             'column': 'Art1/VelX/m/s',
-                            'groups': ['SJ_TipoA', 'SJ_TipoB', 'SJ_TipoC'],
+                            'groups': ['Tipo=SJ;Cond=TipoA', 'Tipo=SJ;Cond=TipoB', 'Tipo=SJ;Cond=TipoC'], # Claves nuevas
                             'parametric': False, 'paired': False,
                             'stats_results': {'test_name': 'Kruskal', 'p_value': 0.06}},
                  'mtime': 1678972800.0,
                  'plot_path': analysis2_path / 'boxplot.png',
-                 'interactive_plot_path': analysis2_path / 'boxplot_interactive.html'}, # Añadir HTML
+                 'interactive_plot_path': analysis2_path / 'boxplot_interactive.html'},
                  {'name': 'Sin_Plotly', 'path': analysis3_path,
                  'config': {'calculation': 'Minimo',
                             'column': 'Art2/PosY/mm',
-                            'groups': ['PRE', 'POST'],
+                            'groups': ['Cond=PRE', 'Cond=POST'], # Asumiendo solo una VI 'Cond'
                             'parametric': True, 'paired': False,
                             'stats_results': {'test_name': 'T-test indep.', 'p_value': 0.87}},
                  'mtime': 1678999999.0,
                  'plot_path': analysis3_path / 'boxplot.png',
-                 'interactive_plot_path': None}, # Simular que no existe
+                 'interactive_plot_path': None},
             ]
 
-        def get_discrete_analysis_groups(self, study_id, frequency):
-            print(f"Dummy: get_discrete_analysis_groups({study_id}, {frequency})")
-            # Devolver claves combinadas de ejemplo
-            return ['CMJ_Normal', 'CMJ_Obeso', 'SJ_Normal', 'SJ_BajoPeso', 'Nulo_Normal']
-        def get_common_columns_for_groups(self, study_id, frequency,
-                                          calculation, group_keys):
-            print(f"Dummy: get_common_columns_for_groups({study_id}, "
-                  f"{frequency}, {calculation}, {group_keys})")
-            return ['Art1/PosX/mm', 'Art1/PosY/mm', 'Art2/VelX/m/s',
-                    'H Salto/Alt/cm']
+        # Los dummies de get_discrete_analysis_groups y get_common_columns_for_groups
+        # ya están en ConfigureIndividualAnalysisDialog, no se necesitan aquí.
+
+        def delete_individual_analysis(self, study_id, analysis_name):
+            # Corregir el print para usar las variables disponibles
+            print(f"Dummy: delete_individual_analysis(study_id={study_id}, "
+                  f"analysis_name='{analysis_name}')")
+            # El return anterior no tenía sentido aquí, lo eliminamos o devolvemos None
+            return None
 
         def perform_individual_analysis(self, study_id, config):
             print(f"Dummy: perform_individual_analysis({study_id}, {config})")
