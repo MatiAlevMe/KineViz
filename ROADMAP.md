@@ -1,6 +1,6 @@
 # KineViz Development Roadmap
 
-Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicialmente se enfocó en la refactorización de la lógica original a una estructura modular. A partir de la Fase 5, el enfoque cambia a mejoras incrementales y la adición de nuevas funcionalidades, mejoras a las funcionalidades actuales u bug-fixes.
+Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicialmente se enfocó en la refactorización de la lógica original a una estructura modular. Luego, el enfoque cambia a mejoras incrementales y la adición de nuevas funcionalidades, mejoras a las funcionalidades actuales u bug-fixes.
 
 ## Estrctura de carpetas de refactorización
 
@@ -75,157 +75,9 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 ├── docs/                 # Documentación
 └── examples/             # Ejemplos de uso
 
-## Fase 1: Integración Inicial y Estructura Base (Completada - d2caeef)
+## Diccionario de Tareas
 
-*   [x] Crear estructura básica del proyecto (`kineviz` package).
-*   [x] Mover lógica de `lectura.py` a `kineviz.core.data_processing` y `kineviz.core.services`.
-*   [x] Crear punto de entrada `kineviz/app.py`.
-*   [x] Refactorizar `kineviz/ui/main_window.py` para manejar la ventana principal, configuración inicial y navegación básica.
-*   [x] Integrar `LandingPage` (`kineviz/ui/views/landing_page.py`).
-*   [x] Integrar diálogo de creación/edición de estudios (`kineviz/ui/dialogs/study_dialog.py`) con validación básica.
-*   [x] Adaptar `StudyService` y `StudyRepository` para soportar operaciones básicas y conteo.
-*   [x] Corregir errores iniciales de importación y validación.
-
-## Fase 2: Vista Principal y Gestión de Estudios
-
-*   [x] Implementar `MainView` (`kineviz/ui/views/main_view.py`) para mostrar la lista de estudios.
-    *   [x] Tabla de estudios (`ttk.Treeview`).
-    *   [x] Funcionalidad de búsqueda.
-    *   [x] Paginación de estudios.
-    *   [x] Botones de acción (Ver, Editar, Eliminar) en la tabla.
-    *   [x] Botones de cabecera (Manual, Config, Ayuda, Abrir Carpeta).
-*   [x] Implementar la funcionalidad completa de **Editar Estudio** en `StudyDialog` y `StudyService`/`StudyRepository`.
-    *   [x] Cargar datos existentes en el diálogo.
-    *   [x] Validar datos modificados.
-    *   [x] Actualizar datos en la base de datos (`StudyService.update_study`).
-    *   [x] Renombrar carpeta del estudio si el nombre cambia (`StudyRepository.rename_study_folder`).
-    *   [x] Manejar la validación/eliminación de archivos existentes si los criterios (tipos/periodos) cambian.
-*   [x] Implementar la funcionalidad de **Eliminar Estudio** en `MainView` y `StudyService`/`StudyRepository`.
-*   [x] Implementar la funcionalidad de **Ver Estudio** (`StudyView`).
-    *   [x] Mostrar detalles básicos del estudio.
-    *   [x] Integrar `FileBrowser` para mostrar archivos del estudio.
-    *   [x] Implementar carga real de archivos en `FileBrowser` desde `FileService`.
-    *   [x] Funcionalidad "Ver Archivo".
-    *   [x] Funcionalidad "Eliminar Archivo".
-
-## Fase 3: Gestión de Archivos y Análisis
-
-*   [x] Implementar `FileBrowser` (`kineviz/ui/widgets/file_browser.py`) completamente.
-    *   [x] Cargar y mostrar archivos del estudio desde `FileService`. (Hecho en Fase 2)
-    *   [x] Paginación de archivos.
-    *   [x] Búsqueda/filtrado de archivos.
-    *   [x] Funcionalidad "Ver Archivo". (Hecho en Fase 2)
-    *   [x] Funcionalidad "Eliminar Archivo". (Hecho en Fase 2)
-*   [x] Implementar `FileService` para manejar la lógica de archivos (obtener, eliminar, filtrar, paginar, agregar). (Hecho en Fase 2 y 3)
-*   [x] Implementar diálogo para **Agregar Archivos** a un estudio, incluyendo validación de formato de nombre.
-*   [X] Implementar `AnalysisDialog` (`kineviz/ui/dialogs/analysis_dialog.py`).
-    *   [x] Selección de parámetros (pacientes, frecuencias, tipos, periodos, cálculos).
-    *   [X] Generación de reportes PDF.
-    *   [X] Visualización/eliminación de reportes generados.
-*   [x] Implementar `AnalysisService` para la lógica de análisis y generación de reportes. (Implementación inicial de PDF y cálculos)
-*   [x] Implementar `Charting` (`kineviz/ui/widgets/charting.py`) para visualizaciones. (Boxplot, Barchart básicos)
-*   [x] Implementar visualización/eliminación de reportes generados en `AnalysisDialog`.
-
-## Fase 5: Mejoras Incrementales - Descriptores y Detección de Frecuencia (Completada)
-
-*   [x] **Modificación de Identificador de Frecuencias**: Cambiar la detección de tipo de frecuencia (Cinemática, Cinética, Electromiográfica) basada en metadatos del archivo ("Model Outputs", "Force Plate"). (Tarea 1)
-*   [x] **Implementación de Descriptores**: Reemplazar el sistema de "Tipos de Prueba" y "Periodos de Prueba" por un sistema flexible de "Descriptores" definidos por el usuario al crear/editar estudios. (Tarea 2 - UI y DB)
-*   [x] **Modificación de Etiquetas Post-Carga**: Permitir al usuario asignar alias o nombres descriptivos a los descriptores detectados en los archivos, para visualización en análisis y reportes. (Tarea 3)
-*   [x] **Integración Completa**: Asegurar que los cambios en la detección de frecuencia y el sistema de descriptores se integren correctamente en la carga de archivos, validación, análisis, reportes y UI. (Tarea 4)
-
-## Fase 6: Análisis Estadístico Discreto y Reportes Avanzados (Pendiente)
-
-### **Visión General**
-Esta funcionalidad está pensada para automatizar el análisis estadístico de datos discretos (por ejemplo, valores máximos, mínimos y rangos) obtenidos de estudios, en donde cada estudio puede contener múltiples archivos por paciente y por intento. Principalmente, se enfoca en datos cinemáticos, generando tanto tablas como gráficos para comparar estadísticamente distintos descriptores según las etiquetas asignadas.
-
-### Flujo del Proceso
-1.  **Extracción y Normalización de Datos**
-    *   Se genera una tabla para cada cálculo (máximo, mínimo, rango) basada en los datos originales del estudio.
-    *   Cada tabla contendrá:
-        *   El tipo de cálculo realizado (por ejemplo, máximo).
-        *   Filas que representan a cada paciente (con sus intentos).
-        *   Columnas que corresponden a las variables repetidas presentes en cada archivo (p.ej.: posiciones X, Y, Z agrupadas por articulación y unidad de medida).
-
-2. **Interacción y Configuración del Análisis:**
-    *   **Paso 1: Definir el Diseño del Estudio**
-        *   Preguntar al usuario si los datos son **pareados** o **independientes**.
-        *   Preguntar si los datos se pueden asumir normalmente distribuidos o si se requiere la aplicación de una prueba automática para verificar la normalidad.
-    *   **Paso 2: Seleccionar el Método Estadístico**
-        *   **Si se comparan dos descriptores:**
-            *   Utilizar t-test pareado o t-test para muestras independientes, según corresponda.
-        *   **Si se comparan tres o más descriptores:**
-            *   Utilizar ANOVA (o su equivalente no paramétrico en caso de datos no normales).
-    *   **Paso 3: Configuración Adicional**
-        *   Elegir las variables y etiquetas que se utilizarán para generar las tablas y gráficos.
-        *   Guardar la configuración para análisis individual y generar reportes generales en PDF con las combinaciones de gráficos y tablas pertinentes.
-
-### Gráficos y Tablas
-1.  **Generación de Gráficos y Reportes:**
-    *   Se generan gráficos que reflejen el análisis de las variables desginadas
-    *   Se incorpora la opción de utilizar dos o mas descriptores del estudio según lo definido por el usuario.
-    *   Los reportes generales se crean automáticamente en formato PDF, agrupados por tipo de cálculo. Es decir habrían 3 archivos si hay 3 calculos Maximo, Minimo, Rango, cada archivo muestra como ese calculo interactua con los descriptores en un gráfico de boxplot para cada combinación de descriptores y el calculo fijo. Lo que quiere decir que se traducirian en varios gráficos en un archivo de una manera rapida y sencilla.
-
-2.  **Generación de Archivos y Acceso**
-    *   Al hacer clic en el botón “Análisis Continuo” (para la parte de tablas discretas) se generan múltiples archivos automáticamente:
-        *   Cada archivo corresponde a un cálculo (por ejemplo, “Máximo – Cinemática – Estudio: Testing” y "Minimo - Cinemática - Estudio: Testing").
-        *   Las tablas generadas se alojan en una estructura de carpetas accesible mediante un botón en la nueva ventana de análisis. Algo asi como Estudios/[NOMBRE_DEL_ESTUDIO]/Analisis Discreto/Individual/[CALCULO]/[FRECUENCIA]/[ARCHIVOS]
-
-3.  **Análisis Individual y Reporte General**
-    *   **Análisis Individual:**
-        *   Se abre una ventana donde el usuario define parámetros tales como:
-            *   El cálculo a utilizar.
-            *   Un calculo de referencia (fijo) para comparar con otros descriptores (que pueden ser n descriptores extras según permita el estudio) en un boxplot, estos descriptores seran también los puntos del gráfico, el calculo será el eje vertical y los distintos descriptores estarán en el eje horizontal.
-            *   La variable (columna) a graficar.
-        *   Se guarda la configuración y se despliega una lista de análisis previos, con opciones de búsqueda, filtrado y visualización (incluyendo un botón para abrir la carpeta de gráficos y tablas).
-
-    *   **Reporte General:**
-        *   Se genera un PDF automático que incluye todos los posibles gráficos generados para cada cálculo, utilizando todas las variables y combinaciones de descriptores disponibles en el estudio.
-        *   La nomenclatura de los archivos y carpetas sigue una estructura jerárquica basada en el cálculo y el descriptor fijo.
-
-### Consideraciones Técnicas
-- **Herramientas:** Pandas, Matplotlib/Seaborn, SciPy.
-- **Enfoque Inicial:** Datos cinemáticos.
-- **Exclusiones:** Columnas "Frame", "Sub Frame", "Tiempo".
-- **Normalización:** No necesaria para análisis discreto.
-
-### Ejemplo de archivo de tabla resultante en "TABLA RESUMEN CINEMÁTICA CMJ MAX.csv"
-### Ejemplo de gráfico resultante en "H Salto.png"
-
-## Fase 7: Refinamientos y Finalización (Antigua Fase 4)
-
-*   [x] Implementar `ConfigDialog` (`kineviz/ui/dialogs/config_dialog.py`) y `AppSettings` (`kineviz/config/settings.py`).
-*   [x] Mejorar manejo de errores y logging (`kineviz/utils/logger.py`). (Integrado en la mayoría de módulos)
-*   [ ] Añadir pruebas unitarias e de integración (`tests/`). (Inicio: validadores, StudyRepository, FileService, AnalysisService)
-*   [ ] Completar documentación (`docs/`).
-*   [x] Limpiar código remanente de `interfaz.py` y `lectura.py`.
-*   [ ] Revisión final de estilos y UX.
-
-## Fase 8: Refactorización a Variables Independientes (En Progreso)
-*   **1. Modificar Modelo de Estudio:**
-    *   [x] Reemplazar columna `descriptores` por `independent_variables` (JSON TEXT) en DB (conceptual).
-    *   [x] Actualizar `StudyRepository` y `StudyService` para manejar la nueva estructura JSON `[{"name": "VI_Nombre", "descriptors": ["Desc1", "Desc2"]}]`.
-
-*   **2. Refactorizar UI Creación/Edición Estudio (`StudyDialog`):**
-    *   [x] Reemplazar entrada de descriptores por flujo: Num VIs -> (Nombre VI -> Num Descriptores -> [Nombres Descriptores]) x Num VIs.
-    *   [x] Implementar restricciones de edición (solo nombre VI editable inicialmente).
-    *   [x] Añadir tooltip/info sobre uso de "Nulo". (Hecho - requiere `tooltip.py`)
-*   **3. Refactorizar Validación (`validators.py`):**
-    *   [x] Reescribir `validate_filename_for_study_criteria` para nuevo formato (`PteXX VI1 VI2... VIn IntentoNN`), orden estricto, valores permitidos (incl. "Nulo"), y regla de al menos un descriptor no-Nulo.
-    *   [x] Eliminar `validate_study_data` (lógica movida a `StudyDialog`).
-*   **4. Actualizar Vista Estudio (`StudyView`):**
-    *   [x] Mostrar nombres de VIs.
-    *   [x] Añadir botón/tooltip para mostrar descriptores por VI. (Hecho - requiere `tooltip.py`)
-*   **5. Integrar con Servicios:**
-    *   [ ] Actualizar `FileService.add_files_to_study` (usa nuevo validador). **(Pendiente - requiere `FileService`)**
-    *   [x] Actualizar `AnalysisService._identify_study_groups` (crear claves combinadas: "DescVI1_DescVI2_...").
-    *   [x] Asegurar que `generate_discrete_summary_tables` y `perform_individual_analysis` usen las nuevas claves de grupo.
-*   **6. Pruebas:** (Pendiente) Añadir pruebas de integración para la nueva validación y flujo.
-
----
-
-## Diccionario de Tareas (Fase 5+)
-
-**Fase 5: Mejoras Incrementales - Descriptores y Detección de Frecuencia**
+**Fase 1: Mejoras Incrementales - Descriptores y Detección de Frecuencia**
 
 *   **1. Implementar detección automática de tipo de frecuencias basada en metadatos del archivo. (Completado - 91ffd0a)**
     *   **Detalle**: Modificada la lógica en `kineviz.core.data_processing.file_handlers.leer_seccion` y `kineviz.core.services.file_service._process_and_copy_file` para identificar Cinemática ("Model Outputs") y Cinética ("Force Plate").
@@ -256,7 +108,7 @@ Esta funcionalidad está pensada para automatizar el análisis estadístico de d
         *   `kineviz.ui.dialogs.analysis_dialog.py`: (Hecho) Actualizado para mostrar y usar selector de `descriptors`.
         *   Actualizar pruebas unitarias afectadas. (Hecho)
 
-**Fase 6: Análisis Estadístico Discreto y Reportes Avanzados**
+**Fase 2: Análisis Estadístico Discreto y Reportes Avanzados**
 
 *   **1. Generación de Matrices:** (En Progreso) Crear tablas por tipo de cálculo y descriptor (ej: "máximo_cinemática_obesidad").
     *   **1.1 Servicio `generate_discrete_summary_tables`**: (Hecho) Lógica para agrupar archivos, leer stats, crear DataFrames y guardar CSVs (inicialmente para Cinemática).
@@ -304,6 +156,37 @@ Esta funcionalidad está pensada para automatizar el análisis estadístico de d
      *   (Hecho) Corregido error de reconocimiento de columnas (prefijo `PteXX:`) modificando la generación de tablas resumen y la lectura de cabeceras.
  *   **11. Integración y Pruebas:** (Pendiente) Integrar la funcionalidad en la plataforma y realizar pruebas de integración.
 
+## Fase 3: Refactorización a Variables Independientes (Completada - Parcialmente)
+*   **1. Modificar Modelo de Estudio:** (Completado)
+    *   **1.1 DB Conceptual**: (Hecho) Reemplazada columna `descriptores` por `independent_variables` (JSON TEXT).
+    *   **1.2 Repositorio (`StudyRepository`)**: (Hecho) Actualizados métodos `create_study`, `get_study_by_id`, `update_study` para usar
+`independent_variables`. Añadida migración simple.
+    *   **1.3 Servicio (`StudyService`)**: (Hecho) Actualizados métodos `create_study`, `get_study_details`, `update_study` para manejar la conversión entre estructura Python y JSON string.
+*   **2. Refactorizar UI Creación/Edición Estudio (`StudyDialog`):** (Completado)
+    *   **2.1 Flujo UI**: (Hecho) Reemplazada sección de descriptores por UI dinámica para definir VIs y sus descriptores.
+    *   **2.2 Restricciones Edición**: (Hecho) Número de VIs y descriptores no editables al modificar estudio; nombre de VI sí editable.
+    *   **2.3 Tooltip "Nulo"**: (Hecho) Añadido icono de información y tooltip explicando el uso de "Nulo".
+    *   **2.4 Validación Interna**: (Hecho) Movida y adaptada la validación de datos del estudio al método `save` del diálogo.
+*   **3. Refactorizar Validación (`validators.py`):** (Completado)
+    *   **3.1 Validador Nombres Archivo**: (Hecho) Reescribir `validate_filename_for_study_criteria` para validar formato `PteXX VI1...VIn NN`, orden, valores permitidos (incl. "Nulo"), y regla de al menos un descriptor no-Nulo. Devuelve tupla `(bool, list[str|None])`.
+    *   **3.2 Eliminar Validador Estudio**: (Hecho) Eliminada función `validate_study_data`.
+*   **4. Actualizar Vista Estudio (`StudyView`):** (Completado)
+    *   **4.1 Mostrar Nombres VI**: (Hecho) Añadido label para mostrar nombres de VIs definidos.
+    *   **4.2 Mostrar Descriptores (Tooltip)**: (Hecho) Añadido botón `ℹ️` con tooltip que muestra los descriptores asociados a cada VI.
+    *   **4.3 Eliminar Gestión Alias**: (Hecho) Eliminados botón y lógica relacionada con `DescriptorAliasDialog`.
+*   **5. Integrar con Servicios:** (En Progreso)
+    *   **5.1 `FileService.add_files_to_study`**: (Pendiente) Actualizar para usar el nuevo `validate_filename_for_study_criteria` y la
+estructura VI obtenida de `StudyService`. **(Requiere `FileService`)**
+    *   **5.2 `AnalysisService._identify_study_groups`**: (Hecho) Modificado para usar el nuevo validador y crear claves de grupo combinadas (ej:"CMJ_Normal", "SaltoAlto_Nulo").
+    *   **5.3 `AnalysisService.generate_discrete_summary_tables`**: (Hecho) Modificado para usar las nuevas claves de grupo combinadas al agrupar archivos y nombrar las tablas generadas. 
+    *   **5.4 `AnalysisService.perform_individual_analysis`**: (Hecho) Modificado para recibir y usar las claves de grupo combinadas al leer las tablas CSV internas.
+    *   **5.5 `AnalysisService.get_discrete_analysis_groups`**: (Hecho) Modificado para devolver las claves combinadas únicas.
+    *   **5.6 `AnalysisService.get_common_columns_for_groups`**: (Hecho) Adaptado para recibir claves combinadas (lógica interna sin cambios).
+    *   **5.7 `AnalysisService.generate_report`**: (Hecho) Adaptado para usar alias (si se reintroducen) o claves combinadas en títulos leyendas.
+*   **6. Adaptar UI de Análisis:** (Completado)
+    *   **6.1 `ConfigureIndividualAnalysisDialog`**: (Hecho) Modificado para mostrar y seleccionar las claves de grupo combinadas.
+    *   **6.2 `IndividualAnalysisManagerDialog`**: (Hecho) Modificado para mostrar las claves de grupo combinadas en la columna "Grupos  Comparados".     
+*   **7. Pruebas:** (Pendiente) Añadir/actualizar pruebas unitarias y de integración para la nueva lógica de validación, creación/edición de estudios y agrupación en análisis.
 
 ---
 
