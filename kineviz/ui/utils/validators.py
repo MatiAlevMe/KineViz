@@ -79,6 +79,9 @@ def validate_study_iv_data(data: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
                 return False, f"Descriptor vacío encontrado en '{vi_name}'."
             if ' ' in cleaned_desc:
                 return False, f"El descriptor '{cleaned_desc}' en '{vi_name}' no puede contener espacios."
+            # Añadir validación para no permitir "Nulo" (case-insensitive)
+            if cleaned_desc.lower() == "nulo":
+                return False, f"El descriptor '{cleaned_desc}' en '{vi_name}' no puede llamarse 'Nulo'."
             if cleaned_desc in cleaned_descriptors_in_iv:
                 return False, f"Descriptor duplicado '{cleaned_desc}' dentro de la Variable Independiente '{vi_name}'."
             if cleaned_desc in all_descriptor_names:

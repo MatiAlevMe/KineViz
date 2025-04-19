@@ -283,13 +283,18 @@ class FileService:
             results['errors'].append(f"No se pudo encontrar la ruta para el estudio ID {study_id}.")
             return results
 
-        # Obtener descriptores del estudio para validación
+        # Obtener detalles del estudio (incluyendo VIs) para validación
         try:
             study_details = self.study_service.get_study_details(study_id)
-            descriptors_str = study_details.get('descriptores', '') or ''
-            valid_descriptors = [d.strip() for d in descriptors_str.split(',') if d.strip()]
+            # Obtener la estructura de VIs
+            independent_variables = study_details.get('independent_variables', [])
+            if not independent_variables:
+                 # Si no hay VIs definidas, la validación debería fallar para cualquier archivo con descriptores
+                 logger.warning(f"Estudio {study_id} no tiene Variables Independientes definidas. No se validarán nombres de archivo con descriptores.")
+                 # O podríamos permitir archivos sin descriptores intermedios si num_vis_defined es 0 en el validador?
+                 # Por ahora, mantenemos la estructura vacía, el validador manejará la lógica.
         except Exception as e:
-            error_msg = f"Error al obtener descriptores del estudio {study_id}: {e}"
+            error_msg = f"Error al obtener detalles/VIs del estudio {study_id}: {e}"
             logger.error(error_msg, exc_info=True)
             results['errors'].append(error_msg)
             return results
@@ -300,15 +305,20 @@ class FileService:
             file_name = source_file_path.name
             logger.debug(f"Intentando agregar archivo: '{file_name}' al estudio {study_id}")
             try:
-                # 1. Validar nombre de archivo usando descriptores
-                logger.debug(f"Validando '{file_name}' con descriptores: {valid_descriptors}")
-                is_valid_name = validate_filename_for_study_criteria(file_name, valid_descriptors)
-                logger.debug(f"Resultado validación para '{file_name}': {is_valid_name}")
+                # 1. Validar nombre de archivo usando la estructura de VIs
+                logger.debug(f"Validando '{file_name}' con VIs: {independent_variables}")
+                # Pasar la estructura de VIs al validador
+                is_valid_name, extracted_descriptors = validate_filename_for_study_criteria(
+                    file_name, independent_variables
+                )
+                logger.debug(f"Resultado validación para '{file_name}': {is_valid_name}, Extraído: {extracted_descriptors}")
                 if not is_valid_name:
                     # Lanzar ValueError si la validación falla
-                    raise ValueError(f"Nombre de archivo '{file_name}' no cumple con los descriptores definidos para el estudio.")
+                    raise ValueError(f"Nombre de archivo '{file_name}' no cumple con la estructura de Variables Independientes definida para el estudio.")
 
                 # 2. Procesar y copiar el archivo (Solo si la validación fue exitosa)
+                # Nota: _process_and_copy_file NO necesita los descriptores extraídos,
+                # solo necesita saber que el nombre es válido para proceder.
                 self._process_and_copy_file(study_path, source_file_path)
                 results['success'] += 1
                 logger.info(f"Archivo '{file_name}' procesado y agregado exitosamente al estudio {study_id}.")

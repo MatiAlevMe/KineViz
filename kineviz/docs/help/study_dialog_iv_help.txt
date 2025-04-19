@@ -11,6 +11,7 @@ Guía Rápida: Variables Independientes y Descriptores
 2. **Añadir Descriptores:** Haz clic en el icono `+` junto al nombre de la VI para añadir los posibles valores (descriptores) para esa variable.
     * Cada VI debe tener **al menos dos** descriptores.
     * Los nombres de VI y Descriptores no pueden estar vacíos ni repetidos dentro del mismo estudio.
+    * **Importante:** Un descriptor **no puede** llamarse "Nulo" (ni "nulo", "NULO", etc.).
 3. **Eliminar:** Usa el icono `🗑️` para eliminar una VI completa o un descriptor específico.
 4. **Orden:** El orden en que defines las VIs es **importante**. Determina cómo debes nombrar tus archivos de datos.
 

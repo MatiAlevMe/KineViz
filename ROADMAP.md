@@ -136,18 +136,18 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
     * **2.2 Restricciones Edición**: (Hecho) Deshabilitados añadir/eliminar VIs/Descriptores; permitido renombrar VIs.
     * **2.3 Botón Ayuda VI**: (Hecho) Añadido botón `(?)` coloreado que abre `kineviz/docs/help/study_dialog_iv_help.txt`.
 * **3. Refactorizar Validación (`validators.py`):** (Hecho)
-    * **3.1 Validador Datos Estudio**: (Hecho) Creado `validate_study_iv_data` para estructura VI (nombres no vacíos/duplicados, min 1 VI, min 2 Descriptores por VI, no descriptores con espacios).
+    * **3.1 Validador Datos Estudio**: (Hecho) Creado `validate_study_iv_data` (incluye regla anti-"Nulo").
     * **3.2 Validador Nombres Archivo**: (Hecho) Reescrito `validate_filename_for_study_criteria` para formato `PteXX [VAL_VI1]...[VAL_VIn] NN`, orden, valores permitidos (incl. "Nulo"), regla de al menos un descriptor no-Nulo. Devuelve `(bool, list[str|None])`.
     * **3.3 Eliminar Validador Antiguo**: (Hecho) Eliminado `validate_study_data`.
-* **4. Integrar Validación:** (Pendiente)
-    * **4.1 `StudyDialog`**: (Pendiente) Usar `validate_study_iv_data` en `save`.
-    * **4.2 `FileService.add_files_to_study`**: (Pendiente) Usar nuevo `validate_filename_for_study_criteria`.
-* **5. Actualizar `FileService`:** (Pendiente)
-    * **5.1 `add_files_to_study`**: (Pendiente) Obtener estructura VI de `StudyService` para validación.
+* **4. Integrar Validación:** (En Progreso)
+    * **4.1 `StudyDialog`**: (Hecho) Usa `validate_study_iv_data` en `save`.
+    * **4.2 `FileService.add_files_to_study`**: (Hecho) Usa nuevo `validate_filename_for_study_criteria`.
+* **5. Actualizar `FileService`:** (En Progreso)
+    * **5.1 `add_files_to_study`**: (Hecho) Obtiene estructura VI de `StudyService` para validación.
     * **5.2 `get_unique_study_parameters`**: (Pendiente) Adaptar para extraer parámetros basados en la nueva estructura y nombres de archivo. Devolver descriptores únicos encontrados por *posición* de VI.
-* **6. Actualizar Vista Estudio (`StudyView`):** (Pendiente)
-    * **6.1 Mostrar VIs**: (Pendiente) Añadir label para mostrar nombres de VIs.
-    * **6.2 Mostrar Descriptores (Tooltip/Popup)**: (Pendiente) Añadir botón `ℹ️` que muestra Descriptores por VI (con alias).
+* **6. Actualizar Vista Estudio (`StudyView`):** (En Progreso)
+    * **6.1 Mostrar VIs**: (Hecho) Añadido label para mostrar nombres de VIs.
+    * **6.2 Mostrar Descriptores (Tooltip/Popup)**: (Hecho) Añadido botón `ℹ️` que muestra Descriptores por VI (con alias) en popup.
     * **6.3 Botón Ayuda General**: (Pendiente) Añadir botón `(?)` que abre `kineviz/docs/help/study_view_help.txt`.
 * **7. Refactorizar Gestión de Alias:** (Hecho)
     * **7.1 Mover a DB**: (Hecho) Implementado carga/guardado de alias por estudio en `StudyRepository` y `StudyService`.
