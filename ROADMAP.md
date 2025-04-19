@@ -139,8 +139,8 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
     * **3.1 Validador Datos Estudio**: (Hecho) Creado `validate_study_iv_data` (incluye regla anti-"Nulo").
     * **3.2 Validador Nombres Archivo**: (Hecho) Reescrito `validate_filename_for_study_criteria` para formato `PteXX [VAL_VI1]...[VAL_VIn] NN`, orden, valores permitidos (incl. "Nulo"), regla de al menos un descriptor no-Nulo. Devuelve `(bool, list[str|None])`.
     * **3.3 Eliminar Validador Antiguo**: (Hecho) Eliminado `validate_study_data`.
-* **4. Integrar Validación:** (En Progreso)
-    * **4.1 `StudyDialog`**: (Hecho) Usa `validate_study_iv_data` en `save`.
+* **4. Integrar Validación:** (Hecho)
+    * **4.1 `StudyDialog`**: (Hecho) Usa `validate_study_iv_data` en `save` (corregido bug edición).
     * **4.2 `FileService.add_files_to_study`**: (Hecho) Usa nuevo `validate_filename_for_study_criteria`.
 * **5. Actualizar `FileService`:** (En Progreso)
     * **5.1 `add_files_to_study`**: (Hecho) Obtiene estructura VI de `StudyService` para validación.
