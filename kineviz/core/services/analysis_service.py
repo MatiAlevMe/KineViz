@@ -816,42 +816,24 @@ class AnalysisService:
             processed_files, _ = self.file_service.get_study_files(
                 study_id=study_id,
                 page=1,
-                per_page=10000,  # Obtener todos los archivos
-                file_type='Processed',
-                frequency=target_frequency
+                page=1, per_page=10000, file_type='Processed', frequency=target_frequency
             )
+            path_map = {f_info['path'].stem.split(f'_{target_frequency}')[0]: f_info['path']
+                        for f_info in processed_files_info}
 
-            if not processed_files:
-                results['errors'].append(f"No se encontraron archivos procesados "
-                                         f"de '{target_frequency}' para el "
-                                         f"estudio {study_id}.")
-                return results
+            for file_base_key, group_key in files_to_groups.items():
+                if group_key not in files_by_group_key:
+                    files_by_group_key[group_key] = []
+                # Buscar la ruta completa usando el file_base_key
+                full_path = path_map.get(file_base_key)
+                if full_path:
+                    files_by_group_key[group_key].append(full_path)
+                else:
+                    logger.warning(f"No se encontró la ruta completa para el archivo base '{file_base_key}' del grupo '{group_key}'.")
 
-            for file_info in processed_files:
-                file_path = file_info['path']
-                filename = file_path.name
 
-                # Validar nombre (ya filtrado por frecuencia, pero re-validar por si acaso)
-                if not validate_filename_for_study_criteria(filename, defined_descriptors):
-                    logger.warning(f"Omitiendo archivo con nombre inválido: {filename}")
-                    continue
-
-                # Extraer descriptores del nombre base
-                base_name = filename.split(f'_{target_frequency}')[0]
-                parts = base_name.replace('_', ' ').split()
-                # Descriptores ordenados
-                file_descriptors = sorted(parts[1:-1])
-                descriptor_key = "_".join(file_descriptors) \
-                                 if file_descriptors else "SinDescriptores"
-
-                if descriptor_key not in files_by_descriptor_combo:
-                    files_by_descriptor_combo[descriptor_key] = []
-                files_by_descriptor_combo[descriptor_key].append(file_path)
-
-            if not files_by_descriptor_combo:
-                results['errors'].append(f"No se encontraron archivos válidos "
-                                         f"agrupables por descriptores para "
-                                         f"'{target_frequency}'.")
+            if not files_by_group_key:
+                results['errors'].append(f"No se encontraron archivos válidos agrupables por VIs para '{target_frequency}'.")
                 return results
 
             # 2. Preparar directorio de salida (limpiar si existe)
@@ -868,17 +850,20 @@ class AnalysisService:
                 except OSError as e:
                     logger.error(f"Error limpiando directorio {output_base_dir}: {e}", exc_info=True)
                     # Continuar de todos modos, puede que solo fallen algunos archivos
-            output_base_dir.mkdir(parents=True, exist_ok=True) # Asegurar que exista
+            output_base_dir.mkdir(parents=True, exist_ok=True)
 
-            # 3. Generar tabla para cada combinación de descriptores y cálculo
-            for descriptor_key, file_paths in files_by_descriptor_combo.items():
+            # 3. Generar tabla para cada grupo y cálculo
+            for group_key, file_paths in files_by_group_key.items(): # Usar group_key
                 if not file_paths:
                     continue
+
+                # Crear nombre de archivo seguro reemplazando caracteres inválidos
+                safe_group_key_part = group_key.replace('=', '_').replace(';', '__')
 
                 # Leer cabeceras desde el primer archivo del grupo
                 headers = self._parse_processed_file_headers(file_paths[0])
                 if not headers:
-                    results['errors'].append(f"No se pudieron leer las cabeceras para el grupo '{descriptor_key}'.")
+                    results['errors'].append(f"No se pudieron leer las cabeceras para el grupo '{group_key}'.")
                     continue
                 atributos, columnas, unidades = headers
                 # Número de columnas de datos (sin Frame, Sub, Tiempo)
@@ -925,7 +910,7 @@ class AnalysisService:
                         try:
                             # --- Crear y Guardar CSV Interno (para lógica posterior) ---
                             df_csv_internal = pd.DataFrame(table_data, columns=column_multi_index, index=index_names)
-                            df_csv_internal.index.name = "ARCHIVO" # Nombre del índice
+                            df_csv_internal.index.name = "ARCHIVO"
 
                             # Convertir CSV interno a numérico (punto decimal)
                             for col in df_csv_internal.columns:
@@ -933,8 +918,9 @@ class AnalysisService:
                                     df_csv_internal[col] = df_csv_internal[col].str.replace(',', '.', regex=False)
                                 df_csv_internal[col] = pd.to_numeric(df_csv_internal[col], errors='coerce')
 
-                            output_csv_internal_path = output_base_dir / f"{calc}_{target_frequency}_{descriptor_key}.csv"
-                            df_csv_internal.to_csv(output_csv_internal_path, sep=',', decimal='.', # Punto decimal para CSV interno
+                            # Usar safe_group_key_part para el nombre de archivo
+                            output_csv_internal_path = output_base_dir / f"{calc}_{target_frequency}_{safe_group_key_part}.csv"
+                            df_csv_internal.to_csv(output_csv_internal_path, sep=',', decimal='.',
                                                    encoding='utf-8', header=True, index=True)
                             results['success'].append(str(output_csv_internal_path))
                             logger.info(f"Tabla CSV interna generada: {output_csv_internal_path}")
@@ -975,10 +961,10 @@ class AnalysisService:
                                 row3.append(unit if unit else '')
                             header_rows_list.append(row3)
 
-                            # --- Guardar Formatos de Exportación ---
+                            # --- Guardar Formatos de Exportación (usando safe_group_key_part) ---
 
                             # 1. Formato TSV (Tab Separated, Comma Decimal)
-                            output_tsv_path = output_base_dir / f"{calc}_{target_frequency}_{descriptor_key}.tsv"
+                            output_tsv_path = output_base_dir / f"{calc}_{target_frequency}_{safe_group_key_part}.tsv"
                             try:
                                 with open(output_tsv_path, 'w', encoding='utf-8') as f:
                                     # Escribir las 4 filas de cabecera
@@ -995,7 +981,7 @@ class AnalysisService:
                                 results['errors'].append(error_msg)
 
                             # 2. Formato SCSV (Semicolon Separated, Comma Decimal)
-                            output_scsv_path = output_base_dir / f"{calc}_{target_frequency}_{descriptor_key}.scsv"
+                            output_scsv_path = output_base_dir / f"{calc}_{target_frequency}_{safe_group_key_part}.scsv"
                             try:
                                 with open(output_scsv_path, 'w', encoding='utf-8') as f:
                                     # Escribir las 4 filas de cabecera
@@ -1013,7 +999,7 @@ class AnalysisService:
 
                             # 3. Formato XLSX (Excel, Comma Decimal via Locale?) - openpyxl requerido
                             if OPENPYXL_AVAILABLE:
-                                output_xlsx_path = output_base_dir / f"{calc}_{target_frequency}_{descriptor_key}.xlsx"
+                                output_xlsx_path = output_base_dir / f"{calc}_{target_frequency}_{safe_group_key_part}.xlsx"
                                 try:
                                     # Usar ExcelWriter para acceder al objeto worksheet
                                     with pd.ExcelWriter(output_xlsx_path, engine='openpyxl') as writer:
@@ -1061,20 +1047,20 @@ class AnalysisService:
                                     logger.error(error_msg, exc_info=True)
                                     results['errors'].append(error_msg)
                             else:
-                                logger.warning(f"Omitiendo generación XLSX para {descriptor_key}/{calc} (openpyxl no disponible).")
+                                logger.warning(f"Omitiendo generación XLSX para {group_key}/{calc} (openpyxl no disponible).")
 
 
                         except Exception as e_df:
-                            # Error general al procesar este cálculo/descriptor
+                            # Error general al procesar este cálculo/grupo
                             error_msg = (f"Error procesando datos para "
-                                         f"{calc}_{target_frequency}_{descriptor_key}: {e_df}")
+                                         f"{calc}_{target_frequency}_{group_key}: {e_df}")
                             logger.error(error_msg, exc_info=True)
                             results['errors'].append(error_msg)
                     else:
                         # Mensaje genérico ya que se generan múltiples formatos
                         logger.warning(f"No se encontraron datos válidos para "
                                        f"generar tablas resumen para "
-                                       f"{calc}_{target_frequency}_{descriptor_key}")
+                                       f"{calc}_{target_frequency}_{group_key}")
 
         except Exception as e:
             error_msg = (f"Error inesperado durante generación tablas discretas "
@@ -1175,19 +1161,23 @@ class AnalysisService:
             _, unique_group_keys = self._identify_study_groups(study_id, frequency)
             study_aliases = self.study_service.get_study_aliases(study_id)
 
-            # Crear tuplas (display_name, original_key) usando las nuevas claves
+            # Crear tuplas ("Grupo X - Display Name", original_key)
             groups_with_display_names = []
-            for group_key in unique_group_keys:
+            # Ordenar claves originales para numeración consistente
+            sorted_group_keys = sorted(list(unique_group_keys))
+            for i, group_key in enumerate(sorted_group_keys):
                 display_parts = []
                 if group_key != "SinGrupo":
                     for part in group_key.split(';'):
                         vi_name, desc_value = part.split('=', 1)
                         alias = study_aliases.get(desc_value, desc_value) # Aplicar alias
                         display_parts.append(f"{vi_name}: {alias}") # Formato "VI: Alias"
-                display_name = ", ".join(display_parts) if display_parts else "Grupo General"
-                groups_with_display_names.append((display_name, group_key)) # Guardar clave original
+                base_display_name = ", ".join(display_parts) if display_parts else "Grupo General"
+                # Añadir prefijo "Grupo X - "
+                full_display_name = f"Grupo {i+1} - {base_display_name}"
+                groups_with_display_names.append((full_display_name, group_key)) # Guardar clave original
 
-            # Ordenar por nombre visible
+            # Ordenar por el nombre completo visible (ya incluye número)
             groups_with_display_names.sort()
             return groups_with_display_names
 
@@ -1221,7 +1211,9 @@ class AnalysisService:
             return []
 
         for group_key in group_keys:
-            table_filename = f"{calculation}_{frequency}_{group_key}.csv"
+            # Usar la misma lógica de nombre de archivo seguro que en generate_tables
+            safe_group_key_part = group_key.replace('=', '_').replace(';', '__')
+            table_filename = f"{calculation}_{frequency}_{safe_group_key_part}.csv"
             table_path = freq_path / table_filename
 
             if not table_path.exists():
@@ -1526,26 +1518,35 @@ class AnalysisService:
         try:
             # Obtener alias del estudio
             study_aliases = self.study_service.get_study_aliases(study_id)
-            # Usar alias para nombres de grupo (claves originales en config['groups'])
-            group_display_names = []
-            for group_key in config['groups']: # group_names son las claves originales
+            # Generar nombres de grupo legibles (con prefijo) y etiquetas eje X
+            group_legend_names = [] # Nombres completos para la leyenda
+            group_xaxis_labels = [] # Nombres cortos para el eje X
+            # Ordenar claves originales para numeración consistente
+            sorted_group_keys = sorted(config['groups'])
+            for i, group_key in enumerate(sorted_group_keys):
                 display_parts = []
                 if group_key != "SinGrupo":
                     for part in group_key.split(';'):
                         vi_name, desc_value = part.split('=', 1)
                         alias = study_aliases.get(desc_value, desc_value)
                         display_parts.append(f"{vi_name}: {alias}")
-                display_name = ", ".join(display_parts) if display_parts else "Grupo General"
-                group_display_names.append(display_name)
+                base_display_name = ", ".join(display_parts) if display_parts else "General"
+                # Nombre completo para leyenda
+                full_legend_name = f"Grupo {i+1} - {base_display_name}"
+                group_legend_names.append(full_legend_name)
+                # Nombre corto para eje X
+                group_xaxis_labels.append(f"Grupo {i+1}")
 
             chart_title = (f"{config['calculation']} - {config['column']}\n"
                            f"({analysis_name})")
             # Usar unidad de la columna
             chart_ylabel = f"{config['calculation']} ({target_column_parts[2]})"
 
+            # Pasar ambos tipos de nombres a la función de charting
             charting.create_comparison_boxplot(
                 data_by_group=data_by_group,
-                group_names=group_display_names,  # Usar nombres con alias
+                group_xaxis_labels=group_xaxis_labels, # Para eje X
+                group_legend_names=group_legend_names, # Para leyenda
                 title=chart_title,
                 ylabel=chart_ylabel,
                 output_path=plot_path,
@@ -1560,9 +1561,11 @@ class AnalysisService:
         # --- Guardar Gráfico Interactivo (HTML) ---
         interactive_plot_path = analysis_output_dir / "boxplot_interactive.html"
         try:
+            # Pasar ambos tipos de nombres a la función de charting interactivo
             charting.create_interactive_comparison_boxplot(
                 data_by_group=data_by_group,
-                group_names=group_display_names, # Usar nombres con alias
+                group_xaxis_labels=group_xaxis_labels, # Para eje X
+                group_legend_names=group_legend_names, # Para leyenda (hover)
                 title=chart_title,
                 ylabel=chart_ylabel,
                 output_path=interactive_plot_path
