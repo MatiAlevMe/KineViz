@@ -17553,3 +17553,222 @@ NameError: name 'Path' is not defined
 2025-04-19 17:48:27,628 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 12
 2025-04-19 17:48:27,629 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 12: {}
 2025-04-19 17:48:27,629 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, DL, POST, PRE'
+2025-04-19 17:57:05,641 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-19 17:57:05,641 - INFO - [__main__] - Iniciando KineViz...
+2025-04-19 17:57:10,034 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 12
+2025-04-19 17:57:10,050 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 12
+2025-04-19 17:57:10,050 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 12: {}
+2025-04-19 17:57:10,050 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, DL, POST, PRE'
+2025-04-19 17:57:17,167 - INFO - [kineviz.ui.views.discrete_analysis_view] - Directorio de tablas discretas no encontrado para estudio 12: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas
+2025-04-19 17:57:19,011 - INFO - [kineviz.ui.views.discrete_analysis_view] - Solicitando generación de tablas discretas para estudio 12
+2025-04-19 17:57:19,011 - INFO - [kineviz.core.services.analysis_service] - Iniciando generación de tablas resumen discreto para estudio 12
+2025-04-19 17:57:19,014 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 DL Nulo 02_Cinematica.txt' ---
+2025-04-19 17:57:19,014 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 17:57:19,014 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 DL Nulo 02'
+2025-04-19 17:57:19,014 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'DL', 'Nulo', '02']
+2025-04-19 17:57:19,014 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL', 'Nulo']
+2025-04-19 17:57:19,014 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 2
+2025-04-19 17:57:19,014 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (2) no coincide con VIs definidas (0).
+2025-04-19 17:57:19,014 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 CMJ Nulo 02_Cinematica.txt' ---
+2025-04-19 17:57:19,014 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 17:57:19,015 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 CMJ Nulo 02'
+2025-04-19 17:57:19,015 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'CMJ', 'Nulo', '02']
+2025-04-19 17:57:19,015 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ', 'Nulo']
+2025-04-19 17:57:19,015 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 2
+2025-04-19 17:57:19,015 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (2) no coincide con VIs definidas (0).
+2025-04-19 17:57:19,015 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 Nulo PRE 02_Cinematica.txt' ---
+2025-04-19 17:57:19,015 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 17:57:19,015 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 Nulo PRE 02'
+2025-04-19 17:57:19,015 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'Nulo', 'PRE', '02']
+2025-04-19 17:57:19,015 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Nulo', 'PRE']
+2025-04-19 17:57:19,015 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 2
+2025-04-19 17:57:19,015 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (2) no coincide con VIs definidas (0).
+2025-04-19 17:57:19,095 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_DL_Nulo.csv
+2025-04-19 17:57:19,097 - INFO - [kineviz.core.services.analysis_service] - Tabla TSV generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_DL_Nulo.tsv
+2025-04-19 17:57:19,097 - INFO - [kineviz.core.services.analysis_service] - Tabla SCSV generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_DL_Nulo.scsv
+2025-04-19 17:57:19,106 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_DL_Nulo.xlsx
+2025-04-19 17:57:19,122 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_DL_Nulo.csv
+2025-04-19 17:57:19,123 - INFO - [kineviz.core.services.analysis_service] - Tabla TSV generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_DL_Nulo.tsv
+2025-04-19 17:57:19,123 - INFO - [kineviz.core.services.analysis_service] - Tabla SCSV generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_DL_Nulo.scsv
+2025-04-19 17:57:19,130 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_DL_Nulo.xlsx
+2025-04-19 17:57:19,145 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_DL_Nulo.csv
+2025-04-19 17:57:19,146 - INFO - [kineviz.core.services.analysis_service] - Tabla TSV generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_DL_Nulo.tsv
+2025-04-19 17:57:19,147 - INFO - [kineviz.core.services.analysis_service] - Tabla SCSV generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_DL_Nulo.scsv
+2025-04-19 17:57:19,152 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_DL_Nulo.xlsx
+2025-04-19 17:57:19,169 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_CMJ_Nulo.csv
+2025-04-19 17:57:19,170 - INFO - [kineviz.core.services.analysis_service] - Tabla TSV generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_CMJ_Nulo.tsv
+2025-04-19 17:57:19,170 - INFO - [kineviz.core.services.analysis_service] - Tabla SCSV generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_CMJ_Nulo.scsv
+2025-04-19 17:57:19,176 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_CMJ_Nulo.xlsx
+2025-04-19 17:57:19,192 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_CMJ_Nulo.csv
+2025-04-19 17:57:19,193 - INFO - [kineviz.core.services.analysis_service] - Tabla TSV generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_CMJ_Nulo.tsv
+2025-04-19 17:57:19,193 - INFO - [kineviz.core.services.analysis_service] - Tabla SCSV generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_CMJ_Nulo.scsv
+2025-04-19 17:57:19,199 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_CMJ_Nulo.xlsx
+2025-04-19 17:57:19,215 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_CMJ_Nulo.csv
+2025-04-19 17:57:19,216 - INFO - [kineviz.core.services.analysis_service] - Tabla TSV generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_CMJ_Nulo.tsv
+2025-04-19 17:57:19,216 - INFO - [kineviz.core.services.analysis_service] - Tabla SCSV generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_CMJ_Nulo.scsv
+2025-04-19 17:57:19,222 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_CMJ_Nulo.xlsx
+2025-04-19 17:57:19,239 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Nulo_PRE.csv
+2025-04-19 17:57:19,240 - INFO - [kineviz.core.services.analysis_service] - Tabla TSV generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Nulo_PRE.tsv
+2025-04-19 17:57:19,240 - INFO - [kineviz.core.services.analysis_service] - Tabla SCSV generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Nulo_PRE.scsv
+2025-04-19 17:57:19,246 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Nulo_PRE.xlsx
+2025-04-19 17:57:19,262 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Nulo_PRE.csv
+2025-04-19 17:57:19,263 - INFO - [kineviz.core.services.analysis_service] - Tabla TSV generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Nulo_PRE.tsv
+2025-04-19 17:57:19,263 - INFO - [kineviz.core.services.analysis_service] - Tabla SCSV generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Nulo_PRE.scsv
+2025-04-19 17:57:19,269 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Nulo_PRE.xlsx
+2025-04-19 17:57:19,285 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Nulo_PRE.csv
+2025-04-19 17:57:19,286 - INFO - [kineviz.core.services.analysis_service] - Tabla TSV generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Nulo_PRE.tsv
+2025-04-19 17:57:19,286 - INFO - [kineviz.core.services.analysis_service] - Tabla SCSV generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Nulo_PRE.scsv
+2025-04-19 17:57:19,292 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Nulo_PRE.xlsx
+2025-04-19 17:57:19,292 - INFO - [kineviz.core.services.analysis_service] - Generación tablas discretas finalizada para estudio 12. Éxitos: 36, Errores: 0
+2025-04-19 17:57:38,018 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 12
+2025-04-19 17:57:38,019 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 12: {}
+2025-04-19 17:57:38,019 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, DL, POST, PRE'
+2025-04-19 17:58:33,094 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 12
+2025-04-19 17:58:33,096 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 12: {}
+2025-04-19 17:58:33,096 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, DL, POST, PRE'
+2025-04-19 17:58:47,308 - DEBUG - [kineviz.core.services.analysis_service] - Identificando grupos para estudio 12, frecuencia Cinematica
+2025-04-19 17:58:47,311 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 DL Nulo 02_Cinematica.txt' ---
+2025-04-19 17:58:47,311 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Tipo', 'descriptors': ['CMJ', 'DL']}, {'name': 'Cond', 'descriptors': ['POST', 'PRE']}]
+2025-04-19 17:58:47,311 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 DL Nulo 02'
+2025-04-19 17:58:47,312 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'DL', 'Nulo', '02']
+2025-04-19 17:58:47,312 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL', 'Nulo']
+2025-04-19 17:58:47,312 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-04-19 17:58:47,312 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'DL' es válido para VI 'Tipo'.
+2025-04-19 17:58:47,312 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'Nulo' es Nulo.
+2025-04-19 17:58:47,312 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Descriptores extraídos: ['DL', None]
+2025-04-19 17:58:47,312 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 CMJ Nulo 02_Cinematica.txt' ---
+2025-04-19 17:58:47,312 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Tipo', 'descriptors': ['CMJ', 'DL']}, {'name': 'Cond', 'descriptors': ['POST', 'PRE']}]
+2025-04-19 17:58:47,312 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 CMJ Nulo 02'
+2025-04-19 17:58:47,312 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'CMJ', 'Nulo', '02']
+2025-04-19 17:58:47,312 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ', 'Nulo']
+2025-04-19 17:58:47,312 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-04-19 17:58:47,312 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'CMJ' es válido para VI 'Tipo'.
+2025-04-19 17:58:47,312 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'Nulo' es Nulo.
+2025-04-19 17:58:47,312 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Descriptores extraídos: ['CMJ', None]
+2025-04-19 17:58:47,312 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 Nulo PRE 02_Cinematica.txt' ---
+2025-04-19 17:58:47,312 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Tipo', 'descriptors': ['CMJ', 'DL']}, {'name': 'Cond', 'descriptors': ['POST', 'PRE']}]
+2025-04-19 17:58:47,312 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 Nulo PRE 02'
+2025-04-19 17:58:47,313 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'Nulo', 'PRE', '02']
+2025-04-19 17:58:47,313 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Nulo', 'PRE']
+2025-04-19 17:58:47,313 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-04-19 17:58:47,313 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Nulo' es Nulo.
+2025-04-19 17:58:47,313 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'PRE' es válido para VI 'Cond'.
+2025-04-19 17:58:47,313 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Descriptores extraídos: [None, 'PRE']
+2025-04-19 17:58:47,313 - DEBUG - [kineviz.core.services.analysis_service] - Grupos identificados (3): {'Tipo=Nulo;Cond=PRE', 'Tipo=CMJ;Cond=Nulo', 'Tipo=DL;Cond=Nulo'}
+2025-04-19 17:59:00,018 - DEBUG - [kineviz.core.services.analysis_service] - Buscando columnas comunes para estudio 12, freq=Cinematica, calc=Maximo, grupos=['Tipo=CMJ;Cond=Nulo', 'Tipo=DL;Cond=Nulo']
+2025-04-19 17:59:00,019 - WARNING - [kineviz.core.services.analysis_service] - Tabla de resumen no encontrada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Tipo=CMJ;Cond=Nulo.csv
+2025-04-19 17:59:15,350 - DEBUG - [kineviz.core.services.analysis_service] - Buscando columnas comunes para estudio 12, freq=Cinematica, calc=Maximo, grupos=['Tipo=CMJ;Cond=Nulo', 'Tipo=Nulo;Cond=PRE']
+2025-04-19 17:59:15,352 - WARNING - [kineviz.core.services.analysis_service] - Tabla de resumen no encontrada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Tipo=CMJ;Cond=Nulo.csv
+2025-04-19 17:59:33,510 - INFO - [kineviz.ui.views.discrete_analysis_view] - Intentando abrir archivo: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Nulo_PRE.xlsx
+2025-04-19 17:59:40,035 - INFO - [kineviz.ui.views.discrete_analysis_view] - Intentando abrir archivo: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_CMJ_Nulo.xlsx
+2025-04-19 18:01:00,364 - DEBUG - [kineviz.core.services.analysis_service] - Identificando grupos para estudio 12, frecuencia Cinematica
+2025-04-19 18:01:00,368 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 DL Nulo 02_Cinematica.txt' ---
+2025-04-19 18:01:00,368 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Tipo', 'descriptors': ['CMJ', 'DL']}, {'name': 'Cond', 'descriptors': ['POST', 'PRE']}]
+2025-04-19 18:01:00,368 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 DL Nulo 02'
+2025-04-19 18:01:00,369 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'DL', 'Nulo', '02']
+2025-04-19 18:01:00,369 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL', 'Nulo']
+2025-04-19 18:01:00,369 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-04-19 18:01:00,369 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'DL' es válido para VI 'Tipo'.
+2025-04-19 18:01:00,369 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'Nulo' es Nulo.
+2025-04-19 18:01:00,369 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Descriptores extraídos: ['DL', None]
+2025-04-19 18:01:00,369 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 CMJ Nulo 02_Cinematica.txt' ---
+2025-04-19 18:01:00,369 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Tipo', 'descriptors': ['CMJ', 'DL']}, {'name': 'Cond', 'descriptors': ['POST', 'PRE']}]
+2025-04-19 18:01:00,369 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 CMJ Nulo 02'
+2025-04-19 18:01:00,370 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'CMJ', 'Nulo', '02']
+2025-04-19 18:01:00,370 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ', 'Nulo']
+2025-04-19 18:01:00,370 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-04-19 18:01:00,370 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'CMJ' es válido para VI 'Tipo'.
+2025-04-19 18:01:00,370 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'Nulo' es Nulo.
+2025-04-19 18:01:00,370 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Descriptores extraídos: ['CMJ', None]
+2025-04-19 18:01:00,370 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 Nulo PRE 02_Cinematica.txt' ---
+2025-04-19 18:01:00,370 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Tipo', 'descriptors': ['CMJ', 'DL']}, {'name': 'Cond', 'descriptors': ['POST', 'PRE']}]
+2025-04-19 18:01:00,370 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 Nulo PRE 02'
+2025-04-19 18:01:00,370 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'Nulo', 'PRE', '02']
+2025-04-19 18:01:00,370 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Nulo', 'PRE']
+2025-04-19 18:01:00,370 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-04-19 18:01:00,370 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Nulo' es Nulo.
+2025-04-19 18:01:00,370 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'PRE' es válido para VI 'Cond'.
+2025-04-19 18:01:00,370 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Descriptores extraídos: [None, 'PRE']
+2025-04-19 18:01:00,370 - DEBUG - [kineviz.core.services.analysis_service] - Grupos identificados (3): {'Tipo=Nulo;Cond=PRE', 'Tipo=CMJ;Cond=Nulo', 'Tipo=DL;Cond=Nulo'}
+2025-04-19 18:01:37,228 - DEBUG - [kineviz.core.services.analysis_service] - Identificando grupos para estudio 12, frecuencia Cinematica
+2025-04-19 18:01:37,231 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 DL Nulo 02_Cinematica.txt' ---
+2025-04-19 18:01:37,231 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Tipo', 'descriptors': ['CMJ', 'DL']}, {'name': 'Cond', 'descriptors': ['POST', 'PRE']}]
+2025-04-19 18:01:37,231 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 DL Nulo 02'
+2025-04-19 18:01:37,231 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'DL', 'Nulo', '02']
+2025-04-19 18:01:37,231 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL', 'Nulo']
+2025-04-19 18:01:37,231 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-04-19 18:01:37,231 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'DL' es válido para VI 'Tipo'.
+2025-04-19 18:01:37,231 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'Nulo' es Nulo.
+2025-04-19 18:01:37,231 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Descriptores extraídos: ['DL', None]
+2025-04-19 18:01:37,232 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 CMJ Nulo 02_Cinematica.txt' ---
+2025-04-19 18:01:37,232 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Tipo', 'descriptors': ['CMJ', 'DL']}, {'name': 'Cond', 'descriptors': ['POST', 'PRE']}]
+2025-04-19 18:01:37,232 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 CMJ Nulo 02'
+2025-04-19 18:01:37,232 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'CMJ', 'Nulo', '02']
+2025-04-19 18:01:37,232 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ', 'Nulo']
+2025-04-19 18:01:37,232 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-04-19 18:01:37,232 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'CMJ' es válido para VI 'Tipo'.
+2025-04-19 18:01:37,232 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'Nulo' es Nulo.
+2025-04-19 18:01:37,232 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Descriptores extraídos: ['CMJ', None]
+2025-04-19 18:01:37,232 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 Nulo PRE 02_Cinematica.txt' ---
+2025-04-19 18:01:37,232 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Tipo', 'descriptors': ['CMJ', 'DL']}, {'name': 'Cond', 'descriptors': ['POST', 'PRE']}]
+2025-04-19 18:01:37,232 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 Nulo PRE 02'
+2025-04-19 18:01:37,232 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'Nulo', 'PRE', '02']
+2025-04-19 18:01:37,232 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Nulo', 'PRE']
+2025-04-19 18:01:37,232 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-04-19 18:01:37,232 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Nulo' es Nulo.
+2025-04-19 18:01:37,232 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'PRE' es válido para VI 'Cond'.
+2025-04-19 18:01:37,232 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Descriptores extraídos: [None, 'PRE']
+2025-04-19 18:01:37,232 - DEBUG - [kineviz.core.services.analysis_service] - Grupos identificados (3): {'Tipo=Nulo;Cond=PRE', 'Tipo=CMJ;Cond=Nulo', 'Tipo=DL;Cond=Nulo'}
+2025-04-19 18:16:17,916 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-19 18:16:17,916 - INFO - [__main__] - Iniciando KineViz...
+2025-04-19 18:16:23,590 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 12
+2025-04-19 18:16:23,608 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 12
+2025-04-19 18:16:23,609 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 12: {}
+2025-04-19 18:16:23,609 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, DL, POST, PRE'
+2025-04-19 18:16:29,398 - DEBUG - [kineviz.core.services.analysis_service] - Identificando grupos para estudio 12, frecuencia Cinematica
+2025-04-19 18:16:29,400 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 DL Nulo 02_Cinematica.txt' ---
+2025-04-19 18:16:29,401 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Tipo', 'descriptors': ['CMJ', 'DL']}, {'name': 'Cond', 'descriptors': ['POST', 'PRE']}]
+2025-04-19 18:16:29,401 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 DL Nulo 02'
+2025-04-19 18:16:29,401 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'DL', 'Nulo', '02']
+2025-04-19 18:16:29,401 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL', 'Nulo']
+2025-04-19 18:16:29,401 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-04-19 18:16:29,401 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'DL' es válido para VI 'Tipo'.
+2025-04-19 18:16:29,401 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'Nulo' es Nulo.
+2025-04-19 18:16:29,401 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Descriptores extraídos: ['DL', None]
+2025-04-19 18:16:29,401 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 CMJ Nulo 02_Cinematica.txt' ---
+2025-04-19 18:16:29,401 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Tipo', 'descriptors': ['CMJ', 'DL']}, {'name': 'Cond', 'descriptors': ['POST', 'PRE']}]
+2025-04-19 18:16:29,401 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 CMJ Nulo 02'
+2025-04-19 18:16:29,401 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'CMJ', 'Nulo', '02']
+2025-04-19 18:16:29,401 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ', 'Nulo']
+2025-04-19 18:16:29,401 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-04-19 18:16:29,401 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'CMJ' es válido para VI 'Tipo'.
+2025-04-19 18:16:29,401 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'Nulo' es Nulo.
+2025-04-19 18:16:29,401 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Descriptores extraídos: ['CMJ', None]
+2025-04-19 18:16:29,402 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 Nulo PRE 02_Cinematica.txt' ---
+2025-04-19 18:16:29,402 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Tipo', 'descriptors': ['CMJ', 'DL']}, {'name': 'Cond', 'descriptors': ['POST', 'PRE']}]
+2025-04-19 18:16:29,402 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 Nulo PRE 02'
+2025-04-19 18:16:29,402 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'Nulo', 'PRE', '02']
+2025-04-19 18:16:29,402 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Nulo', 'PRE']
+2025-04-19 18:16:29,402 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-04-19 18:16:29,402 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Nulo' es Nulo.
+2025-04-19 18:16:29,402 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'PRE' es válido para VI 'Cond'.
+2025-04-19 18:16:29,402 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Descriptores extraídos: [None, 'PRE']
+2025-04-19 18:16:29,402 - DEBUG - [kineviz.core.services.analysis_service] - Grupos identificados (3): {'Tipo=DL;Cond=Nulo', 'Tipo=CMJ;Cond=Nulo', 'Tipo=Nulo;Cond=PRE'}
+2025-04-19 18:16:36,205 - DEBUG - [kineviz.core.services.analysis_service] - Buscando columnas comunes para estudio 12, freq=Cinematica, calc=Maximo, grupos=['Tipo=CMJ;Cond=Nulo', 'Tipo=DL;Cond=Nulo']
+2025-04-19 18:16:36,207 - WARNING - [kineviz.core.services.analysis_service] - Tabla de resumen no encontrada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba de Nuelos/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Tipo_CMJ__Cond_Nulo.csv
+2025-04-19 18:16:43,022 - INFO - [__main__] - KineViz cerrado normalmente.
+2025-04-19 18:22:19,770 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-19 18:22:19,770 - INFO - [__main__] - Iniciando KineViz...
+2025-04-19 18:22:23,157 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 12
+2025-04-19 18:22:23,173 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 12
+2025-04-19 18:22:23,173 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 12: {}
+2025-04-19 18:22:23,174 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, DL, POST, PRE'
+2025-04-19 18:22:26,246 - INFO - [kineviz.ui.views.discrete_analysis_view] - Solicitando generación de tablas discretas para estudio 12
+2025-04-19 18:22:26,247 - INFO - [kineviz.core.services.analysis_service] - Iniciando generación de tablas resumen discreto para estudio 12
+2025-04-19 18:22:26,250 - CRITICAL - [kineviz.core.services.analysis_service] - Error inesperado durante generación tablas discretas para estudio 12: name 'files_to_groups' is not defined
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/analysis_service.py", line 825, in generate_discrete_summary_tables
+    for file_base_key, group_key in files_to_groups.items():
+                                    ^^^^^^^^^^^^^^^
+NameError: name 'files_to_groups' is not defined. Did you mean: 'files_by_group_key'?
+2025-04-19 18:22:26,301 - INFO - [kineviz.core.services.analysis_service] - Generación tablas discretas finalizada para estudio 12. Éxitos: 0, Errores: 1
