@@ -127,14 +127,14 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 
 **Fase 3: Refactorización a Variables Independientes (VI)** (En Progreso)
 
-* **1. Modificar Modelo de Estudio:** (Pendiente)
-    * **1.1 DB Conceptual**: (Pendiente) Reemplazar columna `descriptores` por `independent_variables` (JSON TEXT) y añadir `aliases` (JSON TEXT) en tabla `estudios`.
-    * **1.2 Repositorio (`StudyRepository`)**: (Pendiente) Actualizar `_create_tables` (migración), `create_study`, `get_study_by_id`, `update_study` para manejar `independent_variables` y `aliases`.
-    * **1.3 Servicio (`StudyService`)**: (Pendiente) Actualizar métodos para manejar conversión Python <-> JSON para `independent_variables` y `aliases`. Añadir `get_study_aliases`, `update_study_aliases`.
-* **2. Refactorizar UI Creación/Edición Estudio (`StudyDialog`):** (Pendiente)
-    * **2.1 Flujo UI**: (Pendiente) Implementar UI jerárquica para definir VIs y sus Descriptores (con botones '+', '🗑️').
-    * **2.2 Restricciones Edición**: (Pendiente) Deshabilitar añadir/eliminar VIs/Descriptores; permitir renombrar VIs.
-    * **2.3 Botón Ayuda VI**: (Pendiente) Añadir botón `(?)` coloreado que abre `kineviz/docs/help/study_dialog_iv_help.txt`.
+* **1. Modificar Modelo de Estudio:** (Hecho)
+    * **1.1 DB Conceptual**: (Hecho) Reemplazada columna `descriptores` por `independent_variables` (JSON TEXT) y añadida `aliases` (JSON TEXT) en tabla `estudios`.
+    * **1.2 Repositorio (`StudyRepository`)**: (Hecho) Actualizados `_create_tables` (migración), `create_study`, `get_study_by_id`, `update_study` para manejar `independent_variables` y `aliases`.
+    * **1.3 Servicio (`StudyService`)**: (Hecho) Actualizados métodos para manejar conversión Python <-> JSON para `independent_variables` y `aliases`. Añadidos `get_study_aliases`, `update_study_aliases`.
+* **2. Refactorizar UI Creación/Edición Estudio (`StudyDialog`):** (Hecho)
+    * **2.1 Flujo UI**: (Hecho) Implementada UI jerárquica para definir VIs y sus Descriptores (con botones '+', '🗑️').
+    * **2.2 Restricciones Edición**: (Hecho) Deshabilitados añadir/eliminar VIs/Descriptores; permitido renombrar VIs.
+    * **2.3 Botón Ayuda VI**: (Hecho) Añadido botón `(?)` coloreado que abre `kineviz/docs/help/study_dialog_iv_help.txt`.
 * **3. Refactorizar Validación (`validators.py`):** (Hecho)
     * **3.1 Validador Datos Estudio**: (Hecho) Creado `validate_study_iv_data` para estructura VI (nombres no vacíos/duplicados, min 1 VI, min 2 Descriptores por VI, no descriptores con espacios).
     * **3.2 Validador Nombres Archivo**: (Hecho) Reescrito `validate_filename_for_study_criteria` para formato `PteXX [VAL_VI1]...[VAL_VIn] NN`, orden, valores permitidos (incl. "Nulo"), regla de al menos un descriptor no-Nulo. Devuelve `(bool, list[str|None])`.
