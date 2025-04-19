@@ -436,7 +436,7 @@ class AnalysisService:
 
             # --- Iterar y Generar Contenido ---
             plot_counter = 0
-            for freq, descriptor_data in structured_data.items(): # Corregir aquí
+            for freq, descriptor_data in structured_data.items():
                 story.append(Paragraph(f"Resultados para Frecuencia: {freq}",
                                        styles['h2']))
                 story.append(Spacer(1, 0.1*inch))
