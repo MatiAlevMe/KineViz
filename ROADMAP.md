@@ -80,44 +80,47 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 
 ## Diccionario de Tareas
 
-**Fase 1: Mejoras Incrementales - Detección de Frecuencia**
+**Fase 1: Mejoras Incrementales - Detección de Frecuencia (Hecho)**
 
-* **1. Implementar detección automática de tipo de frecuencias basada en metadatos del archivo.** (Pendiente)
-    * **Detalle**: Modificar la lógica en `kineviz.core.data_processing.file_handlers.leer_seccion` y `kineviz.core.services.file_service._process_and_copy_file` para identificar Cinemática ("Model Outputs"), Cinética ("Force Plate") y Electromiográfica (identificador a confirmar).
-    * **1.1 Implementación de identificador de archivo para Cinemática**: (Pendiente).
-    * **1.2 Implementación de identificador de archivo para Cinética**: (Pendiente).
-    * **1.3 Implementación de identificador de archivo para Electromiográfica**: (Pendiente) de confirmación del formato/identificador.
+* **1. Implementar detección automática de tipo de frecuencias basada en metadatos del archivo.** (Heco)
+    * **Detalle**: Modificar la lógica en `kineviz.core.data_processing.file_handlers.leer_seccion` y `kineviz.core.services.file_service._process_and_copy_file` para identificar Cinemática ("Model Outputs"), Cinética ("Force Plate") y Electromiográfica (Hecho).
+    * **1.1 Implementación de identificador de archivo para Cinemática**: (Hecho).
+    * **1.2 Implementación de identificador de archivo para Cinética**: (Hecho).
+    * **1.3 Implementación de identificador de archivo para Electromiográfica**: (Hecho) de confirmación del formato/identificador.
 
-**Fase 2: Análisis Estadístico Discreto y Reportes**
+**Fase 2: Análisis Estadístico Discreto y Reportes (Pendiente)**
 
-* **1. Generación de Matrices:** (Pendiente) Crear tablas por tipo de cálculo y combinación de descriptores (ej: "máximo_cinemática_CMJ_Normal").
-    * **1.1 Servicio `generate_discrete_summary_tables`**: (Pendiente) Lógica para agrupar archivos por combinación de descriptores, leer stats, crear DataFrames y guardar CSVs/TSVs/SCSVs/XLSX.
-    * **1.2 Botón en `StudyView`**: (Pendiente) Añadir botón "Análisis Discreto".
-    * **1.3 Vista `DiscreteAnalysisView`**: (Pendiente) Crear vista para listar/mostrar/eliminar tablas generadas, con filtros y paginación.
-* **2. Identificación de Grupos y Columnas Comunes:** (Pendiente)
-    * **2.1 `AnalysisService._identify_study_groups`**: (Pendiente) Identifica grupos únicos por combinación de descriptores.
-    * **2.2 `AnalysisService.get_discrete_analysis_groups`**: (Pendiente) Expone grupos combinados a la UI.
-    * **2.3 `AnalysisService.get_common_columns_for_groups`**: (Pendiente) Encuentra columnas comunes en tablas CSV internas para grupos combinados.
+* **1. Generación de Matrices:** (Hecho) Crear tablas por tipo de cálculo y combinación de descriptores (ej: "máximo_cinemática_CMJ_Normal"). 
+    * **1.1 Servicio `generate_discrete_summary_tables`**: (Hecho) Lógica para agrupar archivos por combinación de descriptores, leer stats, crear DataFrames y guardar CSVs/TSVs/SCSVs/XLSX.
+    * **1.2 Botón en `StudyView`**: (Hecho) Añadir botón "Análisis Discreto".
+    * **1.3 Vista `DiscreteAnalysisView`**: (Hecho) Crear vista para listar/mostrar/eliminar tablas generadas, con filtros y paginación.
+* **2. Identificación de Grupos y Columnas Comunes:** (Hecho)
+    * **2.1 `AnalysisService._identify_study_groups`**: (Hecho) Identifica grupos únicos por combinación de descriptores.
+    * **2.2 `AnalysisService.get_discrete_analysis_groups`**: (Hecho) Expone grupos combinados a la UI.
+    * **2.3 `AnalysisService.get_common_columns_for_groups`**: (Hecho) Encuentra columnas comunes en tablas CSV internas para grupos combinados.
 * **3. Diálogo de Configuración de Análisis Individual:** (Pendiente)
-    * **3.1 Crear `ConfigureIndividualAnalysisDialog`**: (Pendiente) UI para seleccionar Frecuencia, Cálculo, Grupos combinados (dinámico), Columna (dinámico), y supuestos (paramétrico/pareado).
-* **4. Diálogo de Gestión de Análisis Individual:** (Pendiente)
-    * **4.1 Crear `IndividualAnalysisManagerDialog`**: (Pendiente) UI para listar, ver (gráfico estático/interactivo), eliminar análisis guardados y abrir carpeta.
-    * **4.2 Botón en `DiscreteAnalysisView`**: (Pendiente) Añadir botón para abrir el gestor.
+    * **3.1 Crear `ConfigureIndividualAnalysisDialog`**: (Hecho) UI para seleccionar Frecuencia, Cálculo, Grupos combinados (dinámico), Columna (dinámico), y supuestos (paramétrico/pareado). 
+    * **3.2 Integración con VIS**: (Pendiente) Para Grupos combinados faltaría integrar con fase 3 con las variables independientes, es decir por ejemplo CMJ pertenece a Tipo de Salto y Obeso pertenece a Peso, entonces al comparar grupos, Dira por ejemplo "[VARIABLE_INDEPENDIENTE]:[ALIAS_DESCRIPTOR]" ejemplo para dos variables independientes "Grupo 1 - Tipo de Salto: CMJ, Peso: Obeso" y un "Grupo 2 - Tipo de Salto: DL, Peso: BajoPeso"
+* **4. Diálogo de Gestión de Análisis Individual:** (Hecho)
+    * **4.1 Crear `IndividualAnalysisManagerDialog`**: (Hecho) UI para listar, ver (gráfico estático/interactivo), eliminar análisis guardados y abrir carpeta.
+    * **4.2 Botón en `DiscreteAnalysisView`**: (Hecho) Añadir botón para abrir el gestor.
 * **5. Generación de Gráfico Boxplot Comparativo:** (Pendiente)
-    * **5.1 Función `create_comparison_boxplot`**: (Pendiente) En `charting.py` usando seaborn/matplotlib.
-    * **5.2 `AnalysisService.perform_individual_analysis`**: (Pendiente) Lógica para leer datos de tablas CSV internas, preparar datos por grupo combinado y llamar a `create_comparison_boxplot`. Guarda gráfico PNG y config.json.
+    * **5.1 Función `create_comparison_boxplot`**: (Hecho) En `charting.py` usando seaborn/matplotlib.
+    * **5.2 `AnalysisService.perform_individual_analysis`**: (Hecho) Lógica para leer datos de tablas CSV internas, preparar datos por grupo combinado y llamar a `create_comparison_boxplot`. Guarda gráfico PNG y config.json.
 * **6. Implementación de Tests Estadísticos y Mejoras Gráficas:** (Pendiente)
-    * **6.1 Lógica en `perform_individual_analysis`**: (Pendiente) Ejecutar tests (t-test/ANOVA/Wilcoxon/Kruskal/Friedman) usando `scipy.stats`.
-    * **6.2 Mejorar `create_comparison_boxplot`**: (Pendiente) Usar `swarmplot`, añadir leyenda, mostrar significancia (statannot para 2 grupos, p-valor general para >2).
-    * **6.3 Tests post-hoc**: (Pendiente) Considerar y añadir si es necesario.
-* **7. Generación de Gráfico Interactivo (Plotly):** (Pendiente)
-    * **7.1 Añadir dependencia `plotly`**: (Pendiente).
-    * **7.2 Crear `create_interactive_comparison_boxplot`**: (Pendiente) En `charting.py` para generar HTML.
-    * **7.3 Modificar `perform_individual_analysis`**: (Pendiente) Generar y guardar HTML.
+    * **6.1 Lógica en `perform_individual_analysis`**: (Hecho) Ejecutar tests (t-test/ANOVA/Wilcoxon/Kruskal/Friedman) usando `scipy.stats`.
+    * **6.2 Mejorar `create_comparison_boxplot`**: (Hecho) Usar `swarmplot`, añadir leyenda, mostrar significancia (statannot para 2 grupos, p-valor general para >2).
+    * **6.3 Integrar LEYENDAS con VIs**: (Pendiente) Falta integrar las leyendas en los gráficos con las variables independientes, es decir en vez de las leyendas ser los descriptores utilizados, sería algo como "Grupo 1 - Tipo de Salto: CMJ, Peso: Obeso" y un "Grupo 2 - Tipo de Salto: DL, Peso: BajoPeso".
+    * **6.4 Integrar EL EJE HORIZONTAL con VIs**: (Pendiente): Falta integrar el eje horizontal, en vez de mostrar el descriptor debería mostrar el Grupo al que pertenece y en la leyenda el usuario puede revisar su detalle.
+    * **6.5 Tests post-hoc**: (Pendiente) Considerar y añadir si es necesario.
+* **7. Generación de Gráfico Interactivo (Plotly):** (Hecho)
+    * **7.1 Añadir dependencia `plotly`**: (Hecho).
+    * **7.2 Crear `create_interactive_comparison_boxplot`**: (Hecho) En `charting.py` para generar HTML.
+    * **7.3 Modificar `perform_individual_analysis`**: (Hecho) Generar y guardar HTML.
     * **7.4 Anotaciones en Plotly**: (Pendiente - Fase B) Implementar lógica personalizada si se requiere.
 * **8. Gestión de Análisis Guardados:** (Pendiente)
-    * **8.1 `AnalysisService.list_individual_analyses` / `delete_individual_analysis`**: (Pendiente).
-    * **8.2 Conectar UI `IndividualAnalysisManagerDialog`**: (Pendiente) Cargar, ver PNG, ver HTML, eliminar, abrir carpeta. Mostrar grupos combinados y p-valor.
+    * **8.1 `AnalysisService.list_individual_analyses` / `delete_individual_analysis`**: (Hecho).
+    * **8.2 Conectar UI `IndividualAnalysisManagerDialog`**: (Hecho) Cargar, ver PNG, ver HTML, eliminar, abrir carpeta. Mostrar grupos combinados y p-valor.
 * **9. Reporte General (PDF):** (Pendiente) Implementar generación automática de PDF con análisis para combinaciones relevantes.
 * **10. Corrección de Errores:** (Pendiente) Revisar y corregir errores conocidos (ej: formato cabeceras CSV).
 * **11. Integración y Pruebas:** (Pendiente) Integrar y probar toda la funcionalidad de análisis discreto.
@@ -131,9 +134,9 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 * **2. Refactorizar UI Creación/Edición Estudio (`StudyDialog`):** (Pendiente)
     * **2.1 Flujo UI**: (Pendiente) Implementar UI jerárquica para definir VIs y sus Descriptores (con botones '+', '🗑️').
     * **2.2 Restricciones Edición**: (Pendiente) Deshabilitar añadir/eliminar VIs/Descriptores; permitir renombrar VIs.
-    * **2.3 Botón Ayuda VI**: (Pendiente) Añadir botón `(?)` coloreado que abre `docs/help/study_dialog_iv_help.txt`.
+    * **2.3 Botón Ayuda VI**: (Pendiente) Añadir botón `(?)` coloreado que abre `kineviz/docs/help/study_dialog_iv_help.txt`.
 * **3. Refactorizar Validación (`validators.py`):** (Pendiente)
-    * **3.1 Validador Datos Estudio**: (Pendiente) Crear `validate_study_iv_data` para estructura VI (nombres no vacíos/duplicados, min 1 VI, min 2 Descriptores por VI).
+    * **3.1 Validador Datos Estudio**: (Pendiente) Crear `validate_study_iv_data` para estructura VI (nombres no vacíos/duplicados, min 1 VI, min 2 Descriptores por VI, no se debe permitir crear/guardar un estudio que tenga un descriptor con espacios).
     * **3.2 Validador Nombres Archivo**: (Pendiente) Reescribir `validate_filename_for_study_criteria` para formato `PteXX [VAL_VI1]...[VAL_VIn] NN`, orden, valores permitidos (incl. "Nulo"), regla de al menos un descriptor no-Nulo. Devolver `(bool, list[str|None])`.
     * **3.3 Eliminar Validador Antiguo**: (Pendiente) Eliminar `validate_study_data`.
 * **4. Integrar Validación:** (Pendiente)
@@ -145,13 +148,13 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 * **6. Actualizar Vista Estudio (`StudyView`):** (Pendiente)
     * **6.1 Mostrar VIs**: (Pendiente) Añadir label para mostrar nombres de VIs.
     * **6.2 Mostrar Descriptores (Tooltip/Popup)**: (Pendiente) Añadir botón `ℹ️` que muestra Descriptores por VI (con alias).
-    * **6.3 Botón Ayuda General**: (Pendiente) Añadir botón `(?)` que abre `docs/help/study_view_help.txt`.
+    * **6.3 Botón Ayuda General**: (Pendiente) Añadir botón `(?)` que abre `kineviz/docs/help/study_view_help.txt`.
 * **7. Refactorizar Gestión de Alias:** (Pendiente)
     * **7.1 Mover a DB**: (Pendiente) Implementar carga/guardado de alias por estudio en `StudyRepository` y `StudyService`.
     * **7.2 Adaptar `DescriptorAliasDialog`**: (Pendiente) Cargar/guardar alias vía `StudyService`.
     * **7.3 Limpiar `AppSettings`**: (Pendiente) Eliminar métodos de alias globales.
 * **8. Adaptar Servicios y UI de Análisis:** (Pendiente)
-    * **8.1 `AnalysisService._identify_study_groups`**: (Pendiente) Crear claves de grupo combinadas (ej: "CMJ_Normal", "SaltoAlto_Nulo").
+    * **8.1 `AnalysisService._identify_study_groups`**: (Pendiente) Crear claves de grupo combinadas ("Grupo 1 - Tipo de Salto: CMJ, Peso: Obeso" y un "Grupo 2 - Tipo de Salto: DL, Peso: BajoPeso").
     * **8.2 `AnalysisService` (Resto)**: (Pendiente) Adaptar `get_discrete_analysis_groups`, `generate_discrete_summary_tables`, `perform_individual_analysis`, `get_common_columns_for_groups`, `generate_report` para usar claves combinadas.
     * **8.3 `ConfigureIndividualAnalysisDialog`**: (Pendiente) Mostrar/seleccionar claves de grupo combinadas.
     * **8.4 `IndividualAnalysisManagerDialog`**: (Pendiente) Mostrar claves de grupo combinadas.
