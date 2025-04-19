@@ -442,10 +442,11 @@ if __name__ == '__main__':
         # ya están en ConfigureIndividualAnalysisDialog, no se necesitan aquí.
 
         def delete_individual_analysis(self, study_id, analysis_name):
-            print(f"Dummy: get_common_columns_for_groups({study_id}, "
-                  f"{frequency}, {calculation}, {group_keys})")
-            return ['Art1/PosX/mm', 'Art1/PosY/mm', 'Art2/VelX/m/s',
-                    'H Salto/Alt/cm']
+            # Corregir el print para usar las variables disponibles
+            print(f"Dummy: delete_individual_analysis(study_id={study_id}, "
+                  f"analysis_name='{analysis_name}')")
+            # El return anterior no tenía sentido aquí, lo eliminamos o devolvemos None
+            return None
 
         def perform_individual_analysis(self, study_id, config):
             print(f"Dummy: perform_individual_analysis({study_id}, {config})")
