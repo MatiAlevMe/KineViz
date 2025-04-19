@@ -195,17 +195,21 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                 group_display_names = []
                 # Obtener alias una vez
                 study_aliases = self.analysis_service.study_service.get_study_aliases(self.study_id)
-                for group_key in group_keys:
+                # Ordenar claves originales para numeración consistente
+                sorted_group_keys = sorted(group_keys)
+                for i, group_key in enumerate(sorted_group_keys):
                     display_parts = []
                     if group_key != "SinGrupo":
                         for part in group_key.split(';'):
                             vi_name, desc_value = part.split('=', 1)
                             alias = study_aliases.get(desc_value, desc_value)
                             display_parts.append(f"{vi_name}: {alias}")
-                    display_name = ", ".join(display_parts) if display_parts else "Grupo General"
-                    group_display_names.append(display_name)
+                    base_display_name = ", ".join(display_parts) if display_parts else "General"
+                    # Añadir prefijo "Grupo X - "
+                    full_display_name = f"Grupo {i+1} - {base_display_name}"
+                    group_display_names.append(full_display_name)
 
-                # Unir nombres de grupo legibles para la columna "Grupos Comparados"
+                # Unir nombres de grupo completos para la columna "Grupos Comparados"
                 grupos_comparados_str = " vs ".join(group_display_names)
 
                 # Construir tupla de valores para insertar
