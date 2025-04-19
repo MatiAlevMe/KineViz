@@ -14,8 +14,8 @@ from kineviz.ui.widgets import charting  # Importar nuestro módulo de gráficos
 # Importar el validador de nombres de archivo
 from kineviz.ui.utils.validators import validate_filename_for_study_criteria
 
-# Importar AppSettings para type hinting
-from kineviz.config.settings import AppSettings
+# Ya no se necesita AppSettings
+# from kineviz.config.settings import AppSettings
 
 # Importar reportlab
 from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer, Image,
@@ -49,17 +49,17 @@ except ImportError:
 
 
 class AnalysisService:
-    def __init__(self, study_service: StudyService, file_service: FileService, app_settings: AppSettings):
+    # Eliminar app_settings de la inicialización
+    def __init__(self, study_service: StudyService, file_service: FileService):
         """
         Inicializa el AnalysisService.
 
         :param study_service: Instancia de StudyService.
         :param file_service: Instancia de FileService.
-        :param app_settings: Instancia de AppSettings para acceder a alias.
         """
         self.study_service = study_service
         self.file_service = file_service
-        self.settings = app_settings  # Guardar referencia a AppSettings
+        # self.settings = app_settings # Ya no se guarda referencia a AppSettings
 
     def get_analysis_parameters(self, study_id: int) -> dict:
         """
@@ -432,10 +432,12 @@ class AnalysisService:
             # Parámetros Usados
             story.append(Paragraph("<b>Parámetros Seleccionados:</b>",
                                    styles['h3']))
+            # Obtener alias del estudio
+            study_aliases = self.study_service.get_study_aliases(study_id)
             # Mostrar alias para descriptores seleccionados
             selected_descriptors_orig = parameters.get('descriptors', [])
             selected_descriptors_display = [
-                self.settings.get_descriptor_alias(d) or d
+                study_aliases.get(d, d) # Usar alias del estudio o el descriptor original
                 for d in selected_descriptors_orig
             ]
             param_text = (
@@ -455,10 +457,11 @@ class AnalysisService:
                 story.append(Spacer(1, 0.1*inch))
 
                 for descriptor_key, patient_data in descriptor_data.items():
+                    # Obtener alias del estudio (ya obtenidos antes)
                     # Obtener alias para cada parte de la clave de descriptor
                     descriptor_parts = descriptor_key.split('_')
                     descriptor_display_parts = [
-                        self.settings.get_descriptor_alias(part) or part
+                        study_aliases.get(part, part) # Usar alias del estudio o el original
                         for part in descriptor_parts
                     ]
                     descriptor_display = ', '.join(descriptor_display_parts) \
@@ -1188,13 +1191,25 @@ class AnalysisService:
 
         :param study_id: ID del estudio.
         :param frequency: Frecuencia a considerar.
-        :return: Lista ordenada de claves de grupo únicas.
+        :return: Lista ordenada de tuplas (display_name, original_key).
         """
         try:
-            _, unique_group_keys = self._identify_study_groups(study_id,
-                                                               frequency)
-            # Devolver lista ordenada para consistencia en la UI
-            return sorted(list(unique_group_keys))
+            _, unique_group_keys = self._identify_study_groups(study_id, frequency)
+            study_aliases = self.study_service.get_study_aliases(study_id)
+
+            # Crear tuplas (display_name, original_key)
+            groups_with_display_names = []
+            for g_key in unique_group_keys:
+                parts = g_key.split('_')
+                aliased_parts = [study_aliases.get(p, p) for p in parts]
+                display_name = ', '.join(aliased_parts) \
+                    if g_key != "SinDescriptores" else "Sin Descriptores"
+                groups_with_display_names.append((display_name, g_key))
+
+            # Ordenar por nombre visible
+            groups_with_display_names.sort()
+            return groups_with_display_names
+
         except ValueError as e:
             logger.warning(f"No se pudieron obtener grupos para estudio {study_id}: {e}")
             return [] # Devolver vacío si hay error
@@ -1528,12 +1543,13 @@ class AnalysisService:
 
         # --- Generar Gráfico ---
         try:
-            # Usar alias para nombres de grupo si están disponibles
+            # Obtener alias del estudio
+            study_aliases = self.study_service.get_study_aliases(study_id)
+            # Usar alias para nombres de grupo
             group_display_names = []
-            for g_key in group_names:
+            for g_key in group_names: # group_names son las claves originales
                 parts = g_key.split('_')
-                aliased_parts = [self.settings.get_descriptor_alias(p) or p
-                                 for p in parts]
+                aliased_parts = [study_aliases.get(p, p) for p in parts]
                 display_name = ', '.join(aliased_parts) \
                     if g_key != "SinDescriptores" else "Sin Descriptores"
                 group_display_names.append(display_name)

@@ -162,22 +162,11 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             self.available_groups = []
         else:
             try:
-                # Usar alias para mostrar en la UI
-                raw_groups = self.analysis_service.get_discrete_analysis_groups(self.study_id, selected_freq)
-                self.available_groups = []
-                for g_key in raw_groups:
-                    parts = g_key.split('_')
-                    # Acceder a settings a través de analysis_service
-                    aliased_parts = [
-                        self.analysis_service.settings.get_descriptor_alias(p) or p
-                        for p in parts
-                    ]
-                    display_name = ', '.join(aliased_parts) \
-                        if g_key != "SinDescriptores" else "Sin Descriptores"
-                    # Guardar tupla (display_name, original_key)
-                    self.available_groups.append((display_name, g_key))
-                # Ordenar por nombre visible
-                self.available_groups.sort()
+                # get_discrete_analysis_groups ahora devuelve tuplas (display_name, key)
+                self.available_groups = self.analysis_service.get_discrete_analysis_groups(
+                    self.study_id, selected_freq
+                )
+                # No es necesario ordenar aquí, ya viene ordenado del servicio
 
             except Exception as e:
                 logger.error(f"Error obteniendo grupos para frecuencia "
@@ -422,18 +411,26 @@ if __name__ == '__main__':
     # --- Dummies (igual que en el manager) ---
     class DummyAnalysisService:
         def __init__(self):
-            # Simular AppSettings
-            class DummySettings:
-                def get_descriptor_alias(self, desc):
-                    return {'CMJ': 'Salto CM', 'PRE': 'Antes',
-                            'POST': 'Despues'}.get(desc)
-            self.settings = DummySettings()
+            # Simular StudyService anidado para alias
+            class DummyStudyService:
+                 def get_study_aliases(self, study_id):
+                     print(f"DummyStudyService: get_study_aliases({study_id})")
+                     return {'CMJ': 'Salto CM', 'PRE': 'Antes', 'POST': 'Despues'}
+            self.study_service = DummyStudyService()
 
         def get_discrete_analysis_groups(self, study_id, frequency):
-            print(f"Dummy: get_discrete_analysis_groups({study_id}, "
-                  f"{frequency})")
-            return ['CMJ_PRE', 'CMJ_POST', 'SJ_TipoA', 'SJ_TipoB',
-                    'SJ_TipoC', 'SinDescriptores']
+            print(f"Dummy: get_discrete_analysis_groups({study_id}, {frequency})")
+            # Devolver tuplas (display_name, key)
+            raw_keys = ['CMJ_PRE', 'CMJ_POST', 'SJ_TipoA', 'SJ_TipoB', 'SJ_TipoC', 'SinDescriptores']
+            aliases = self.study_service.get_study_aliases(study_id)
+            groups = []
+            for key in raw_keys:
+                parts = key.split('_')
+                aliased_parts = [aliases.get(p, p) for p in parts]
+                display = ', '.join(aliased_parts) if key != "SinDescriptores" else "Sin Descriptores"
+                groups.append((display, key))
+            groups.sort()
+            return groups
 
         def get_common_columns_for_groups(self, study_id, frequency,
                                           calculation, group_keys):

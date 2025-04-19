@@ -1,18 +1,22 @@
 import tkinter as tk
 from tkinter import ttk, Toplevel, messagebox
 import logging
-from kineviz.config.settings import AppSettings
-from kineviz.core.services.file_service import FileService
+# Ya no se necesita AppSettings
+# from kineviz.config.settings import AppSettings
+# Ya no se necesita FileService directamente aquí
+# from kineviz.core.services.file_service import FileService
 
 logger = logging.getLogger(__name__)
 
 class DescriptorAliasDialog(Toplevel):
-    """Diálogo para gestionar alias de descriptores detectados en un estudio."""
+    """Diálogo para gestionar alias de descriptores definidos en un estudio."""
 
-    def __init__(self, parent, app_settings: AppSettings, file_service: FileService, study_id: int):
+    # Cambiar app_settings y file_service por study_service
+    def __init__(self, parent, study_service: StudyService, study_id: int):
         super().__init__(parent)
-        self.app_settings = app_settings
-        self.file_service = file_service
+        # self.app_settings = app_settings # Ya no se usa
+        # self.file_service = file_service # Ya no se usa
+        self.study_service = study_service # Usar StudyService
         self.study_id = study_id
 
         self.title(f"Gestionar Alias de Descriptores (Estudio {study_id})")
@@ -21,8 +25,10 @@ class DescriptorAliasDialog(Toplevel):
 
         # Diccionario para almacenar las variables de entrada de alias
         self.alias_vars = {}
-        # Almacenar descriptores detectados
-        self.detected_descriptors = set()
+        # Almacenar descriptores definidos en el estudio
+        self.defined_descriptors = set()
+        # Almacenar alias actuales del estudio
+        self.current_aliases = {}
 
         # --- Frame principal con scroll ---
         container_frame = ttk.Frame(self)
@@ -54,15 +60,15 @@ class DescriptorAliasDialog(Toplevel):
         main_frame.pack(fill=tk.BOTH, expand=True)
 
         # Instrucciones
-        ttk.Label(main_frame, text="Asigne un alias descriptivo a cada descriptor detectado en los archivos del estudio.", wraplength=450).pack(pady=(0, 10))
+        ttk.Label(main_frame, text="Asigne un alias descriptivo a cada descriptor definido para este estudio.", wraplength=450).pack(pady=(0, 10))
 
         # Frame para la tabla de alias (usaremos grid aquí)
         self.alias_grid_frame = ttk.Frame(main_frame)
         self.alias_grid_frame.pack(fill=tk.BOTH, expand=True)
         self.alias_grid_frame.columnconfigure(1, weight=1) # Columna de alias expandible
 
-        # Cabeceras (opcional)
-        ttk.Label(self.alias_grid_frame, text="Descriptor Detectado", font=('Helvetica', 10, 'bold')).grid(row=0, column=0, padx=5, pady=5, sticky='w')
+        # Cabeceras
+        ttk.Label(self.alias_grid_frame, text="Descriptor Definido", font=('Helvetica', 10, 'bold')).grid(row=0, column=0, padx=5, pady=5, sticky='w')
         ttk.Label(self.alias_grid_frame, text="Alias Asignado", font=('Helvetica', 10, 'bold')).grid(row=0, column=1, padx=5, pady=5, sticky='w')
 
         # Los descriptores se añadirán dinámicamente en load_descriptors_and_aliases
@@ -74,15 +80,24 @@ class DescriptorAliasDialog(Toplevel):
         ttk.Button(button_frame, text="Cancelar", command=self.destroy).pack(side=tk.RIGHT)
 
     def load_descriptors_and_aliases(self):
-        """Carga los descriptores detectados y los alias existentes."""
+        """Carga los descriptores definidos en el estudio y sus alias actuales."""
         try:
-            # Obtener descriptores únicos detectados en los archivos del estudio
-            params = self.file_service.get_unique_study_parameters(self.study_id)
-            self.detected_descriptors = params.get('descriptors', set())
-            logger.info(f"Descriptores detectados para estudio {self.study_id}: {self.detected_descriptors}")
+            # Obtener detalles del estudio para VIs y alias
+            study_details = self.study_service.get_study_details(self.study_id)
+            independent_variables = study_details.get('independent_variables', [])
+            self.current_aliases = study_details.get('aliases', {}) # Guardar alias actuales
 
-            # Obtener alias existentes desde la configuración
-            existing_aliases = self.app_settings.get_all_aliases()
+            # Extraer todos los descriptores definidos de la estructura de VIs
+            self.defined_descriptors = set()
+            for iv in independent_variables:
+                # Asumiendo que cada VI es un dict con 'name' y 'descriptors' (lista)
+                if isinstance(iv, dict) and 'descriptors' in iv and isinstance(iv['descriptors'], list):
+                    for desc in iv['descriptors']:
+                        if isinstance(desc, str) and desc.strip(): # Asegurar que sea string no vacío
+                            self.defined_descriptors.add(desc.strip())
+
+            logger.info(f"Descriptores definidos para estudio {self.study_id}: {self.defined_descriptors}")
+            logger.debug(f"Aliases actuales para estudio {self.study_id}: {self.current_aliases}")
 
             # Limpiar entradas anteriores si se recarga
             for widget in self.alias_grid_frame.winfo_children():
@@ -91,18 +106,20 @@ class DescriptorAliasDialog(Toplevel):
                     widget.destroy()
             self.alias_vars.clear()
 
-            # Crear fila para cada descriptor detectado
+            # Crear fila para cada descriptor definido
             row_idx = 1 # Empezar después de las cabeceras
-            if not self.detected_descriptors:
-                 ttk.Label(self.alias_grid_frame, text="No se detectaron descriptores en los archivos válidos de este estudio.").grid(row=row_idx, column=0, columnspan=2, pady=10)
+            if not self.defined_descriptors:
+                 ttk.Label(self.alias_grid_frame, text="No hay descriptores definidos para este estudio.").grid(row=row_idx, column=0, columnspan=2, pady=10)
             else:
-                for descriptor in sorted(list(self.detected_descriptors)):
+                # Ordenar descriptores para consistencia
+                for descriptor in sorted(list(self.defined_descriptors)):
                     # Etiqueta del descriptor
                     ttk.Label(self.alias_grid_frame, text=descriptor).grid(row=row_idx, column=0, padx=5, pady=2, sticky='w')
 
                     # Entrada para el alias
                     alias_var = tk.StringVar()
-                    alias_var.set(existing_aliases.get(descriptor, "")) # Cargar alias existente o vacío
+                    # Cargar alias actual del estudio
+                    alias_var.set(self.current_aliases.get(descriptor, ""))
                     alias_entry = ttk.Entry(self.alias_grid_frame, textvariable=alias_var)
                     alias_entry.grid(row=row_idx, column=1, padx=5, pady=2, sticky='ew')
 
@@ -114,23 +131,31 @@ class DescriptorAliasDialog(Toplevel):
             messagebox.showerror("Error", f"No se pudieron cargar los descriptores o alias:\n{e}", parent=self)
 
     def save_aliases(self):
-        """Guarda los alias modificados en la configuración."""
+        """Guarda los alias modificados para el estudio actual usando StudyService."""
+        new_aliases_dict = {}
+        changed = False
+        for descriptor, alias_var in self.alias_vars.items():
+            new_alias = alias_var.get().strip()
+            # Guardar solo si el alias no está vacío
+            if new_alias:
+                new_aliases_dict[descriptor] = new_alias
+            # Comparar con los alias originales cargados
+            if new_alias != (self.current_aliases.get(descriptor) or ""):
+                changed = True
+
+        if not changed:
+            messagebox.showinfo("Información", "No se detectaron cambios en los alias.", parent=self)
+            self.destroy()
+            return
+
         try:
-            changed = False
-            for descriptor, alias_var in self.alias_vars.items():
-                new_alias = alias_var.get().strip()
-                current_alias = self.app_settings.get_descriptor_alias(descriptor) or ""
-                if new_alias != current_alias:
-                    self.app_settings.set_descriptor_alias(descriptor, new_alias)
-                    changed = True
-
-            if changed:
-                self.app_settings.save_settings()
-                messagebox.showinfo("Éxito", "Alias guardados correctamente.", parent=self)
-            else:
-                messagebox.showinfo("Información", "No se detectaron cambios en los alias.", parent=self)
-
+            # Llamar al servicio para actualizar los alias del estudio
+            self.study_service.update_study_aliases(self.study_id, new_aliases_dict)
+            messagebox.showinfo("Éxito", "Alias guardados correctamente para este estudio.", parent=self)
             self.destroy() # Cerrar diálogo después de guardar
+        except ValueError as ve:
+            logger.error(f"Error de validación al guardar alias para estudio {self.study_id}: {ve}", exc_info=True)
+            messagebox.showerror("Error de Validación", f"No se pudieron guardar los alias:\n{ve}", parent=self)
         except Exception as e:
-            logger.error(f"Error guardando alias: {e}", exc_info=True)
-            messagebox.showerror("Error al Guardar", f"Ocurrió un error al guardar los alias:\n{e}", parent=self)
+            logger.error(f"Error inesperado guardando alias para estudio {self.study_id}: {e}", exc_info=True)
+            messagebox.showerror("Error al Guardar", f"Ocurrió un error inesperado al guardar los alias:\n{e}", parent=self)
