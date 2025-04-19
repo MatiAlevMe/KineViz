@@ -142,13 +142,13 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 * **4. Integrar Validación:** (Hecho)
     * **4.1 `StudyDialog`**: (Hecho) Usa `validate_study_iv_data` en `save` (corregido bug edición).
     * **4.2 `FileService.add_files_to_study`**: (Hecho) Usa nuevo `validate_filename_for_study_criteria`.
-* **5. Actualizar `FileService`:** (En Progreso)
+* **5. Actualizar `FileService`:** (Hecho)
     * **5.1 `add_files_to_study`**: (Hecho) Obtiene estructura VI de `StudyService` para validación.
-    * **5.2 `get_unique_study_parameters`**: (Pendiente) Adaptar para extraer parámetros basados en la nueva estructura y nombres de archivo. Devolver descriptores únicos encontrados por *posición* de VI.
-* **6. Actualizar Vista Estudio (`StudyView`):** (En Progreso)
+    * **5.2 `get_unique_study_parameters`**: (Hecho) Adaptado para extraer parámetros basados en la nueva estructura y nombres de archivo. Devuelve descriptores únicos encontrados por *posición* de VI.
+* **6. Actualizar Vista Estudio (`StudyView`):** (Hecho)
     * **6.1 Mostrar VIs**: (Hecho) Añadido label para mostrar nombres de VIs.
     * **6.2 Mostrar Descriptores (Tooltip/Popup)**: (Hecho) Añadido botón `ℹ️` que muestra Descriptores por VI (con alias) en popup.
-    * **6.3 Botón Ayuda General**: (Pendiente) Añadir botón `(?)` que abre `kineviz/docs/help/study_view_help.txt`.
+    * **6.3 Botón Ayuda General**: (Hecho) Añadido botón `(?)` que abre `kineviz/docs/help/study_view_help.txt`.
 * **7. Refactorizar Gestión de Alias:** (Hecho)
     * **7.1 Mover a DB**: (Hecho) Implementado carga/guardado de alias por estudio en `StudyRepository` y `StudyService`.
     * **7.2 Adaptar `DescriptorAliasDialog`**: (Hecho) Carga/guarda alias vía `StudyService`.
@@ -159,9 +159,9 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
     * **8.3 `ConfigureIndividualAnalysisDialog`**: (Pendiente) Mostrar/seleccionar claves de grupo combinadas.
     * **8.4 `IndividualAnalysisManagerDialog`**: (Pendiente) Mostrar claves de grupo combinadas.
 * **9. Pruebas:** (Pendiente) Añadir/actualizar pruebas unitarias y de integración para validadores, servicios, UI refactorizada y lógica de agrupación/análisis.
-* **10. Crear Archivos de Ayuda:** (Pendiente)
-    * **10.1 `docs/help/study_dialog_iv_help.txt`**: (Pendiente)
-    * **10.2 `docs/help/study_view_help.txt`**: (Pendiente)
+* **10. Crear Archivos de Ayuda:** (Hecho)
+    * **10.1 `docs/help/study_dialog_iv_help.txt`**: (Hecho)
+    * **10.2 `docs/help/study_view_help.txt`**: (Hecho)
 
 ---
 
