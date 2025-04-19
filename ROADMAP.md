@@ -173,7 +173,6 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 *   **4. Actualizar Vista Estudio (`StudyView`):** (Completado)
     *   **4.1 Mostrar Nombres VI**: (Hecho) Añadido label para mostrar nombres de VIs definidos.
     *   **4.2 Mostrar Descriptores (Tooltip)**: (Hecho) Añadido botón `ℹ️` con tooltip que muestra los descriptores asociados a cada VI.
-    *   **4.3 Eliminar Gestión Alias**: (Hecho) Eliminados botón y lógica relacionada con `DescriptorAliasDialog`.
 *   **5. Integrar con Servicios:** (En Progreso)
     *   **5.1 `FileService.add_files_to_study`**: (Pendiente) Actualizar para usar el nuevo `validate_filename_for_study_criteria` y la
 estructura VI obtenida de `StudyService`. **(Requiere `FileService`)**
