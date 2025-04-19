@@ -209,5 +209,3 @@ class StudyService:
         except Exception as e:
             logger.error(f"Error actualizando alias para estudio {study_id}: {e}", exc_info=True)
             raise
-        if original_name != new_name:
-            self.repo.rename_study_folder(original_name, new_name)
