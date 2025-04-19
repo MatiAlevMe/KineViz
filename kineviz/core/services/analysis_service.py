@@ -813,14 +813,15 @@ class AnalysisService:
             # 1. Encontrar y agrupar archivos procesados de Cinemática
             # { 'Desc1_Desc2': [path1, path2,...], ... }
             files_by_descriptor_combo = {}
-            processed_files, _ = self.file_service.get_study_files(
+            processed_files_info, _ = self.file_service.get_study_files( # Corregir nombre variable
                 study_id=study_id,
-                page=1,
-                page=1, per_page=10000, file_type='Processed', frequency=target_frequency
+                page=1, # Eliminar el 'page=1' duplicado
+                per_page=10000, file_type='Processed', frequency=target_frequency
             )
             path_map = {f_info['path'].stem.split(f'_{target_frequency}')[0]: f_info['path']
                         for f_info in processed_files_info}
 
+            files_by_group_key = {} # Inicializar aquí
             for file_base_key, group_key in files_to_groups.items():
                 if group_key not in files_by_group_key:
                     files_by_group_key[group_key] = []
