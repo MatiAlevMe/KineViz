@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, Toplevel, messagebox
 import logging
+
+from kineviz.core.services.study_service import StudyService
 # Ya no se necesita AppSettings
 # from kineviz.config.settings import AppSettings
 # Ya no se necesita FileService directamente aquí
