@@ -15205,3 +15205,51 @@
 2025-04-18 01:44:56,496 - INFO - [kineviz.core.services.analysis_service] - Tabla resumen TSV generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 7/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_DL.tsv
 2025-04-18 01:44:56,516 - INFO - [kineviz.core.services.analysis_service] - Tabla resumen TSV generada: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 7/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_DL.tsv
 2025-04-18 01:44:56,516 - INFO - [kineviz.core.services.analysis_service] - Generación tablas discretas finalizada para estudio 8. Éxitos: 6, Errores: 0
+2025-04-19 14:11:26,747 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-19 14:11:26,747 - INFO - [__main__] - Iniciando KineViz...
+2025-04-19 14:38:04,866 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 8
+2025-04-19 14:38:04,874 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-04-19 14:38:04,880 - ERROR - [kineviz.core.services.file_service] - Error al obtener descriptores del estudio 8 para parámetros: 'int' object has no attribute 'split'
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/file_service.py", line 353, in get_unique_study_parameters
+    defined_descriptors = [d.strip() for d in descriptors_str.split(',') if d.strip()]
+                                              ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'split'
+2025-04-19 14:38:04,885 - DEBUG - [kineviz.ui.views.study_view] - Descriptores detectados: []
+2025-04-19 14:38:04,885 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado: Sin descriptores detectados.
+2025-04-19 14:38:26,877 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 8
+2025-04-19 14:38:26,884 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-04-19 14:38:26,885 - ERROR - [kineviz.core.services.file_service] - Error al obtener descriptores del estudio 8 para parámetros: 'int' object has no attribute 'split'
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/file_service.py", line 353, in get_unique_study_parameters
+    defined_descriptors = [d.strip() for d in descriptors_str.split(',') if d.strip()]
+                                              ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'split'
+2025-04-19 14:38:26,886 - DEBUG - [kineviz.ui.views.study_view] - Descriptores detectados: []
+2025-04-19 14:38:26,886 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado: Sin descriptores detectados.
+2025-04-19 14:39:33,470 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 8
+2025-04-19 14:39:33,477 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-04-19 14:39:33,478 - ERROR - [kineviz.core.services.file_service] - Error al obtener descriptores del estudio 8 para parámetros: 'int' object has no attribute 'split'
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/file_service.py", line 353, in get_unique_study_parameters
+    defined_descriptors = [d.strip() for d in descriptors_str.split(',') if d.strip()]
+                                              ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'split'
+2025-04-19 14:39:33,479 - DEBUG - [kineviz.ui.views.study_view] - Descriptores detectados: []
+2025-04-19 14:39:33,479 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado: Sin descriptores detectados.
+2025-04-19 14:50:48,115 - ERROR - [kineviz.core.services.file_service] - Error al obtener descriptores del estudio 8 para parámetros: 'int' object has no attribute 'split'
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/file_service.py", line 353, in get_unique_study_parameters
+    defined_descriptors = [d.strip() for d in descriptors_str.split(',') if d.strip()]
+                                              ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'split'
+2025-04-19 14:50:48,119 - INFO - [kineviz.ui.dialogs.descriptor_alias_dialog] - Descriptores detectados para estudio 8: set()
+2025-04-19 14:50:52,186 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-04-19 14:50:52,187 - ERROR - [kineviz.core.services.file_service] - Error al obtener descriptores del estudio 8 para parámetros: 'int' object has no attribute 'split'
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/file_service.py", line 353, in get_unique_study_parameters
+    defined_descriptors = [d.strip() for d in descriptors_str.split(',') if d.strip()]
+                                              ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'int' object has no attribute 'split'
+2025-04-19 14:50:52,188 - DEBUG - [kineviz.ui.views.study_view] - Descriptores detectados: []
+2025-04-19 14:50:52,188 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado: Sin descriptores detectados.
