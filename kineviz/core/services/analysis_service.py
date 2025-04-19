@@ -436,12 +436,12 @@ class AnalysisService:
 
             # --- Iterar y Generar Contenido ---
             plot_counter = 0
-            for freq, descriptor_data in structured_data.items():
+            for freq, descriptor_data in structured_data.items(): # Corregir aquí
                 story.append(Paragraph(f"Resultados para Frecuencia: {freq}",
                                        styles['h2']))
                 story.append(Spacer(1, 0.1*inch))
 
-                for group_key, patient_data in group_data.items(): # Usar group_key
+                for group_key, patient_data in descriptor_data.items(): # Usar descriptor_data
                     # Convertir group_key a formato legible con alias
                     group_display_parts = []
                     if group_key != "SinGrupo":
