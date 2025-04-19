@@ -1,6 +1,8 @@
 import tkinter as tk # Importar tk para fill/expand
 from tkinter import ttk, messagebox # Importar messagebox
 import logging # Importar logging
+import webbrowser # Para abrir archivo de ayuda                                                                                     
+from pathlib import Path # Para construir ruta de ayuda  
 # Ya no se necesita PaginatedTable aquí
 from kineviz.ui.widgets.file_browser import FileBrowser
 # Importar FileService para type hinting
