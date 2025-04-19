@@ -195,26 +195,26 @@ Esta funcionalidad está pensada para automatizar el análisis estadístico de d
 
 *   [x] Implementar `ConfigDialog` (`kineviz/ui/dialogs/config_dialog.py`) y `AppSettings` (`kineviz/config/settings.py`).
 *   [x] Mejorar manejo de errores y logging (`kineviz/utils/logger.py`). (Integrado en la mayoría de módulos)
-*   [ ] Añadir pruebas unitarias e de integración (`tests/`). (Inicio: validadores, StudyRepository, FileService, AnalysisService) - **Necesita más cobertura, especialmente tras refactor VI.**
+*   [ ] Añadir pruebas unitarias e de integración (`tests/`). (Inicio: validadores, StudyRepository, FileService, AnalysisService)
 *   [ ] Completar documentación (`docs/`).
 *   [x] Limpiar código remanente de `interfaz.py` y `lectura.py`.
 *   [ ] Revisión final de estilos y UX.
 
 ## Fase 8: Refactorización a Variables Independientes (En Progreso)
-
 *   **1. Modificar Modelo de Estudio:**
     *   [x] Reemplazar columna `descriptores` por `independent_variables` (JSON TEXT) en DB (conceptual).
     *   [x] Actualizar `StudyRepository` y `StudyService` para manejar la nueva estructura JSON `[{"name": "VI_Nombre", "descriptors": ["Desc1", "Desc2"]}]`.
+
 *   **2. Refactorizar UI Creación/Edición Estudio (`StudyDialog`):**
     *   [x] Reemplazar entrada de descriptores por flujo: Num VIs -> (Nombre VI -> Num Descriptores -> [Nombres Descriptores]) x Num VIs.
     *   [x] Implementar restricciones de edición (solo nombre VI editable inicialmente).
-    *   [x] Añadir tooltip/info sobre uso de "Nulo".
+    *   [x] Añadir tooltip/info sobre uso de "Nulo". (Hecho - requiere `tooltip.py`)
 *   **3. Refactorizar Validación (`validators.py`):**
     *   [x] Reescribir `validate_filename_for_study_criteria` para nuevo formato (`PteXX VI1 VI2... VIn IntentoNN`), orden estricto, valores permitidos (incl. "Nulo"), y regla de al menos un descriptor no-Nulo.
     *   [x] Eliminar `validate_study_data` (lógica movida a `StudyDialog`).
 *   **4. Actualizar Vista Estudio (`StudyView`):**
     *   [x] Mostrar nombres de VIs.
-    *   [x] Añadir botón/tooltip para mostrar descriptores por VI.
+    *   [x] Añadir botón/tooltip para mostrar descriptores por VI. (Hecho - requiere `tooltip.py`)
 *   **5. Integrar con Servicios:**
     *   [ ] Actualizar `FileService.add_files_to_study` (usa nuevo validador). **(Pendiente - requiere `FileService`)**
     *   [x] Actualizar `AnalysisService._identify_study_groups` (crear claves combinadas: "DescVI1_DescVI2_...").
