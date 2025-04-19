@@ -301,25 +301,6 @@ class AnalysisService:
                         logger.warning(f"No se pudieron leer datos válidos de {filename}")
 
         return structured_data
-                        df_data = self._read_processed_file_data(file_path)
-                        if df_data is not None and not df_data.empty:
-                            # Acumular datos si ya existe una entrada para este paciente/freq/descriptor_key
-                            if patient not in structured_data[freq][descriptor_key]:
-                                structured_data[freq][descriptor_key][patient] = \
-                                    df_data
-                            else:
-                                # Concatenar DataFrames
-                                structured_data[freq][descriptor_key][patient] = \
-                                    pd.concat(
-                                        [structured_data[freq][descriptor_key][patient],
-                                         df_data],
-                                        ignore_index=True
-                                    )
-                        else:
-                            logger.warning(f"No se pudieron leer datos válidos "
-                                           f"de {filename}")
-
-        return structured_data
 
     def _calculate_statistic(self, df: pd.DataFrame, calculation: str) -> pd.Series | None:
         """Calcula una estadística ('Maximo', 'Minimo', 'Rango') para cada columna numérica del DataFrame."""
