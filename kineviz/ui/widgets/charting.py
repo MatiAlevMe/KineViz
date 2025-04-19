@@ -93,14 +93,16 @@ def create_barchart(data_dict: dict, title: str, xlabel: str, ylabel: str, outpu
     plt.close(fig)
 
 
-def create_interactive_comparison_boxplot(data_by_group: list, group_names: list[str],
+def create_interactive_comparison_boxplot(data_by_group: list,
+                                          group_xaxis_labels: list[str],
+                                          group_legend_names: list[str],
                                           title: str, ylabel: str, output_path: Path):
     """
     Genera un gráfico de caja comparativo interactivo usando Plotly y lo guarda como HTML.
-    NOTA: Actualmente no incluye anotaciones de significancia (NS, *, **).
 
     :param data_by_group: Lista de listas/arrays con datos numéricos por grupo.
-    :param group_names: Lista de nombres para cada grupo (etiquetas eje X).
+    :param group_xaxis_labels: Lista de etiquetas cortas para el eje X ("Grupo 1", ...).
+    :param group_legend_names: Lista de nombres descriptivos completos para leyenda/hover.
     :param title: Título del gráfico.
     :param ylabel: Etiqueta del eje Y.
     :param output_path: Ruta (Path object) donde guardar el gráfico HTML.
@@ -114,30 +116,35 @@ def create_interactive_comparison_boxplot(data_by_group: list, group_names: list
         return
 
     if len(data_by_group) != len(group_names):
-        raise ValueError("Longitud de data_by_group y group_names no coinciden.")
+        raise ValueError("Longitud de data_by_group y etiquetas de grupo no coinciden.")
+    if len(group_xaxis_labels) != len(group_legend_names):
+         raise ValueError("Longitud de etiquetas de eje X y leyenda no coinciden.")
 
     fig = go.Figure()
 
     # Colores consistentes con Seaborn Pastel1 si es posible
     try:
-        palette = sns.color_palette("Pastel1", n_colors=len(group_names)).as_hex()
+        palette = sns.color_palette("Pastel1", n_colors=len(group_xaxis_labels)).as_hex()
     except NameError: # Si seaborn no está disponible (poco probable aquí)
         palette = None
 
     valid_groups_exist = False
-    for i, (group_name, group_data) in enumerate(zip(group_names, data_by_group)):
+    # Iterar usando los nombres de leyenda y los datos
+    for i, (legend_name, group_data) in enumerate(zip(group_legend_names, data_by_group)):
         # Convertir a array numpy y quitar NaNs
         numeric_data = np.array(group_data, dtype=float)
         cleaned_data = numeric_data[~np.isnan(numeric_data)]
 
         if cleaned_data.size > 0:
             valid_groups_exist = True
+            # Usar legend_name para el nombre del trace (visible en hover/leyenda)
             fig.add_trace(go.Box(
                 y=cleaned_data,
-                name=group_name,
-                boxpoints='all',  # Mostrar todos los puntos (similar a swarmplot)
-                jitter=0.3,      # Añadir algo de dispersión horizontal
-                pointpos=-1.8,   # Posicionar puntos a la izquierda
+                name=legend_name, # Nombre completo para hover/leyenda
+                x=[group_xaxis_labels[i]] * len(cleaned_data), # Asociar con etiqueta eje X
+                boxpoints='all',  # Mostrar todos los puntos
+                jitter=0.3,
+                pointpos=-1.8,
                 marker_size=4,
                 marker_color=palette[i] if palette else None,
                 line_width=1
@@ -157,14 +164,16 @@ def create_interactive_comparison_boxplot(data_by_group: list, group_names: list
         title=title,
         yaxis_title=ylabel,
         xaxis_title="", # Quitar título eje X
-        showlegend=False, # Ocultar leyenda (nombres en eje X)
-        # legend_title_text='Grupos', # Ya no necesario
-        boxmode='group', # Agrupar boxplots
+        showlegend=True, # Mostrar leyenda
+        legend_title_text='Grupos', # Título para la leyenda
+        boxmode='group',
         xaxis=dict(
-            tickmode='array', # Usar array para ticks
-            tickvals=list(range(len(group_names))), # Posiciones numéricas
-            ticktext=group_names, # Nombres legibles
-            tickangle=30 # Rotar etiquetas eje X
+            categoryorder='array', # Ordenar eje X según la lista proporcionada
+            categoryarray=group_xaxis_labels, # Usar etiquetas cortas para ordenar
+            tickmode='array',
+            tickvals=group_xaxis_labels, # Usar etiquetas cortas para posiciones
+            ticktext=group_xaxis_labels, # Usar etiquetas cortas para mostrar
+            tickangle=30
         ),
         yaxis=dict(
             gridcolor='lightgrey', # Color de la cuadrícula Y
@@ -184,35 +193,41 @@ def create_interactive_comparison_boxplot(data_by_group: list, group_names: list
             f.write(f"<html><body><p>Error al guardar el gráfico interactivo: {e}</p></body></html>")
 
 
-def create_comparison_boxplot(data_by_group: list, group_names: list[str],
+def create_comparison_boxplot(data_by_group: list,
+                              group_xaxis_labels: list[str],
+                              group_legend_names: list[str],
                               title: str, ylabel: str, output_path: Path,
                               stats_results=None):
     """
     Genera un gráfico de caja comparando múltiples grupos usando Seaborn y Statannot.
 
     :param data_by_group: Lista de listas/arrays con datos numéricos por grupo.
-    :param group_names: Lista de nombres para cada grupo (etiquetas eje X).
+    :param group_xaxis_labels: Lista de etiquetas cortas para el eje X ("Grupo 1", ...).
+    :param group_legend_names: Lista de nombres descriptivos completos para leyenda.
     :param title: Título del gráfico.
     :param ylabel: Etiqueta del eje Y.
     :param output_path: Ruta (Path object) donde guardar el gráfico PNG.
     :param stats_results: Diccionario con resultados del test principal
                           {'test_name': str, 'p_value': float} o None.
     """
-    if len(data_by_group) != len(group_names):
-        raise ValueError("Longitud de data_by_group y group_names no coinciden.")
+    if len(data_by_group) != len(group_xaxis_labels) or len(data_by_group) != len(group_legend_names):
+        raise ValueError("Longitud de data_by_group y etiquetas de grupo no coinciden.")
 
     # 1. Preparar datos en formato largo (DataFrame) para Seaborn/Statannot
     data_list = []
+    # Usar group_xaxis_labels para la columna 'Group' del DataFrame
     for i, group_data in enumerate(data_by_group):
-        group_name = group_names[i]
+        xaxis_label = group_xaxis_labels[i] # Etiqueta corta para agrupar
+        legend_name = group_legend_names[i] # Nombre completo para referencia
         # Convertir a array numpy y quitar NaNs
         numeric_data = np.array(group_data, dtype=float)
         cleaned_data = numeric_data[~np.isnan(numeric_data)]
         if cleaned_data.size > 0:
             for value in cleaned_data:
-                data_list.append({'Group': group_name, 'Value': value})
+                # Usar etiqueta corta en la columna 'Group'
+                data_list.append({'Group': xaxis_label, 'Value': value})
         else:
-            logger.warning(f"Grupo '{group_name}' sin datos válidos para boxplot.")
+            logger.warning(f"Grupo '{legend_name}' sin datos válidos para boxplot.")
 
     if not data_list:
         logger.warning(f"No hay datos válidos para generar boxplot: {title}")
@@ -227,45 +242,47 @@ def create_comparison_boxplot(data_by_group: list, group_names: list[str],
         return
 
     df_long = pd.DataFrame(data_list)
-    # Asegurar que el orden de los grupos sea el original
-    group_order = [name for name, data in zip(group_names, data_by_group)
+    # Usar group_xaxis_labels para el orden y las etiquetas del eje X
+    xaxis_order = [label for label, data in zip(group_xaxis_labels, data_by_group)
                    if np.any(~np.isnan(np.array(data, dtype=float)))]
+    # Mapear etiquetas cortas a nombres completos para la leyenda
+    legend_map = {xaxis_label: legend_name
+                  for xaxis_label, legend_name in zip(group_xaxis_labels, group_legend_names)}
 
     # 2. Crear el gráfico base con Seaborn
-    fig, ax = plt.subplots(figsize=(max(8, len(group_order) * 1.5), 6))
-    palette = sns.color_palette("Pastel1", n_colors=len(group_order))
+    fig, ax = plt.subplots(figsize=(max(8, len(xaxis_order) * 1.5), 6))
+    palette = sns.color_palette("Pastel1", n_colors=len(xaxis_order))
 
-    # Boxplot
-    sns.boxplot(data=df_long, x='Group', y='Value', order=group_order,
-                hue='Group', # Asignar x a hue
-                palette=palette, showfliers=False, ax=ax, legend=False,
-                boxprops=dict(alpha=.7)) # Añadir transparencia a cajas
+    # Boxplot - Usar xaxis_order para x y order, hue mapeado a nombres de leyenda
+    sns.boxplot(data=df_long, x='Group', y='Value', order=xaxis_order,
+                hue='Group', hue_order=xaxis_order, # Usar etiquetas cortas para hue
+                palette=palette, showfliers=False, ax=ax, legend=False, # Ocultar leyenda interna
+                boxprops=dict(alpha=.7))
 
-    # Puntos individuales con swarmplot para mejor distribución
-    sns.swarmplot(data=df_long, x='Group', y='Value', order=group_order,
-                  hue='Group', # Asignar x a hue
-                  palette=palette, # Usar misma paleta
-                  edgecolor='auto', linewidth=0.5, # Usar 'auto' para color borde
-                  legend=False, ax=ax, size=4) # Ajustar tamaño
+    # Puntos individuales con swarmplot
+    sns.swarmplot(data=df_long, x='Group', y='Value', order=xaxis_order,
+                  hue='Group', hue_order=xaxis_order, # Usar etiquetas cortas para hue
+                  palette=palette,
+                  edgecolor='auto', linewidth=0.5,
+                  legend=False, ax=ax, size=4) # Ocultar leyenda interna
 
     ax.set_title(title)
     ax.set_ylabel(ylabel)
-    ax.set_xlabel("") # Quitar etiqueta X, los nombres de grupo van en ticks
-    # Usar group_names directamente como etiquetas del eje X
-    ax.set_xticks(range(len(group_order))) # Asegurar ticks numéricos
-    ax.set_xticklabels(group_order, rotation=30, ha="right") # Usar nombres legibles
+    ax.set_xlabel("") # Quitar etiqueta X
+    # Usar etiquetas cortas para el eje X
+    ax.set_xticks(range(len(xaxis_order)))
+    ax.set_xticklabels(xaxis_order, rotation=30, ha="right")
     plt.grid(axis='y', linestyle='--', alpha=0.7)
 
-    # 3. Añadir anotaciones estadísticas con statannot (si hay 2 grupos y p-valor)
-    if stats_results and 'p_value' in stats_results and len(group_order) == 2:
+    # 3. Añadir anotaciones estadísticas (usando xaxis_order)
+    if stats_results and 'p_value' in stats_results and len(xaxis_order) == 2:
         p_value = stats_results['p_value']
-        if not np.isnan(p_value): # Solo si el p-valor es válido
-            box_pairs = [(group_order[0], group_order[1])]
+        if not np.isnan(p_value):
+            box_pairs = [(xaxis_order[0], xaxis_order[1])] # Usar etiquetas cortas
             try:
-                # Configurar Annotator con los datos y parámetros del plot
+                # Configurar Annotator
                 annotator = Annotator(ax, box_pairs, data=df_long,
-                                      x='Group', y='Value', order=group_order)
-                # Configurar cómo mostrar los p-valores (formato estrella)
+                                      x='Group', y='Value', order=xaxis_order)
                 annotator.configure(text_format='star', loc='inside', verbose=0)
                 # Aplicar las anotaciones usando los p-valores precalculados
                 annotator.set_pvalues_and_annotate([p_value])
@@ -298,17 +315,16 @@ def create_comparison_boxplot(data_by_group: list, group_names: list[str],
                      bbox=dict(boxstyle='round,pad=0.3', fc='white', alpha=0.5))
 
 
-    # 4. Añadir Leyenda
-    # Ya no se necesita leyenda separada si los nombres están en el eje X
-    # # Crear handles (patches de color) para la leyenda
-    # handles = [plt.Rectangle((0,0),1,1, color=palette[i])
-    #            for i in range(len(group_order))]
-    # # Colocar leyenda fuera del área del gráfico, a la derecha
-    # plt.legend(handles, group_order, title="Grupos",
-    #            bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0.)
+    # 4. Añadir Leyenda (usando nombres completos)
+    handles = [plt.Rectangle((0,0),1,1, color=palette[i])
+               for i in range(len(xaxis_order))]
+    # Mapear etiquetas cortas a nombres completos para la leyenda
+    legend_labels = [legend_map[label] for label in xaxis_order]
+    plt.legend(handles, legend_labels, title="Grupos",
+               bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0.)
 
 
-    # Ajustar layout para asegurar que todo quepa
+    # Ajustar layout para asegurar que todo quepa (incluida leyenda)
     plt.tight_layout(rect=[0, 0, 0.85, 1]) # Ajustar rect para dejar espacio a la derecha
 
     plt.savefig(output_path, bbox_inches='tight', dpi=150)
