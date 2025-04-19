@@ -3,7 +3,8 @@ from tkinter import ttk, Toplevel, messagebox, Canvas, Scrollbar, Frame
 # Importar validador de datos y nuevo validador de nombres de archivo
 from tkinter import simpledialog # Para pedir número de VIs/Descriptores
 from kineviz.core.services.file_service import FileService
-from kineviz.ui.utils.validators import validate_study_data # Se adaptará
+# validate_study_data ya no se importa, la lógica está en el diálogo
+# from kineviz.ui.utils.validators import validate_study_data
 # validate_filename_for_study_criteria no se usa directamente aquí
 import logging
 # FileService no se necesita directamente aquí ahora
