@@ -218,16 +218,16 @@ class StudyView:
              self.frame.destroy()
         self.frame = None # Limpiar referencia
 
-   def show_study_view_help(self):
-       """Muestra el archivo de ayuda para la vista de estudio."""
-       try:
-           # Construir ruta relativa al archivo actual
-           help_file_path = Path(__file__).parent.parent.parent / "docs" / "help" / "study_view_help.txt"
-           if help_file_path.exists():
-               # Usar webbrowser para abrir el archivo (más portable)
-               webbrowser.open(help_file_path.as_uri()) # as_uri() para formato file:///
-           else:
-               messagebox.showerror("Error", f"No se encontró el archivo de ayuda:\n{help_file_path}", parent=self.frame)
-       except Exception as e:
-           logger.error(f"Error al abrir archivo de ayuda de StudyView: {e}", exc_info=True)
-           messagebox.showerror("Error", f"No se pudo abrir el archivo de ayuda:\n{e}", parent=self.frame)
+    def show_study_view_help(self):
+        """Muestra el archivo de ayuda para la vista de estudio."""
+        try:
+            # Construir ruta relativa al archivo actual
+            help_file_path = Path(__file__).parent.parent.parent / "docs" / "help" / "study_view_help.txt"
+            if help_file_path.exists():
+                # Usar webbrowser para abrir el archivo (más portable)
+                webbrowser.open(help_file_path.as_uri()) # as_uri() para formato file:///
+            else:
+                messagebox.showerror("Error", f"No se encontró el archivo de ayuda:\n{help_file_path}", parent=self.frame)
+        except Exception as e:
+            logger.error(f"Error al abrir archivo de ayuda de StudyView: {e}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudo abrir el archivo de ayuda:\n{e}", parent=self.frame)
