@@ -440,6 +440,7 @@ class FileService:
                                      logger.warning(f"Número de descriptores extraídos ({len(extracted_descriptors)}) no coincide con número de VIs ({num_vis}) para archivo válido {filename}.")
 
         logger.debug(f"Parámetros únicos encontrados: {parameters}")
+        print(parameters)
         return parameters
 
 
