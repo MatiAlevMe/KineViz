@@ -1,0 +1,40 @@
+Guía Rápida: Vista del Estudio
+
+Esta vista te permite gestionar los archivos y análisis de un estudio específico.
+
+**Botones Principales:**
+
+* **<< Volver a Estudios:** Regresa a la lista de todos tus estudios.
+* **Analizar Estudio:** (Funcionalidad anterior) Abre un diálogo para generar un reporte PDF general basado en selecciones simples (será reemplazado/mejorado).
+* **Agregar Archivos:** Abre un diálogo para seleccionar archivos `.txt` o `.csv` de tu computadora y añadirlos a este estudio. Los nombres de archivo deben seguir el formato definido por las Variables Independientes del estudio (ver ayuda `(?)` en Crear/Editar Estudio).
+* **Abrir Carpeta Estudio:** Abre la carpeta en tu sistema donde se almacenan los archivos procesados y originales de este estudio.
+* **Gestionar Alias Descriptores:** Abre un diálogo para asignar nombres más descriptivos (alias) a los valores de descriptores detectados en los archivos (ej: "CMJ" -> "Salto Contra Movimiento"). Estos alias se usan para mejorar la legibilidad en gráficos y reportes. Los alias son **específicos para este estudio**.
+* **Análisis Discreto:** Abre la vista para generar y gestionar análisis estadísticos más detallados basados en comparaciones entre grupos definidos por los descriptores.
+
+**Detalles del Estudio:**
+
+* Muestra información básica: Nombre, Sujetos, Intentos.
+* **Variables Independientes:** Lista los nombres de las categorías definidas para este estudio (ej: "Tipo Salto, Condición").
+* **Botón `ℹ️` (Junto a VIs):** Muestra los descriptores específicos definidos para cada Variable Independiente, usando los alias que hayas asignado.
+
+**Navegador de Archivos:**
+
+* Muestra una lista de los archivos asociados a este estudio.
+* **Columnas:**
+    * `Paciente`: Identificador del paciente extraído del nombre del archivo.
+    * `Nombre Archivo`: Nombre completo del archivo.
+    * `Tipo`: "Procesado" (generado por Kineviz) u "Original" (copia del archivo fuente).
+    * `Frecuencia`: Tipo de datos procesados (Cinematica, Cinetica, etc.) o "N/A" para originales.
+* **Búsqueda:** Escribe parte del nombre del archivo o paciente y presiona Enter para filtrar la lista.
+* **Filtros (Tipo, Frecuencia):** Selecciona valores en los menús desplegables para filtrar la lista. Haz clic en "Limpiar Filtros" para volver a ver todos.
+* **Paginación:** Usa los botones `<<`, `<`, `>` `>>` o introduce un número de página para navegar si hay muchos archivos.
+* **Acciones (al seleccionar un archivo):**
+    * **Ver Archivo:** Abre el archivo seleccionado con el programa predeterminado de tu sistema.
+    * **Eliminar Archivo:** Borra permanentemente el archivo seleccionado del estudio. ¡Esta acción no se puede deshacer!
+
+**Formato de Nombres de Archivo (Recordatorio):**
+
+* `PteXX [Desc_VI1] [Desc_VI2] ... NN_Frecuencia.ext`
+* Usa `Nulo` si un descriptor no aplica.
+* Debe haber al menos un descriptor no-`Nulo`.
+* El orden de los descriptores debe coincidir con el orden de las VIs definidas.

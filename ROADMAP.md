@@ -73,135 +73,104 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 │   └── integration/
 │
 ├── docs/                 # Documentación
+│   └── help/             # Documentación de ayuda del software
+│       ├── study_view_help.txt            # Guía Rápida: Variables Independientes y Descriptores
+│       └── study_dialog_iv_help.txt       # Guía Rápida: Vista del Estudio  
 └── examples/             # Ejemplos de uso
 
 ## Diccionario de Tareas
 
-**Fase 1: Mejoras Incrementales - Descriptores y Detección de Frecuencia**
+**Fase 1: Mejoras Incrementales - Detección de Frecuencia**
 
-*   **1. Implementar detección automática de tipo de frecuencias basada en metadatos del archivo. (Completado - 91ffd0a)**
-    *   **Detalle**: Modificada la lógica en `kineviz.core.data_processing.file_handlers.leer_seccion` y `kineviz.core.services.file_service._process_and_copy_file` para identificar Cinemática ("Model Outputs") y Cinética ("Force Plate").
-    *   **1.1 Implementación de identificador de archivo para Cinemática**: (Hecho).
-    *   **1.2 Implementación de identificador de archivo para Cinética**: (Hecho).
-    *   **1.3 Implementación de identificador de archivo para Electromiográfica**: (Pendiente) de confirmación del formato/identificador.
+* **1. Implementar detección automática de tipo de frecuencias basada en metadatos del archivo.** (Pendiente)
+    * **Detalle**: Modificar la lógica en `kineviz.core.data_processing.file_handlers.leer_seccion` y `kineviz.core.services.file_service._process_and_copy_file` para identificar Cinemática ("Model Outputs"), Cinética ("Force Plate") y Electromiográfica (identificador a confirmar).
+    * **1.1 Implementación de identificador de archivo para Cinemática**: (Pendiente).
+    * **1.2 Implementación de identificador de archivo para Cinética**: (Pendiente).
+    * **1.3 Implementación de identificador de archivo para Electromiográfica**: (Pendiente) de confirmación del formato/identificador.
 
-*   **2. Implementación para crear/editar estudio con descriptores extra. (Completado)**
-    *   **Detalle**: Modificado `kineviz.ui.dialogs.study_dialog.py` para reemplazar los campos de entrada de "Tipos de Prueba" y "Periodos de Prueba" por una sección dinámica que permita añadir/eliminar campos de texto para "Descriptores".
-    *   **2.1 Soportar múltiples etiquetas de descriptores**: (Hecho) UI modificada para añadir/eliminar campos. Tabla `estudios` modificada para usar columna `descriptores` (TEXT, separado por comas). Repositorio y Servicio actualizados.
-    *   **2.2 Validación de descriptores**: (Hecho) Añadida validación en `kineviz.ui.utils.validators.validate_study_data` para evitar descriptores vacíos o duplicados exactos.
+**Fase 2: Análisis Estadístico Discreto y Reportes**
 
-*   **3. Implementación para modificar nombres de etiquetas de descriptores post-carga.** (Completado)
-    *   **Detalle**: Añadir una nueva funcionalidad (posiblemente en `kineviz.ui.views.study_view.py` o un nuevo diálogo) que permita al usuario ver los descriptores *detectados* en los nombres de archivo de un estudio y asignarles un "alias" o "nombre descriptivo" (ej: "CMJ" -> "Salto Contra Movimiento"). Este alias se usaría para mostrar en gráficos y reportes. El almacenamiento de estos alias podría ser en `config.ini` o en la base de datos. *Nota: Inicialmente, esta modificación es solo visual.*
-    *   **3.1 Añadir gestión de alias en `AppSettings`**: (Hecho) Métodos para leer/escribir sección `[DESCRIPTOR_ALIASES]` en `config.ini`.
-    *   **3.2 Crear `DescriptorAliasDialog`**: (Hecho) Diálogo para ver descriptores detectados y asignar/guardar alias usando `AppSettings`.
-    *   **3.3 Añadir botón en `StudyView` para abrir el diálogo**: (Hecho).
-    *   **3.4 Mostrar alias en `StudyView`**: (Hecho).
+* **1. Generación de Matrices:** (Pendiente) Crear tablas por tipo de cálculo y combinación de descriptores (ej: "máximo_cinemática_CMJ_Normal").
+    * **1.1 Servicio `generate_discrete_summary_tables`**: (Pendiente) Lógica para agrupar archivos por combinación de descriptores, leer stats, crear DataFrames y guardar CSVs/TSVs/SCSVs/XLSX.
+    * **1.2 Botón en `StudyView`**: (Pendiente) Añadir botón "Análisis Discreto".
+    * **1.3 Vista `DiscreteAnalysisView`**: (Pendiente) Crear vista para listar/mostrar/eliminar tablas generadas, con filtros y paginación.
+* **2. Identificación de Grupos y Columnas Comunes:** (Pendiente)
+    * **2.1 `AnalysisService._identify_study_groups`**: (Pendiente) Identifica grupos únicos por combinación de descriptores.
+    * **2.2 `AnalysisService.get_discrete_analysis_groups`**: (Pendiente) Expone grupos combinados a la UI.
+    * **2.3 `AnalysisService.get_common_columns_for_groups`**: (Pendiente) Encuentra columnas comunes en tablas CSV internas para grupos combinados.
+* **3. Diálogo de Configuración de Análisis Individual:** (Pendiente)
+    * **3.1 Crear `ConfigureIndividualAnalysisDialog`**: (Pendiente) UI para seleccionar Frecuencia, Cálculo, Grupos combinados (dinámico), Columna (dinámico), y supuestos (paramétrico/pareado).
+* **4. Diálogo de Gestión de Análisis Individual:** (Pendiente)
+    * **4.1 Crear `IndividualAnalysisManagerDialog`**: (Pendiente) UI para listar, ver (gráfico estático/interactivo), eliminar análisis guardados y abrir carpeta.
+    * **4.2 Botón en `DiscreteAnalysisView`**: (Pendiente) Añadir botón para abrir el gestor.
+* **5. Generación de Gráfico Boxplot Comparativo:** (Pendiente)
+    * **5.1 Función `create_comparison_boxplot`**: (Pendiente) En `charting.py` usando seaborn/matplotlib.
+    * **5.2 `AnalysisService.perform_individual_analysis`**: (Pendiente) Lógica para leer datos de tablas CSV internas, preparar datos por grupo combinado y llamar a `create_comparison_boxplot`. Guarda gráfico PNG y config.json.
+* **6. Implementación de Tests Estadísticos y Mejoras Gráficas:** (Pendiente)
+    * **6.1 Lógica en `perform_individual_analysis`**: (Pendiente) Ejecutar tests (t-test/ANOVA/Wilcoxon/Kruskal/Friedman) usando `scipy.stats`.
+    * **6.2 Mejorar `create_comparison_boxplot`**: (Pendiente) Usar `swarmplot`, añadir leyenda, mostrar significancia (statannot para 2 grupos, p-valor general para >2).
+    * **6.3 Tests post-hoc**: (Pendiente) Considerar y añadir si es necesario.
+* **7. Generación de Gráfico Interactivo (Plotly):** (Pendiente)
+    * **7.1 Añadir dependencia `plotly`**: (Pendiente).
+    * **7.2 Crear `create_interactive_comparison_boxplot`**: (Pendiente) En `charting.py` para generar HTML.
+    * **7.3 Modificar `perform_individual_analysis`**: (Pendiente) Generar y guardar HTML.
+    * **7.4 Anotaciones en Plotly**: (Pendiente - Fase B) Implementar lógica personalizada si se requiere.
+* **8. Gestión de Análisis Guardados:** (Pendiente)
+    * **8.1 `AnalysisService.list_individual_analyses` / `delete_individual_analysis`**: (Pendiente).
+    * **8.2 Conectar UI `IndividualAnalysisManagerDialog`**: (Pendiente) Cargar, ver PNG, ver HTML, eliminar, abrir carpeta. Mostrar grupos combinados y p-valor.
+* **9. Reporte General (PDF):** (Pendiente) Implementar generación automática de PDF con análisis para combinaciones relevantes.
+* **10. Corrección de Errores:** (Pendiente) Revisar y corregir errores conocidos (ej: formato cabeceras CSV).
+* **11. Integración y Pruebas:** (Pendiente) Integrar y probar toda la funcionalidad de análisis discreto.
 
-*   **4. Integrar con el resto del código. (Completado - Alias)**
-    *   **Detalle**: Revisar y actualizar todos los módulos que dependían de `test_types` y `test_periods` (Hecho). **Adicionalmente**, integrar el uso de los alias de descriptores en:
-        *   `kineviz.core.services.analysis_service`: (Hecho) Usar alias en `generate_report` para títulos, leyendas, etc.
-        *   `kineviz.ui.dialogs.analysis_dialog.py`: (Hecho) Mostrar alias en el selector de descriptores. Asegurarse de pasar el descriptor original al servicio.
-        *   `kineviz.ui.utils.validators.validate_filename_for_study_criteria`: (Hecho) Actualizada para validar contra `descriptors`.
-        *   `kineviz.core.services.file_service.add_files_to_study`: (Hecho) Actualizado para usar el validador con `descriptors`.
-        *   `kineviz.core.services.file_service.get_unique_study_parameters`: (Hecho) Actualizado para extraer `descriptors` de nombres de archivo válidos.
-        *   `kineviz.core.services.analysis_service`: (Hecho) `get_analysis_parameters`, `_get_data_for_parameters`, `generate_report` actualizados para usar `descriptors`.
-        *   `kineviz.ui.dialogs.analysis_dialog.py`: (Hecho) Actualizado para mostrar y usar selector de `descriptors`.
-        *   Actualizar pruebas unitarias afectadas. (Hecho)
+**Fase 3: Refactorización a Variables Independientes (VI)** (En Progreso)
 
-**Fase 2: Análisis Estadístico Discreto y Reportes Avanzados**
-
-*   **1. Generación de Matrices:** (En Progreso) Crear tablas por tipo de cálculo y descriptor (ej: "máximo_cinemática_obesidad").
-    *   **1.1 Servicio `generate_discrete_summary_tables`**: (Hecho) Lógica para agrupar archivos, leer stats, crear DataFrames y guardar CSVs (inicialmente para Cinemática).
-    *   **1.2 Botón en `StudyView`**: (Hecho) Añadido botón "Análisis Discreto".
-    *   **1.3 Vista `DiscreteAnalysisView`**: (Hecho) Creada vista básica con botón para generar tablas.
-    *   **1.4 Listar/Mostrar Tablas Generadas**: (En Progreso)
-        *   (Hecho) Implementado Treeview básico y lógica para mostrar/ver/eliminar archivos CSV.
-        *   (Hecho) Añadidas columnas: Nombre Archivo, Tipo Cálculo, Descriptores, Fecha Modificación, Tamaño.
-        *   (Hecho) Añadida barra de búsqueda (por nombre, cálculo, descriptores).
-        *   (Hecho) Añadido filtro por Tipo de Cálculo.
-        *   (Hecho) Añadida paginación configurable (`discrete_tables_per_page` en `config.ini`).
- *   **2. Identificación de Grupos y Columnas Comunes:** (Hecho)
-     *   (Hecho) `AnalysisService._identify_study_groups`: Identifica grupos únicos por descriptores.
-     *   (Hecho) `AnalysisService.get_discrete_analysis_groups`: Expone grupos a la UI.
-     *   (Hecho) `AnalysisService.get_common_columns_for_groups`: Encuentra columnas comunes en tablas CSV.
- *   **3. Diálogo de Configuración de Análisis Individual:** (Hecho)
-     *   (Hecho) Creado `ConfigureIndividualAnalysisDialog` con UI para seleccionar Frecuencia, Cálculo, Grupos (dinámico), Columna (dinámico), y supuestos (paramétrico/pareado).
-     *   (Hecho) Lógica básica para cargar grupos y columnas disponibles.
- *   **4. Diálogo de Gestión de Análisis Individual:** (Hecho)
-     *   (Hecho) Creado `IndividualAnalysisManagerDialog` con UI básica (lista placeholder, botones).
-     *   (Hecho) Añadido botón "Análisis Individual" en `DiscreteAnalysisView` para abrir el gestor.
- *   **5. Generación de Gráfico Boxplot Comparativo:** (Hecho)
-     *   (Hecho) Añadida función `create_comparison_boxplot` en `charting.py`.
-     *   (Hecho) `AnalysisService.perform_individual_analysis`: Implementada lógica básica para leer datos de tablas CSV, preparar datos por grupo y llamar a `create_comparison_boxplot`. Guarda gráfico y config.json.
- *   **6. Implementación de Tests Estadísticos y Mejoras Gráficas:** (En Progreso)
-     *   (Hecho) Añadida lógica en `perform_individual_analysis` para ejecutar tests principales (t-test/ANOVA/Wilcoxon/Kruskal/Friedman) usando `scipy.stats`.
-     *   (Hecho) Modificado `create_comparison_boxplot` para usar `seaborn` y `swarmplot`.
-     *   (Hecho) Añadida leyenda de grupos al boxplot.
-     *   (Hecho) Reintroducido `statannot` para mostrar significancia (NS, *, **) en comparaciones de 2 grupos en gráfico estático (PNG). P-valor general mostrado como texto para >2 grupos.
-     *   (Pendiente) Considerar tests post-hoc y anotaciones pairwise para >2 grupos si es necesario (en gráfico estático).
- *   **7. Generación de Gráfico Interactivo (Plotly):** (En Progreso)
-     *   (Hecho) Añadida dependencia `plotly`.
-     *   (Hecho) Creada función `create_interactive_comparison_boxplot` en `charting.py` para generar HTML con Plotly (sin anotaciones de significancia).
-     *   (Hecho) Modificado `perform_individual_analysis` para generar y guardar `boxplot_interactive.html`.
-     *   (Pendiente) Implementar lógica personalizada para añadir anotaciones de significancia en Plotly (complejo, Fase B).
- *   **8. Gestión de Análisis Guardados:** (En Progreso)
-     *   (Hecho) Implementado `AnalysisService.list_individual_analyses` y `delete_individual_analysis`.
-     *   (Hecho) Conectada UI de `IndividualAnalysisManagerDialog` (cargar, ver gráfico PNG, eliminar, abrir carpeta).
-     *   (Hecho) Añadido botón "Ver Gráfico Interactivo" en `IndividualAnalysisManagerDialog` para abrir HTML en navegador.
-     *   (Hecho) Modificada tabla en `IndividualAnalysisManagerDialog`: reemplazada columna "Grupo X" por "Grupos Comparados". Corregido bug de encabezados.
-     *   (Hecho) Añadida columna "Valores Clave" para mostrar resultado del test (p-valor). Guardado p-valor en `config.json`.
- *   **9. Reporte General:** (Pendiente) Implementar generación automática de PDF con todas las combinaciones.
-     *   **Nota**: Necesitará preguntar/configurar los supuestos (paramétrico/pareado) para aplicar las comparaciones correctas.
- *   **10. Corrección de Errores:** (En Progreso)
-     *   (Hecho) Corregido error de reconocimiento de columnas (prefijo `PteXX:`) modificando la generación de tablas resumen y la lectura de cabeceras.
- *   **11. Integración y Pruebas:** (Pendiente) Integrar la funcionalidad en la plataforma y realizar pruebas de integración.
-
-## Fase 3: Refactorización a Variables Independientes (Completada - Parcialmente)
-*   **1. Modificar Modelo de Estudio:** (Completado)
-    *   **1.1 DB Conceptual**: (Hecho) Reemplazada columna `descriptores` por `independent_variables` (JSON TEXT).
-    *   **1.2 Repositorio (`StudyRepository`)**: (Hecho) Actualizados métodos `create_study`, `get_study_by_id`, `update_study` para usar
-`independent_variables`. Añadida migración simple.
-    *   **1.3 Servicio (`StudyService`)**: (Hecho) Actualizados métodos `create_study`, `get_study_details`, `update_study` para manejar la conversión entre estructura Python y JSON string.
-*   **2. Refactorizar UI Creación/Edición Estudio (`StudyDialog`):** (Completado)
-    *   **2.1 Flujo UI**: (Hecho) Reemplazada sección de descriptores por UI dinámica para definir VIs y sus descriptores.
-    *   **2.2 Restricciones Edición**: (Hecho) Número de VIs y descriptores no editables al modificar estudio; nombre de VI sí editable.
-    *   **2.3 Tooltip "Nulo"**: (Hecho) Añadido icono de información y tooltip explicando el uso de "Nulo".
-    *   **2.4 Validación Interna**: (Hecho) Movida y adaptada la validación de datos del estudio al método `save` del diálogo.
-*   **3. Refactorizar Validación (`validators.py`):** (Completado)
-    *   **3.1 Validador Nombres Archivo**: (Hecho) Reescribir `validate_filename_for_study_criteria` para validar formato `PteXX VI1...VIn NN`, orden, valores permitidos (incl. "Nulo"), y regla de al menos un descriptor no-Nulo. Devuelve tupla `(bool, list[str|None])`.
-    *   **3.2 Eliminar Validador Estudio**: (Hecho) Eliminada función `validate_study_data`.
-*   **4. Actualizar Vista Estudio (`StudyView`):** (Completado)
-    *   **4.1 Mostrar Nombres VI**: (Hecho) Añadido label para mostrar nombres de VIs definidos.
-    *   **4.2 Mostrar Descriptores (Tooltip)**: (Hecho) Añadido botón `ℹ️` con tooltip que muestra los descriptores asociados a cada VI.
-*   **5. Integrar con Servicios:** (En Progreso)
-    *   **5.1 `FileService.add_files_to_study`**: (Pendiente) Actualizar para usar el nuevo `validate_filename_for_study_criteria` y la
-estructura VI obtenida de `StudyService`. **(Requiere `FileService`)**
-    *   **5.2 `AnalysisService._identify_study_groups`**: (Hecho) Modificado para usar el nuevo validador y crear claves de grupo combinadas (ej:"CMJ_Normal", "SaltoAlto_Nulo").
-    *   **5.3 `AnalysisService.generate_discrete_summary_tables`**: (Hecho) Modificado para usar las nuevas claves de grupo combinadas al agrupar archivos y nombrar las tablas generadas. 
-    *   **5.4 `AnalysisService.perform_individual_analysis`**: (Hecho) Modificado para recibir y usar las claves de grupo combinadas al leer las tablas CSV internas.
-    *   **5.5 `AnalysisService.get_discrete_analysis_groups`**: (Hecho) Modificado para devolver las claves combinadas únicas.
-    *   **5.6 `AnalysisService.get_common_columns_for_groups`**: (Hecho) Adaptado para recibir claves combinadas (lógica interna sin cambios).
-    *   **5.7 `AnalysisService.generate_report`**: (Hecho) Adaptado para usar alias (si se reintroducen) o claves combinadas en títulos leyendas.
-*   **6. Adaptar UI de Análisis:** (Completado)
-    *   **6.1 `ConfigureIndividualAnalysisDialog`**: (Hecho) Modificado para mostrar y seleccionar las claves de grupo combinadas.
-    *   **6.2 `IndividualAnalysisManagerDialog`**: (Hecho) Modificado para mostrar las claves de grupo combinadas en la columna "Grupos  Comparados".     
-*   **7. Pruebas:** (Pendiente) Añadir/actualizar pruebas unitarias y de integración para la nueva lógica de validación, creación/edición de estudios y agrupación en análisis.
+* **1. Modificar Modelo de Estudio:** (Pendiente)
+    * **1.1 DB Conceptual**: (Pendiente) Reemplazar columna `descriptores` por `independent_variables` (JSON TEXT) y añadir `aliases` (JSON TEXT) en tabla `estudios`.
+    * **1.2 Repositorio (`StudyRepository`)**: (Pendiente) Actualizar `_create_tables` (migración), `create_study`, `get_study_by_id`, `update_study` para manejar `independent_variables` y `aliases`.
+    * **1.3 Servicio (`StudyService`)**: (Pendiente) Actualizar métodos para manejar conversión Python <-> JSON para `independent_variables` y `aliases`.
+* **2. Refactorizar UI Creación/Edición Estudio (`StudyDialog`):** (Pendiente)
+    * **2.1 Flujo UI**: (Pendiente) Implementar UI jerárquica para definir VIs y sus Descriptores (con botones '+', '🗑️').
+    * **2.2 Restricciones Edición**: (Pendiente) Deshabilitar añadir/eliminar VIs/Descriptores; permitir renombrar VIs.
+    * **2.3 Botón Ayuda VI**: (Pendiente) Añadir botón `(?)` coloreado que abre `docs/help/study_dialog_iv_help.txt`.
+* **3. Refactorizar Validación (`validators.py`):** (Pendiente)
+    * **3.1 Validador Datos Estudio**: (Pendiente) Crear `validate_study_iv_data` para estructura VI (nombres no vacíos/duplicados, min 1 VI, min 2 Descriptores por VI).
+    * **3.2 Validador Nombres Archivo**: (Pendiente) Reescribir `validate_filename_for_study_criteria` para formato `PteXX [VAL_VI1]...[VAL_VIn] NN`, orden, valores permitidos (incl. "Nulo"), regla de al menos un descriptor no-Nulo. Devolver `(bool, list[str|None])`.
+    * **3.3 Eliminar Validador Antiguo**: (Pendiente) Eliminar `validate_study_data`.
+* **4. Integrar Validación:** (Pendiente)
+    * **4.1 `StudyDialog`**: (Pendiente) Usar `validate_study_iv_data` en `save`.
+    * **4.2 `FileService.add_files_to_study`**: (Pendiente) Usar nuevo `validate_filename_for_study_criteria`.
+* **5. Actualizar `FileService`:** (Pendiente)
+    * **5.1 `add_files_to_study`**: (Pendiente) Obtener estructura VI de `StudyService` para validación.
+    * **5.2 `get_unique_study_parameters`**: (Pendiente) Adaptar para extraer parámetros basados en la nueva estructura y nombres de archivo. Devolver descriptores únicos encontrados por *posición* de VI.
+* **6. Actualizar Vista Estudio (`StudyView`):** (Pendiente)
+    * **6.1 Mostrar VIs**: (Pendiente) Añadir label para mostrar nombres de VIs.
+    * **6.2 Mostrar Descriptores (Tooltip/Popup)**: (Pendiente) Añadir botón `ℹ️` que muestra Descriptores por VI (con alias).
+    * **6.3 Botón Ayuda General**: (Pendiente) Añadir botón `(?)` que abre `docs/help/study_view_help.txt`.
+* **7. Refactorizar Gestión de Alias:** (Pendiente)
+    * **7.1 Mover a DB**: (Pendiente) Implementar carga/guardado de alias por estudio en `StudyRepository` y `StudyService`.
+    * **7.2 Adaptar `DescriptorAliasDialog`**: (Pendiente) Cargar/guardar alias vía `StudyService`.
+    * **7.3 Limpiar `AppSettings`**: (Pendiente) Eliminar métodos de alias globales.
+* **8. Adaptar Servicios y UI de Análisis:** (Pendiente)
+    * **8.1 `AnalysisService._identify_study_groups`**: (Pendiente) Crear claves de grupo combinadas (ej: "CMJ_Normal", "SaltoAlto_Nulo").
+    * **8.2 `AnalysisService` (Resto)**: (Pendiente) Adaptar `get_discrete_analysis_groups`, `generate_discrete_summary_tables`, `perform_individual_analysis`, `get_common_columns_for_groups`, `generate_report` para usar claves combinadas.
+    * **8.3 `ConfigureIndividualAnalysisDialog`**: (Pendiente) Mostrar/seleccionar claves de grupo combinadas.
+    * **8.4 `IndividualAnalysisManagerDialog`**: (Pendiente) Mostrar claves de grupo combinadas.
+* **9. Pruebas:** (Pendiente) Añadir/actualizar pruebas unitarias y de integración para validadores, servicios, UI refactorizada y lógica de agrupación/análisis.
+* **10. Crear Archivos de Ayuda:** (Pendiente)
+    * **10.1 `docs/help/study_dialog_iv_help.txt`**: (Pendiente)
+    * **10.2 `docs/help/study_view_help.txt`**: (Pendiente)
 
 ---
 
 ## Known Issues / Bugs
 
-*   **Edición de Estudio - Cambio de Criterios**: Al editar un estudio y cambiar los `Tipos de Prueba` o `Periodos de Prueba`, no se validan ni eliminan automáticamente los archivos existentes que ya no cumplen con los nuevos criterios. (Ver Fase 2 - Editar Estudio).
-*   **Análisis y Reportes**: La lógica de análisis, generación de PDF y gestión básica de reportes (listar, ver, eliminar) está implementada.
-*   **Configuración**: Implementada la gestión básica de configuración (`AppSettings`, `ConfigDialog`) para paginación. El botón de reseteo global está conectado.
-*   **Limpieza de Directorios**: La limpieza de directorios vacíos (paciente, frecuencia) después de eliminar el último archivo dentro de ellos funciona, pero podría mejorarse para manejar casos borde o errores de permisos de forma más robusta.
-*   **Validación de Pacientes para Análisis**: La validación ahora se basa en los parámetros únicos extraídos de archivos procesados válidos. Si un estudio tiene archivos pero no cumplen los criterios o solo tiene archivos OG, no permitirá el análisis.
-*   **Lectura de Datos Procesados**: La función `_read_processed_file_data` en `AnalysisService` asume un formato específico (';' como separador, 4 líneas de header, 3 de stats). Podría ser más robusta o configurable.
-*   **Logging**: El logging está implementado en la mayoría de los módulos. Se podrían añadir más mensajes de `DEBUG` o refinar los niveles existentes.
-*   **Análisis Discreto - formato CSV**:
-    *   Primera línea de comas vacías en el archivo de ejemplo.
-    *   Nombres de las primeras dos filas de cabecera ("Atributo", "Columna" vs. vacía, "PteXX:Articulacion").
-    *   La primera columna (índice) se escribe sin nombre explícito en la fila de datos (comportamiento actual después de 1.5).
+* **Edición de Estudio - Cambio de Criterios**: (Revisar en Fase 3) La validación de archivos existentes al cambiar criterios necesita ser reimplementada para la estructura de VI.
+* **Análisis y Reportes**: (Revisar en Fase 2 y 3) La lógica de análisis y reportes necesita adaptarse a la estructura de VI y claves de grupo combinadas.
+* **Configuración**: La gestión de alias debe moverse de `AppSettings` a la base de datos (Fase 3).
+* **Limpieza de Directorios**: Funcionalidad básica existe, podría mejorarse.
+* **Lectura de Datos Procesados**: Formato asumido en `_read_processed_file_data` podría ser más robusto.
+* **Logging**: Implementado, pero puede refinarse.
+* **Análisis Discreto - formato CSV/Cabeceras**: (Revisar en Fase 2) Corregir formato de cabeceras en tablas generadas.
 
 ---
-*Este archivo se actualizará y se marcaran con una X las tareas que se vayan realizando a medida que avance el desarrollo.*
+*Este archivo se actualizará y se marcaran las tareas que se vayan realizando a medida que avance el desarrollo.*
