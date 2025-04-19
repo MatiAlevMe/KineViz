@@ -15253,3 +15253,1442 @@ Traceback (most recent call last):
 AttributeError: 'int' object has no attribute 'split'
 2025-04-19 14:50:52,188 - DEBUG - [kineviz.ui.views.study_view] - Descriptores detectados: []
 2025-04-19 14:50:52,188 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado: Sin descriptores detectados.
+2025-04-19 16:38:33,759 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-19 16:38:33,760 - INFO - [__main__] - Iniciando KineViz...
+2025-04-19 16:38:54,479 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-04-19 16:38:54,479 - INFO - [__main__] - Iniciando KineViz...
+2025-04-19 16:48:10,099 - INFO - [kineviz.database.repositories] - Directorio creado para estudio 9: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Prueba 8
+2025-04-19 16:48:10,100 - INFO - [kineviz.core.services.study_service] - Estudio 9 ('Prueba 8') creado en servicio.
+2025-04-19 16:48:13,441 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 9
+2025-04-19 16:48:13,452 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 9
+2025-04-19 16:48:13,452 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 9: {}
+2025-04-19 16:48:13,452 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, DL'
+2025-04-19 16:48:30,431 - INFO - [kineviz.ui.dialogs.descriptor_alias_dialog] - Descriptores definidos para estudio 9: {'DL', 'CMJ'}
+2025-04-19 16:48:30,432 - DEBUG - [kineviz.ui.dialogs.descriptor_alias_dialog] - Aliases actuales para estudio 9: {}
+2025-04-19 16:48:39,133 - INFO - [kineviz.database.repositories] - Estudio ID 9 actualizado correctamente.
+2025-04-19 16:48:39,134 - INFO - [kineviz.core.services.study_service] - Estudio 9 actualizado en servicio.
+2025-04-19 16:48:39,134 - INFO - [kineviz.core.services.study_service] - Aliases actualizados para estudio 9.
+2025-04-19 16:48:40,731 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 9
+2025-04-19 16:48:40,732 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 9: {'CMJ': 'Salto 1', 'DL': 'Salto 2'}
+2025-04-19 16:48:40,733 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ (Salto 1), DL (Salto 2)'
+2025-04-19 16:48:45,026 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 8
+2025-04-19 16:48:45,101 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-04-19 16:48:45,102 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-04-19 16:48:45,102 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado: Sin descriptores definidos.
+2025-04-19 16:48:49,596 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 9
+2025-04-19 16:48:49,607 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 9
+2025-04-19 16:48:49,608 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 9: {'CMJ': 'Salto 1', 'DL': 'Salto 2'}
+2025-04-19 16:48:49,608 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ (Salto 1), DL (Salto 2)'
+2025-04-19 16:49:04,221 - INFO - [kineviz.ui.dialogs.descriptor_alias_dialog] - Descriptores definidos para estudio 9: {'DL', 'CMJ'}
+2025-04-19 16:49:04,222 - DEBUG - [kineviz.ui.dialogs.descriptor_alias_dialog] - Aliases actuales para estudio 9: {'CMJ': 'Salto 1', 'DL': 'Salto 2'}
+2025-04-19 16:49:08,166 - INFO - [kineviz.database.repositories] - Estudio ID 9 actualizado correctamente.
+2025-04-19 16:49:08,167 - INFO - [kineviz.core.services.study_service] - Estudio 9 actualizado en servicio.
+2025-04-19 16:49:08,167 - INFO - [kineviz.core.services.study_service] - Aliases actualizados para estudio 9.
+2025-04-19 16:49:09,398 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 9
+2025-04-19 16:49:09,399 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 9: {}
+2025-04-19 16:49:09,399 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, DL'
+2025-04-19 16:49:29,726 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 CMJ 01.txt' ---
+2025-04-19 16:49:29,727 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,727 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 CMJ 01'
+2025-04-19 16:49:29,727 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'CMJ', '01']
+2025-04-19 16:49:29,727 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,727 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,727 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,728 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 CMJ 02.txt' ---
+2025-04-19 16:49:29,728 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,728 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 CMJ 02'
+2025-04-19 16:49:29,728 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'CMJ', '02']
+2025-04-19 16:49:29,728 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,728 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,728 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,728 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 CMJ 03.txt' ---
+2025-04-19 16:49:29,728 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,728 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 CMJ 03'
+2025-04-19 16:49:29,728 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'CMJ', '03']
+2025-04-19 16:49:29,728 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,728 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,728 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,728 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 DL 01.txt' ---
+2025-04-19 16:49:29,728 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,728 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 DL 01'
+2025-04-19 16:49:29,728 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'DL', '01']
+2025-04-19 16:49:29,728 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,728 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,728 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,728 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 DL 02.txt' ---
+2025-04-19 16:49:29,728 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 DL 02'
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'DL', '02']
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 DL 03.txt' ---
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 DL 03'
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'DL', '03']
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte04 CMJ 02.txt' ---
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte04 CMJ 02'
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte04', 'CMJ', '02']
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte04 CMJ 03.txt' ---
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte04 CMJ 03'
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte04', 'CMJ', '03']
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,729 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte04 CMJ 04.txt' ---
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte04 CMJ 04'
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte04', 'CMJ', '04']
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte04 DL 03.txt' ---
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte04 DL 03'
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte04', 'DL', '03']
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte04 DL 04.txt' ---
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte04 DL 04'
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte04', 'DL', '04']
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte04 DL 05.txt' ---
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,730 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte04 DL 05'
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte04', 'DL', '05']
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte05 CMJ 01.txt' ---
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte05 CMJ 01'
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte05', 'CMJ', '01']
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte05 CMJ 03.txt' ---
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte05 CMJ 03'
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte05', 'CMJ', '03']
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte05 CMJ 04.txt' ---
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte05 CMJ 04'
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte05', 'CMJ', '04']
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte05 DL 01.txt' ---
+2025-04-19 16:49:29,731 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte05 DL 01'
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte05', 'DL', '01']
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte05 DL 02.txt' ---
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte05 DL 02'
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte05', 'DL', '02']
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte05 DL 03.txt' ---
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte05 DL 03'
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte05', 'DL', '03']
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte06 CMJ 01.txt' ---
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte06 CMJ 01'
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte06', 'CMJ', '01']
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,732 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte06 CMJ 02.txt' ---
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte06 CMJ 02'
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte06', 'CMJ', '02']
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte06 CMJ 04.txt' ---
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte06 CMJ 04'
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte06', 'CMJ', '04']
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte06 DL 01.txt' ---
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte06 DL 01'
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte06', 'DL', '01']
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte06 DL 02.txt' ---
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte06 DL 02'
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte06', 'DL', '02']
+2025-04-19 16:49:29,733 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte06 DL 03.txt' ---
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte06 DL 03'
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte06', 'DL', '03']
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte07 CMJ 01.txt' ---
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte07 CMJ 01'
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte07', 'CMJ', '01']
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte07 CMJ 02.txt' ---
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte07 CMJ 02'
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte07', 'CMJ', '02']
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte07 CMJ 03.txt' ---
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte07 CMJ 03'
+2025-04-19 16:49:29,734 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte07', 'CMJ', '03']
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte07 DL 02.txt' ---
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte07 DL 02'
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte07', 'DL', '02']
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte07 DL 03.txt' ---
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte07 DL 03'
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte07', 'DL', '03']
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte07 DL 07.txt' ---
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte07 DL 07'
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte07', 'DL', '07']
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte09 CMJ 01.txt' ---
+2025-04-19 16:49:29,735 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte09 CMJ 01'
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte09', 'CMJ', '01']
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte09 CMJ 02.txt' ---
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte09 CMJ 02'
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte09', 'CMJ', '02']
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte09 CMJ 03.txt' ---
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte09 CMJ 03'
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte09', 'CMJ', '03']
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte09 DL 01.txt' ---
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte09 DL 01'
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte09', 'DL', '01']
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,736 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte09 DL 02.txt' ---
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte09 DL 02'
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte09', 'DL', '02']
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte09 DL 03.txt' ---
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte09 DL 03'
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte09', 'DL', '03']
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte10 CMJ 01.txt' ---
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte10 CMJ 01'
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'CMJ', '01']
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte10 CMJ 03.txt' ---
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte10 CMJ 03'
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'CMJ', '03']
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,737 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte10 CMJ 04.txt' ---
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte10 CMJ 04'
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'CMJ', '04']
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte10 DL 01.txt' ---
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte10 DL 01'
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'DL', '01']
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte10 DL 02.txt' ---
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte10 DL 02'
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'DL', '02']
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte10 DL 03.txt' ---
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte10 DL 03'
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'DL', '03']
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,738 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte11 CMJ 01.txt' ---
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte11 CMJ 01'
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte11', 'CMJ', '01']
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte11 CMJ 02.txt' ---
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte11 CMJ 02'
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte11', 'CMJ', '02']
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte11 CMJ 03.txt' ---
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte11 CMJ 03'
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte11', 'CMJ', '03']
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte11 DL 01.txt' ---
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte11 DL 01'
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte11', 'DL', '01']
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte11 DL 02.txt' ---
+2025-04-19 16:49:29,739 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte11 DL 02'
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte11', 'DL', '02']
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte11 DL 03.txt' ---
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte11 DL 03'
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte11', 'DL', '03']
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte12 CMJ 01.txt' ---
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte12 CMJ 01'
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte12', 'CMJ', '01']
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte12 CMJ 02.txt' ---
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte12 CMJ 02'
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte12', 'CMJ', '02']
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte12 CMJ 03.txt' ---
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte12 CMJ 03'
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte12', 'CMJ', '03']
+2025-04-19 16:49:29,740 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte12 DL 01.txt' ---
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte12 DL 01'
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte12', 'DL', '01']
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte12 DL 02.txt' ---
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte12 DL 02'
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte12', 'DL', '02']
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte12 DL 03.txt' ---
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte12 DL 03'
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte12', 'DL', '03']
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte13 CMJ 01.txt' ---
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte13 CMJ 01'
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte13', 'CMJ', '01']
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,741 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte13 CMJ 02.txt' ---
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte13 CMJ 02'
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte13', 'CMJ', '02']
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte13 CMJ 03.txt' ---
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte13 CMJ 03'
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte13', 'CMJ', '03']
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte13 DL 01.txt' ---
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte13 DL 01'
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte13', 'DL', '01']
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte13 DL 02.txt' ---
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte13 DL 02'
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte13', 'DL', '02']
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte13 DL 03.txt' ---
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte13 DL 03'
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte13', 'DL', '03']
+2025-04-19 16:49:29,742 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte14 CMJ 01.txt' ---
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte14 CMJ 01'
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte14', 'CMJ', '01']
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte14 CMJ 02.txt' ---
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte14 CMJ 02'
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte14', 'CMJ', '02']
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte14 CMJ 03.txt' ---
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte14 CMJ 03'
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte14', 'CMJ', '03']
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte14 DL 02.txt' ---
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte14 DL 02'
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte14', 'DL', '02']
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,743 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte14 DL 03.txt' ---
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte14 DL 03'
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte14', 'DL', '03']
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte15 CMJ 01.txt' ---
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte15 CMJ 01'
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte15', 'CMJ', '01']
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte15 CMJ 02.txt' ---
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte15 CMJ 02'
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte15', 'CMJ', '02']
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte15 CMJ 03.txt' ---
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte15 CMJ 03'
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte15', 'CMJ', '03']
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte15 DL 01.txt' ---
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte15 DL 01'
+2025-04-19 16:49:29,744 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte15', 'DL', '01']
+2025-04-19 16:49:29,745 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,745 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,745 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,745 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte15 DL 02.txt' ---
+2025-04-19 16:49:29,745 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,745 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte15 DL 02'
+2025-04-19 16:49:29,745 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte15', 'DL', '02']
+2025-04-19 16:49:29,745 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,745 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,745 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:29,745 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte15 DL 03.txt' ---
+2025-04-19 16:49:29,745 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:29,745 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte15 DL 03'
+2025-04-19 16:49:29,745 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte15', 'DL', '03']
+2025-04-19 16:49:29,745 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:29,745 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:29,745 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:37,358 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte10 CMJ 01.txt' ---
+2025-04-19 16:49:37,358 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:37,358 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte10 CMJ 01'
+2025-04-19 16:49:37,358 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'CMJ', '01']
+2025-04-19 16:49:37,358 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:37,358 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:37,358 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:45,644 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte1 CMJ PRE 04.txt' ---
+2025-04-19 16:49:45,645 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:45,646 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte1 CMJ PRE 04'
+2025-04-19 16:49:45,646 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte1', 'CMJ', 'PRE', '04']
+2025-04-19 16:49:45,646 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ', 'PRE']
+2025-04-19 16:49:45,646 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 2
+2025-04-19 16:49:45,646 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (2) no coincide con VIs definidas (0).
+2025-04-19 16:49:51,811 - INFO - [kineviz.core.services.file_service] - Iniciando proceso de agregado de 73 archivos al estudio 9.
+2025-04-19 16:49:51,812 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte03 CMJ 01.txt' al estudio 9
+2025-04-19 16:49:51,812 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte03 CMJ 01.txt' con descriptores: []
+2025-04-19 16:49:51,812 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 CMJ 01.txt' ---
+2025-04-19 16:49:51,812 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:51,812 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 CMJ 01'
+2025-04-19 16:49:51,812 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'CMJ', '01']
+2025-04-19 16:49:51,812 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:51,812 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:51,812 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:51,812 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte03 CMJ 01.txt': (False, [])
+2025-04-19 16:49:51,876 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte03 CMJ 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:51,876 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte03 CMJ 01.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:51,876 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte03 CMJ 02.txt' al estudio 9
+2025-04-19 16:49:51,876 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte03 CMJ 02.txt' con descriptores: []
+2025-04-19 16:49:51,876 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 CMJ 02.txt' ---
+2025-04-19 16:49:51,876 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:51,876 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 CMJ 02'
+2025-04-19 16:49:51,876 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'CMJ', '02']
+2025-04-19 16:49:51,876 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:51,876 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:51,876 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:51,876 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte03 CMJ 02.txt': (False, [])
+2025-04-19 16:49:51,904 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte03 CMJ 02.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:51,904 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte03 CMJ 02.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:51,904 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte03 CMJ 03.txt' al estudio 9
+2025-04-19 16:49:51,904 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte03 CMJ 03.txt' con descriptores: []
+2025-04-19 16:49:51,904 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 CMJ 03.txt' ---
+2025-04-19 16:49:51,904 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:51,904 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 CMJ 03'
+2025-04-19 16:49:51,904 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'CMJ', '03']
+2025-04-19 16:49:51,904 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:51,904 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:51,904 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:51,904 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte03 CMJ 03.txt': (False, [])
+2025-04-19 16:49:51,905 - ERROR - [kineviz.core.services.file_service] - Error procesando una sección (100 frames) de Pte03 CMJ 03.txt: could not convert string to float: '5,47567'
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/file_service.py", line 230, in _process_and_copy_file
+    mediciones, columnas, tipo_frecuencia_determinado = file_handlers.leer_seccion(
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/data_processing/file_handlers.py", line 106, in leer_seccion
+    mediciones.append([float(val) if val.strip() !=
+                       ^^^^^^^^^^
+ValueError: could not convert string to float: '5,47567'
+2025-04-19 16:49:51,906 - WARNING - [kineviz.core.services.file_service] - Error de validación/formato para Pte03 CMJ 03.txt: could not convert string to float: '5,47567'
+2025-04-19 16:49:51,906 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte03 DL 01.txt' al estudio 9
+2025-04-19 16:49:51,906 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte03 DL 01.txt' con descriptores: []
+2025-04-19 16:49:51,906 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 DL 01.txt' ---
+2025-04-19 16:49:51,906 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:51,906 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 DL 01'
+2025-04-19 16:49:51,906 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'DL', '01']
+2025-04-19 16:49:51,906 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:51,906 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:51,906 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:51,906 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte03 DL 01.txt': (False, [])
+2025-04-19 16:49:51,927 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte03 DL 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:51,928 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte03 DL 01.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:51,928 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte03 DL 02.txt' al estudio 9
+2025-04-19 16:49:51,928 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte03 DL 02.txt' con descriptores: []
+2025-04-19 16:49:51,928 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 DL 02.txt' ---
+2025-04-19 16:49:51,928 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:51,928 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 DL 02'
+2025-04-19 16:49:51,928 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'DL', '02']
+2025-04-19 16:49:51,928 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:51,928 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:51,928 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:51,928 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte03 DL 02.txt': (False, [])
+2025-04-19 16:49:51,945 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte03 DL 02.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:51,945 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte03 DL 02.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:51,945 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte03 DL 03.txt' al estudio 9
+2025-04-19 16:49:51,945 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte03 DL 03.txt' con descriptores: []
+2025-04-19 16:49:51,945 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 DL 03.txt' ---
+2025-04-19 16:49:51,945 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:51,945 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 DL 03'
+2025-04-19 16:49:51,945 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'DL', '03']
+2025-04-19 16:49:51,945 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:51,945 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:51,945 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:51,945 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte03 DL 03.txt': (False, [])
+2025-04-19 16:49:51,973 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte03 DL 03.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:51,973 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte03 DL 03.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:51,973 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte04 CMJ 02.txt' al estudio 9
+2025-04-19 16:49:51,973 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte04 CMJ 02.txt' con descriptores: []
+2025-04-19 16:49:51,974 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte04 CMJ 02.txt' ---
+2025-04-19 16:49:51,974 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:51,974 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte04 CMJ 02'
+2025-04-19 16:49:51,974 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte04', 'CMJ', '02']
+2025-04-19 16:49:51,974 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:51,974 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:51,974 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:51,974 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte04 CMJ 02.txt': (False, [])
+2025-04-19 16:49:51,994 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte04 CMJ 02.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:51,994 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte04 CMJ 02.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:51,994 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte04 CMJ 03.txt' al estudio 9
+2025-04-19 16:49:51,994 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte04 CMJ 03.txt' con descriptores: []
+2025-04-19 16:49:51,994 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte04 CMJ 03.txt' ---
+2025-04-19 16:49:51,994 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:51,994 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte04 CMJ 03'
+2025-04-19 16:49:51,994 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte04', 'CMJ', '03']
+2025-04-19 16:49:51,994 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:51,994 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:51,994 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:51,994 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte04 CMJ 03.txt': (False, [])
+2025-04-19 16:49:51,995 - ERROR - [kineviz.core.services.file_service] - Error procesando una sección (100 frames) de Pte04 CMJ 03.txt: could not convert string to float: '10,8521'
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/services/file_service.py", line 230, in _process_and_copy_file
+    mediciones, columnas, tipo_frecuencia_determinado = file_handlers.leer_seccion(
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/python/KineViz/kineviz/core/data_processing/file_handlers.py", line 106, in leer_seccion
+    mediciones.append([float(val) if val.strip() !=
+                       ^^^^^^^^^^
+ValueError: could not convert string to float: '10,8521'
+2025-04-19 16:49:51,995 - WARNING - [kineviz.core.services.file_service] - Error de validación/formato para Pte04 CMJ 03.txt: could not convert string to float: '10,8521'
+2025-04-19 16:49:51,995 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte04 CMJ 04.txt' al estudio 9
+2025-04-19 16:49:51,995 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte04 CMJ 04.txt' con descriptores: []
+2025-04-19 16:49:51,995 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte04 CMJ 04.txt' ---
+2025-04-19 16:49:51,995 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:51,995 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte04 CMJ 04'
+2025-04-19 16:49:51,995 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte04', 'CMJ', '04']
+2025-04-19 16:49:51,995 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:51,995 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:51,995 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:51,995 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte04 CMJ 04.txt': (False, [])
+2025-04-19 16:49:52,014 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte04 CMJ 04.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,015 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte04 CMJ 04.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,015 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte04 DL 03.txt' al estudio 9
+2025-04-19 16:49:52,015 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte04 DL 03.txt' con descriptores: []
+2025-04-19 16:49:52,015 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte04 DL 03.txt' ---
+2025-04-19 16:49:52,015 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,015 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte04 DL 03'
+2025-04-19 16:49:52,015 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte04', 'DL', '03']
+2025-04-19 16:49:52,015 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,015 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,015 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,015 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte04 DL 03.txt': (False, [])
+2025-04-19 16:49:52,032 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte04 DL 03.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,032 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte04 DL 03.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,032 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte04 DL 04.txt' al estudio 9
+2025-04-19 16:49:52,032 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte04 DL 04.txt' con descriptores: []
+2025-04-19 16:49:52,032 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte04 DL 04.txt' ---
+2025-04-19 16:49:52,032 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,032 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte04 DL 04'
+2025-04-19 16:49:52,032 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte04', 'DL', '04']
+2025-04-19 16:49:52,032 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,032 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,032 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,032 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte04 DL 04.txt': (False, [])
+2025-04-19 16:49:52,051 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte04 DL 04.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,052 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte04 DL 04.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,052 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte04 DL 05.txt' al estudio 9
+2025-04-19 16:49:52,052 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte04 DL 05.txt' con descriptores: []
+2025-04-19 16:49:52,052 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte04 DL 05.txt' ---
+2025-04-19 16:49:52,052 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,052 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte04 DL 05'
+2025-04-19 16:49:52,052 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte04', 'DL', '05']
+2025-04-19 16:49:52,052 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,052 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,052 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,052 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte04 DL 05.txt': (False, [])
+2025-04-19 16:49:52,068 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte04 DL 05.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,068 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte04 DL 05.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,068 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte05 CMJ 01.txt' al estudio 9
+2025-04-19 16:49:52,068 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte05 CMJ 01.txt' con descriptores: []
+2025-04-19 16:49:52,068 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte05 CMJ 01.txt' ---
+2025-04-19 16:49:52,068 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,068 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte05 CMJ 01'
+2025-04-19 16:49:52,068 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte05', 'CMJ', '01']
+2025-04-19 16:49:52,068 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,068 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,068 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,068 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte05 CMJ 01.txt': (False, [])
+2025-04-19 16:49:52,090 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte05 CMJ 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,090 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte05 CMJ 01.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,090 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte05 CMJ 03.txt' al estudio 9
+2025-04-19 16:49:52,090 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte05 CMJ 03.txt' con descriptores: []
+2025-04-19 16:49:52,090 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte05 CMJ 03.txt' ---
+2025-04-19 16:49:52,090 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,090 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte05 CMJ 03'
+2025-04-19 16:49:52,090 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte05', 'CMJ', '03']
+2025-04-19 16:49:52,090 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,090 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,090 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,091 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte05 CMJ 03.txt': (False, [])
+2025-04-19 16:49:52,110 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte05 CMJ 03.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,110 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte05 CMJ 03.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,110 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte05 CMJ 04.txt' al estudio 9
+2025-04-19 16:49:52,110 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte05 CMJ 04.txt' con descriptores: []
+2025-04-19 16:49:52,110 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte05 CMJ 04.txt' ---
+2025-04-19 16:49:52,110 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,110 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte05 CMJ 04'
+2025-04-19 16:49:52,110 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte05', 'CMJ', '04']
+2025-04-19 16:49:52,110 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,110 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,110 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,111 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte05 CMJ 04.txt': (False, [])
+2025-04-19 16:49:52,135 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte05 CMJ 04.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,135 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte05 CMJ 04.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,135 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte05 DL 01.txt' al estudio 9
+2025-04-19 16:49:52,135 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte05 DL 01.txt' con descriptores: []
+2025-04-19 16:49:52,135 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte05 DL 01.txt' ---
+2025-04-19 16:49:52,135 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,135 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte05 DL 01'
+2025-04-19 16:49:52,135 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte05', 'DL', '01']
+2025-04-19 16:49:52,135 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,135 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,135 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,135 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte05 DL 01.txt': (False, [])
+2025-04-19 16:49:52,151 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte05 DL 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,151 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte05 DL 01.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,151 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte05 DL 02.txt' al estudio 9
+2025-04-19 16:49:52,151 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte05 DL 02.txt' con descriptores: []
+2025-04-19 16:49:52,151 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte05 DL 02.txt' ---
+2025-04-19 16:49:52,151 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,151 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte05 DL 02'
+2025-04-19 16:49:52,151 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte05', 'DL', '02']
+2025-04-19 16:49:52,151 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,151 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,151 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,151 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte05 DL 02.txt': (False, [])
+2025-04-19 16:49:52,166 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte05 DL 02.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,166 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte05 DL 02.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,166 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte05 DL 03.txt' al estudio 9
+2025-04-19 16:49:52,166 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte05 DL 03.txt' con descriptores: []
+2025-04-19 16:49:52,166 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte05 DL 03.txt' ---
+2025-04-19 16:49:52,166 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,166 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte05 DL 03'
+2025-04-19 16:49:52,166 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte05', 'DL', '03']
+2025-04-19 16:49:52,166 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,166 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,166 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,166 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte05 DL 03.txt': (False, [])
+2025-04-19 16:49:52,183 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte05 DL 03.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,183 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte05 DL 03.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,183 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte06 CMJ 01.txt' al estudio 9
+2025-04-19 16:49:52,183 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte06 CMJ 01.txt' con descriptores: []
+2025-04-19 16:49:52,183 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte06 CMJ 01.txt' ---
+2025-04-19 16:49:52,183 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,183 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte06 CMJ 01'
+2025-04-19 16:49:52,183 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte06', 'CMJ', '01']
+2025-04-19 16:49:52,183 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,183 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,184 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,184 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte06 CMJ 01.txt': (False, [])
+2025-04-19 16:49:52,203 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte06 CMJ 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,203 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte06 CMJ 01.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,203 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte06 CMJ 02.txt' al estudio 9
+2025-04-19 16:49:52,204 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte06 CMJ 02.txt' con descriptores: []
+2025-04-19 16:49:52,204 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte06 CMJ 02.txt' ---
+2025-04-19 16:49:52,204 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,204 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte06 CMJ 02'
+2025-04-19 16:49:52,204 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte06', 'CMJ', '02']
+2025-04-19 16:49:52,204 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,204 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,204 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,204 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte06 CMJ 02.txt': (False, [])
+2025-04-19 16:49:52,222 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte06 CMJ 02.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,222 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte06 CMJ 02.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,222 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte06 CMJ 04.txt' al estudio 9
+2025-04-19 16:49:52,223 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte06 CMJ 04.txt' con descriptores: []
+2025-04-19 16:49:52,223 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte06 CMJ 04.txt' ---
+2025-04-19 16:49:52,223 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,223 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte06 CMJ 04'
+2025-04-19 16:49:52,223 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte06', 'CMJ', '04']
+2025-04-19 16:49:52,223 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,223 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,223 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,223 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte06 CMJ 04.txt': (False, [])
+2025-04-19 16:49:52,240 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte06 CMJ 04.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,240 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte06 CMJ 04.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,240 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte06 DL 01.txt' al estudio 9
+2025-04-19 16:49:52,240 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte06 DL 01.txt' con descriptores: []
+2025-04-19 16:49:52,240 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte06 DL 01.txt' ---
+2025-04-19 16:49:52,240 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,240 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte06 DL 01'
+2025-04-19 16:49:52,240 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte06', 'DL', '01']
+2025-04-19 16:49:52,240 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,240 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,240 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,240 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte06 DL 01.txt': (False, [])
+2025-04-19 16:49:52,255 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte06 DL 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,255 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte06 DL 01.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,255 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte06 DL 02.txt' al estudio 9
+2025-04-19 16:49:52,255 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte06 DL 02.txt' con descriptores: []
+2025-04-19 16:49:52,255 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte06 DL 02.txt' ---
+2025-04-19 16:49:52,255 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,255 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte06 DL 02'
+2025-04-19 16:49:52,255 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte06', 'DL', '02']
+2025-04-19 16:49:52,255 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,255 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,255 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,255 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte06 DL 02.txt': (False, [])
+2025-04-19 16:49:52,273 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte06 DL 02.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,273 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte06 DL 02.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,273 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte06 DL 03.txt' al estudio 9
+2025-04-19 16:49:52,273 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte06 DL 03.txt' con descriptores: []
+2025-04-19 16:49:52,273 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte06 DL 03.txt' ---
+2025-04-19 16:49:52,273 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,273 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte06 DL 03'
+2025-04-19 16:49:52,273 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte06', 'DL', '03']
+2025-04-19 16:49:52,273 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,273 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,273 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,273 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte06 DL 03.txt': (False, [])
+2025-04-19 16:49:52,287 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte06 DL 03.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,287 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte06 DL 03.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,287 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte07 CMJ 01.txt' al estudio 9
+2025-04-19 16:49:52,287 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte07 CMJ 01.txt' con descriptores: []
+2025-04-19 16:49:52,287 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte07 CMJ 01.txt' ---
+2025-04-19 16:49:52,287 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,287 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte07 CMJ 01'
+2025-04-19 16:49:52,287 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte07', 'CMJ', '01']
+2025-04-19 16:49:52,287 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,287 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,287 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,287 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte07 CMJ 01.txt': (False, [])
+2025-04-19 16:49:52,309 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte07 CMJ 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,309 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte07 CMJ 01.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,309 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte07 CMJ 02.txt' al estudio 9
+2025-04-19 16:49:52,309 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte07 CMJ 02.txt' con descriptores: []
+2025-04-19 16:49:52,309 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte07 CMJ 02.txt' ---
+2025-04-19 16:49:52,309 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,309 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte07 CMJ 02'
+2025-04-19 16:49:52,309 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte07', 'CMJ', '02']
+2025-04-19 16:49:52,309 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,309 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,309 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,309 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte07 CMJ 02.txt': (False, [])
+2025-04-19 16:49:52,331 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte07 CMJ 02.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,331 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte07 CMJ 02.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,331 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte07 CMJ 03.txt' al estudio 9
+2025-04-19 16:49:52,331 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte07 CMJ 03.txt' con descriptores: []
+2025-04-19 16:49:52,331 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte07 CMJ 03.txt' ---
+2025-04-19 16:49:52,331 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,331 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte07 CMJ 03'
+2025-04-19 16:49:52,331 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte07', 'CMJ', '03']
+2025-04-19 16:49:52,331 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,331 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,331 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,331 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte07 CMJ 03.txt': (False, [])
+2025-04-19 16:49:52,353 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte07 CMJ 03.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,353 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte07 CMJ 03.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,353 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte07 DL 02.txt' al estudio 9
+2025-04-19 16:49:52,353 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte07 DL 02.txt' con descriptores: []
+2025-04-19 16:49:52,353 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte07 DL 02.txt' ---
+2025-04-19 16:49:52,353 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,353 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte07 DL 02'
+2025-04-19 16:49:52,353 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte07', 'DL', '02']
+2025-04-19 16:49:52,353 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,353 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,353 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,353 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte07 DL 02.txt': (False, [])
+2025-04-19 16:49:52,366 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte07 DL 02.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,367 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte07 DL 02.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,367 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte07 DL 03.txt' al estudio 9
+2025-04-19 16:49:52,367 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte07 DL 03.txt' con descriptores: []
+2025-04-19 16:49:52,367 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte07 DL 03.txt' ---
+2025-04-19 16:49:52,367 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,367 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte07 DL 03'
+2025-04-19 16:49:52,367 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte07', 'DL', '03']
+2025-04-19 16:49:52,367 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,367 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,367 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,367 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte07 DL 03.txt': (False, [])
+2025-04-19 16:49:52,380 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte07 DL 03.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,381 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte07 DL 03.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,381 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte07 DL 07.txt' al estudio 9
+2025-04-19 16:49:52,381 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte07 DL 07.txt' con descriptores: []
+2025-04-19 16:49:52,381 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte07 DL 07.txt' ---
+2025-04-19 16:49:52,381 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,381 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte07 DL 07'
+2025-04-19 16:49:52,381 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte07', 'DL', '07']
+2025-04-19 16:49:52,381 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,381 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,381 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,381 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte07 DL 07.txt': (False, [])
+2025-04-19 16:49:52,398 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte07 DL 07.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,398 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte07 DL 07.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,398 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte09 CMJ 01.txt' al estudio 9
+2025-04-19 16:49:52,398 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte09 CMJ 01.txt' con descriptores: []
+2025-04-19 16:49:52,398 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte09 CMJ 01.txt' ---
+2025-04-19 16:49:52,398 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,398 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte09 CMJ 01'
+2025-04-19 16:49:52,398 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte09', 'CMJ', '01']
+2025-04-19 16:49:52,398 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,398 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,398 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,398 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte09 CMJ 01.txt': (False, [])
+2025-04-19 16:49:52,417 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte09 CMJ 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,418 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte09 CMJ 01.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,418 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte09 CMJ 02.txt' al estudio 9
+2025-04-19 16:49:52,418 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte09 CMJ 02.txt' con descriptores: []
+2025-04-19 16:49:52,418 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte09 CMJ 02.txt' ---
+2025-04-19 16:49:52,418 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,418 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte09 CMJ 02'
+2025-04-19 16:49:52,418 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte09', 'CMJ', '02']
+2025-04-19 16:49:52,418 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,418 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,418 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,418 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte09 CMJ 02.txt': (False, [])
+2025-04-19 16:49:52,436 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte09 CMJ 02.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,436 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte09 CMJ 02.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,436 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte09 CMJ 03.txt' al estudio 9
+2025-04-19 16:49:52,436 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte09 CMJ 03.txt' con descriptores: []
+2025-04-19 16:49:52,436 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte09 CMJ 03.txt' ---
+2025-04-19 16:49:52,436 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,436 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte09 CMJ 03'
+2025-04-19 16:49:52,436 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte09', 'CMJ', '03']
+2025-04-19 16:49:52,436 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,436 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,436 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,436 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte09 CMJ 03.txt': (False, [])
+2025-04-19 16:49:52,456 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte09 CMJ 03.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,456 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte09 CMJ 03.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,456 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte09 DL 01.txt' al estudio 9
+2025-04-19 16:49:52,456 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte09 DL 01.txt' con descriptores: []
+2025-04-19 16:49:52,456 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte09 DL 01.txt' ---
+2025-04-19 16:49:52,456 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,456 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte09 DL 01'
+2025-04-19 16:49:52,456 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte09', 'DL', '01']
+2025-04-19 16:49:52,456 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,456 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,456 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,456 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte09 DL 01.txt': (False, [])
+2025-04-19 16:49:52,469 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte09 DL 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,470 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte09 DL 01.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,470 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte09 DL 02.txt' al estudio 9
+2025-04-19 16:49:52,470 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte09 DL 02.txt' con descriptores: []
+2025-04-19 16:49:52,470 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte09 DL 02.txt' ---
+2025-04-19 16:49:52,470 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,470 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte09 DL 02'
+2025-04-19 16:49:52,470 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte09', 'DL', '02']
+2025-04-19 16:49:52,470 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,470 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,470 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,470 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte09 DL 02.txt': (False, [])
+2025-04-19 16:49:52,483 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte09 DL 02.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,483 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte09 DL 02.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,483 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte09 DL 03.txt' al estudio 9
+2025-04-19 16:49:52,484 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte09 DL 03.txt' con descriptores: []
+2025-04-19 16:49:52,484 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte09 DL 03.txt' ---
+2025-04-19 16:49:52,484 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,484 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte09 DL 03'
+2025-04-19 16:49:52,484 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte09', 'DL', '03']
+2025-04-19 16:49:52,484 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,484 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,484 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,484 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte09 DL 03.txt': (False, [])
+2025-04-19 16:49:52,497 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte09 DL 03.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,497 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte09 DL 03.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,497 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte10 CMJ 01.txt' al estudio 9
+2025-04-19 16:49:52,497 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte10 CMJ 01.txt' con descriptores: []
+2025-04-19 16:49:52,497 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte10 CMJ 01.txt' ---
+2025-04-19 16:49:52,497 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,497 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte10 CMJ 01'
+2025-04-19 16:49:52,497 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'CMJ', '01']
+2025-04-19 16:49:52,497 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,497 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,497 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,497 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte10 CMJ 01.txt': (False, [])
+2025-04-19 16:49:52,519 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte10 CMJ 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,519 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte10 CMJ 01.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,519 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte10 CMJ 03.txt' al estudio 9
+2025-04-19 16:49:52,519 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte10 CMJ 03.txt' con descriptores: []
+2025-04-19 16:49:52,519 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte10 CMJ 03.txt' ---
+2025-04-19 16:49:52,519 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,519 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte10 CMJ 03'
+2025-04-19 16:49:52,519 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'CMJ', '03']
+2025-04-19 16:49:52,519 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,519 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,519 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,519 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte10 CMJ 03.txt': (False, [])
+2025-04-19 16:49:52,539 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte10 CMJ 03.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,539 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte10 CMJ 03.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,539 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte10 CMJ 04.txt' al estudio 9
+2025-04-19 16:49:52,539 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte10 CMJ 04.txt' con descriptores: []
+2025-04-19 16:49:52,539 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte10 CMJ 04.txt' ---
+2025-04-19 16:49:52,539 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,539 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte10 CMJ 04'
+2025-04-19 16:49:52,539 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'CMJ', '04']
+2025-04-19 16:49:52,539 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,539 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,539 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,539 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte10 CMJ 04.txt': (False, [])
+2025-04-19 16:49:52,558 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte10 CMJ 04.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,558 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte10 CMJ 04.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,558 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte10 DL 01.txt' al estudio 9
+2025-04-19 16:49:52,558 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte10 DL 01.txt' con descriptores: []
+2025-04-19 16:49:52,558 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte10 DL 01.txt' ---
+2025-04-19 16:49:52,558 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,558 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte10 DL 01'
+2025-04-19 16:49:52,558 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'DL', '01']
+2025-04-19 16:49:52,558 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,558 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,558 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,558 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte10 DL 01.txt': (False, [])
+2025-04-19 16:49:52,571 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte10 DL 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,571 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte10 DL 01.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,571 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte10 DL 02.txt' al estudio 9
+2025-04-19 16:49:52,571 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte10 DL 02.txt' con descriptores: []
+2025-04-19 16:49:52,571 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte10 DL 02.txt' ---
+2025-04-19 16:49:52,571 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,572 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte10 DL 02'
+2025-04-19 16:49:52,572 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'DL', '02']
+2025-04-19 16:49:52,572 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,572 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,572 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,572 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte10 DL 02.txt': (False, [])
+2025-04-19 16:49:52,589 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte10 DL 02.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,589 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte10 DL 02.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,589 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte10 DL 03.txt' al estudio 9
+2025-04-19 16:49:52,589 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte10 DL 03.txt' con descriptores: []
+2025-04-19 16:49:52,589 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte10 DL 03.txt' ---
+2025-04-19 16:49:52,589 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,589 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte10 DL 03'
+2025-04-19 16:49:52,589 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'DL', '03']
+2025-04-19 16:49:52,590 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,590 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,590 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,590 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte10 DL 03.txt': (False, [])
+2025-04-19 16:49:52,606 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte10 DL 03.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,607 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte10 DL 03.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,607 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte11 CMJ 01.txt' al estudio 9
+2025-04-19 16:49:52,607 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte11 CMJ 01.txt' con descriptores: []
+2025-04-19 16:49:52,607 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte11 CMJ 01.txt' ---
+2025-04-19 16:49:52,607 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,607 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte11 CMJ 01'
+2025-04-19 16:49:52,607 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte11', 'CMJ', '01']
+2025-04-19 16:49:52,607 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,607 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,607 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,607 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte11 CMJ 01.txt': (False, [])
+2025-04-19 16:49:52,627 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte11 CMJ 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,627 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte11 CMJ 01.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,627 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte11 CMJ 02.txt' al estudio 9
+2025-04-19 16:49:52,627 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte11 CMJ 02.txt' con descriptores: []
+2025-04-19 16:49:52,627 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte11 CMJ 02.txt' ---
+2025-04-19 16:49:52,627 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,627 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte11 CMJ 02'
+2025-04-19 16:49:52,627 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte11', 'CMJ', '02']
+2025-04-19 16:49:52,627 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,627 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,627 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,627 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte11 CMJ 02.txt': (False, [])
+2025-04-19 16:49:52,646 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte11 CMJ 02.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,646 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte11 CMJ 02.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,647 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte11 CMJ 03.txt' al estudio 9
+2025-04-19 16:49:52,647 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte11 CMJ 03.txt' con descriptores: []
+2025-04-19 16:49:52,647 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte11 CMJ 03.txt' ---
+2025-04-19 16:49:52,647 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,647 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte11 CMJ 03'
+2025-04-19 16:49:52,647 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte11', 'CMJ', '03']
+2025-04-19 16:49:52,647 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,647 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,647 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,647 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte11 CMJ 03.txt': (False, [])
+2025-04-19 16:49:52,669 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte11 CMJ 03.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,669 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte11 CMJ 03.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,669 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte11 DL 01.txt' al estudio 9
+2025-04-19 16:49:52,669 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte11 DL 01.txt' con descriptores: []
+2025-04-19 16:49:52,669 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte11 DL 01.txt' ---
+2025-04-19 16:49:52,670 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,670 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte11 DL 01'
+2025-04-19 16:49:52,670 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte11', 'DL', '01']
+2025-04-19 16:49:52,670 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,670 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,670 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,670 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte11 DL 01.txt': (False, [])
+2025-04-19 16:49:52,686 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte11 DL 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,686 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte11 DL 01.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,686 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte11 DL 02.txt' al estudio 9
+2025-04-19 16:49:52,687 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte11 DL 02.txt' con descriptores: []
+2025-04-19 16:49:52,687 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte11 DL 02.txt' ---
+2025-04-19 16:49:52,687 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,687 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte11 DL 02'
+2025-04-19 16:49:52,687 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte11', 'DL', '02']
+2025-04-19 16:49:52,687 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,687 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,687 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,687 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte11 DL 02.txt': (False, [])
+2025-04-19 16:49:52,701 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte11 DL 02.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,701 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte11 DL 02.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,701 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte11 DL 03.txt' al estudio 9
+2025-04-19 16:49:52,701 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte11 DL 03.txt' con descriptores: []
+2025-04-19 16:49:52,701 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte11 DL 03.txt' ---
+2025-04-19 16:49:52,701 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,701 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte11 DL 03'
+2025-04-19 16:49:52,701 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte11', 'DL', '03']
+2025-04-19 16:49:52,701 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,701 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,701 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,701 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte11 DL 03.txt': (False, [])
+2025-04-19 16:49:52,716 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte11 DL 03.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,716 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte11 DL 03.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,716 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte12 CMJ 01.txt' al estudio 9
+2025-04-19 16:49:52,716 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte12 CMJ 01.txt' con descriptores: []
+2025-04-19 16:49:52,716 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte12 CMJ 01.txt' ---
+2025-04-19 16:49:52,716 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,716 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte12 CMJ 01'
+2025-04-19 16:49:52,716 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte12', 'CMJ', '01']
+2025-04-19 16:49:52,716 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,716 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,716 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,716 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte12 CMJ 01.txt': (False, [])
+2025-04-19 16:49:52,738 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte12 CMJ 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,738 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte12 CMJ 01.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,738 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte12 CMJ 02.txt' al estudio 9
+2025-04-19 16:49:52,738 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte12 CMJ 02.txt' con descriptores: []
+2025-04-19 16:49:52,738 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte12 CMJ 02.txt' ---
+2025-04-19 16:49:52,738 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,738 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte12 CMJ 02'
+2025-04-19 16:49:52,738 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte12', 'CMJ', '02']
+2025-04-19 16:49:52,738 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,738 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,738 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,738 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte12 CMJ 02.txt': (False, [])
+2025-04-19 16:49:52,758 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte12 CMJ 02.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,758 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte12 CMJ 02.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,758 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte12 CMJ 03.txt' al estudio 9
+2025-04-19 16:49:52,758 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte12 CMJ 03.txt' con descriptores: []
+2025-04-19 16:49:52,758 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte12 CMJ 03.txt' ---
+2025-04-19 16:49:52,758 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,758 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte12 CMJ 03'
+2025-04-19 16:49:52,758 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte12', 'CMJ', '03']
+2025-04-19 16:49:52,758 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,758 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,758 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,758 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte12 CMJ 03.txt': (False, [])
+2025-04-19 16:49:52,777 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte12 CMJ 03.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,777 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte12 CMJ 03.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,777 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte12 DL 01.txt' al estudio 9
+2025-04-19 16:49:52,777 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte12 DL 01.txt' con descriptores: []
+2025-04-19 16:49:52,777 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte12 DL 01.txt' ---
+2025-04-19 16:49:52,777 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,777 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte12 DL 01'
+2025-04-19 16:49:52,777 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte12', 'DL', '01']
+2025-04-19 16:49:52,777 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,777 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,777 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,777 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte12 DL 01.txt': (False, [])
+2025-04-19 16:49:52,795 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte12 DL 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,795 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte12 DL 01.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,795 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte12 DL 02.txt' al estudio 9
+2025-04-19 16:49:52,795 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte12 DL 02.txt' con descriptores: []
+2025-04-19 16:49:52,795 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte12 DL 02.txt' ---
+2025-04-19 16:49:52,795 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,795 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte12 DL 02'
+2025-04-19 16:49:52,795 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte12', 'DL', '02']
+2025-04-19 16:49:52,795 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,795 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,795 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,795 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte12 DL 02.txt': (False, [])
+2025-04-19 16:49:52,812 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte12 DL 02.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,812 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte12 DL 02.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,812 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte12 DL 03.txt' al estudio 9
+2025-04-19 16:49:52,812 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte12 DL 03.txt' con descriptores: []
+2025-04-19 16:49:52,812 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte12 DL 03.txt' ---
+2025-04-19 16:49:52,812 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,812 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte12 DL 03'
+2025-04-19 16:49:52,812 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte12', 'DL', '03']
+2025-04-19 16:49:52,812 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,812 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,812 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,812 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte12 DL 03.txt': (False, [])
+2025-04-19 16:49:52,828 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte12 DL 03.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,828 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte12 DL 03.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,828 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte13 CMJ 01.txt' al estudio 9
+2025-04-19 16:49:52,828 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte13 CMJ 01.txt' con descriptores: []
+2025-04-19 16:49:52,828 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte13 CMJ 01.txt' ---
+2025-04-19 16:49:52,828 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,828 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte13 CMJ 01'
+2025-04-19 16:49:52,828 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte13', 'CMJ', '01']
+2025-04-19 16:49:52,828 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,828 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,828 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,828 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte13 CMJ 01.txt': (False, [])
+2025-04-19 16:49:52,852 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte13 CMJ 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,852 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte13 CMJ 01.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,852 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte13 CMJ 02.txt' al estudio 9
+2025-04-19 16:49:52,852 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte13 CMJ 02.txt' con descriptores: []
+2025-04-19 16:49:52,852 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte13 CMJ 02.txt' ---
+2025-04-19 16:49:52,852 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,852 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte13 CMJ 02'
+2025-04-19 16:49:52,852 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte13', 'CMJ', '02']
+2025-04-19 16:49:52,852 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,852 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,852 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,852 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte13 CMJ 02.txt': (False, [])
+2025-04-19 16:49:52,872 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte13 CMJ 02.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,872 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte13 CMJ 02.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,872 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte13 CMJ 03.txt' al estudio 9
+2025-04-19 16:49:52,872 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte13 CMJ 03.txt' con descriptores: []
+2025-04-19 16:49:52,872 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte13 CMJ 03.txt' ---
+2025-04-19 16:49:52,872 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,872 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte13 CMJ 03'
+2025-04-19 16:49:52,872 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte13', 'CMJ', '03']
+2025-04-19 16:49:52,872 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,872 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,872 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,872 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte13 CMJ 03.txt': (False, [])
+2025-04-19 16:49:52,888 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte13 CMJ 03.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,888 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte13 CMJ 03.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,888 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte13 DL 01.txt' al estudio 9
+2025-04-19 16:49:52,888 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte13 DL 01.txt' con descriptores: []
+2025-04-19 16:49:52,888 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte13 DL 01.txt' ---
+2025-04-19 16:49:52,888 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,888 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte13 DL 01'
+2025-04-19 16:49:52,888 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte13', 'DL', '01']
+2025-04-19 16:49:52,888 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,888 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,888 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,888 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte13 DL 01.txt': (False, [])
+2025-04-19 16:49:52,903 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte13 DL 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,903 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte13 DL 01.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,903 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte13 DL 02.txt' al estudio 9
+2025-04-19 16:49:52,903 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte13 DL 02.txt' con descriptores: []
+2025-04-19 16:49:52,903 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte13 DL 02.txt' ---
+2025-04-19 16:49:52,903 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,903 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte13 DL 02'
+2025-04-19 16:49:52,903 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte13', 'DL', '02']
+2025-04-19 16:49:52,903 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,903 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,903 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,903 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte13 DL 02.txt': (False, [])
+2025-04-19 16:49:52,917 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte13 DL 02.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,918 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte13 DL 02.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,918 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte13 DL 03.txt' al estudio 9
+2025-04-19 16:49:52,918 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte13 DL 03.txt' con descriptores: []
+2025-04-19 16:49:52,918 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte13 DL 03.txt' ---
+2025-04-19 16:49:52,918 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,918 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte13 DL 03'
+2025-04-19 16:49:52,918 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte13', 'DL', '03']
+2025-04-19 16:49:52,918 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,918 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,918 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,918 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte13 DL 03.txt': (False, [])
+2025-04-19 16:49:52,934 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte13 DL 03.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,934 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte13 DL 03.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,934 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte14 CMJ 01.txt' al estudio 9
+2025-04-19 16:49:52,934 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte14 CMJ 01.txt' con descriptores: []
+2025-04-19 16:49:52,934 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte14 CMJ 01.txt' ---
+2025-04-19 16:49:52,934 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,934 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte14 CMJ 01'
+2025-04-19 16:49:52,934 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte14', 'CMJ', '01']
+2025-04-19 16:49:52,934 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,934 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,934 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,934 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte14 CMJ 01.txt': (False, [])
+2025-04-19 16:49:52,957 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte14 CMJ 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,957 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte14 CMJ 01.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,957 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte14 CMJ 02.txt' al estudio 9
+2025-04-19 16:49:52,957 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte14 CMJ 02.txt' con descriptores: []
+2025-04-19 16:49:52,957 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte14 CMJ 02.txt' ---
+2025-04-19 16:49:52,957 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,957 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte14 CMJ 02'
+2025-04-19 16:49:52,957 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte14', 'CMJ', '02']
+2025-04-19 16:49:52,957 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,957 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,957 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,957 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte14 CMJ 02.txt': (False, [])
+2025-04-19 16:49:52,976 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte14 CMJ 02.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,976 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte14 CMJ 02.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,976 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte14 CMJ 03.txt' al estudio 9
+2025-04-19 16:49:52,976 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte14 CMJ 03.txt' con descriptores: []
+2025-04-19 16:49:52,976 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte14 CMJ 03.txt' ---
+2025-04-19 16:49:52,976 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,976 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte14 CMJ 03'
+2025-04-19 16:49:52,976 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte14', 'CMJ', '03']
+2025-04-19 16:49:52,976 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:52,976 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,976 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:52,976 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte14 CMJ 03.txt': (False, [])
+2025-04-19 16:49:52,999 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte14 CMJ 03.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:52,999 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte14 CMJ 03.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:52,999 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte14 DL 02.txt' al estudio 9
+2025-04-19 16:49:52,999 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte14 DL 02.txt' con descriptores: []
+2025-04-19 16:49:52,999 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte14 DL 02.txt' ---
+2025-04-19 16:49:52,999 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:52,999 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte14 DL 02'
+2025-04-19 16:49:52,999 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte14', 'DL', '02']
+2025-04-19 16:49:52,999 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:52,999 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:52,999 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:53,000 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte14 DL 02.txt': (False, [])
+2025-04-19 16:49:53,018 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte14 DL 02.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:53,018 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte14 DL 02.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:53,018 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte14 DL 03.txt' al estudio 9
+2025-04-19 16:49:53,018 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte14 DL 03.txt' con descriptores: []
+2025-04-19 16:49:53,018 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte14 DL 03.txt' ---
+2025-04-19 16:49:53,019 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:53,019 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte14 DL 03'
+2025-04-19 16:49:53,019 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte14', 'DL', '03']
+2025-04-19 16:49:53,019 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:53,019 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:53,019 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:53,019 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte14 DL 03.txt': (False, [])
+2025-04-19 16:49:53,033 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte14 DL 03.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:53,033 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte14 DL 03.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:53,033 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte15 CMJ 01.txt' al estudio 9
+2025-04-19 16:49:53,033 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte15 CMJ 01.txt' con descriptores: []
+2025-04-19 16:49:53,033 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte15 CMJ 01.txt' ---
+2025-04-19 16:49:53,033 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:53,033 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte15 CMJ 01'
+2025-04-19 16:49:53,033 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte15', 'CMJ', '01']
+2025-04-19 16:49:53,033 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:53,033 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:53,033 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:53,033 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte15 CMJ 01.txt': (False, [])
+2025-04-19 16:49:53,051 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte15 CMJ 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:53,051 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte15 CMJ 01.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:53,051 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte15 CMJ 02.txt' al estudio 9
+2025-04-19 16:49:53,051 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte15 CMJ 02.txt' con descriptores: []
+2025-04-19 16:49:53,051 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte15 CMJ 02.txt' ---
+2025-04-19 16:49:53,051 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:53,051 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte15 CMJ 02'
+2025-04-19 16:49:53,051 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte15', 'CMJ', '02']
+2025-04-19 16:49:53,051 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:53,051 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:53,051 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:53,051 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte15 CMJ 02.txt': (False, [])
+2025-04-19 16:49:53,073 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte15 CMJ 02.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:53,073 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte15 CMJ 02.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:53,073 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte15 CMJ 03.txt' al estudio 9
+2025-04-19 16:49:53,073 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte15 CMJ 03.txt' con descriptores: []
+2025-04-19 16:49:53,073 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte15 CMJ 03.txt' ---
+2025-04-19 16:49:53,073 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:53,073 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte15 CMJ 03'
+2025-04-19 16:49:53,073 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte15', 'CMJ', '03']
+2025-04-19 16:49:53,073 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:53,073 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:53,073 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:53,073 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte15 CMJ 03.txt': (False, [])
+2025-04-19 16:49:53,092 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte15 CMJ 03.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:53,093 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte15 CMJ 03.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:53,093 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte15 DL 01.txt' al estudio 9
+2025-04-19 16:49:53,093 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte15 DL 01.txt' con descriptores: []
+2025-04-19 16:49:53,093 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte15 DL 01.txt' ---
+2025-04-19 16:49:53,093 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:53,093 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte15 DL 01'
+2025-04-19 16:49:53,093 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte15', 'DL', '01']
+2025-04-19 16:49:53,093 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:53,093 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:53,093 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:53,093 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte15 DL 01.txt': (False, [])
+2025-04-19 16:49:53,113 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte15 DL 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:53,113 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte15 DL 01.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:53,113 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte15 DL 02.txt' al estudio 9
+2025-04-19 16:49:53,113 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte15 DL 02.txt' con descriptores: []
+2025-04-19 16:49:53,113 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte15 DL 02.txt' ---
+2025-04-19 16:49:53,113 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:53,113 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte15 DL 02'
+2025-04-19 16:49:53,113 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte15', 'DL', '02']
+2025-04-19 16:49:53,113 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:53,113 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:53,113 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:53,113 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte15 DL 02.txt': (False, [])
+2025-04-19 16:49:53,146 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte15 DL 02.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:53,146 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte15 DL 02.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:53,146 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte15 DL 03.txt' al estudio 9
+2025-04-19 16:49:53,146 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte15 DL 03.txt' con descriptores: []
+2025-04-19 16:49:53,146 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte15 DL 03.txt' ---
+2025-04-19 16:49:53,146 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:53,146 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte15 DL 03'
+2025-04-19 16:49:53,146 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte15', 'DL', '03']
+2025-04-19 16:49:53,146 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['DL']
+2025-04-19 16:49:53,146 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:53,146 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:53,146 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte15 DL 03.txt': (False, [])
+2025-04-19 16:49:53,160 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte15 DL 03.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:53,160 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte15 DL 03.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:53,160 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte10 CMJ 01.txt' al estudio 9
+2025-04-19 16:49:53,160 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte10 CMJ 01.txt' con descriptores: []
+2025-04-19 16:49:53,160 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte10 CMJ 01.txt' ---
+2025-04-19 16:49:53,160 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:53,160 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte10 CMJ 01'
+2025-04-19 16:49:53,160 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte10', 'CMJ', '01']
+2025-04-19 16:49:53,160 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ']
+2025-04-19 16:49:53,160 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 1
+2025-04-19 16:49:53,160 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (1) no coincide con VIs definidas (0).
+2025-04-19 16:49:53,160 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte10 CMJ 01.txt': (False, [])
+2025-04-19 16:49:53,180 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte10 CMJ 01.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:53,180 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte10 CMJ 01.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:53,180 - DEBUG - [kineviz.core.services.file_service] - Intentando agregar archivo: 'Pte1 CMJ PRE 04.txt' al estudio 9
+2025-04-19 16:49:53,180 - DEBUG - [kineviz.core.services.file_service] - Validando 'Pte1 CMJ PRE 04.txt' con descriptores: []
+2025-04-19 16:49:53,180 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte1 CMJ PRE 04.txt' ---
+2025-04-19 16:49:53,180 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: []
+2025-04-19 16:49:53,180 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte1 CMJ PRE 04'
+2025-04-19 16:49:53,180 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte1', 'CMJ', 'PRE', '04']
+2025-04-19 16:49:53,180 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['CMJ', 'PRE']
+2025-04-19 16:49:53,180 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 0, Partes intermedias encontradas: 2
+2025-04-19 16:49:53,180 - DEBUG - [kineviz.ui.utils.validators] - Fallo: Número de partes intermedias (2) no coincide con VIs definidas (0).
+2025-04-19 16:49:53,181 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte1 CMJ PRE 04.txt': (False, [])
+2025-04-19 16:49:53,194 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte1 CMJ PRE 04.txt: {'Cinetica', 'Cinematica'}
+2025-04-19 16:49:53,194 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte1 CMJ PRE 04.txt' procesado y agregado exitosamente al estudio 9.
+2025-04-19 16:49:53,194 - INFO - [kineviz.core.services.file_service] - Proceso de agregado finalizado para estudio 9. Éxitos: 71, Errores: 2.
