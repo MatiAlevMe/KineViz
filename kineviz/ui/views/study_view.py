@@ -65,12 +65,25 @@ class StudyView:
         # Corregido: Mostrar solo una vez el nombre
         ttk.Label(details_frame, text=f"Nombre: {study_details.get('name', 'N/A')}").pack(anchor='w', padx=5, pady=2)
         ttk.Label(details_frame, text=f"Número de Sujetos: {study_details.get('num_subjects', 'N/A')}").pack(anchor='w', padx=5, pady=2)
-        # Mostrar Descriptores definidos en el estudio
-        defined_descriptors_str = study_details.get('descriptores', 'Ninguno') or 'Ninguno'
-        ttk.Label(details_frame, text=f"Descriptores Definidos: {defined_descriptors_str}").pack(anchor='w', padx=5, pady=2)
         ttk.Label(details_frame, text=f"Intentos: {study_details.get('attempts_count', 'N/A')}").pack(anchor='w', padx=5, pady=2)
 
-        # Mostrar Alias asignados a descriptores detectados
+        # --- Mostrar Variables Independientes y Botón Info ---
+        vi_frame = ttk.Frame(details_frame)
+        vi_frame.pack(anchor='w', padx=5, pady=2, fill='x')
+
+        # Extraer nombres de VIs
+        independent_variables = study_details.get('independent_variables', [])
+        vi_names = [iv.get('name', 'N/A') for iv in independent_variables]
+        vi_display_text = "Variables Independientes: " + (", ".join(vi_names) if vi_names else "Ninguna")
+        ttk.Label(vi_frame, text=vi_display_text).pack(side=tk.LEFT, anchor='w')
+
+        # Botón Info (si hay VIs)
+        if vi_names:
+            info_button = ttk.Button(vi_frame, text="ℹ️", width=3, command=self.show_vi_descriptor_info)
+            info_button.pack(side=tk.LEFT, padx=(5, 0))
+        # --- Fin VIs ---
+
+        # Mostrar Alias asignados a descriptores definidos
         self.alias_label = ttk.Label(details_frame, text="Alias Asignados: Cargando...", wraplength=500) # Usar wraplength
         self.alias_label.pack(anchor='w', padx=5, pady=2)
         # No llamar aquí, se llama después de obtener detalles
@@ -138,6 +151,38 @@ class StudyView:
         # Esperar a que el diálogo se cierre y luego actualizar la etiqueta de alias
         self.parent.wait_window(dialog) # Espera a que el Toplevel se cierre
         self.update_alias_display() # Actualizar la información mostrada
+
+    def show_vi_descriptor_info(self):
+        """Muestra un popup con los descriptores y alias de cada VI."""
+        try:
+            study_details = self.main_window.study_service.get_study_details(self.study_id)
+            independent_variables = study_details.get('independent_variables', [])
+            study_aliases = study_details.get('aliases', {})
+
+            if not independent_variables:
+                messagebox.showinfo("Información VIs", "No hay Variables Independientes definidas para este estudio.", parent=self.frame)
+                return
+
+            info_text = "Variables Independientes y sus Descriptores (Alias):\n\n"
+            for iv in independent_variables:
+                vi_name = iv.get('name', 'VI Sin Nombre')
+                descriptors = iv.get('descriptors', [])
+                info_text += f"▶ {vi_name}:\n"
+                if descriptors:
+                    for desc in sorted(descriptors):
+                        alias = study_aliases.get(desc)
+                        display = f"{desc} ({alias})" if alias else desc
+                        info_text += f"    - {display}\n"
+                else:
+                    info_text += "    (Sin descriptores definidos)\n"
+                info_text += "\n" # Espacio entre VIs
+
+            messagebox.showinfo("Detalle Variables Independientes", info_text.strip(), parent=self.frame)
+
+        except Exception as e:
+            logger.error(f"Error mostrando información de VIs para estudio {self.study_id}: {e}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudo mostrar la información de las VIs:\n{e}", parent=self.frame)
+
 
     def open_study_folder(self):
         """Abre la carpeta del estudio actual."""
