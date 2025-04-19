@@ -339,20 +339,12 @@ class StudyDialog(Toplevel):
 
         try:
             if self.study_to_edit:
-                # Actualizar estudio existente
-                # Nota: El servicio ahora maneja la conversión a JSON
-                self.study_service.update_study(
-                    self.study_to_edit['id'], final_study_data
-                )
-                messagebox.showinfo(
-                    "Éxito", "Estudio actualizado correctamente", parent=self
-                )
+                self.study_service.update_study(self.study_to_edit['id'], final_study_data)
+                messagebox.showinfo("Éxito", "Estudio actualizado correctamente", parent=self)
             else:
                 # Crear nuevo estudio
                 self.study_service.create_study(final_study_data)
-                messagebox.showinfo(
-                    "Éxito", "Estudio creado correctamente", parent=self
-                )
+                messagebox.showinfo("Éxito", "Estudio creado correctamente", parent=self)
 
             # Llamar al callback si existe
             if self.on_save_callback:
