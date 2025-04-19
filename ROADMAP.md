@@ -122,7 +122,7 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
     * **8.1 `AnalysisService.list_individual_analyses` / `delete_individual_analysis`**: (Hecho).
     * **8.2 Conectar UI `IndividualAnalysisManagerDialog`**: (Hecho) Cargar, ver PNG, ver HTML, eliminar, abrir carpeta. Mostrar grupos combinados y p-valor.
 * **9. Reporte General (PDF):** (Pendiente) Implementar generación automática de PDF con análisis para combinaciones relevantes.
-* **10. Corrección de Errores:** (Pendiente) Revisar y corregir errores conocidos (ej: formato cabeceras CSV).
+* **10. Corrección de Errores:** (En Progreso) Revisar y corregir errores conocidos (ej: formato cabeceras CSV, error generación tablas discretas).
 * **11. Integración y Pruebas:** (Pendiente) Integrar y probar toda la funcionalidad de análisis discreto.
 
 **Fase 3: Refactorización a Variables Independientes (VI)** (En Progreso)
