@@ -1,7 +1,9 @@
 import tkinter as tk
 from tkinter import ttk, Toplevel, messagebox, Canvas, Scrollbar, Frame
-# Importar validador de datos y nuevo validador de nombres de archivo
-from kineviz.ui.utils.validators import validate_study_data, validate_filename_for_study_criteria
+import webbrowser # Para abrir archivo de ayuda
+from pathlib import Path # Para construir ruta de ayuda
+# Importar NUEVO validador de datos y validador de nombres de archivo
+from kineviz.ui.utils.validators import validate_study_iv_data, validate_filename_for_study_criteria
 import logging # Importar logging
 # Importar FileService para obtener archivos y Path para manejar rutas
 # Nota: FileService se importa aquí para consistencia, aunque también se usa en __init__
@@ -18,14 +20,14 @@ class StudyDialog(Toplevel):
         self.file_service = FileService(study_service) # Necesitamos FileService para buscar archivos
         self.study_to_edit = study_to_edit
         self.on_save_callback = on_save_callback
+        self.is_editing = bool(study_to_edit) # Flag para modo edición
 
-        # Lista para almacenar las entradas de descriptores (StringVar)
-        self.descriptor_vars = []
-        # Lista para almacenar los frames de cada fila de descriptor
-        self.descriptor_frames = []
+        # Estructura para almacenar VIs y sus descriptores en la UI
+        # Lista de diccionarios: [{'name_var': StringVar, 'descriptor_vars': [StringVar], 'frame': Frame, 'desc_frames': [Frame]}]
+        self.independent_variables_ui = []
 
-        self.title("Editar Estudio" if study_to_edit else "Nuevo Estudio")
-        # Aumentar altura para descriptores
+        self.title("Editar Estudio" if self.is_editing else "Nuevo Estudio")
+        # Aumentar altura para VIs/descriptores
         self.geometry("600x550")
         self.resizable(True, True) # Permitir redimensionar
 
@@ -34,8 +36,8 @@ class StudyDialog(Toplevel):
         self.var_num_sujetos = tk.StringVar()
         self.var_cantidad_intentos = tk.StringVar()
 
-        # Si estamos editando, cargar datos existentes (incluyendo descriptores)
-        if self.study_to_edit:
+        # Cargar datos si estamos editando (ahora carga VIs)
+        if self.is_editing:
             self._load_study_data()
 
         self.create_form()
@@ -64,10 +66,9 @@ class StudyDialog(Toplevel):
             self.var_num_sujetos.set(str(study_details.get('num_subjects', '')))
             self.var_cantidad_intentos.set(str(study_details.get('attempts_count', '')))
 
-            # Cargar descriptores, asegurándose de que sea una cadena antes de split
-            descriptors_value = study_details.get('descriptores') # Obtener valor (puede ser None, str, int)
-            descriptors_str = str(descriptors_value) if descriptors_value is not None else '' # Convertir a str, manejar None
-            self.initial_descriptors = [d.strip() for d in descriptors_str.split(',') if d.strip()]
+            # Cargar estructura de VIs y descriptores
+            # get_study_details ya devuelve la estructura Python parseada
+            self.initial_independent_variables = study_details.get('independent_variables', [])
 
         except Exception as e:
             logger.error(f"No se pudieron cargar los datos del estudio {self.study_to_edit.get('id', 'N/A')} para edición: {e}", exc_info=True)
@@ -98,149 +99,276 @@ class StudyDialog(Toplevel):
         ttk.Entry(main_frame, textvariable=self.var_cantidad_intentos).grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5)
         row_idx += 1
 
-        # --- Sección de Descriptores Dinámicos ---
-        descriptors_label_frame = ttk.LabelFrame(main_frame, text="Descriptores")
-        descriptors_label_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", padx=5, pady=10)
-        descriptors_label_frame.columnconfigure(1, weight=1) # Permitir que Entry se expanda
-        self.descriptors_container = descriptors_label_frame # Guardar referencia
+        # --- Sección de Variables Independientes Dinámicas ---
+        iv_frame = ttk.LabelFrame(main_frame, text="Variables Independientes (VIs)")
+        iv_frame.grid(row=row_idx, column=0, columnspan=2, sticky="nsew", padx=5, pady=10)
+        iv_frame.columnconfigure(0, weight=1) # Permitir que el contenido se expanda
+        main_frame.rowconfigure(row_idx, weight=1) # Permitir que esta sección se expanda verticalmente
+        self.iv_container = iv_frame # Guardar referencia
         row_idx += 1
 
-        # Botón inicial para añadir el primer descriptor (o más)
-        add_button_frame = ttk.Frame(main_frame)
-        add_button_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", padx=15)
-        self.add_descriptor_button = ttk.Button(add_button_frame, text="+ Añadir Descriptor", command=self.add_descriptor_entry)
-        self.add_descriptor_button.pack()
+        # --- Canvas y Scrollbar para VIs ---
+        iv_canvas = Canvas(self.iv_container, borderwidth=0, highlightthickness=0)
+        iv_scrollbar = ttk.Scrollbar(self.iv_container, orient="vertical", command=iv_canvas.yview)
+        # Frame interior que contendrá las VIs
+        self.iv_scrollable_frame = ttk.Frame(iv_canvas)
+
+        self.iv_scrollable_frame.bind(
+            "<Configure>",
+            lambda e: iv_canvas.configure(scrollregion=iv_canvas.bbox("all"))
+        )
+        iv_canvas.create_window((0, 0), window=self.iv_scrollable_frame, anchor="nw")
+        iv_canvas.configure(yscrollcommand=iv_scrollbar.set)
+
+        iv_canvas.pack(side="left", fill="both", expand=True)
+        iv_scrollbar.pack(side="right", fill="y")
+        # --- Fin Canvas y Scrollbar ---
+
+        # Botón para añadir VI (dentro del frame principal, debajo del contenedor scrollable)
+        add_iv_button_frame = ttk.Frame(main_frame)
+        add_iv_button_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", padx=15, pady=(5,0))
+        self.add_iv_button = ttk.Button(add_iv_button_frame, text="+ Añadir Variable Independiente", command=self.add_independent_variable_ui)
+        self.add_iv_button.pack()
         # Deshabilitar si estamos editando
-        if self.study_to_edit:
-            self.add_descriptor_button.config(state=tk.DISABLED)
+        if self.is_editing:
+            self.add_iv_button.config(state=tk.DISABLED)
         row_idx += 1
 
-        # Cargar descriptores iniciales (si estamos editando o si queremos uno por defecto)
-        initial_descriptors_to_load = self.initial_descriptors if self.study_to_edit else []
-        if not initial_descriptors_to_load:
-             # Opcional: añadir un campo vacío por defecto al crear nuevo
-             # self.add_descriptor_entry()
-             pass
+        # Cargar VIs iniciales (si estamos editando)
+        initial_ivs_to_load = self.initial_independent_variables if self.is_editing else []
+        if not initial_ivs_to_load and not self.is_editing:
+             # Añadir una VI vacía por defecto al crear nuevo estudio
+             self.add_independent_variable_ui()
         else:
-             for desc_value in initial_descriptors_to_load:
-                 self.add_descriptor_entry(value=desc_value)
+             for iv_data in initial_ivs_to_load:
+                 self.add_independent_variable_ui(
+                     name_value=iv_data.get('name', ''),
+                     descriptors_values=iv_data.get('descriptors', [])
+                 )
 
-
-        # --- Frame para botones (Guardar, Cancelar) ---
+        # --- Frame para botones (Guardar, Cancelar, Ayuda) ---
         button_frame = ttk.Frame(main_frame)
+        # Usar row_idx actual, que está después del botón "+ Añadir VI"
         button_frame.grid(row=row_idx, column=0, columnspan=2, sticky="se", pady=20, padx=5)
-        main_frame.rowconfigure(row_idx, weight=1) # Empujar botones hacia abajo
+        # No configurar rowconfigure aquí, dejar que los botones estén al final
+
+        # Botón de Ayuda (?)
+        # Usar un estilo para el color o configurar directamente
+        style = ttk.Style()
+        style.configure("Help.TButton", foreground="white", background="blue") # Ejemplo de estilo
+        help_button = ttk.Button(button_frame, text="?", width=3, style="Help.TButton", command=self.show_iv_help)
+        help_button.pack(side=tk.LEFT, padx=(0, 10)) # A la izquierda de Cancelar
 
         ttk.Button(button_frame, text="Guardar", command=self.save).pack(side=tk.RIGHT, padx=5)
         ttk.Button(button_frame, text="Cancelar", command=self.destroy).pack(side=tk.RIGHT)
 
-    def add_descriptor_entry(self, value=""):
-        """Añade una nueva fila para un descriptor."""
-        frame = ttk.Frame(self.descriptors_container)
-        frame.pack(fill=tk.X, pady=2) # Usar pack dentro del LabelFrame
 
-        descriptor_var = tk.StringVar(value=value)
-        label_text = f"Descriptor {len(self.descriptor_vars) + 1}:"
-        ttk.Label(frame, text=label_text).pack(side=tk.LEFT, padx=5)
-        entry = ttk.Entry(frame, textvariable=descriptor_var)
-        entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+    def add_independent_variable_ui(self, name_value="", descriptors_values=None):
+        """Añade una nueva sección para una Variable Independiente."""
+        if descriptors_values is None:
+            descriptors_values = []
 
-        # Botón para eliminar esta fila específica
-        remove_button = ttk.Button(frame, text="🗑️", width=3,
-                                   command=lambda f=frame, v=descriptor_var: self.remove_descriptor_entry(f, v))
-        remove_button.pack(side=tk.LEFT, padx=5)
+        # Frame principal para esta VI (dentro del scrollable_frame)
+        vi_frame = ttk.Frame(self.iv_scrollable_frame, padding="5", relief="groove", borderwidth=1)
+        vi_frame.pack(fill=tk.X, pady=5, padx=5)
 
-        # Si estamos editando, deshabilitar la entrada y el botón de eliminar
-        if self.study_to_edit:
-            entry.config(state='readonly')
-            remove_button.config(state=tk.DISABLED)
+        # --- Fila para Nombre VI y botones ---
+        vi_header_frame = ttk.Frame(vi_frame)
+        vi_header_frame.pack(fill=tk.X)
 
-        self.descriptor_vars.append(descriptor_var)
-        self.descriptor_frames.append(frame)
+        vi_name_var = tk.StringVar(value=name_value)
+        vi_name_entry = ttk.Entry(vi_header_frame, textvariable=vi_name_var, width=30)
+        vi_name_entry.pack(side=tk.LEFT, padx=5, pady=5, fill=tk.X, expand=True)
+        # Permitir editar nombre VI en modo edición
+        # vi_name_entry.config(state='readonly' if self.is_editing else 'normal')
 
-    def remove_descriptor_entry(self, frame_to_remove, var_to_remove):
-        """Elimina una fila de descriptor."""
+        # Botón para añadir descriptor a ESTA VI
+        add_desc_button = ttk.Button(vi_header_frame, text="+", width=3,
+                                     command=lambda v=vi_name_var: self.add_descriptor_ui(v))
+        add_desc_button.pack(side=tk.LEFT, padx=(0, 5))
+        if self.is_editing:
+            add_desc_button.config(state=tk.DISABLED)
+
+        # Botón para eliminar ESTA VI
+        remove_vi_button = ttk.Button(vi_header_frame, text="🗑️", width=3,
+                                      command=lambda f=vi_frame, v=vi_name_var: self.remove_independent_variable_ui(f, v))
+        remove_vi_button.pack(side=tk.LEFT, padx=(0, 5))
+        if self.is_editing:
+            remove_vi_button.config(state=tk.DISABLED)
+
+        # --- Contenedor para descriptores de esta VI ---
+        descriptors_container = ttk.Frame(vi_frame, padding="5 0 0 20") # Indentación izquierda
+        descriptors_container.pack(fill=tk.X)
+
+        # Guardar referencias
+        vi_ui_data = {
+            'name_var': vi_name_var,
+            'descriptor_vars': [],
+            'frame': vi_frame,
+            'descriptors_container': descriptors_container,
+            'desc_frames': []
+        }
+        self.independent_variables_ui.append(vi_ui_data)
+
+        # Añadir descriptores iniciales para esta VI
+        if not descriptors_values and not self.is_editing:
+            # Añadir 2 descriptores vacíos por defecto al crear nueva VI
+            self.add_descriptor_ui(vi_name_var)
+            self.add_descriptor_ui(vi_name_var)
+        else:
+            for desc_value in descriptors_values:
+                self.add_descriptor_ui(vi_name_var, value=desc_value)
+
+    def remove_independent_variable_ui(self, frame_to_remove, vi_name_var_to_remove):
+        """Elimina la sección de una Variable Independiente."""
+        if self.is_editing: return # No permitir eliminar en modo edición
+
+        found_index = -1
+        for i, vi_data in enumerate(self.independent_variables_ui):
+            if vi_data['name_var'] == vi_name_var_to_remove:
+                found_index = i
+                break
+
+        if found_index != -1:
+            self.independent_variables_ui.pop(found_index)
+            frame_to_remove.destroy()
+        else:
+            logger.warning("Intento de eliminar una VI que no está en la lista UI.")
+
+    def add_descriptor_ui(self, vi_name_var, value=""):
+        """Añade una fila para un descriptor dentro de una VI específica."""
+        if self.is_editing: return # No permitir añadir en modo edición
+
+        # Encontrar la VI correspondiente en la UI
+        target_vi_data = None
+        for vi_data in self.independent_variables_ui:
+            if vi_data['name_var'] == vi_name_var:
+                target_vi_data = vi_data
+                break
+
+        if not target_vi_data:
+            logger.error(f"No se encontró la VI UI para añadir descriptor (Nombre Var: {vi_name_var.get()})")
+            return
+
+        container = target_vi_data['descriptors_container']
+        desc_frame = ttk.Frame(container)
+        desc_frame.pack(fill=tk.X, pady=1)
+
+        desc_var = tk.StringVar(value=value)
+        desc_entry = ttk.Entry(desc_frame, textvariable=desc_var)
+        desc_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+        if self.is_editing:
+            desc_entry.config(state='readonly')
+
+        # Botón para eliminar este descriptor
+        remove_desc_button = ttk.Button(desc_frame, text="🗑️", width=3,
+                                        command=lambda f=desc_frame, v=desc_var, vi_v=vi_name_var: self.remove_descriptor_ui(f, v, vi_v))
+        remove_desc_button.pack(side=tk.LEFT, padx=(0, 5))
+        if self.is_editing:
+            remove_desc_button.config(state=tk.DISABLED)
+
+        target_vi_data['descriptor_vars'].append(desc_var)
+        target_vi_data['desc_frames'].append(desc_frame)
+
+    def remove_descriptor_ui(self, frame_to_remove, desc_var_to_remove, vi_name_var):
+        """Elimina una fila de descriptor de una VI específica."""
+        if self.is_editing: return # No permitir eliminar en modo edición
+
+        # Encontrar la VI
+        target_vi_data = None
+        for vi_data in self.independent_variables_ui:
+            if vi_data['name_var'] == vi_name_var:
+                target_vi_data = vi_data
+                break
+
+        if not target_vi_data:
+            logger.error(f"No se encontró la VI UI para eliminar descriptor (Nombre Var VI: {vi_name_var.get()})")
+            return
+
+        # Encontrar el descriptor dentro de la VI
         try:
-            index = self.descriptor_vars.index(var_to_remove)
-            self.descriptor_vars.pop(index)
-            frame = self.descriptor_frames.pop(index)
-            frame.destroy()
-
-            # Re-numerar las etiquetas restantes
-            for i, frm in enumerate(self.descriptor_frames):
-                # Asumiendo que el Label es el primer widget hijo del frame
-                label_widget = frm.winfo_children()[0]
-                if isinstance(label_widget, ttk.Label):
-                    label_widget.config(text=f"Descriptor {i + 1}:")
-
+            index = target_vi_data['descriptor_vars'].index(desc_var_to_remove)
+            target_vi_data['descriptor_vars'].pop(index)
+            target_vi_data['desc_frames'].pop(index)
+            frame_to_remove.destroy()
         except ValueError:
-            logger.warning("Intento de eliminar un descriptor que ya no existe en la lista.")
+            logger.warning("Intento de eliminar un descriptor que no está en la lista de la VI.")
 
-    def _handle_criteria_change(self, study_id: int, new_types: list[str], new_periods: list[str]) -> bool:
-        """
-        Verifica si los archivos existentes cumplen con los nuevos criterios y pide confirmación para eliminar los inválidos.
+    def show_iv_help(self):
+        """Muestra el archivo de ayuda para VIs."""
+        try:
+            # Construir ruta relativa al archivo actual
+            help_file_path = Path(__file__).parent.parent.parent / "docs" / "help" / "study_dialog_iv_help.txt"
+            if help_file_path.exists():
+                # Usar webbrowser para abrir el archivo (más portable)
+                webbrowser.open(help_file_path.as_uri()) # as_uri() para formato file:///
+            else:
+                messagebox.showerror("Error", f"No se encontró el archivo de ayuda:\n{help_file_path}", parent=self)
+        except Exception as e:
+            logger.error(f"Error al abrir archivo de ayuda: {e}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudo abrir el archivo de ayuda:\n{e}", parent=self)
 
-        :param study_id: ID del estudio que se está editando.
-        :param new_types: Nueva lista de tipos de prueba.
-        :param new_descriptors: Nueva lista de descriptores.
-        :return: True si se puede proceder con el guardado, False si el usuario canceló la eliminación.
-        """
-        # --- ESTA LÓGICA NECESITA REVISIÓN COMPLETA EN TAREA 4 ---
-        # Por ahora, la comentamos o devolvemos True para permitir guardar cambios
-        # sin validar/eliminar archivos basados en los nuevos descriptores.
-        logger.warning(f"Validación de cambio de criterios para descriptores aún no implementada. Omitiendo validación de archivos existentes.")
-        return True
-        # El código comentado desde aquí hasta el final de la función original _handle_criteria_change se elimina.
 
     def save(self):
-        # Recolectar descriptores de las entradas
-        current_descriptors = [var.get().strip() for var in self.descriptor_vars]
+        # Recolectar datos de VIs y descriptores de la UI
+        collected_ivs = []
+        for vi_ui_data in self.independent_variables_ui:
+            vi_name = vi_ui_data['name_var'].get().strip()
+            descriptors = [desc_var.get().strip() for desc_var in vi_ui_data['descriptor_vars']]
+            # Filtrar descriptores vacíos
+            valid_descriptors = [d for d in descriptors if d]
+            # Solo añadir VI si tiene nombre y descriptores válidos
+            if vi_name and valid_descriptors:
+                collected_ivs.append({'name': vi_name, 'descriptors': valid_descriptors})
 
         study_data = {
             'name': self.var_nombre.get().strip(),
             'num_subjects': self.var_num_sujetos.get().strip(),
-            'descriptores': current_descriptors,  # Pasar la lista para validación
-            'attempts_count': self.var_cantidad_intentos.get().strip()
+            'attempts_count': self.var_cantidad_intentos.get().strip(),
+            'independent_variables': collected_ivs, # Pasar estructura recolectada
+            # Aliases se manejan por separado, no se envían desde aquí
         }
 
-        # Validar datos básicos del formulario (incluyendo descriptores)
-        is_valid, error_message = validate_study_data(study_data)
+        # Validar datos usando el nuevo validador
+        is_valid, error_message = validate_study_iv_data(study_data)
         if not is_valid:
             messagebox.showerror("Datos Inválidos", error_message, parent=self)
             return
 
-        # --- Lógica de manejo de cambio de criterios (DESHABILITADA TEMPORALMENTE) ---
+        # --- Lógica de manejo de cambio de criterios (REVISAR EN TAREA 4) ---
+        # La validación de archivos existentes al cambiar VIs/descriptores es compleja
+        # y se abordará en un paso posterior. Por ahora, asumimos que se puede guardar.
         proceed_with_save = True
-        if self.study_to_edit:
-            # Comparar descriptores nuevos con los originales
-            # new_descriptors_set = set(d for d in current_descriptors if d) # Ignorar vacíos para comparación
-            # original_descriptors_set = set(self.initial_descriptors)
-            # if new_descriptors_set != original_descriptors_set:
-            #     logger.info("Descriptores han cambiado.")
-            #     # Llamar a la función que maneja la validación/eliminación de archivos (Tarea 4)
-            #     proceed_with_save = self._handle_criteria_change(
-            #         self.study_to_edit['id'],
-            #         list(new_descriptors_set) # Pasar lista limpia
-            #     )
-            # else:
-            #     logger.debug(f"Descriptores no han cambiado para estudio {self.study_to_edit['id'}.")
-            pass  # Omitir validación de archivos por ahora
+        if self.is_editing:
+            # Aquí iría la lógica para comparar `collected_ivs` con `self.initial_independent_variables`
+            # y llamar a una función similar a `_handle_criteria_change` si hay diferencias
+            # estructurales (que no deberían ocurrir si los botones están deshabilitados).
+            # Solo el cambio de nombre de VI es permitido y no requiere revalidar archivos.
+            logger.debug("Modo edición: Omitiendo validación de archivos existentes por cambio de estructura (deshabilitado).")
+            pass
 
-        # --- Proceder con el guardado si todo está bien ---
         if not proceed_with_save:
-            logger.warning(
-                f"Guardado de estudio {self.study_to_edit.get('id', 'N/A')} abortado debido a cancelación de eliminación de archivos."
-            )
-            return  # No guardar si el usuario canceló la eliminación
+             logger.warning(f"Guardado de estudio {self.study_to_edit.get('id', 'N/A')} abortado.")
+             return
 
-        # Preparar datos finales para el servicio (unir descriptores)
+        # Preparar datos finales para el servicio (ya están en el formato correcto)
         final_study_data = study_data.copy()
-        # Filtrar descriptores vacíos antes de unir
-        valid_descriptors = [d for d in current_descriptors if d]
-        final_study_data['descriptores'] = ','.join(valid_descriptors)
+        # Si estamos editando, necesitamos obtener los alias existentes para no perderlos
+        if self.is_editing:
+            try:
+                existing_details = self.study_service.get_study_details(self.study_to_edit['id'])
+                final_study_data['aliases'] = existing_details.get('aliases', {})
+            except Exception as e:
+                 logger.error(f"Error obteniendo alias existentes para estudio {self.study_to_edit['id']} al guardar: {e}")
+                 messagebox.showerror("Error", "No se pudieron obtener los alias existentes. Cambios no guardados.", parent=self)
+                 return
+        else:
+             # Para nuevos estudios, inicializar alias como vacío
+             final_study_data['aliases'] = {}
+
 
         try:
-            if self.study_to_edit:
+            if self.is_editing:
                 # Actualizar estudio existente
                 self.study_service.update_study(
                     self.study_to_edit['id'], final_study_data
@@ -260,13 +388,11 @@ class StudyDialog(Toplevel):
                 self.on_save_callback()
 
             self.destroy()  # Cerrar el diálogo
-        except ValueError as ve:  # Capturar errores específicos de validación
+        except ValueError as ve:  # Capturar errores específicos de validación (ej. nombre duplicado)
             logger.warning(f"Error de validación al guardar estudio: {ve}")
             messagebox.showerror("Error de Validación", str(ve), parent=self)
         except Exception as e:  # Capturar errores generales
-            study_id_log = (
-                self.study_to_edit['id' if self.study_to_edit else "nuevo"]
-            )
+            study_id_log = self.study_to_edit['id'] if self.is_editing else "nuevo"
             logger.error(
                 f"Error inesperado al guardar estudio {study_id_log}: {e}", exc_info=True
             )
