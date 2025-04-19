@@ -310,27 +310,63 @@ class StudyDialog(Toplevel):
 
 
     def save(self):
-        # Recolectar datos de VIs y descriptores de la UI
-        collected_ivs = []
-        for vi_ui_data in self.independent_variables_ui:
-            vi_name = vi_ui_data['name_var'].get().strip()
-            descriptors = [desc_var.get().strip() for desc_var in vi_ui_data['descriptor_vars']]
-            # Filtrar descriptores vacíos
-            valid_descriptors = [d for d in descriptors if d]
-            # Solo añadir VI si tiene nombre y descriptores válidos
-            if vi_name and valid_descriptors:
-                collected_ivs.append({'name': vi_name, 'descriptors': valid_descriptors})
-
-        study_data = {
+        # Recolectar datos básicos
+        study_data_base = {
             'name': self.var_nombre.get().strip(),
             'num_subjects': self.var_num_sujetos.get().strip(),
             'attempts_count': self.var_cantidad_intentos.get().strip(),
-            'independent_variables': collected_ivs, # Pasar estructura recolectada
-            # Aliases se manejan por separado, no se envían desde aquí
         }
 
-        # Validar datos usando el nuevo validador
-        is_valid, error_message = validate_study_iv_data(study_data)
+        # Recolectar y validar estructura de VIs según modo (crear/editar)
+        if self.is_editing:
+            # --- Modo Edición ---
+            # Reconstruir VIs usando nombres actualizados y descriptores originales
+            reconstructed_ivs = []
+            # Mapear nombres originales a descriptores originales para fácil acceso
+            original_iv_map = {iv.get('name'): iv.get('descriptors', [])
+                               for iv in self.initial_independent_variables}
+
+            if len(self.independent_variables_ui) != len(self.initial_independent_variables):
+                 # Esto no debería pasar si los botones están deshabilitados
+                 logger.error("Discrepancia en número de VIs entre UI y datos iniciales en modo edición.")
+                 messagebox.showerror("Error Interno", "Error al procesar VIs en modo edición.", parent=self)
+                 return
+
+            for i, vi_ui_data in enumerate(self.independent_variables_ui):
+                updated_vi_name = vi_ui_data['name_var'].get().strip()
+                # Obtener descriptores originales basados en la posición inicial
+                original_vi_data = self.initial_independent_variables[i]
+                original_descriptors = original_vi_data.get('descriptors', [])
+
+                if updated_vi_name and original_descriptors: # Asegurar que el nombre actualizado y los descriptores originales sean válidos
+                    reconstructed_ivs.append({'name': updated_vi_name, 'descriptors': original_descriptors})
+                else:
+                    # Loggear error si falta nombre actualizado o descriptores originales
+                    logger.error(f"Error reconstruyendo VI #{i+1} en modo edición: Nombre='{updated_vi_name}', Descriptores Originales={original_descriptors}")
+                    messagebox.showerror("Error Interno", f"Error procesando Variable Independiente #{i+1}.", parent=self)
+                    return
+
+            study_data_to_validate = {**study_data_base, 'independent_variables': reconstructed_ivs}
+
+        else:
+            # --- Modo Creación ---
+            # Recolectar VIs y descriptores directamente de la UI
+            collected_ivs = []
+            for vi_ui_data in self.independent_variables_ui:
+                vi_name = vi_ui_data['name_var'].get().strip()
+                # Recolectar descriptores de las entradas de esta VI
+                descriptors = [desc_var.get().strip() for desc_var in vi_ui_data['descriptor_vars']]
+                # Filtrar descriptores vacíos
+                valid_descriptors = [d for d in descriptors if d]
+                # Solo añadir VI si tiene nombre y descriptores válidos
+                if vi_name and valid_descriptors:
+                    collected_ivs.append({'name': vi_name, 'descriptors': valid_descriptors})
+
+            study_data_to_validate = {**study_data_base, 'independent_variables': collected_ivs}
+
+
+        # Validar datos (estructura recolectada o reconstruida)
+        is_valid, error_message = validate_study_iv_data(study_data_to_validate)
         if not is_valid:
             messagebox.showerror("Datos Inválidos", error_message, parent=self)
             return
@@ -351,8 +387,8 @@ class StudyDialog(Toplevel):
              logger.warning(f"Guardado de estudio {self.study_to_edit.get('id', 'N/A')} abortado.")
              return
 
-        # Preparar datos finales para el servicio (ya están en el formato correcto)
-        final_study_data = study_data.copy()
+        # Preparar datos finales para el servicio (usar datos validados)
+        final_study_data = study_data_to_validate.copy()
         # Si estamos editando, necesitamos obtener los alias existentes para no perderlos
         if self.is_editing:
             try:
