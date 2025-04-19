@@ -821,6 +821,14 @@ class AnalysisService:
             path_map = {f_info['path'].stem.split(f'_{target_frequency}')[0]: f_info['path']
                         for f_info in processed_files_info}
 
+            # --- Identificar grupos y mapear archivos ---
+            # Usar _identify_study_groups para obtener el mapeo archivo_base -> group_key
+            try:
+                files_to_groups, _ = self._identify_study_groups(study_id, target_frequency)
+            except ValueError as e_group:
+                results['errors'].append(f"Error identificando grupos para {target_frequency}: {e_group}")
+                return results
+
             files_by_group_key = {} # Inicializar aquí
             for file_base_key, group_key in files_to_groups.items():
                 if group_key not in files_by_group_key:
