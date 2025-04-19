@@ -203,7 +203,7 @@ class StudyService:
                      # ya que la DB se actualizó. Podría requerir intervención manual.
                      logger.error(f"Error al renombrar carpeta del estudio {study_id} de '{original_name}' a '{new_name}': {e_rename}", exc_info=True)
                      # Podríamos añadir un mensaje al usuario aquí
-            raise
+            # Eliminar el 'raise' incorrecto que estaba aquí
 
     # --- Métodos específicos para Aliases por Estudio ---
 
