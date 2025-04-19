@@ -8,7 +8,15 @@ import logging # Importar logging
 # Importar FileService para obtener archivos y Path para manejar rutas
 # Nota: FileService se importa aquí para consistencia, aunque también se usa en __init__
 from kineviz.core.services.file_service import FileService
+# validate_study_data ya no se importa, la lógica está en el diálogo
+# from kineviz.ui.utils.validators import validate_study_data
+# validate_filename_for_study_criteria no se usa directamente aquí
+import logging
+# FileService no se necesita directamente aquí ahora
+# from kineviz.core.services.file_service import FileService
 from pathlib import Path
+import json # Para cargar/guardar estructura VI
+from kineviz.ui.widgets.tooltip import ToolTip # Para info "Nulo"
 
 logger = logging.getLogger(__name__) # Logger para este módulo
 
@@ -35,12 +43,13 @@ class StudyDialog(Toplevel):
         self.var_nombre = tk.StringVar()
         self.var_num_sujetos = tk.StringVar()
         self.var_cantidad_intentos = tk.StringVar()
+        self.var_num_vis = tk.IntVar(value=0) # Para número de VIs
 
         # Cargar datos si estamos editando (ahora carga VIs)
         if self.is_editing:
             self._load_study_data()
 
-        self.create_form()
+        self.create_form() # Crea la UI basada en los datos cargados o iniciales
 
         # Centrar diálogo en la ventana padre
         self.transient(parent)
@@ -82,21 +91,44 @@ class StudyDialog(Toplevel):
         main_frame.pack(fill=tk.BOTH, expand=True)
 
         # Configurar grid layout para mejor alineación
-        main_frame.columnconfigure(1, weight=1) # Columna de Entries expandible
+        # Frame principal con scrollbar vertical
+        canvas = tk.Canvas(self)
+        scrollbar = ttk.Scrollbar(self, orient="vertical", command=canvas.yview)
+        scrollable_frame = ttk.Frame(canvas, padding="20")
 
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox("all")
+            )
+        )
+
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+        # --- Contenido dentro del scrollable_frame ---
+        scrollable_frame.columnconfigure(1, weight=1) # Columna de Entries expandible
         row_idx = 0
 
         # --- Campos Fijos ---
-        ttk.Label(main_frame, text="Nombre del estudio:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
-        ttk.Entry(main_frame, textvariable=self.var_nombre).grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5)
+        ttk.Label(scrollable_frame, text="Nombre del estudio:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        ttk.Entry(scrollable_frame, textvariable=self.var_nombre).grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5)
         row_idx += 1
 
-        ttk.Label(main_frame, text="Número de Sujetos:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
-        ttk.Entry(main_frame, textvariable=self.var_num_sujetos).grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5)
+        ttk.Label(scrollable_frame, text="Número de Sujetos:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        ttk.Entry(scrollable_frame, textvariable=self.var_num_sujetos).grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5)
         row_idx += 1
 
-        ttk.Label(main_frame, text="Cantidad de Intentos por Prueba:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
-        ttk.Entry(main_frame, textvariable=self.var_cantidad_intentos).grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5)
+        ttk.Label(scrollable_frame, text="Cantidad de Intentos por Prueba:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        ttk.Entry(scrollable_frame, textvariable=self.var_cantidad_intentos).grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5)
+        row_idx += 1
+
+        # --- Sección de Variables Independientes (VIs) ---
+        vi_header_frame = ttk.Frame(scrollable_frame)
+        vi_header_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", padx=5, pady=(10, 0))
         row_idx += 1
 
         # --- Sección de Variables Independientes Dinámicas ---
@@ -415,9 +447,7 @@ class StudyDialog(Toplevel):
             else:
                 # Crear nuevo estudio
                 self.study_service.create_study(final_study_data)
-                messagebox.showinfo(
-                    "Éxito", "Estudio creado correctamente", parent=self
-                )
+                messagebox.showinfo("Éxito", "Estudio creado correctamente", parent=self)
 
             # Llamar al callback si existe
             if self.on_save_callback:
@@ -430,8 +460,25 @@ class StudyDialog(Toplevel):
         except Exception as e:  # Capturar errores generales
             study_id_log = self.study_to_edit['id'] if self.is_editing else "nuevo"
             logger.error(
-                f"Error inesperado al guardar estudio {study_id_log}: {e}", exc_info=True
-            )
-            messagebox.showerror(
-                "Error al Guardar", f"Ocurrió un error inesperado:\n{str(e)}", parent=self
-            )
+                f"Error inesperado al guardar estudio {study_id_log}: {e}", exc_info=True)
+            messagebox.showerror("Error al Guardar", f"Ocurrió un error inesperado:\n{str(e)}", parent=self)
+
+    def _validate_fixed_study_data(self, data):
+        """Valida solo los campos fijos del estudio (nombre, sujetos, intentos)."""
+        name = data.get('name', '').strip()
+        if not name: return False, "El nombre del estudio es obligatorio."
+        if len(name) < 3: return False, "El nombre del estudio debe tener al menos 3 caracteres."
+
+        num_subjects_str = data.get('num_subjects', '')
+        if not num_subjects_str: return False, "El número de sujetos es obligatorio."
+        try:
+            if int(num_subjects_str) <= 0: return False, "El número de sujetos debe ser un entero positivo."
+        except ValueError: return False, "El número de sujetos debe ser un número entero."
+
+        attempts_count_str = data.get('attempts_count', '')
+        if not attempts_count_str: return False, "La cantidad de intentos es obligatoria."
+        try:
+            if int(attempts_count_str) <= 0: return False, "La cantidad de intentos debe ser un entero positivo."
+        except ValueError: return False, "La cantidad de intentos debe ser un número entero."
+
+        return True, None

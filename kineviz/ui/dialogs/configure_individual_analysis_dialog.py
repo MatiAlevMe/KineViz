@@ -175,16 +175,14 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
                                    f"disponibles:\n{e}", parent=self)
                 self.available_groups = []
 
-        # Actualizar los combobox de grupo existentes
-        display_names = [g[0] for g in self.available_groups]
+        # Actualizar los combobox de grupo existentes con las claves combinadas
         for frame in self.group_selector_frames:
-            # Asumiendo que el Combobox es el primer hijo
-            combo = frame.winfo_children()[0]
-            combo['values'] = display_names
-            # Intentar mantener la selección si aún es válida
-            current_display_selection = combo.get()
-            if current_display_selection not in display_names:
-                combo.set('')  # Limpiar si la selección ya no existe
+            combo = frame.winfo_children()[0] # Asumiendo Combobox es el primero
+            current_selection = combo.get()
+            combo['values'] = self.available_groups
+            # Mantener selección si aún existe, si no limpiar
+            if current_selection not in self.available_groups:
+                combo.set('')
 
         # Limpiar columnas ya que los grupos cambiaron
         self.column_var.set('')
@@ -199,8 +197,8 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         frame.columnconfigure(0, weight=1)
 
         group_var = tk.StringVar()
-        display_names = [g[0] for g in self.available_groups]
-        combo = ttk.Combobox(frame, textvariable=group_var, values=display_names,
+        # Usar directamente available_groups (lista de strings)
+        combo = ttk.Combobox(frame, textvariable=group_var, values=self.available_groups,
                              state="readonly", width=35)
         combo.grid(row=0, column=0, sticky="ew", padx=(0, 5))
         # Actualizar columnas al cambiar grupo
@@ -218,7 +216,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.selected_group_vars.append(group_var)
         self.group_selector_frames.append(frame)
 
-        if initial_value and initial_value in display_names:
+        if initial_value and initial_value in self.available_groups:
             group_var.set(initial_value)
 
     def remove_group_selector(self, frame_to_remove, var_to_remove):
@@ -246,43 +244,28 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             logger.error("Intento de eliminar un frame de grupo no listado.")
 
     def get_selected_group_keys(self) -> List[str]:
-        """Obtiene las claves originales de los grupos seleccionados."""
+        """Obtiene las claves combinadas de los grupos seleccionados."""
         selected_keys = []
-        selected_display_names = set()  # Para detectar duplicados
+        selected_values = set() # Para detectar duplicados
         valid = True
 
         for group_var in self.selected_group_vars:
-            display_name = group_var.get()
-            if not display_name:
+            key = group_var.get()
+            if not key:
                 valid = False
-                break  # Salir si uno está vacío
+                break # Salir si uno está vacío
 
-            if display_name in selected_display_names:
-                messagebox.showerror(
-                    "Error de Selección",
-                    f"El grupo '{display_name}' está seleccionado más de una vez.",
-                    parent=self)
-                return []  # Devolver vacío si hay duplicados
+            if key in selected_values:
+                messagebox.showerror("Error de Selección",
+                                     f"El grupo '{key}' está seleccionado más de una vez.",
+                                     parent=self)
+                return [] # Devolver vacío si hay duplicados
 
-            selected_display_names.add(display_name)
-
-            # Encontrar la clave original correspondiente al display_name
-            original_key = None
-            for name, key in self.available_groups:
-                if name == display_name:
-                    original_key = key
-                    break
-            if original_key:
-                selected_keys.append(original_key)
-            else:
-                # Esto no debería pasar si la UI funciona bien
-                logger.error("No se encontró clave original para: "
-                             f"{display_name}")
-                valid = False
-                break
+            selected_values.add(key)
+            selected_keys.append(key)
 
         if not valid or len(selected_keys) < 2:
-            return []  # Devolver vacío si no es válido o no hay suficientes
+            return [] # Devolver vacío si no es válido o no hay suficientes
 
         return selected_keys
 

@@ -9,7 +9,10 @@ from kineviz.ui.widgets.file_browser import FileBrowser
 from kineviz.core.services.file_service import FileService
 # Importar diálogos necesarios
 from kineviz.ui.dialogs.file_dialog import FileDialog
-from kineviz.ui.dialogs.descriptor_alias_dialog import DescriptorAliasDialog
+# DescriptorAliasDialog ya no se usa con la nueva estructura VI
+# from kineviz.ui.dialogs.descriptor_alias_dialog import DescriptorAliasDialog
+from kineviz.ui.widgets.tooltip import ToolTip # Para mostrar descriptores
+import json # Para parsear estructura VI
 
 logger = logging.getLogger(__name__) # Logger para este módulo
 
@@ -51,8 +54,9 @@ class StudyView:
                    command=self.open_study_folder).pack(side=tk.LEFT, padx=(0, 10))
 
         # Botón Gestionar Alias
-        ttk.Button(header_frame, text="Gestionar Alias Descriptores",
-                   command=self.manage_descriptor_aliases).pack(side=tk.LEFT, padx=(0, 10))
+        # Botón Gestionar Alias Descriptores (Eliminado - ya no aplica directamente)
+        # ttk.Button(header_frame, text="Gestionar Alias Descriptores",
+        #            command=self.manage_descriptor_aliases).pack(side=tk.LEFT, padx=(0, 10))
 
         # Botón Análisis Discreto (Fase 6)
         ttk.Button(header_frame, text="Análisis Discreto",

@@ -33,6 +33,7 @@ class StudyRepository:
                 CREATE TABLE IF NOT EXISTS estudios (
                     id_estudio INTEGER PRIMARY KEY AUTOINCREMENT,
                     nombre_estudio TEXT NOT NULL UNIQUE,
+                    nombre_estudio TEXT NOT NULL UNIQUE,
                     num_sujetos INTEGER NOT NULL,
                     cantidad_intentos_prueba INTEGER NOT NULL,
                     independent_variables TEXT, -- Almacenará JSON con estructura de VIs y Descriptores
@@ -84,6 +85,7 @@ class StudyRepository:
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             try:
+                # Insertar usando la nueva columna 'independent_variables'
                 cursor.execute('''
                     INSERT INTO estudios
                     (nombre_estudio, num_sujetos, cantidad_intentos_prueba, independent_variables, aliases)
