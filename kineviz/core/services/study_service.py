@@ -1,27 +1,48 @@
+import json # Importar json
+import logging
 from kineviz.database.repositories import StudyRepository
-from kineviz.ui.utils.validators import validate_study_data
+# El validador antiguo se eliminará, la validación se hará en el diálogo/nuevo validador
+# from kineviz.ui.utils.validators import validate_study_data
+
+logger = logging.getLogger(__name__)
 
 class StudyService:
     def __init__(self):
         self.repo = StudyRepository()
-    
+
     def create_study(self, study_data):
         """
-        Crea un nuevo estudio
-        
-        :param study_data: Diccionario con datos del estudio
-        :return: ID del estudio creado
-        """
-        # La validación ahora se hace en el diálogo antes de llamar al servicio,
-        # pero podríamos revalidar aquí por seguridad.
-        # is_valid, error_message = validate_study_data(study_data)
-        # if not is_valid:
-        #     raise ValueError(f"Datos de estudio inválidos: {error_message}")
+        Crea un nuevo estudio.
 
-        # Llamar al repositorio para crear
-        study_id = self.repo.create_study(study_data)
-        return study_id
-    
+        :param study_data: Diccionario con datos del estudio, incluyendo
+                           'independent_variables' (list/dict) y opcionalmente 'aliases' (dict).
+        :return: ID del estudio creado.
+        :raises ValueError: Si los datos son inválidos o el nombre ya existe.
+        :raises Exception: Para otros errores.
+        """
+        # La validación principal se hará en el diálogo usando el nuevo validador.
+        # Aquí convertimos a JSON para el repositorio.
+        try:
+            data_for_repo = study_data.copy()
+            # Convertir VIs a JSON string. Asumir lista vacía si no existe.
+            data_for_repo['independent_variables'] = json.dumps(
+                study_data.get('independent_variables', [])
+            )
+            # Convertir Aliases a JSON string. Asumir dict vacío si no existe.
+            data_for_repo['aliases'] = json.dumps(
+                study_data.get('aliases', {})
+            )
+
+            # Llamar al repositorio para crear
+            study_id = self.repo.create_study(data_for_repo)
+            logger.info(f"Estudio {study_id} ('{study_data['name']}') creado en servicio.")
+            return study_id
+        except json.JSONDecodeError as e:
+            logger.error(f"Error convirtiendo datos a JSON para nuevo estudio: {e}", exc_info=True)
+            raise ValueError(f"Error interno al procesar datos del estudio: {e}")
+        # Dejar que repo.create_study maneje ValueError por nombre duplicado
+        # y otros errores de DB.
+
     def get_studies(self):
         """
         Obtiene la lista de todos los estudios
@@ -33,12 +54,39 @@ class StudyService:
     def get_study_details(self, study_id):
         """
         Obtiene los detalles de un estudio específico
-        
-        :param study_id: ID del estudio
-        :return: Diccionario con detalles del estudio
+        :param study_id: ID del estudio.
+        :return: Diccionario con detalles del estudio, con 'independent_variables'
+                 y 'aliases' como estructuras Python (list/dict).
+        :raises ValueError: Si el estudio no se encuentra.
+        :raises Exception: Para otros errores.
         """
-        return self.repo.get_study_by_id(study_id)
-    
+        try:
+            study_details_raw = self.repo.get_study_by_id(study_id)
+
+            # Parsear JSON strings a estructuras Python
+            try:
+                study_details_raw['independent_variables'] = json.loads(
+                    study_details_raw.get('independent_variables') or '[]' # Default a JSON array vacío
+                )
+            except (json.JSONDecodeError, TypeError) as e_iv:
+                logger.error(f"Error parseando JSON 'independent_variables' para estudio {study_id}: {e_iv}. Usando lista vacía.", exc_info=True)
+                study_details_raw['independent_variables'] = []
+
+            try:
+                study_details_raw['aliases'] = json.loads(
+                    study_details_raw.get('aliases') or '{}' # Default a JSON object vacío
+                )
+            except (json.JSONDecodeError, TypeError) as e_al:
+                logger.error(f"Error parseando JSON 'aliases' para estudio {study_id}: {e_al}. Usando dict vacío.", exc_info=True)
+                study_details_raw['aliases'] = {}
+
+            return study_details_raw
+        except ValueError: # Relanzar error de estudio no encontrado
+            raise
+        except Exception as e:
+            logger.error(f"Error inesperado obteniendo detalles estudio {study_id}: {e}", exc_info=True)
+            raise # Relanzar otros errores
+
     def delete_study(self, study_id):
         """
         Elimina un estudio
@@ -82,24 +130,84 @@ class StudyService:
     def update_study(self, study_id: int, study_data: dict):
         """
         Actualiza los datos de un estudio existente.
-        (Implementación básica, necesita validación y manejo de carpetas)
 
         :param study_id: ID del estudio a actualizar.
-        :param study_data: Diccionario con los nuevos datos del estudio.
+        :param study_data: Diccionario con los nuevos datos del estudio,
+                           incluyendo 'independent_variables' (list/dict) y 'aliases' (dict).
+        :raises ValueError: Si los datos son inválidos, el estudio no existe o el nombre ya está en uso.
+        :raises Exception: Para otros errores.
         """
-        # La validación ahora se hace en el diálogo.
-        # is_valid, error_message = validate_study_data(study_data)
-        # if not is_valid:
-        #     raise ValueError(f"Datos de estudio inválidos: {error_message}")
+        # La validación principal se hará en el diálogo.
+        # Convertir a JSON para el repositorio.
+        try:
+            # Obtener nombre original para renombrar carpeta si es necesario
+            # Usar get_study_details para obtener datos parseados
+            original_study = self.get_study_details(study_id)
+            original_name = original_study['name']
 
-        # Obtener nombre original para renombrar carpeta si es necesario
-        original_study = self.repo.get_study_by_id(study_id)
-        original_name = original_study['name']
+            data_for_repo = study_data.copy()
+            # Convertir VIs a JSON string
+            data_for_repo['independent_variables'] = json.dumps(
+                study_data.get('independent_variables', [])
+            )
+            # Convertir Aliases a JSON string
+            data_for_repo['aliases'] = json.dumps(
+                study_data.get('aliases', {})
+            )
 
-        # Llamar al repositorio para actualizar
-        self.repo.update_study(study_id, study_data)
+            # Llamar al repositorio para actualizar
+            self.repo.update_study(study_id, data_for_repo)
+            logger.info(f"Estudio {study_id} actualizado en servicio.")
 
-        # Renombrar carpeta si el nombre cambió
-        new_name = study_data['name']
+            # Renombrar carpeta si el nombre cambió
+            new_name = study_data['name']
+            if original_name != new_name:
+                # Asegurarse de que el nuevo nombre no esté vacío
+                if not new_name:
+                     logger.error(f"Intento de renombrar estudio {study_id} a un nombre vacío. Omitiendo renombrado de carpeta.")
+                     # Podríamos lanzar un error aquí si el nombre vacío no fue validado antes
+                else:
+                     self.repo.rename_study_folder(original_name, new_name)
+
+        except json.JSONDecodeError as e:
+            logger.error(f"Error convirtiendo datos a JSON para actualizar estudio {study_id}: {e}", exc_info=True)
+            raise ValueError(f"Error interno al procesar datos del estudio: {e}")
+        except ValueError as ve: # Capturar errores de repo (no encontrado, nombre duplicado)
+            logger.warning(f"Error de validación/DB al actualizar estudio {study_id}: {ve}")
+            raise # Relanzar
+        except Exception as e:
+            logger.error(f"Error inesperado actualizando estudio {study_id}: {e}", exc_info=True)
+            raise
+
+    # --- Métodos específicos para Aliases (si se gestionan aquí) ---
+    # Estos métodos asumen que los alias se cargan/guardan junto con el estudio.
+
+    def get_study_aliases(self, study_id: int) -> dict:
+        """Obtiene el diccionario de alias para un estudio específico."""
+        try:
+            study_details = self.get_study_details(study_id)
+            # get_study_details ya parsea el JSON
+            return study_details.get('aliases', {})
+        except ValueError: # Estudio no encontrado
+            return {}
+        except Exception as e:
+            logger.error(f"Error obteniendo alias para estudio {study_id}: {e}", exc_info=True)
+            return {}
+
+    def update_study_aliases(self, study_id: int, aliases: dict):
+        """Actualiza solo los alias de un estudio específico."""
+        try:
+            # Obtener datos actuales para no perder VIs, etc.
+            study_details = self.get_study_details(study_id)
+            # Actualizar solo los alias
+            study_details['aliases'] = aliases
+            # Llamar a update_study con todos los datos (convertirá a JSON)
+            self.update_study(study_id, study_details)
+            logger.info(f"Aliases actualizados para estudio {study_id}.")
+        except ValueError: # Estudio no encontrado
+            raise
+        except Exception as e:
+            logger.error(f"Error actualizando alias para estudio {study_id}: {e}", exc_info=True)
+            raise
         if original_name != new_name:
             self.repo.rename_study_folder(original_name, new_name)
