@@ -1,8 +1,9 @@
 import os
 import shutil
-import logging # Importar logging
+import logging
 from pathlib import Path
 from tkinter import messagebox
+import json # Importar json
 # Importar validador a nivel de módulo
 from kineviz.ui.utils.validators import validate_filename_for_study_criteria
 
@@ -283,13 +284,20 @@ class FileService:
             results['errors'].append(f"No se pudo encontrar la ruta para el estudio ID {study_id}.")
             return results
 
-        # Obtener descriptores del estudio para validación
+        # Obtener la estructura de VIs del estudio para validación
         try:
             study_details = self.study_service.get_study_details(study_id)
-            descriptors_str = study_details.get('descriptores', '') or ''
-            valid_descriptors = [d.strip() for d in descriptors_str.split(',') if d.strip()]
+            # StudyService ya debería devolver 'independent_variables_struct' parseado
+            vi_structure = study_details.get('independent_variables_struct')
+            if vi_structure is None: # Podría ser None si hay error o no está definida
+                 raise ValueError("Estructura de Variables Independientes no encontrada o inválida para el estudio.")
+            # No es necesario parsear JSON aquí si el servicio lo hace
+            # vi_structure = json.loads(vi_structure_json or '[]')
+            # if not isinstance(vi_structure, list):
+            #      raise ValueError("Formato de Variables Independientes inválido.")
+
         except Exception as e:
-            error_msg = f"Error al obtener descriptores del estudio {study_id}: {e}"
+            error_msg = f"Error al obtener la estructura de VIs del estudio {study_id}: {e}"
             logger.error(error_msg, exc_info=True)
             results['errors'].append(error_msg)
             return results
@@ -300,13 +308,16 @@ class FileService:
             file_name = source_file_path.name
             logger.debug(f"Intentando agregar archivo: '{file_name}' al estudio {study_id}")
             try:
-                # 1. Validar nombre de archivo usando descriptores
-                logger.debug(f"Validando '{file_name}' con descriptores: {valid_descriptors}")
-                is_valid_name = validate_filename_for_study_criteria(file_name, valid_descriptors)
+                # 1. Validar nombre de archivo usando la estructura VI
+                logger.debug(f"Validando '{file_name}' con estructura VI: {vi_structure}")
+                # El validador ahora devuelve (bool, list | None)
+                is_valid_name, _ = validate_filename_for_study_criteria(file_name, vi_structure)
                 logger.debug(f"Resultado validación para '{file_name}': {is_valid_name}")
+
                 if not is_valid_name:
                     # Lanzar ValueError si la validación falla
-                    raise ValueError(f"Nombre de archivo '{file_name}' no cumple con los descriptores definidos para el estudio.")
+                    # El validador ya debería haber loggeado la razón específica
+                    raise ValueError(f"Nombre de archivo '{file_name}' no cumple con la estructura de Variables Independientes definida para el estudio.")
 
                 # 2. Procesar y copiar el archivo (Solo si la validación fue exitosa)
                 self._process_and_copy_file(study_path, source_file_path)
