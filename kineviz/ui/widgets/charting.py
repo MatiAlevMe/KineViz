@@ -115,7 +115,8 @@ def create_interactive_comparison_boxplot(data_by_group: list,
                     "No se pudo generar el gráfico interactivo.</p></body></html>")
         return
 
-    if len(data_by_group) != len(group_names):
+    # Corregir la validación de longitud
+    if len(data_by_group) != len(group_xaxis_labels) or len(data_by_group) != len(group_legend_names):
         raise ValueError("Longitud de data_by_group y etiquetas de grupo no coinciden.")
     if len(group_xaxis_labels) != len(group_legend_names):
          raise ValueError("Longitud de etiquetas de eje X y leyenda no coinciden.")
@@ -150,7 +151,8 @@ def create_interactive_comparison_boxplot(data_by_group: list,
                 line_width=1
             ))
         else:
-            logger.warning(f"Grupo '{group_name}' sin datos válidos para boxplot interactivo.")
+            # Usar legend_name en el log
+            logger.warning(f"Grupo '{legend_name}' sin datos válidos para boxplot interactivo.")
 
     if not valid_groups_exist:
         logger.warning(f"No hay datos válidos para generar boxplot interactivo: {title}")
