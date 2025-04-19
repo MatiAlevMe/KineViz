@@ -41,8 +41,8 @@ class MainWindow:
         # --- Instanciación de Servicios ---
         self.study_service = StudyService()
         self.file_service = FileService(self.study_service) # Servicio para operaciones de archivos dentro de estudios
-        # Pasar study_service, file_service y settings a AnalysisService
-        self.analysis_service = AnalysisService(self.study_service, self.file_service, self.settings) # Servicio para lógica de análisis y reportes
+        # Pasar solo study_service y file_service a AnalysisService
+        self.analysis_service = AnalysisService(self.study_service, self.file_service) # Servicio para lógica de análisis y reportes
 
         self.current_view = None
         self.style = ttk.Style()
