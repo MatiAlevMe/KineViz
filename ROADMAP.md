@@ -135,10 +135,10 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
     * **2.1 Flujo UI**: (Pendiente) Implementar UI jerárquica para definir VIs y sus Descriptores (con botones '+', '🗑️').
     * **2.2 Restricciones Edición**: (Pendiente) Deshabilitar añadir/eliminar VIs/Descriptores; permitir renombrar VIs.
     * **2.3 Botón Ayuda VI**: (Pendiente) Añadir botón `(?)` coloreado que abre `kineviz/docs/help/study_dialog_iv_help.txt`.
-* **3. Refactorizar Validación (`validators.py`):** (Pendiente)
-    * **3.1 Validador Datos Estudio**: (Pendiente) Crear `validate_study_iv_data` para estructura VI (nombres no vacíos/duplicados, min 1 VI, min 2 Descriptores por VI, no descriptores con espacios).
-    * **3.2 Validador Nombres Archivo**: (Pendiente) Reescribir `validate_filename_for_study_criteria` para formato `PteXX [VAL_VI1]...[VAL_VIn] NN`, orden, valores permitidos (incl. "Nulo"), regla de al menos un descriptor no-Nulo. Devolver `(bool, list[str|None])`.
-    * **3.3 Eliminar Validador Antiguo**: (Pendiente) Eliminar `validate_study_data`.
+* **3. Refactorizar Validación (`validators.py`):** (Hecho)
+    * **3.1 Validador Datos Estudio**: (Hecho) Creado `validate_study_iv_data` para estructura VI (nombres no vacíos/duplicados, min 1 VI, min 2 Descriptores por VI, no descriptores con espacios).
+    * **3.2 Validador Nombres Archivo**: (Hecho) Reescrito `validate_filename_for_study_criteria` para formato `PteXX [VAL_VI1]...[VAL_VIn] NN`, orden, valores permitidos (incl. "Nulo"), regla de al menos un descriptor no-Nulo. Devuelve `(bool, list[str|None])`.
+    * **3.3 Eliminar Validador Antiguo**: (Hecho) Eliminado `validate_study_data`.
 * **4. Integrar Validación:** (Pendiente)
     * **4.1 `StudyDialog`**: (Pendiente) Usar `validate_study_iv_data` en `save`.
     * **4.2 `FileService.add_files_to_study`**: (Pendiente) Usar nuevo `validate_filename_for_study_criteria`.
