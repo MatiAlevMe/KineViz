@@ -1,0 +1,33 @@
+Task ID,Task Name,Start Date,End Date,Duration,Dependencies
+1,Inicio Fase Final Proyecto Titulo,2025-03-04,2025-03-04,0d,
+2,Reunion Semanal Avance,2025-03-05,2025-03-05,1d,1
+3,Fase 2: Mejoras Análisis Estadístico,2025-03-05,2025-03-18,10d,1
+4,Reunion Semanal Avance,2025-03-12,2025-03-12,1d,
+5,Fase 2: Implementación Reporte General PDF,2025-03-19,2025-04-08,15d,3
+6,Reunion Semanal Avance,2025-03-19,2025-03-19,1d,
+7,Reunion Semanal Avance,2025-03-26,2025-03-26,1d,
+8,Reunion Semanal Avance,2025-04-02,2025-04-02,1d,
+9,Fase 2: Corrección Errores Menores Análisis Discreto,2025-04-09,2025-04-15,5d,5
+10,Reunion Semanal Avance,2025-04-09,2025-04-09,1d,
+11,Hito: Fin Implementación Análisis Discreto,2025-04-15,2025-04-15,0d,9
+12,Fase 3: Pruebas Finales VIs y Alias,2025-04-16,2025-04-24,7d,11
+13,Reunion Semanal Avance,2025-04-16,2025-04-16,1d,
+14,Reunion Semanal Avance,2025-04-23,2025-04-23,1d,
+15,Hito: Fin Pruebas VIs,2025-04-24,2025-04-24,0d,12
+16,Hito: Entrega Avance Proyecto Título,2025-04-25,2025-04-25,0d,15;5
+17,Fase 4: Análisis Continuo - Diseño y Prototipo UI,2025-04-28,2025-05-09,10d,16
+18,Reunion Semanal Avance,2025-04-30,2025-04-30,1d,
+19,Reunion Semanal Avance,2025-05-07,2025-05-07,1d,
+20,Fase 4: Análisis Continuo - Implementación Backend (Normalización, Promedio),2025-05-12,2025-05-23,10d,17
+21,Reunion Semanal Avance,2025-05-14,2025-05-14,1d,
+22,Reunion Semanal Avance,2025-05-21,2025-05-21,1d,
+23,Fase 4: Análisis Continuo - Implementación Frontend (Gráficos Líneas),2025-05-26,2025-06-06,10d,20
+24,Reunion Semanal Avance,2025-05-28,2025-05-28,1d,
+25,Reunion Semanal Avance,2025-06-04,2025-06-04,1d,
+26,Hito: Fin Implementación Análisis Continuo,2025-06-06,2025-06-06,0d,23
+27,Pruebas de Usuario (Estudiantes Kinesiología),2025-06-09,2025-06-13,5d,26
+28,Reunion Semanal Avance,2025-06-11,2025-06-11,1d,
+29,Pruebas Integración Finales y Correcciones,2025-06-09,2025-06-13,5d,27
+30,Documentación Final y Preparación Entrega,2025-06-16,2025-06-19,4d,29
+31,Reunion Semanal Avance,2025-06-18,2025-06-18,1d,
+32,Hito: Entrega Final Proyecto Título,2025-06-20,2025-06-20,0d,30
