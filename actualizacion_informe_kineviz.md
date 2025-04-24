@@ -63,7 +63,46 @@ Automatizar y optimizar el proceso de análisis biomecánico mediante el desarro
 *   **RNF-FI-005 (Precisión Estadística):** El sistema debe utilizar librerías estadísticas validadas (ej. SciPy) y aplicar los cálculos correctamente según la configuración del análisis (tipo de test, supuestos seleccionados).
 *   **RNF-US-007 (Interpretabilidad Resultados):** Los resultados de los análisis (p-valores, gráficos, tablas) deben presentarse de forma clara y organizada, utilizando elementos como tooltips, alias y leyendas legibles para facilitar su interpretación por parte de usuarios con conocimientos básicos de estadística.
 
-*(Añadir la siguiente NUEVA subsección de requerimientos funcionales después de RF-AD)*
+*(Añadir la siguiente lista de requerimientos funcionales actuales, basados en Proyecto.pdf pp. 18-21)*
+
+**Requerimientos Funcionales - Gestión de Estudios (RF-GE)**
+
+*   **RF-GE-001: Creación de Estudio:** El sistema permitirá al usuario crear un nuevo estudio especificando su nombre, número de sujetos, cantidad de intentos de prueba y definiendo la estructura jerárquica de Variables Independientes (VIs) y sus Descriptores asociados.
+*   **RF-GE-002: Creación de Alias de Estudio:** El sistema permitirá al usuario definir Alias para los Descriptores de un estudio específico. Estos alias se almacenarán asociados al estudio y se utilizarán para mejorar la legibilidad en análisis y reportes.
+*   **RF-GE-003: Listado Paginado y Búsqueda de Estudios:** El sistema permitirá listar los estudios existentes de forma paginada y ofrecerá una opción de búsqueda.
+*   **RF-GE-004: Visualización de Estudio:** El sistema permitirá ver los detalles completos de un estudio seleccionado, incluyendo metadatos, la estructura de VIs/Descriptores (con alias) y un resumen o acceso a los archivos asociados.
+*   **RF-GE-005: Edición de Estudio:** El sistema permitirá modificar los metadatos de un estudio existente (nombre de estudio, nombre del paciente, número de intentos de prueba) y sus alias. La estructura de VIs/Descriptores tendrá edición restringida (solo renombrar VIs) tras la creación inicial.
+*   **RF-GE-006: Eliminación de Estudio:** El sistema permitirá eliminar un estudio seleccionado, incluyendo sus metadatos, archivos procesados y resultados de análisis asociados, previa confirmación del usuario.
+
+**Requerimientos Funcionales - Gestión de Archivos (RF-GA)**
+
+*   **RF-GA-001: Adición de Archivo(s):** El sistema permitirá al usuario seleccionar y añadir uno o más archivos de datos (tanto .txt como .csv pero en el formato especificado por el cliente) a un estudio existente.
+*   **RF-GA-002: Validación de Nombre(s) de Archivo(s):** Al añadir archivos, el sistema validará que sus nombres sigan el formato “PteXX [DescriptorVI1]...[DescriptorVIn] NN", comprobando la existencia y orden de los descriptores contra la estructura de VIs del estudio (permitiendo "Nulo" siempre y cuando exista al menos un descriptor definido).
+*   **RF-GA-003: Procesamiento y Clasificación de Archivo(s):** En el procesado, de manera general, se realizará lo siguiente: (1) Detectar automáticamente la frecuencia de datos (Cinemática, Cinética, EMG) por contenido. (2) Extraer datos relevantes en un nuevo formato (ie. Columna de tiempo y cálculos de las columnas). (3) Guardar los datos procesados en archivos estructurados (ej. CSV) en subcarpetas por frecuencia.
+*   **RF-GA-004: Creación de Columna Tiempo:** Durante el procesado, se generarán archivos resultantes con una columna nueva llamada "tiempo” en todos los archivos de estudio al calcular el tiempo basado en la fórmula (1/Hz) para cada sección de datos en el archivo.
+*   **RF-GA-005: Creación de Filas de Cálculos:** Durante el procesado, se generarán archivos resultantes con nuevas filas con cálculos específicos (max, min, rango) para todas las columnas excepto "frames”, “subframe” y “tiempo”.
+*   **RF-GA-006: Listado Paginado, Búsqueda y Filtrado de Archivos:** El sistema permitirá listar los archivos asociados a un estudio, con opciones de filtrado por tipo/frecuencia, búsqueda y paginación.
+*   **RF-GA-007: Gestión de Archivos:** El sistema permitirá eliminar archivos específicos de un estudio, como también visualizar cada archivo del estudio tanto procesado como los archivos originales subidos por el usuario.
+
+**Requerimientos Funcionales - Análisis de Datos Discreto (RF-AD)**
+
+*   **RF-AD-001: Generación de Tablas:** El sistema permitirá generar tablas resumen (CSV/TSV/XLSX) con estadísticas descriptivas (máximo, mínimo, promedio, etc.) para cada columna numérica, agrupadas por combinación única de Descriptores de VIs y por frecuencia, almacenandose en ".../Análisis Discreto/Tablas".
+*   **RF-AD-002: Gestión de Tablas:** El sistema proporcionará una vista (donde se puede observar nombre de archivo, tipo de cálculo, sus descriptores y VIs, entre otras) para listar en un formato paginado, buscar, filtrar por cálculo u formato (.csv, .tsv, .xlsx, etc), eliminar, y visualizar (abrir) las tablas resumen generadas en RF-AD-001.
+*   **RF-AD-003: Configuración de Análisis Individual:** El sistema ofrecerá un diálogo para configurar un análisis comparativo, permitiendo seleccionar: frecuencia, cálculo base (de tablas resumen), dos o más grupos (presentados con VIs/Alias), una columna común (variable dependiente), y supuestos estadísticos (paramétrico/no paramétrico, pareado/no pareado).
+*   **RF-AD-004: Ejecución de Análisis Individual:** Tras la configuración (RF-AD-003), el sistema ejecutará la prueba estadística adecuada (t-test, ANOVA, Wilcoxon, etc.), generará gráficos comparativos (boxplot+swarmplot) estáticos (PNG) e interactivos (HTML) con etiquetas legibles (VIs/Alias) y significancia, y guardará los resultados (config.json, PNG, HTML) en Análisis Discreto/Individual/[NOMBRE_ANALISIS]
+*   **RF-AD-005: Gestión de Análisis Individuales:** El sistema proporcionará un diálogo para listar análisis individuales guardados, mostrar detalles relevantes (grupos, columna analizada, p-valor, entre otras), visualizar gráficos (PNG/HTML), eliminar análisis y abrir su carpeta de resultados.
+*   **RF-AD-006: Generación de Reporte General PDF:** El sistema permitirá generar un reporte PDF consolidado para un estudio. El usuario seleccionará una columna de interés, y el sistema realizará análisis comparativos para combinaciones relevantes de grupos para esa columna, incluyendo gráficos y resultados en el PDF.
+
+**Requerimientos Funcionales - Configuración y Utilidades (RF-CU)**
+
+*   **RF-CU-001: Configuración de Ajustes de Aplicación:** El sistema permitirá al usuario configurar ajustes generales (ej. elementos por página) a través de un diálogo específico.
+*   **RF-CU-002: Persistencia de Configuraciones:** Las configuraciones de la aplicación se guardarán en un archivo (config.ini) y se cargarán al inicio.
+*   **RF-CU-003: Registro de Eventos (Logging):** El sistema registrará eventos importantes y errores en archivos de log para diagnóstico y monitoreo.
+*   **RF-CU-004: Guardado de Estudios Localmente:** El sistema debe permitir guardar los estudios y sus archivos de manera local en una carpeta del programa, permitiendo que estos se carguen fluidamente sin necesidad de recargar los estudios previamente guardados.
+*   **RF-CU-005: Página de Bienvenida:** El sistema mostrará una ventana de bienvenida al iniciar el programa por primera vez, esta ventana contará con distintas opciones relevantes (ej. Crear primer estudio, una pequeña guía de acceso rápido para crear el primer estudio y el manual de estudio).
+*   **RF-CU-006: Acceso a Carpetas Locales del Sistema:** El sistema mostrará un botón para abrir distintas carpetas relevantes para el usuario (ej. La carpeta de los distintos estudios, la carpeta de los distintos análisis)
+
+*(Añadir la siguiente NUEVA subsección de requerimientos funcionales para Análisis Continuo)*
 
 **Requerimientos Funcionales - Análisis Continuo (RF-AC)**
 
@@ -79,7 +118,9 @@ Automatizar y optimizar el proceso de análisis biomecánico mediante el desarro
 
 # --- SECCIÓN 4.4: Análisis de Riesgos (pp. 31-32) ---
 
-*(Añadir los siguientes riesgos a la lista existente)*
+*(Actualización y adición a los riesgos listados en Proyecto.pdf pp. 31-32)*
+
+**Nota:** Los siguientes riesgos (RSG-VI, RSG-AD, RSG-STAT, RSG-PLOT) complementan y actualizan el análisis de riesgos inicial (RSG-01 a RSG-09) presentado en el informe `Proyecto.pdf`, reflejando la evolución del proyecto hacia el uso de Variables Independientes y análisis estadístico más complejo.
 
 *   **RSG-VI-01: Complejidad en Validación y Gestión de VIs**
     *   **Impacto:** Medio
@@ -109,7 +150,7 @@ Automatizar y optimizar el proceso de análisis biomecánico mediante el desarro
 
 *(Reemplazar COMPLETAMENTE la sección 7 existente con el siguiente texto)*
 
-**7. Estado de Avance del Proyecto (Actualizado a [Fecha Actual])**
+**7. Estado de Avance del Proyecto (Actualizado a 24 de Abril de 2025)**
 
 **7.1 Resumen General**
 
