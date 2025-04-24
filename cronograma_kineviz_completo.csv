@@ -1,20 +1,20 @@
 Task ID,Task Name,Start Date,End Date,Duration,Dependencies
-16,Fase 2: Análisis Discreto - Generación Gráfico Interactivo (Plotly),2025-03-04,2025-03-17,10d,
-17,Fase 2: Análisis Discreto - Diálogo Gestión Análisis Individual,2025-03-18,2025-03-31,10d,16
 18,Reunion Semanal Avance,2025-03-05,2025-03-05,1d,
 19,Reunion Semanal Avance,2025-03-12,2025-03-12,1d,
-20,Fase 2: Análisis Discreto - Implementación Reporte General PDF,2025-04-01,2025-04-15,11d,17
 21,Reunion Semanal Avance,2025-03-19,2025-03-19,1d,
 22,Reunion Semanal Avance,2025-03-26,2025-03-26,1d,
+27,Fase 3: Refactorización VIs - Pruebas VIs y Alias,2025-03-04,2025-03-17,10d,
+30,Hito: Fin Pruebas VIs,2025-03-17,2025-03-17,0d,27
+16,Fase 2: Análisis Discreto - Generación Gráfico Interactivo (Plotly),2025-03-18,2025-03-28,9d,30
+17,Fase 2: Análisis Discreto - Diálogo Gestión Análisis Individual,2025-03-31,2025-04-09,8d,16
 23,Reunion Semanal Avance,2025-04-02,2025-04-02,1d,
-24,Fase 2: Análisis Discreto - Corrección Errores Menores,2025-04-16,2025-04-18,3d,20
 25,Reunion Semanal Avance,2025-04-09,2025-04-09,1d,
-26,Hito: Fin Implementación Análisis Discreto (MVP),2025-04-18,2025-04-18,0d,24
-27,Fase 3: Refactorización VIs - Pruebas Finales VIs y Alias,2025-04-21,2025-04-24,4d,26;17
+20,Fase 2: Análisis Discreto - Implementación Reporte General PDF,2025-04-10,2025-04-22,9d,17
 28,Reunion Semanal Avance,2025-04-16,2025-04-16,1d,
+24,Fase 2: Análisis Discreto - Corrección Errores Menores,2025-04-23,2025-04-24,2d,20
 29,Reunion Semanal Avance,2025-04-23,2025-04-23,1d,
-30,Hito: Fin Pruebas VIs,2025-04-24,2025-04-24,0d,27
-31,Hito: Entrega Avance Proyecto Título (Revisión Informe),2025-04-25,2025-04-25,1d,30;20
+26,Hito: Fin Implementación Análisis Discreto (MVP),2025-04-24,2025-04-24,0d,24
+31,Hito: Entrega Avance Proyecto Título (Revisión Informe),2025-04-25,2025-04-25,1d,26;20
 32,Fase 4: Análisis Continuo - Diseño y Prototipo UI,2025-04-28,2025-05-09,10d,31
 33,Reunion Semanal Avance,2025-04-30,2025-04-30,1d,
 34,Reunion Semanal Avance,2025-05-07,2025-05-07,1d,
