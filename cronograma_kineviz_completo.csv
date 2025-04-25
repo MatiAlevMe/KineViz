@@ -1,28 +1,28 @@
 Task Name,Start Date,Due Date,Duration
 Inicio: Proyecto KineViz - Segunda Parte,2025-03-04,2025-03-04,0d
 Fase 0: Refactorización Inicial Código Base,2025-03-04,2025-03-12,7d
-Reunion Semanal Avance,2025-03-12,2025-06-18,10000d
-Fase 1: Detección Automática Frecuencia (Cinemática/Cinética/EMG),2025-04-04,2025-04-23,10d
-Hito: Fin Detección Frecuencia,2025-04-23,2025-04-23,0d
-Fase 2: Análisis Discreto - Generación Tablas Resumen (Matrices),2025-04-04,2025-04-23,15d
-Fase 2: Análisis Discreto - Identificación Grupos/Columnas Comunes,2025-04-04,2025-04-23,10d
-Fase 3: Refactorización VIs - Modificar Modelo Estudio (DB/Servicios),2025-04-04,2025-04-23,10d
-Fase 3: Refactorización VIs - Refactorizar UI Estudio (StudyDialog),2025-04-04,2025-04-23,10d
-Fase 3: Refactorización VIs - Refactorizar Validación (validators.py),2025-04-04,2025-04-23,10d
-Fase 3: Refactorización VIs - Integrar Validación (UI/FileService),2025-04-04,2025-04-23,10d
-Fase 2: Análisis Discreto - Diálogo Configuración Análisis Individual,2025-04-04,2025-04-23,10d
-Fase 3: Refactorización VIs - Actualizar FileService/StudyView/Alias,2025-04-04,2025-04-23,10d
-Fase 2: Análisis Discreto - Generación Gráfico Boxplot (Seaborn),2025-04-04,2025-04-23,10d
-Fase 2: Análisis Discreto - Implementación Tests Estadísticos (SciPy),2025-04-04,2025-04-23,10d
-Fase 2: Análisis Discreto - Mejoras Gráficas (Swarmplot, Leyendas VI),2025-04-04,2025-04-23,10d
-Fase 2: Análisis Discreto - Generación Gráfico Interactivo (Plotly),2025-04-04,2025-04-23,10d
-Fase 2: Análisis Discreto - Diálogo Gestión Análisis Individual,2025-04-04,2025-04-23,10d
-Fase 2: Análisis Discreto - Implementación Reporte General PDF,2025-04-28,2025-05-09,10d
-Fase 2: Análisis Discreto - Corrección Errores Menores,2025-05-12,2025-05-14,3d
-Hito: Fin Implementación Análisis Discreto (MVP),2025-05-14,2025-05-14,0d
-Fase 3: Refactorización VIs - Pruebas Finales VIs y Alias,2025-05-12,2025-05-16,5d
-Hito: Fin Pruebas VIs,2025-05-16,2025-05-16,0d
-Hito: Entrega Avance Proyecto Título,2025-05-19,2025-05-19,0d
+Reunion Semanal Avance,2025-03-12,2025-06-18,99d
+Fase 1: Detección Automática Frecuencia (Cinemática/Cinética/EMG),2025-03-12,2025-03-18,5d
+Hito: Fin Detección Frecuencia,2025-03-18,2025-03-18,0d
+Fase 2: Análisis Discreto - Generación Tablas Resumen (Matrices),2025-03-19,2025-03-25,5d
+Fase 2: Análisis Discreto - Identificación Grupos/Columnas Comunes,2025-03-26,2025-03-28,3d
+Fase 3: Refactorización VIs - Modificar Modelo Estudio (DB/Servicios),2025-03-19,2025-03-25,5d
+Fase 3: Refactorización VIs - Refactorizar UI Estudio (StudyDialog),2025-03-19,2025-03-25,5d
+Fase 3: Refactorización VIs - Refactorizar Validación (validators.py),2025-03-26,2025-03-28,3d
+Fase 3: Refactorización VIs - Integrar Validación (UI/FileService),2025-03-31,2025-04-02,3d
+Fase 2: Análisis Discreto - Diálogo Configuración Análisis Individual,2025-03-31,2025-04-04,5d
+Fase 3: Refactorización VIs - Actualizar FileService/StudyView/Alias,2025-03-31,2025-04-02,3d
+Fase 2: Análisis Discreto - Generación Gráfico Boxplot (Seaborn),2025-04-07,2025-04-09,3d
+Fase 2: Análisis Discreto - Implementación Tests Estadísticos (SciPy),2025-04-10,2025-04-14,3d
+Fase 2: Análisis Discreto - Mejoras Gráficas (Swarmplot, Leyendas VI),2025-04-15,2025-04-16,2d
+Fase 2: Análisis Discreto - Generación Gráfico Interactivo (Plotly),2025-04-17,2025-04-21,3d
+Fase 2: Análisis Discreto - Diálogo Gestión Análisis Individual,2025-04-15,2025-04-16,2d
+Fase 3: Refactorización VIs - Pruebas Finales VIs y Alias,2025-04-03,2025-04-07,3d
+Hito: Fin Pruebas VIs,2025-04-07,2025-04-07,0d
+Fase 2: Análisis Discreto - Implementación Reporte General PDF,2025-04-17,2025-04-23,5d
+Fase 2: Análisis Discreto - Corrección Errores Menores,2025-04-24,2025-04-25,2d
+Hito: Fin Implementación Análisis Discreto (MVP),2025-04-25,2025-04-25,0d
+Hito: Entrega Avance Proyecto Título,2025-04-25,2025-04-25,0d
 Fase 4: Análisis Continuo - Diseño y Prototipo UI,2025-05-20,2025-05-28,7d
 Fase 4: Análisis Continuo - Implementación Backend (Normalización, Promedio),2025-05-29,2025-06-06,7d
 Fase 4: Análisis Continuo - Implementación Frontend (Gráficos Líneas),2025-06-09,2025-06-17,7d
