@@ -1,7 +1,7 @@
 Task Name,Start Date,Due Date,Duration
 Inicio Proyecto KineViz (Conceptual),2025-03-04,2025-03-13,8d
-Fase 0: Refactorización Inicial Código Base,2025-03-04,2025-04-12,10d
-Reunion Semanal Avance,2025-04-12,2025-06-18,10000d
+Fase 0: Refactorización Inicial Código Base,2025-03-04,2025-03-12,10d
+Reunion Semanal Avance,2025-03-12,2025-06-18,10000d
 Fase 1: Detección Automática Frecuencia (Cinemática/Cinética/EMG),2025-04-04,2025-04-23,10d
 Hito: Fin Detección Frecuencia,2025-04-23,2025-04-23,0d
 Fase 2: Análisis Discreto - Generación Tablas Resumen (Matrices),2025-04-04,2025-04-23,15d
