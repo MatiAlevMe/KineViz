@@ -1,9 +1,11 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import logging
-from typing import List  # Para type hinting
+from typing import List, Tuple # Añadir Tuple para type hint
 
 from kineviz.core.services.analysis_service import AnalysisService
+# Importar validador necesario
+from kineviz.ui.utils.validators import validate_filename_for_study_criteria
 
 
 logger = logging.getLogger(__name__)
