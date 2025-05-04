@@ -55,24 +55,25 @@ exe = EXE(
     # icon=icon_file # Descomentar si se define un icono arriba
 )
 
-coll = COLLECT(
-    exe,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
-    strip=False,
-    upx=True,
-    upx_exclude=[],
-    name=app_name
-)
+#Específico para Windos
+#coll = COLLECT(
+#    exe,
+#    a.binaries,
+#    a.zipfiles,
+#    a.datas,
+#    strip=False,
+#    upx=True,
+#    upx_exclude=[],
+#    name=app_name
+#)
 
-# Específico para macOS: Crear un .app bundle
-# app = BUNDLE(
-#     coll,
-#     name=f'{app_name}.app',
-#     icon=icon_file, # Usar el .icns definido arriba
-#     bundle_identifier=None # Opcional: ej. 'com.tuorganizacion.kineviz'
-# )
+Específico para macOS: Crear un .app bundle
+app = BUNDLE(
+    coll,
+    name=f'{app_name}.app',
+    icon=icon_file, # Usar el .icns definido arriba
+    bundle_identifier=None # Opcional: ej. 'com.tuorganizacion.kineviz'
+)
 
 # Nota: Para macOS, descomenta la sección 'app = BUNDLE(...)' y comenta/elimina 'coll = COLLECT(...)'
 #       Asegúrate de que 'icon_file' apunte a un archivo .icns válido.
