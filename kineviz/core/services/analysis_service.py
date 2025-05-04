@@ -1126,10 +1126,11 @@ class AnalysisService:
                 file_path = file_info['path']
                 filename = file_path.name
 
-                # Validar nombre usando VIs
-                is_valid_name, extracted_descriptors = validate_filename_for_study_criteria(
+                # Validar nombre usando VIs y desempaquetar los 4 valores
+                is_valid_name, _, extracted_descriptors, _ = validate_filename_for_study_criteria(
                     filename, independent_variables
                 )
+                # Solo necesitamos is_valid_name y extracted_descriptors aquí
                 if not is_valid_name:
                     continue
 
