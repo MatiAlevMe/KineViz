@@ -42,4 +42,5 @@ El formato debe ser: `PteXX [Desc_VI1] [Desc_VI2] ... [Desc_VIn] NN_Frecuencia.e
 **Edición:**
 
 * Al editar un estudio, **no puedes** añadir ni eliminar VIs o Descriptores.
-* **Sí puedes** cambiar el nombre de las Variables Independientes.
+* **Sí puedes** cambiar el nombre de las Variables Independientes, el número de sujetos y la cantidad de intentos.
+* **Importante:** Al editar, no podrás reducir el número de sujetos por debajo de la cantidad de sujetos distintos ya presentes en los archivos del estudio. Tampoco podrás reducir la cantidad de intentos por debajo del número máximo de intentos que cualquier sujeto ya tenga registrado.

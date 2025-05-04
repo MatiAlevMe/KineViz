@@ -44,8 +44,9 @@ Esta vista te permite gestionar los archivos y análisis de un estudio específi
 **Botones Principales:**
 
 * **<< Volver a Estudios:** Regresa a la lista de todos tus estudios.
-* **Analizar Estudio:** (Funcionalidad anterior, será reemplazada) Abre un diálogo para generar un reporte PDF general.
-* **Agregar Archivos:** Abre un diálogo para seleccionar archivos `.txt` o `.csv` y añadirlos a este estudio. Los nombres de archivo deben seguir el formato definido por las Variables Independientes (VIs) del estudio.
+* **Agregar Archivos:** Abre un diálogo para seleccionar archivos `.txt` o `.csv` y añadirlos a este estudio.
+    * Los nombres de archivo deben seguir el formato definido por las Variables Independientes (VIs) del estudio.
+    * **Validación:** Al agregar, el sistema verificará que no se exceda el **número máximo de sujetos** ni la **cantidad máxima de intentos por sujeto** definidos para este estudio, considerando tanto los archivos existentes como los nuevos.
 * **Abrir Carpeta Estudio:** Abre la carpeta en tu sistema donde se almacenan los archivos procesados y originales de este estudio.
 * **Gestionar Alias Descriptores:** Asigna nombres más legibles (alias) a los descriptores definidos para este estudio (ej: "CMJ" -> "Salto Contra Movimiento"). Estos alias se usan en gráficos y reportes y son **específicos para este estudio**.
 * **Análisis Discreto:** Abre la vista para generar y gestionar análisis estadísticos comparativos entre grupos definidos por los descriptores.

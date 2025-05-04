@@ -98,9 +98,10 @@ def validate_study_iv_data(data: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
 def validate_filename_for_study_criteria(
     filename: str,
     independent_variables: List[Dict[str, Any]]
-) -> Tuple[bool, List[Optional[str]]]:
+) -> Tuple[bool, Optional[str], List[Optional[str]], Optional[int]]:
     """
-    Valida si un nombre de archivo cumple con la estructura de VIs del estudio.
+    Valida si un nombre de archivo cumple con la estructura de VIs del estudio
+    y extrae el ID del sujeto, los descriptores y el número de intento.
 
     Formato esperado: PteXX [VAL_VI1] [VAL_VI2] ... [VAL_VIn] NN[_Frecuencia].ext
     Permite 'Nulo' como valor. Verifica orden y pertenencia a descriptores de cada VI.
@@ -108,12 +109,13 @@ def validate_filename_for_study_criteria(
     :param filename: Nombre del archivo (sin ruta, solo nombre base con extensión).
     :param independent_variables: Lista de VIs definidas para el estudio
                                   (ej: [{'name': 'Tipo', 'descriptors': ['A', 'B']}]).
-    :return: Tupla (bool, list[str|None]).
-             - Si es válido: (True, lista de descriptores extraídos o None si era 'Nulo').
-             - Si es inválido: (False, []).
+    :return: Tupla (bool, subject_id|None, list[str|None], attempt_num|None).
+             - Si es válido: (True, "PteXX", lista_descriptores, NN).
+             - Si es inválido: (False, None, [], None).
     """
     logger.debug(f"--- Validando nombre archivo: '{filename}' ---")
     logger.debug(f"VIs definidas: {independent_variables}")
+    invalid_return = (False, None, [], None) # Valor de retorno para inválido
 
     # 1. Extraer nombre base (sin extensión ni frecuencia)
     name_without_ext = Path(filename).stem
@@ -129,19 +131,31 @@ def validate_filename_for_study_criteria(
     parts = base_name.split()
     logger.debug(f"Partes del nombre base: {parts}")
 
-    # 3. Validaciones básicas de estructura
+    # 3. Validaciones básicas de estructura y extracción de PteXX y NN
     if len(parts) < 2:
         logger.debug("Fallo: Menos de 2 partes (se espera PteXX y NN).")
-        return False, []
-    if not parts[0].lower().startswith('pte'):
-        logger.debug(f"Fallo: Primera parte '{parts[0]}' no empieza con 'pte'.")
-        return False, []
-    if not parts[-1].isdigit():
-        logger.debug(f"Fallo: Última parte '{parts[-1]}' no es un número (NN).")
-        return False, []
+        return invalid_return
+    subject_id_part = parts[0]
+    if not subject_id_part.lower().startswith('pte') or not subject_id_part[3:].isdigit():
+        logger.debug(f"Fallo: Primera parte '{subject_id_part}' no sigue el formato 'PteXX'.")
+        return invalid_return
+    subject_id = subject_id_part # Guardar el PteXX extraído
+
+    attempt_num_part = parts[-1]
+    if not attempt_num_part.isdigit():
+        logger.debug(f"Fallo: Última parte '{attempt_num_part}' no es un número (NN).")
+        return invalid_return
+    try:
+        attempt_num = int(attempt_num_part)
+        if attempt_num <= 0:
+             logger.debug(f"Fallo: Número de intento '{attempt_num}' no es positivo.")
+             return invalid_return
+    except ValueError:
+         logger.debug(f"Fallo: No se pudo convertir la última parte '{attempt_num_part}' a número de intento.")
+         return invalid_return
 
     # 4. Extraer partes intermedias (potenciales descriptores)
-    intermediate_parts = parts[1:-1]
+    intermediate_parts = parts[1:-1] # Entre PteXX y NN
     num_vis_defined = len(independent_variables)
     num_intermediate = len(intermediate_parts)
     logger.debug(f"Partes intermedias (descriptores): {intermediate_parts}")
@@ -150,7 +164,7 @@ def validate_filename_for_study_criteria(
     # 5. Validar número de partes intermedias vs VIs definidas
     if num_intermediate != num_vis_defined:
         logger.debug(f"Fallo: Número de partes intermedias ({num_intermediate}) no coincide con VIs definidas ({num_vis_defined}).")
-        return False, []
+        return invalid_return
 
     # 6. Validar cada parte intermedia
     extracted_descriptors: List[Optional[str]] = []
@@ -168,16 +182,16 @@ def validate_filename_for_study_criteria(
             logger.debug(f"Parte {i+1}: '{part}' es válido para VI '{vi_definition.get('name', 'N/A')}'.")
         else:
             logger.debug(f"Fallo: Parte {i+1} '{part}' no es 'Nulo' ni un descriptor válido para VI '{vi_definition.get('name', 'N/A')}' ({valid_descriptors_for_vi}).")
-            return False, []
+            return invalid_return
 
     # 7. Validar que al menos un descriptor no sea "Nulo"
     if not has_non_nulo_descriptor and num_vis_defined > 0: # Solo aplicar si hay VIs definidas
         logger.debug("Fallo: Todas las partes intermedias son 'Nulo'. Se requiere al menos un descriptor válido.")
-        return False, []
+        return invalid_return
 
     # 8. Si todas las validaciones pasan
-    logger.debug(f"Validación exitosa. Descriptores extraídos: {extracted_descriptors}")
-    return True, extracted_descriptors
+    logger.debug(f"Validación exitosa. Sujeto: {subject_id}, Descriptores: {extracted_descriptors}, Intento: {attempt_num}")
+    return True, subject_id, extracted_descriptors, attempt_num
 
 
 # --- ELIMINAR VALIDADOR ANTIGUO ---

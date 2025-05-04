@@ -371,21 +371,43 @@ class StudyDialog(Toplevel):
             messagebox.showerror("Datos Inválidos", error_message, parent=self)
             return
 
-        # --- Lógica de manejo de cambio de criterios (REVISAR EN TAREA 4) ---
-        # La validación de archivos existentes al cambiar VIs/descriptores es compleja
-        # y se abordará en un paso posterior. Por ahora, asumimos que se puede guardar.
-        proceed_with_save = True
+        # --- Validación adicional en modo edición (Sujetos e Intentos) ---
         if self.is_editing:
-            # Aquí iría la lógica para comparar `collected_ivs` con `self.initial_independent_variables`
-            # y llamar a una función similar a `_handle_criteria_change` si hay diferencias
-            # estructurales (que no deberían ocurrir si los botones están deshabilitados).
-            # Solo el cambio de nombre de VI es permitido y no requiere revalidar archivos.
-            logger.debug("Modo edición: Omitiendo validación de archivos existentes por cambio de estructura (deshabilitado).")
-            pass
+            try:
+                new_num_subjects_str = study_data_to_validate.get('num_subjects', '0')
+                new_attempts_count_str = study_data_to_validate.get('attempts_count', '0')
+                new_num_subjects = int(new_num_subjects_str) if new_num_subjects_str.isdigit() else 0
+                new_attempts_count = int(new_attempts_count_str) if new_attempts_count_str.isdigit() else 0
 
-        if not proceed_with_save:
-             logger.warning(f"Guardado de estudio {self.study_to_edit.get('id', 'N/A')} abortado.")
-             return
+                # Obtener estado actual de archivos
+                _, actual_num_subjects, max_attempts_found = self.file_service._get_study_file_details(self.study_to_edit['id'])
+
+                # Validar número de sujetos
+                if new_num_subjects < actual_num_subjects:
+                    messagebox.showerror(
+                        "Error de Validación",
+                        f"No se puede reducir el número de sujetos a {new_num_subjects} "
+                        f"porque el estudio ya contiene {actual_num_subjects} sujetos distintos.",
+                        parent=self
+                    )
+                    return # Detener guardado
+
+                # Validar número de intentos
+                if new_attempts_count < max_attempts_found:
+                     messagebox.showerror(
+                        "Error de Validación",
+                        f"No se puede reducir la cantidad de intentos a {new_attempts_count} "
+                        f"porque al menos un sujeto ya tiene {max_attempts_found} intentos registrados.",
+                        parent=self
+                    )
+                     return # Detener guardado
+
+                logger.info(f"Validación de edición (sujetos/intentos) pasada para estudio {self.study_to_edit['id']}.")
+
+            except Exception as e_val_edit:
+                 logger.error(f"Error durante validación de edición para estudio {self.study_to_edit['id']}: {e_val_edit}", exc_info=True)
+                 messagebox.showerror("Error Interno", f"Ocurrió un error al validar los límites de sujetos/intentos:\n{e_val_edit}", parent=self)
+                 return # Detener guardado
 
         # Preparar datos finales para el servicio (usar datos validados)
         final_study_data = study_data_to_validate.copy()
