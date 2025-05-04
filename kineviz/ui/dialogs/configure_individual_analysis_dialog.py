@@ -258,32 +258,77 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             messagebox.showerror("Error", f"No se pudieron cargar los datos iniciales del estudio: {e}", parent=self)
             self.destroy()
 
+
     def update_available_groups(self, event=None):
-        """Actualiza la lista de grupos disponibles basada en la frecuencia."""
-        selected_freq = self.frequency_var.get()
-        if not selected_freq:
-            self.available_groups = []
-        else:
-            try:
-                # get_discrete_analysis_groups ahora devuelve tuplas (display_name, key)
-                self.available_groups = self.analysis_service.get_discrete_analysis_groups(
-                    self.study_id, selected_freq
-                )
-                # No es necesario ordenar aquí, ya viene ordenado del servicio
+        """Actualiza la lista de grupos FILTRADOS basados en las selecciones previas."""
+        frequency = self.frequency_var.get()
+        mode = self.vi_grouping_mode.get()
+        primary_vi = self.primary_vi_var.get() if mode == '1VI' else None
+        fixed_vi = self.fixed_vi_var.get() if mode == '2VIs' else None
+        fixed_descriptor_display = self.fixed_descriptor_var.get() if mode == '2VIs' else None
 
-            except Exception as e:
-                logger.error(f"Error obteniendo grupos para frecuencia "
-                             f"{selected_freq}: {e}", exc_info=True)
-                messagebox.showerror("Error", f"No se pudieron cargar los grupos "
-                                   f"disponibles:\n{e}", parent=self)
-                self.available_groups = []
+        # Limpiar si falta información clave
+        if not frequency or not mode or (mode == '1VI' and not primary_vi) or \
+           (mode == '2VIs' and (not fixed_vi or not fixed_descriptor_display)):
+            self.available_groups_filtered = {}
+            self._clear_group_selectors(update_columns=False) # No actualizar columnas aún
+            self.group_selection_outer_frame.grid_remove() # Ocultar frame de grupos
+            logger.debug("Limpiando grupos: falta información previa.")
+            return
 
-        # Actualizar los combobox de grupo existentes
-        display_names = [g[0] for g in self.available_groups]
-        for frame in self.group_selector_frames:
-            # Asumiendo que el Combobox es el primer hijo
-            combo = frame.winfo_children()[0]
-            combo['values'] = display_names
+        # Obtener el descriptor original si hay alias
+        fixed_descriptor = None
+        if fixed_descriptor_display:
+             # Buscar descriptor original que coincide con el display name (con o sin alias)
+             for desc_orig, alias in self.study_aliases.items():
+                 if f"{desc_orig} ({alias})" == fixed_descriptor_display:
+                     fixed_descriptor = desc_orig
+                     break
+             if not fixed_descriptor: # Si no tenía alias o no se encontró
+                 # Asumir que es el original si no tiene formato de alias
+                 fixed_descriptor = fixed_descriptor_display.split(" (")[0]
+
+
+        try:
+            logger.debug(f"Actualizando grupos filtrados: mode={mode}, freq={frequency}, primary={primary_vi}, fixed_vi={fixed_vi}, fixed_desc={fixed_descriptor}")
+
+            # LLAMAR A NUEVO MÉTODO DEL SERVICIO
+            filtered_groups = self.analysis_service.get_filtered_discrete_analysis_groups(
+                study_id=self.study_id,
+                frequency=frequency,
+                mode=mode,
+                primary_vi_name=primary_vi,
+                fixed_vi_name=fixed_vi,
+                fixed_descriptor_value=fixed_descriptor
+            )
+
+            # Mapear display_name -> original_key
+            self.available_groups_filtered = {display_name: key for key, display_name in filtered_groups.items()}
+            logger.debug(f"Grupos filtrados disponibles: {self.available_groups_filtered}")
+
+            # Mostrar el frame de selección de grupos y actualizar combos
+            self.group_selection_outer_frame.grid()
+            self._update_group_combobox_values()
+
+            # Añadir selectores iniciales si no existen
+            if not self.group_selector_vars:
+                 self.add_group_selector()
+                 self.add_group_selector()
+
+            # Ocultar/mostrar pasos siguientes
+            self.column_frame.grid_remove()
+            self.assumptions_frame.grid_remove()
+            self.analysis_name_frame.grid_remove()
+            self.button_frame.grid_remove()
+            self.save_button.config(state=tk.DISABLED)
+
+
+        except Exception as e:
+            logger.error(f"Error actualizando grupos filtrados: {e}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudieron cargar los grupos filtrados:\n{e}", parent=self)
+            self.available_groups_filtered = {}
+            self._clear_group_selectors(update_columns=False) # No actualizar columnas
+            self.group_selection_outer_frame.grid_remove()
     def load_frequencies(self):
         """Carga las frecuencias disponibles para el estudio."""
         try:
