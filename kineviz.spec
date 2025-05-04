@@ -15,8 +15,8 @@ datas_to_include = [
 ]
 
 # Opcional: Añadir un icono (descomentar y ajustar la ruta si tienes uno)
-# icon_file = str(project_root / 'assets' / 'kineviz_icon.ico') # Para Windows (.ico)
-# icon_file = str(project_root / 'assets' / 'kineviz_icon.icns') # Para macOS (.icns)
+icon_file = str(project_root / 'assets' / 'kineviz_icon_windows.ico') # Para Windows (.ico)
+icon_file = str(project_root / 'assets' / 'kineviz_icon_mac.icns') # Para macOS (.icns)
 
 
 a = Analysis(
