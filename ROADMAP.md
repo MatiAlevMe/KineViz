@@ -168,6 +168,16 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
     * **12.1 `StudyView`**: (Hecho) Eliminar botón "Analizar Estudio".
     * **12.2 (Opcional/Futuro)**: Eliminar `AnalysisDialog` y métodos relacionados en `AnalysisService` si ya no se usan.
 
+**Fase 4: Empaquetado y Distribución (Nuevo)**
+
+* **1. Crear Paquetes Distribuibles:**
+    * **1.1 Configurar PyInstaller**: (Hecho) Creado `kineviz.spec` para definir el proceso de build.
+    * **1.2 Generar Build Windows**: (Pendiente) Ejecutar PyInstaller en Windows para crear el paquete.
+    * **1.3 Generar Build macOS**: (Pendiente) Ejecutar PyInstaller en macOS para crear el paquete (`.app` bundle).
+    * **1.4 Pruebas de Paquetes**: (Pendiente) Probar los paquetes generados en máquinas limpias de Windows 10/11 y macOS 11+.
+* **2. Refinar Requerimiento de Compatibilidad (RNF-PO-001):** (Hecho - Documentado aquí)
+    * **Detalle**: Especificar versiones mínimas soportadas: Windows 10 (64-bit) y posteriores, macOS 11 (Big Sur) y posteriores (Intel/Apple Silicon vía Rosetta 2). Actualizar documentación formal si es posible.
+
 ---
 
 ## Known Issues / Bugs
@@ -179,6 +189,8 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 * **Lectura de Datos Procesados**: Formato asumido en `_read_processed_file_data` podría ser más robusto.
 * **Logging**: Implementado, pero puede refinarse.
 * **Análisis Discreto - formato CSV/Cabeceras**: (Revisar en Fase 2) Corregir formato de cabeceras en tablas generadas.
+* **Compatibilidad SO (RNF-PO-001)**: (Refinado) Definido como Windows 10+ (64-bit) y macOS 11+ (Big Sur). Pendiente actualizar documentación formal si existe.
+* **Empaquetado PyInstaller**: (Pendiente) Pueden surgir problemas con dependencias ocultas o rutas de datos que requieran ajustes en `kineviz.spec`.
 
 ---
 *Este archivo se actualizará y se marcaran las tareas que se vayan realizando a medida que avance el desarrollo.*
