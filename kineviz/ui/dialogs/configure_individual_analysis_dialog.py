@@ -164,6 +164,82 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.save_button.pack(side=tk.RIGHT, padx=5)
         ttk.Button(self.button_frame, text="Cancelar", command=self.destroy).pack(side=tk.RIGHT)
 
+
+    def set_vi_grouping_mode(self, mode):
+        """Configura la UI según se elija agrupar por 1 o 2 VIs."""
+        self.vi_grouping_mode.set(mode)
+        logger.info(f"Modo de agrupación seleccionado: {mode}")
+
+        # Resetear selecciones dependientes
+        self.primary_vi_var.set("")
+        self.fixed_vi_var.set("")
+        self.fixed_descriptor_var.set("")
+        self.available_groups_filtered = {}
+        self._clear_group_selectors(update_columns=False) # No actualizar columnas aún
+        self.column_var.set("")
+        self.column_combo['values'] = []
+        self.save_button.config(state=tk.DISABLED)
+
+        # Ocultar todos los frames de configuración específicos
+        self.one_vi_config_frame.grid_remove()
+        self.two_vi_config_frame.grid_remove()
+        self.group_selection_outer_frame.grid_remove()
+        self.column_frame.grid_remove()
+        self.assumptions_frame.grid_remove()
+        self.analysis_name_frame.grid_remove()
+        self.button_frame.grid_remove()
+
+        # Mostrar el frame correspondiente al modo seleccionado
+        if mode == '1VI':
+            self.one_vi_config_frame.grid()
+            self.primary_vi_combo['values'] = self.all_vi_names
+            # Habilitar/deshabilitar botón 2VI
+            self.one_vi_button.state(['pressed', 'disabled'])
+            self.two_vi_button.state(['!pressed', '!disabled'])
+        elif mode == '2VIs':
+            if len(self.all_vi_names) < 2:
+                 messagebox.showwarning("No disponible", "Se requieren al menos 2 Variables Independientes definidas en el estudio para agrupar por 2 VIs.", parent=self)
+                 self.vi_grouping_mode.set("") # Resetear modo
+                 self.one_vi_button.state(['!pressed', '!disabled']) # Resetear botones
+                 self.two_vi_button.state(['!pressed', '!disabled'])
+                 return
+            self.two_vi_config_frame.grid()
+            self.fixed_vi_combo['values'] = self.all_vi_names
+            self.fixed_descriptor_combo['values'] = [] # Limpiar descriptores fijos
+            # Habilitar/deshabilitar botón 1VI
+            self.one_vi_button.state(['!pressed', '!disabled'])
+            self.two_vi_button.state(['pressed', 'disabled'])
+        else: # Si se resetea
+             self.one_vi_button.state(['!pressed', '!disabled'])
+             self.two_vi_button.state(['!pressed', '!disabled'])
+
+
+    def _update_fixed_descriptor_options(self, event=None):
+        """Actualiza el combobox de descriptores fijos basado en la VI fija seleccionada."""
+        fixed_vi_name = self.fixed_vi_var.get()
+        self.fixed_descriptor_var.set("") # Limpiar selección anterior
+        self.fixed_descriptor_combo['values'] = []
+        self.available_groups_filtered = {} # Limpiar grupos disponibles
+        self._clear_group_selectors(update_columns=False) # No actualizar columnas aún
+
+        if fixed_vi_name:
+            descriptors = self.all_descriptors_by_vi.get(fixed_vi_name, [])
+            # Mostrar alias si existen
+            display_descriptors = [f"{d} ({self.study_aliases.get(d)})" if self.study_aliases.get(d) else d for d in descriptors]
+            self.fixed_descriptor_combo['values'] = sorted(display_descriptors)
+            self.fixed_descriptor_label.config(text=f"Valor Fijo para '{fixed_vi_name}':") # Actualizar label
+        else:
+             self.fixed_descriptor_label.config(text="Valor Fijo:")
+
+        # Ocultar/mostrar pasos siguientes
+        self.group_selection_outer_frame.grid_remove()
+        self.column_frame.grid_remove()
+        self.assumptions_frame.grid_remove()
+        self.analysis_name_frame.grid_remove()
+        self.button_frame.grid_remove()
+        self.save_button.config(state=tk.DISABLED)
+
+
     def load_initial_data(self):
         """Carga datos iniciales: VIs, alias, frecuencias."""
         try:
@@ -368,41 +444,61 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
 
         return selected_keys
 
+
     def update_available_columns(self, event=None):
-        """Actualiza la lista de columnas comunes basada en los grupos seleccionados."""
-        selected_freq = self.frequency_var.get()
-        selected_calc = self.calculation_var.get()
+        """Actualiza la lista de columnas comunes y muestra los siguientes pasos."""
+        frequency = self.frequency_var.get()
+        calculation = self.calculation_var.get()
         selected_group_keys = self.get_selected_group_keys()
 
-        # Limpiar selección actual
-        self.column_var.set('')
-        self.col_combo['values'] = []
-        self.available_columns = []
+        # Limpiar columnas y ocultar pasos siguientes si falta info o grupos
+        if not frequency or not calculation or len(selected_group_keys) < 2:
+            self.available_columns = []
+            self.column_combo['values'] = []
+            self.column_var.set("")
+            self.column_frame.grid_remove()
+            self.assumptions_frame.grid_remove()
+            self.analysis_name_frame.grid_remove()
+            self.button_frame.grid_remove()
+            self.save_button.config(state=tk.DISABLED)
+            logger.debug("Limpiando columnas y ocultando pasos: falta info o grupos.")
+            return
 
-        if selected_freq and selected_calc and len(selected_group_keys) >= 2:
-            try:
-                self.available_columns = \
-                    self.analysis_service.get_common_columns_for_groups(
-                        self.study_id, selected_freq, selected_calc,
-                        selected_group_keys
-                    )
-                self.col_combo['values'] = self.available_columns
-                if self.available_columns:
-                    # Dejar vacío para que el usuario elija explícitamente
-                    pass
-                else:
-                    messagebox.showinfo(
-                        "Sin Columnas Comunes",
-                        "No se encontraron columnas de datos comunes para la "
-                        "combinación de cálculo y grupos seleccionada.",
-                        parent=self)
+        try:
+            logger.debug(f"Actualizando columnas para freq={frequency}, calc={calculation}, grupos={selected_group_keys}")
+            common_columns = self.analysis_service.get_common_columns_for_groups(
+                self.study_id, frequency, calculation, selected_group_keys
+            )
+            self.available_columns = sorted(common_columns)
+            self.column_combo['values'] = self.available_columns
+            logger.debug(f"Columnas comunes encontradas: {self.available_columns}")
 
-            except Exception as e:
-                logger.error(f"Error obteniendo columnas comunes: {e}",
-                             exc_info=True)
-                messagebox.showerror("Error", f"No se pudieron cargar las "
-                self.available_columns = []
-                self._hide_final_steps() # Ocultar pasos finales en caso de error
+            # Mostrar frame de columna
+            self.column_frame.grid()
+
+            # Mantener selección si aún es válida, sino limpiar y ocultar resto
+            current_column = self.column_var.get()
+            if current_column not in self.available_columns:
+                self.column_var.set("")
+                self._hide_final_steps() # Ocultar pasos finales
+            elif self.available_columns: # Si hay columnas y la selección es válida (o se acaba de seleccionar)
+                self._show_final_steps() # Mostrar pasos finales
+            else: # Si no hay columnas comunes
+                 self._hide_final_steps()
+                 messagebox.showinfo(
+                     "Sin Columnas Comunes",
+                     "No se encontraron columnas de datos comunes para la "
+                     "combinación de cálculo y grupos seleccionada.",
+                     parent=self)
+
+
+        except Exception as e:
+            logger.error(f"Error actualizando columnas comunes: {e}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudieron cargar las columnas comunes:\n{e}", parent=self)
+            self.available_columns = []
+            self.column_combo['values'] = []
+            self.column_var.set("")
+            self._hide_final_steps() # Ocultar pasos finales en caso de error
 
 
     def _on_column_selected(self, event=None):
