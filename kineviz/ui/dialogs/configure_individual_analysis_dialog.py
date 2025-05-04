@@ -332,18 +332,33 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             self._clear_group_selectors(update_columns=False) # No actualizar columnas
             self.group_selection_outer_frame.grid_remove()
     def load_frequencies(self):
-        """Carga las frecuencias disponibles para el estudio."""
+        """Carga las frecuencias disponibles basadas en las tablas resumen generadas."""
+        logger.debug(f"Cargando frecuencias desde tablas resumen para estudio {self.study_id}")
+        self.available_frequencies = []
+        self.frequency_var.set("") # Limpiar selección
+        self.freq_combo['values'] = [] # Limpiar combo
+
         try:
-            params = self.analysis_service.file_service.get_unique_study_parameters(self.study_id)
-            self.available_frequencies = sorted(list(params.get('frequencies', [])))
-            self.freq_combo['values'] = self.available_frequencies
+            # Obtener la ruta base de las tablas resumen
+            tables_path = self.analysis_service.get_discrete_analysis_tables_path(self.study_id)
+            if tables_path and tables_path.exists():
+                # Listar subdirectorios (que representan frecuencias)
+                for item in tables_path.iterdir():
+                    if item.is_dir():
+                        self.available_frequencies.append(item.name)
+                self.available_frequencies.sort()
+                self.freq_combo['values'] = self.available_frequencies
+                logger.debug(f"Frecuencias encontradas en tablas resumen: {self.available_frequencies}")
+            else:
+                 logger.warning(f"Directorio de tablas resumen no encontrado o no existe: {tables_path}")
+                 messagebox.showwarning("Sin Tablas", "No se encontraron tablas resumen generadas. Genérelas desde la vista 'Análisis Discreto'.", parent=self)
+
             if not self.available_frequencies:
-                self.frequency_var.set("")
-                messagebox.showwarning("Sin Datos", "No se encontraron archivos procesados con frecuencias válidas para este estudio.", parent=self)
-            # No seleccionar frecuencia por defecto aquí, esperar interacción del usuario
+                messagebox.showwarning("Sin Frecuencias", "No hay frecuencias disponibles en las tablas resumen para análisis.", parent=self)
+
         except Exception as e:
-            logger.error(f"Error cargando frecuencias para estudio {self.study_id}: {e}", exc_info=True)
-            messagebox.showerror("Error", f"No se pudieron cargar las frecuencias: {e}", parent=self)
+            logger.error(f"Error cargando frecuencias desde tablas resumen para estudio {self.study_id}: {e}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudieron cargar las frecuencias disponibles desde las tablas resumen:\n{e}", parent=self)
             self.available_frequencies = []
             self.freq_combo['values'] = []
 
@@ -687,9 +702,11 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             self.save_button.config(state=tk.DISABLED) # Deshabilitar botón
             self.update_idletasks()
 
+            logger.info(f"Llamando a perform_individual_analysis con config: {config}") # LOG ANTES
             result = self.analysis_service.perform_individual_analysis(
                 self.study_id, config
             )
+            logger.info("Llamada a perform_individual_analysis completada.") # LOG DESPUÉS
             messagebox.showinfo(
                 "Análisis Generado",
                 f"El análisis '{analysis_name}' se generó correctamente.\n"
