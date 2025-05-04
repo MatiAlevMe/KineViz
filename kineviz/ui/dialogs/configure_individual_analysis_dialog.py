@@ -458,10 +458,13 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         selected_display_names = set()  # Para detectar duplicados
         has_duplicates = False # Inicializar aquí
 
-        for group_var in self.selected_group_vars:
+        for group_var in self.group_selector_vars: # <--- CORREGIR AQUÍ
             display_name = group_var.get()
             if not display_name:
-                valid = False
+                # Si una variable está vacía, no la consideramos para la selección
+                # pero no invalidamos toda la selección necesariamente.
+                # Podríamos simplemente continuar al siguiente.
+                continue # Saltar variables vacías
                 break  # Salir si uno está vacío
 
             if display_name in selected_display_names:
