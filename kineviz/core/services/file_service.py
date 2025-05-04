@@ -524,10 +524,11 @@ class FileService:
                          if file_path.is_file() and file_path.suffix.lower() in ['.txt', '.csv']:
                              filename = file_path.name
                              logger.debug(f"Validando archivo: {filename}")
-                             # Validar nombre usando la estructura de VIs
-                             is_valid_name, extracted_descriptors = validate_filename_for_study_criteria(
+                             # Validar nombre usando la estructura de VIs y desempaquetar los 4 valores
+                             is_valid_name, _, extracted_descriptors, _ = validate_filename_for_study_criteria(
                                  filename, independent_variables
                              )
+                             # Solo necesitamos is_valid_name y extracted_descriptors aquí
                              logger.debug(f"Resultado validación para '{filename}': {is_valid_name}, Extraído: {extracted_descriptors}")
 
                              if is_valid_name:
