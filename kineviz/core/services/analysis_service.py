@@ -1471,6 +1471,82 @@ class AnalysisService:
             raise ValueError("No se encontraron datos válidos en ninguna tabla "
                              "para los grupos y columna seleccionados.")
 
+        # --- Generar Título y Leyendas Específicos del Modo ---
+        aliases = self.study_service.get_study_aliases(study_id)
+        mode = config.get("grouping_mode")
+        primary_vi = config.get("primary_vi_name")
+        fixed_vi = config.get("fixed_vi_name")
+        fixed_desc_display = config.get("fixed_descriptor_display") # Display name con alias
+        calculation = config['calculation'] # Obtener cálculo
+        column = config['column'] # Obtener columna completa (Attr/Col/Unit)
+        groups = config['groups'] # Obtener claves originales seleccionadas
+        frequency = config['frequency'] # Obtener frecuencia
+
+        # Título base
+        title = f"{calculation.capitalize()} de {column}"
+        group_legend_names = [] # Nombres para la leyenda del gráfico
+        group_xaxis_labels = [] # Etiquetas cortas para eje X ("G1", "G2", ...)
+
+        # Obtener display names filtrados (como se mostraron en el diálogo)
+        # Necesitamos volver a llamar a get_filtered_discrete_analysis_groups
+        # o pasar los display names en la config (mejor opción)
+        # Por ahora, reconstruimos la lógica aquí:
+        filtered_groups_display = {}
+        if mode == '1VI' and primary_vi:
+             title += f" ({primary_vi})"
+             for key in groups: # groups son las claves originales seleccionadas
+                 vi_name, descriptor = key.split('=')
+                 if vi_name == primary_vi:
+                     alias = aliases.get(descriptor, descriptor)
+                     filtered_groups_display[key] = f"{alias}" # Leyenda corta
+        elif mode == '2VIs' and fixed_vi and fixed_desc_display:
+             title += f" ({fixed_desc_display})"
+             fixed_desc_original = fixed_desc_display.split(" (")[0]
+             fixed_pair_str = f"{fixed_vi}={fixed_desc_original}"
+             for key in groups:
+                 parts = key.split(';')
+                 if len(parts) == 2:
+                     part1, part2 = parts[0], parts[1]
+                     other_part = part2 if part1 == fixed_pair_str else part1
+                     other_vi_name, other_desc = other_part.split('=')
+                     other_alias = aliases.get(other_desc, other_desc)
+                     filtered_groups_display[key] = f"{other_vi_name}: {other_alias}" # Leyenda con parte variable
+        else: # Fallback
+             title += " (Comparación)"
+             # Obtener todos los display names (tuplas)
+             all_display_groups_tuples = self.get_discrete_analysis_groups(study_id, frequency)
+             # Convertir a dict {key: display}
+             all_display_groups = {key: display for display, key in all_display_groups_tuples}
+             for key in groups:
+                 # Extraer solo el nombre base del display name completo ("Grupo X - Nombre Base")
+                 full_display = all_display_groups.get(key, key)
+                 base_display = full_display.split(" - ", 1)[1] if " - " in full_display else full_display
+                 filtered_groups_display[key] = base_display # Usar nombre base como fallback
+
+        # Generar leyendas y etiquetas X ordenadas según las claves originales
+        sorted_groups = sorted(groups) # Ordenar claves originales para consistencia
+        for i, key in enumerate(sorted_groups):
+             group_legend_names.append(filtered_groups_display.get(key, f"Grupo {i+1}"))
+             group_xaxis_labels.append(f"G{i+1}") # Usar G1, G2... para eje X
+
+        # Reordenar data_by_group para que coincida con sorted_groups
+        # Crear un diccionario temporal para mapear clave original a datos
+        # group_names aquí son las claves originales leídas de las tablas, deben coincidir con 'groups'
+        data_map = {key: data for key, data in zip(group_names, data_by_group)}
+        ordered_data_by_group = [data_map[key] for key in sorted_groups if key in data_map]
+
+        # Obtener ylabel del gráfico (unidad)
+        try:
+            chart_ylabel = f"{calculation.capitalize()} ({target_column_parts[2]})"
+        except IndexError:
+            chart_ylabel = f"{calculation.capitalize()}" # Fallback si no hay unidad
+
+
+        logger.info(f"Título del gráfico: {title}")
+        logger.info(f"Etiquetas Eje X: {group_xaxis_labels}")
+        logger.info(f"Leyendas del gráfico: {group_legend_names}")
+
+
         # --- Realizar Análisis Estadístico ---
         stats_results = None
         if stats:  # Verificar si scipy.stats está disponible
