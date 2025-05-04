@@ -469,23 +469,23 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
                     parent=self)
                 return []  # Devolver vacío si hay duplicados
 
-                    selected_display_names.add(display_name)
-                    # Buscar en los grupos filtrados
-                    original_key = self.available_groups_filtered.get(display_name)
-                    if original_key:
-                        selected_keys.append(original_key)
-                    else:
-                        logger.error(f"Clave original no encontrada para el grupo filtrado seleccionado: '{display_name}'")
+            selected_display_names.add(display_name)
+            # Buscar en los grupos filtrados
+            original_key = self.available_groups_filtered.get(display_name)
+            if original_key:
+                selected_keys.append(original_key)
+            else:
+                logger.error(f"Clave original no encontrada para el grupo filtrado seleccionado: '{display_name}'")
 
         if has_duplicates:
-             messagebox.showwarning("Grupos Duplicados", "Ha seleccionado el mismo grupo más de una vez. Los duplicados serán ignorados.", parent=self)
-             unique_keys = []
-             seen_keys = set()
-             for key in selected_keys:
-                 if key not in seen_keys:
-                     unique_keys.append(key)
-                     seen_keys.add(key)
-             return unique_keys
+                messagebox.showwarning("Grupos Duplicados", "Ha seleccionado el mismo grupo más de una vez. Los duplicados serán ignorados.", parent=self)
+                unique_keys = []
+                seen_keys = set()
+                for key in selected_keys:
+                    if key not in seen_keys:
+                        unique_keys.append(key)
+                        seen_keys.add(key)
+                return unique_keys
 
         return selected_keys
 
@@ -618,7 +618,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             "calculation": selected_calc,
             "column": selected_col,
             "groups": selected_group_keys,  # Guardar las claves originales
-            "parametric": is_parametric,
+            "parametric": is_parametric,}
         is_parametric = self.parametric_var.get()
         is_paired = self.paired_var.get()
         mode = self.vi_grouping_mode.get() # Obtener modo
