@@ -456,7 +456,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         """Obtiene las claves originales de los grupos seleccionados y válidos de los FILTRADOS."""
         selected_keys = []
         selected_display_names = set()  # Para detectar duplicados
-        valid = True
+        has_duplicates = False # Inicializar aquí
 
         for group_var in self.selected_group_vars:
             display_name = group_var.get()
