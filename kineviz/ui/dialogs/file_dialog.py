@@ -95,7 +95,8 @@ class FileDialog(Toplevel):
                 file_name_str = file_path.name # Nombre del archivo
 
                 # Validar nombre usando la estructura de VIs
-                is_valid, _ = validate_filename_for_study_criteria(
+                # Desempaquetar los 4 valores, aunque solo usemos is_valid aquí
+                is_valid, _, _, _ = validate_filename_for_study_criteria(
                     file_name_str, self.independent_variables # Pasar estructura VIs
                 )
 
@@ -136,8 +137,122 @@ class FileDialog(Toplevel):
         has_valid_files = any('(Nombre Inválido)' not in item for item in self.listbox_item_to_path.keys())
         self.process_button.config(state=tk.NORMAL if has_valid_files else tk.DISABLED)
 
+    def _validate_files_for_processing(self) -> Tuple[bool, str]:
+        """
+        Valida los archivos seleccionados contra los límites de sujetos e intentos
+        (granular por combinación sujeto+descriptores) del estudio.
+        Considera los archivos existentes + los seleccionados.
+
+        :return: Tupla (bool: es_valido, str: mensaje_error si no es válido)
+        """
+        import copy # Para deepcopy
+        from typing import Tuple # Añadir Tuple para type hint
+
+        logger.info(f"Iniciando validación de límites para {len(self.listbox_item_to_path)} archivos en lista para estudio {self.study_id}")
+
+        # 1. Obtener límites y VIs del estudio
+        try:
+            max_subjects_allowed = self.study_details.get('num_subjects')
+            max_attempts_allowed = self.study_details.get('attempts_count')
+            independent_variables = self.study_details.get('independent_variables', [])
+
+            if max_subjects_allowed is None or max_attempts_allowed is None:
+                 raise ValueError("Límites de sujetos o intentos no definidos en los detalles del estudio.")
+            logger.debug(f"Límites: {max_subjects_allowed} sujetos, {max_attempts_allowed} intentos/combinación.")
+        except Exception as e:
+            msg = f"Error obteniendo límites/VIs del estudio: {e}"
+            logger.error(msg, exc_info=True)
+            return False, msg
+
+        # 2. Obtener estado actual de archivos del estudio
+        try:
+            # Usar la nueva estructura devuelta por _get_study_file_details
+            existing_attempts_by_combination, existing_unique_subjects = self.file_service._get_study_file_details(self.study_id)
+            logger.debug(f"Estado actual: {len(existing_unique_subjects)} sujetos. Intentos/comb: {existing_attempts_by_combination}")
+        except Exception as e:
+            msg = f"Error obteniendo detalles de archivos existentes: {e}"
+            logger.error(msg, exc_info=True)
+            return False, msg
+
+        # 3. Simular adición de archivos seleccionados (válidos)
+        simulated_attempts_by_combination = copy.deepcopy(existing_attempts_by_combination)
+        simulated_unique_subjects = copy.deepcopy(existing_unique_subjects)
+        validation_errors = []
+
+        # Iterar sobre los archivos en la lista (mapeo)
+        for display_name, file_path in self.listbox_item_to_path.items():
+            file_name = file_path.name
+
+            # Solo considerar archivos marcados como válidos en la lista
+            if '(Nombre Inválido)' in display_name:
+                logger.debug(f"Omitiendo archivo con nombre inválido '{file_name}' de la validación de límites.")
+                continue
+
+            # Validar nombre y extraer info (debería ser válido si no tiene la marca)
+            is_valid, subject_id, extracted_descriptors, attempt_num = validate_filename_for_study_criteria(
+                file_name, independent_variables
+            )
+
+            # Doble chequeo por si acaso
+            if not is_valid or not subject_id or attempt_num is None:
+                logger.warning(f"Archivo '{file_name}' marcado como válido pero falló la re-validación. Omitiendo de límites.")
+                continue
+
+            # Añadir sujeto al conjunto simulado
+            simulated_unique_subjects.add(subject_id)
+
+            # Crear clave de combinación y añadir intento
+            combination_key = (subject_id, tuple(extracted_descriptors))
+            if combination_key not in simulated_attempts_by_combination:
+                simulated_attempts_by_combination[combination_key] = set()
+            simulated_attempts_by_combination[combination_key].add(attempt_num)
+
+        # 4. Realizar validaciones con datos simulados
+        # 4.1. Validar número total de sujetos
+        if len(simulated_unique_subjects) > max_subjects_allowed:
+            msg = (f"Límite de sujetos excedido ({max_subjects_allowed}). "
+                   f"El estudio tiene {len(existing_unique_subjects)} y con los seleccionados serían {len(simulated_unique_subjects)}.")
+            logger.warning(msg)
+            validation_errors.append(msg)
+
+        # 4.2. Validar número de intentos por combinación
+        for combination_key, attempts_set in simulated_attempts_by_combination.items():
+            if len(attempts_set) > max_attempts_allowed:
+                subject, descriptors = combination_key
+                # Formatear descriptores para el mensaje
+                desc_str = ", ".join(d if d is not None else "Nulo" for d in descriptors)
+                msg = (f"Límite de intentos excedido ({max_attempts_allowed}) para:\n"
+                       f"  Sujeto: {subject}\n"
+                       f"  Descriptores: [{desc_str}]\n"
+                       f"Se encontraron {len(attempts_set)} intentos.")
+                logger.warning(msg)
+                validation_errors.append(msg)
+
+        # 5. Devolver resultado
+        if validation_errors:
+            # Construir mensaje de error consolidado
+            final_error_message = "Errores de validación:\n- " + "\n- ".join(validation_errors)
+            # Añadir info sobre estado actual y lo que se intenta añadir
+            final_error_message += f"\n\nActualmente: {len(existing_unique_subjects)} sujetos."
+            max_existing_attempts = 0
+            for attempts in existing_attempts_by_combination.values():
+                 max_existing_attempts = max(max_existing_attempts, len(attempts))
+            final_error_message += f" Máximo {max_existing_attempts} intentos por combinación."
+
+            final_error_message += f"\nIntentando añadir archivos que resultarían en: {len(simulated_unique_subjects)} sujetos."
+            max_simulated_attempts = 0
+            for attempts in simulated_attempts_by_combination.values():
+                 max_simulated_attempts = max(max_simulated_attempts, len(attempts))
+            final_error_message += f" Máximo {max_simulated_attempts} intentos por combinación."
+
+            return False, final_error_message
+        else:
+            logger.info("Validación de límites exitosa.")
+            return True, ""
+
+
     def process_files(self):
-        """Llama al FileService para procesar los archivos seleccionados válidos."""
+        """Valida y luego llama al FileService para procesar los archivos seleccionados válidos."""
         # Obtener solo los archivos válidos del mapeo
         valid_files_to_process = []
         invalid_names_skipped = []
@@ -148,6 +263,7 @@ class FileDialog(Toplevel):
                 invalid_names_skipped.append(file_path.name)
 
         if not valid_files_to_process:
+            # Esto no debería ocurrir si el botón de procesar está deshabilitado correctamente
             messagebox.showwarning("Sin Archivos Válidos", "No hay archivos con nombres válidos en la lista para procesar.", parent=self)
             return
 
@@ -160,6 +276,7 @@ class FileDialog(Toplevel):
             self.grab_set() # Bloquear interacción con otras ventanas
             self.update_idletasks() # Forzar actualización UI
 
+            # Llamar al servicio (FileService ya no valida límites)
             results = self.file_service.add_files_to_study(self.study_id, file_path_strings)
 
             # Mostrar resultados
