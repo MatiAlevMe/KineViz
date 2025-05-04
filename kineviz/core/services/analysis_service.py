@@ -6,6 +6,8 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 
+from typing import Optional # Importar Optional
+
 # Importar servicios y helpers
 from .file_service import FileService
 from .study_service import StudyService
