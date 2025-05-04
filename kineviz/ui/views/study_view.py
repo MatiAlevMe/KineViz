@@ -38,10 +38,6 @@ class StudyView:
         ttk.Button(header_frame, text="<< Volver a Estudios",
                    command=back_command).pack(side=tk.LEFT, padx=(0, 10))
 
-        # Botón Analizar - Corregir comando
-        ttk.Button(header_frame, text="Analizar Estudio",
-                   command=lambda: self.main_window.show_analysis_dialog(self.study_id)).pack(side=tk.LEFT, padx=(0, 10))
-
         # Botón Agregar Archivos                                                                                                               
         ttk.Button(header_frame, text="Agregar Archivos",                                                                                      
                    command=self.add_files_dialog).pack(side=tk.LEFT, padx=(0, 10))
