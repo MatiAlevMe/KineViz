@@ -1557,7 +1557,8 @@ class AnalysisService:
                       logger.warning(f"No se encontró parte para VI primaria '{primary_vi}' en clave '{key}'")
                       filtered_groups_display[key] = key # Usar clave original como fallback
         elif mode == '2VIs' and fixed_vi and fixed_desc_display:
-             title += f" ({fixed_desc_display})"
+             # Incluir nombre de VI fija en el título
+             title += f" ({fixed_vi}: {fixed_desc_display})"
              # Obtener descriptor original (sin alias)
              fixed_desc_original = fixed_desc_display.split(" (")[0]
              fixed_pair_str = f"{fixed_vi}={fixed_desc_original}"
