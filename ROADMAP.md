@@ -125,7 +125,7 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 * **10. Corrección de Errores:** (En Progreso) Revisar y corregir errores conocidos (ej: formato cabeceras CSV, error generación tablas discretas, inconsistencia nombres archivo análisis individual).
 * **11. Integración y Pruebas:** (Pendiente) Integrar y probar toda la funcionalidad de análisis discreto.
 
-**Fase 3: Refactorización a Variables Independientes (VI)** (En Progreso)
+**Fase 3: Refactorización a Variables Independientes (VI) y Mejoras UI/Validación** (En Progreso)
 
 * **1. Modificar Modelo de Estudio:** (Hecho)
     * **1.1 DB Conceptual**: (Hecho) Reemplazada columna `descriptores` por `independent_variables` (JSON TEXT) y añadida `aliases` (JSON TEXT) en tabla `estudios`.
@@ -162,13 +162,20 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 * **10. Crear Archivos de Ayuda:** (Hecho)
     * **10.1 `docs/help/study_dialog_iv_help.txt`**: (Hecho)
     * **10.2 `docs/help/study_view_help.txt`**: (Hecho)
+* **11. Validación Número Sujetos/Intentos:** (Hecho)
+    * **11.1 `FileService.add_files_to_study`**: (Hecho) Validar que no se exceda `num_subjects` ni `attempts_count` al añadir archivos, considerando estado actual + lote nuevo.
+    * **11.2 `StudyDialog.save` (Edición)**: (Hecho) Validar que no se pueda reducir `num_subjects` por debajo de los sujetos existentes, ni `attempts_count` por debajo del máximo intento existente.
+    * **11.3 Actualizar Documentación Ayuda**: (Hecho) Reflejar nuevas validaciones en `study_dialog_iv_help.txt` y `study_view_help.txt`.
+* **12. Eliminar Funcionalidad "Analizar Estudio" Antigua:** (Hecho)
+    * **12.1 `StudyView`**: (Hecho) Eliminar botón "Analizar Estudio".
+    * **12.2 (Opcional/Futuro)**: Eliminar `AnalysisDialog` y métodos relacionados en `AnalysisService` si ya no se usan.
 
 ---
 
 ## Known Issues / Bugs
 
-* **Edición de Estudio - Cambio de Criterios**: (Revisar en Fase 3) La validación de archivos existentes al cambiar criterios necesita ser reimplementada para la estructura de VI.
-* **Análisis y Reportes**: (Revisar en Fase 2 y 3) La lógica de análisis y reportes necesita adaptarse a la estructura de VI y claves de grupo combinadas.
+* **Edición de Estudio - Cambio de Criterios**: (Hecho - Parcialmente) La edición de estructura VI está deshabilitada. La edición de `num_subjects` y `attempts_count` ahora valida contra archivos existentes.
+* **Análisis y Reportes**: (Revisar en Fase 2 y 3) La lógica de análisis y reportes necesita adaptarse a la estructura de VI y claves de grupo combinadas. La funcionalidad antigua "Analizar Estudio" ha sido eliminada.
 * **Configuración**: La gestión de alias debe moverse de `AppSettings` a la base de datos (Fase 3).
 * **Limpieza de Directorios**: Funcionalidad básica existe, podría mejorarse.
 * **Lectura de Datos Procesados**: Formato asumido en `_read_processed_file_data` podría ser más robusto.

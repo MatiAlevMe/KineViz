@@ -7,6 +7,7 @@ from tkinter import messagebox
 from kineviz.ui.utils.validators import validate_filename_for_study_criteria
 
 # Asume que StudyRepository está disponible para obtener detalles del estudio si es necesario
+from typing import Dict, Set, Tuple, List, Optional # Añadir tipos necesarios
 # O que se pasa la ruta base de los estudios.
 logger = logging.getLogger(__name__) # Logger para este módulo
 # Por simplicidad inicial, asumiremos que la estructura de carpetas es conocida.
@@ -276,6 +277,7 @@ class FileService:
         """
         # Ya no es necesario importar pandas aquí, se importa dentro de _process_and_copy_file
         # El validador se importa a nivel de módulo ahora
+        import copy # Para deepcopy
 
         results = {'success': 0, 'errors': []}
         study_path = self._get_study_path(study_id)
@@ -283,63 +285,171 @@ class FileService:
             results['errors'].append(f"No se pudo encontrar la ruta para el estudio ID {study_id}.")
             return results
 
-        # Obtener detalles del estudio (incluyendo VIs) para validación
+        # Obtener detalles del estudio (VIs, num_subjects, attempts_count)
         try:
             study_details = self.study_service.get_study_details(study_id)
-            # Obtener la estructura de VIs
             independent_variables = study_details.get('independent_variables', [])
-            if not independent_variables:
-                 # Si no hay VIs definidas, la validación debería fallar para cualquier archivo con descriptores
-                 logger.warning(f"Estudio {study_id} no tiene Variables Independientes definidas. No se validarán nombres de archivo con descriptores.")
-                 # O podríamos permitir archivos sin descriptores intermedios si num_vis_defined es 0 en el validador?
-                 # Por ahora, mantenemos la estructura vacía, el validador manejará la lógica.
+            max_subjects_allowed = study_details.get('num_subjects')
+            max_attempts_allowed = study_details.get('attempts_count')
+
+            if max_subjects_allowed is None or max_attempts_allowed is None:
+                 raise ValueError("No se pudo obtener el número máximo de sujetos o intentos del estudio.")
+
+            logger.info(f"Estudio {study_id}: Máx Sujetos={max_subjects_allowed}, Máx Intentos={max_attempts_allowed}")
+
         except Exception as e:
-            error_msg = f"Error al obtener detalles/VIs del estudio {study_id}: {e}"
+            error_msg = f"Error al obtener detalles/límites del estudio {study_id}: {e}"
             logger.error(error_msg, exc_info=True)
             results['errors'].append(error_msg)
             return results
 
-        logger.info(f"Iniciando proceso de agregado de {len(file_paths)} archivos al estudio {study_id}.")
-        for file_path_str in file_paths:
-            source_file_path = Path(file_path_str)
-            file_name = source_file_path.name
-            logger.debug(f"Intentando agregar archivo: '{file_name}' al estudio {study_id}")
-            try:
-                # 1. Validar nombre de archivo usando la estructura de VIs
-                logger.debug(f"Validando '{file_name}' con VIs: {independent_variables}")
-                # Pasar la estructura de VIs al validador
-                is_valid_name, extracted_descriptors = validate_filename_for_study_criteria(
+        # --- Validación Preliminar (Sujetos e Intentos) ---
+        try:
+            # 1. Obtener estado actual de sujetos e intentos
+            existing_subjects_attempts, current_num_subjects, _ = self._get_study_file_details(study_id)
+            # Crear una copia profunda para simular la adición
+            simulated_subjects_attempts = copy.deepcopy(existing_subjects_attempts)
+
+            # 2. Validar nombres y extraer info de archivos a añadir
+            files_to_process = [] # Guardar info de archivos válidos para procesar después
+            validation_errors = [] # Errores específicos de esta validación
+            new_subjects_in_batch = set() # Sujetos nuevos solo en este lote
+
+            for file_path_str in file_paths:
+                source_file_path = Path(file_path_str)
+                file_name = source_file_path.name
+                logger.debug(f"Validando preliminarmente: '{file_name}'")
+
+                is_valid, subject_id, _, attempt_num = validate_filename_for_study_criteria(
                     file_name, independent_variables
                 )
-                logger.debug(f"Resultado validación para '{file_name}': {is_valid_name}, Extraído: {extracted_descriptors}")
-                if not is_valid_name:
-                    # Lanzar ValueError si la validación falla
-                    raise ValueError(f"Nombre de archivo '{file_name}' no cumple con la estructura de Variables Independientes definida para el estudio.")
 
-                # 2. Procesar y copiar el archivo (Solo si la validación fue exitosa)
-                # Nota: _process_and_copy_file NO necesita los descriptores extraídos,
-                # solo necesita saber que el nombre es válido para proceder.
+                if not is_valid or not subject_id or attempt_num is None:
+                    msg = f"Nombre de archivo '{file_name}' inválido o no sigue el formato esperado (PteXX ... NN)."
+                    logger.warning(msg)
+                    validation_errors.append(msg)
+                    continue # Saltar al siguiente archivo
+
+                # Añadir a la simulación
+                if subject_id not in simulated_subjects_attempts:
+                    simulated_subjects_attempts[subject_id] = set()
+                    # Marcar si es nuevo respecto a los existentes Y a los ya vistos en este lote
+                    if subject_id not in existing_subjects_attempts and subject_id not in new_subjects_in_batch:
+                         new_subjects_in_batch.add(subject_id)
+
+                simulated_subjects_attempts[subject_id].add(attempt_num)
+                files_to_process.append((source_file_path, file_name, subject_id, attempt_num)) # Guardar info
+
+            # 3. Realizar validaciones con los datos simulados
+            simulated_num_subjects = len(simulated_subjects_attempts)
+            if simulated_num_subjects > max_subjects_allowed:
+                msg = (f"Se excede el número máximo de sujetos ({max_subjects_allowed}). "
+                       f"Actualmente hay {current_num_subjects}, se intentarían añadir {len(new_subjects_in_batch)} nuevos, "
+                       f"resultando en {simulated_num_subjects} total.")
+                logger.warning(msg)
+                validation_errors.append(msg)
+
+            max_attempts_violation = False
+            for subject_id, attempts_set in simulated_subjects_attempts.items():
+                if len(attempts_set) > max_attempts_allowed:
+                    msg = (f"Se excede el número máximo de intentos ({max_attempts_allowed}) para el sujeto '{subject_id}'. "
+                           f"Se encontraron {len(attempts_set)} intentos.")
+                    logger.warning(msg)
+                    validation_errors.append(msg)
+                    max_attempts_violation = True # Marcar que hubo al menos una violación
+
+            # 4. Si hubo errores de validación, añadirlos a results y retornar
+            if validation_errors:
+                results['errors'].extend(validation_errors)
+                logger.warning(f"Validación preliminar fallida para estudio {study_id}. Errores: {validation_errors}")
+                return results
+
+        except Exception as e_val:
+            error_msg = f"Error durante la validación preliminar de archivos: {e_val}"
+            logger.error(error_msg, exc_info=True)
+            results['errors'].append(error_msg)
+            return results
+
+        # --- Procesamiento de Archivos (Solo si la validación preliminar pasó) ---
+        logger.info(f"Validación preliminar exitosa. Procesando {len(files_to_process)} archivos para estudio {study_id}.")
+        for source_file_path, file_name, subject_id, attempt_num in files_to_process:
+            logger.debug(f"Procesando archivo validado: '{file_name}' (Sujeto: {subject_id}, Intento: {attempt_num})")
+            try:
+                # Procesar y copiar el archivo
                 self._process_and_copy_file(study_path, source_file_path)
                 results['success'] += 1
                 logger.info(f"Archivo '{file_name}' procesado y agregado exitosamente al estudio {study_id}.")
 
             except FileNotFoundError:
-                 error_msg = f"Archivo no encontrado: {file_name}"
+                 error_msg = f"Archivo no encontrado (durante procesamiento): {file_name}"
                  logger.error(error_msg)
                  results['errors'].append(error_msg)
-            except ValueError as ve: # Errores de formato o validación
-                 error_msg = f"{file_name}: {ve}"
-                 logger.warning(f"Error de validación/formato para {error_msg}")
+            except ValueError as ve: # Errores de formato durante _process_and_copy
+                 error_msg = f"Error de formato procesando '{file_name}': {ve}"
+                 logger.warning(error_msg) # Ya se loggeó error en _process_and_copy si ocurrió ahí
                  results['errors'].append(error_msg)
             except Exception as e:
                  # Capturar otros errores durante el procesamiento
-                 error_msg = f"Error procesando '{file_name}': {e}"
+                 error_msg = f"Error inesperado procesando '{file_name}': {e}"
                  logger.error(error_msg, exc_info=True) # Usar exc_info para traceback
                  results['errors'].append(error_msg)
-                 # Ya no es necesario traceback.print_exc()
 
         logger.info(f"Proceso de agregado finalizado para estudio {study_id}. Éxitos: {results['success']}, Errores: {len(results['errors'])}.")
         return results
+
+    def _get_study_file_details(self, study_id: int) -> Tuple[Dict[str, Set[int]], int, int]:
+        """
+        Analiza los archivos procesados de un estudio para obtener detalles sobre sujetos e intentos.
+
+        :param study_id: ID del estudio.
+        :return: Tupla:
+                 - Dict[str, Set[int]]: Mapeo de subject_id a un set de sus attempt_nums.
+                 - int: Número total de sujetos únicos encontrados.
+                 - int: Número máximo de intentos encontrado para cualquier sujeto.
+        :raises Exception: Si no se pueden obtener los detalles del estudio o VIs.
+        """
+        subjects_attempts: Dict[str, Set[int]] = {}
+        study_path = self._get_study_path(study_id)
+        if not study_path:
+            return {}, 0, 0 # No hay ruta, no hay detalles
+
+        # Obtener VIs para usar el validador
+        try:
+            study_details = self.study_service.get_study_details(study_id)
+            independent_variables = study_details.get('independent_variables', [])
+        except Exception as e:
+            logger.error(f"Error al obtener VIs del estudio {study_id} para detalles de archivo: {e}", exc_info=True)
+            raise # Relanzar, es necesario para la validación
+
+        processed_folders = ["Cinematica", "Cinetica", "Electromiografica"]
+        logger.debug(f"Buscando detalles de archivos para estudio {study_id} en {study_path}")
+
+        for patient_dir in study_path.iterdir():
+            if patient_dir.is_dir() and not patient_dir.name.lower() in ["reportes", "temp", "og"]:
+                for freq_folder_name in processed_folders:
+                    freq_folder_path = patient_dir / freq_folder_name
+                    if freq_folder_path.exists() and freq_folder_path.is_dir():
+                        for file_path in freq_folder_path.iterdir():
+                            if file_path.is_file() and file_path.suffix.lower() in ['.txt', '.csv']:
+                                filename = file_path.name
+                                # Validar y extraer info
+                                is_valid, subject_id, _, attempt_num = validate_filename_for_study_criteria(
+                                    filename, independent_variables
+                                )
+                                if is_valid and subject_id and attempt_num is not None:
+                                    if subject_id not in subjects_attempts:
+                                        subjects_attempts[subject_id] = set()
+                                    subjects_attempts[subject_id].add(attempt_num)
+
+        num_unique_subjects = len(subjects_attempts)
+        max_attempts_found = 0
+        for attempts_set in subjects_attempts.values():
+            if len(attempts_set) > max_attempts_found:
+                max_attempts_found = len(attempts_set)
+
+        logger.debug(f"Detalles encontrados: {num_unique_subjects} sujetos, máx {max_attempts_found} intentos. Data: {subjects_attempts}")
+        return subjects_attempts, num_unique_subjects, max_attempts_found
+
 
     def get_unique_study_parameters(self, study_id: int) -> dict:
         """
