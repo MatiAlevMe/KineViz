@@ -3,6 +3,7 @@ from tkinter import ttk, Toplevel, messagebox, filedialog, Listbox, Scrollbar
 from pathlib import Path
 import os # Para os.path.basename
 import logging # Importar logging
+from typing import Tuple # Importar Tuple para type hints
 
 # Importar FileService para type hinting y validación
 from kineviz.core.services.file_service import FileService
