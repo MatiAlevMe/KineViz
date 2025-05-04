@@ -227,6 +227,7 @@ class AnalysisService:
                      }, ...
                  Retorna diccionario vacío si no hay datos o hay error.
         """
+        logger.debug(f"Inicio _get_data_for_parameters para estudio {study_id} con params: {parameters}") # LOG INICIO
         structured_data = {}
         # Usar método protegido para obtener ruta
         study_path = self.file_service._get_study_path(study_id)
@@ -1392,8 +1393,8 @@ class AnalysisService:
         :raises Exception: Si ocurre un error durante el análisis o graficación.
         """
         analysis_name_log = config.get('name', 'N/A')
-        logger.info(f"Iniciando análisis individual para estudio {study_id}: "
-                    f"{analysis_name_log}")
+        logger.info(f"Inicio perform_individual_analysis para estudio {study_id}: {analysis_name_log}") # LOG INICIO
+        logger.debug(f"Configuración recibida: {config}")
 
         # --- Validación de Configuración ---
         required_keys = ['name', 'frequency', 'calculation', 'column',
@@ -1456,11 +1457,13 @@ class AnalysisService:
         # Identificar mapeo archivo -> grupo (no usado directamente aquí, pero útil)
         # files_to_groups, _ = self._identify_study_groups(study_id, frequency)
 
+        logger.debug("Inicio lectura de datos desde tablas resumen...") # LOG ANTES DE LEER TABLAS
         for group_key in group_names:
             # --- Usar la misma lógica de nombre seguro que en generate_tables ---
             safe_group_key_part = group_key.replace('=', '_').replace(';', '__')
             table_filename = f"{calculation}_{frequency}_{safe_group_key_part}.csv"
             table_path = freq_path / table_filename
+            logger.debug(f"Intentando leer tabla para grupo '{group_key}': {table_path}") # LOG TABLA
             if not table_path.exists():
                 # Log detallado del archivo buscado y el error
                 logger.error(f"No se encontró tabla resumen requerida. Buscando: {table_path}")
