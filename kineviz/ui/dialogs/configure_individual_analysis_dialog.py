@@ -717,14 +717,21 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         except (ValueError, FileNotFoundError) as e:
             logger.warning(f"Error de validación o datos al generar análisis "
                            f"'{analysis_name}': {e}")
+            # Añadir log específico para ValueError
+            if isinstance(e, ValueError):
+                 logger.error(f"ValueError durante generate_analysis: {e}", exc_info=True)
             messagebox.showerror("Error al Generar Análisis", f"{e}",
                                    parent=self)
+            self.title("Configurar Análisis Individual") # Restaurar título
+            self.save_button.config(state=tk.NORMAL) # Rehabilitar botón
         except Exception as e:
             logger.critical(f"Error inesperado al generar análisis "
                             f"'{analysis_name}': {e}", exc_info=True)
             messagebox.showerror("Error Crítico",
                                    f"Ocurrió un error inesperado:\n{e}",
                                    parent=self)
+            self.title("Configurar Análisis Individual") # Restaurar título
+            self.save_button.config(state=tk.NORMAL) # Rehabilitar botón
 
 
 # Para pruebas rápidas
