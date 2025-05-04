@@ -1221,32 +1221,67 @@ class AnalysisService:
         all_groups = {key: display for display, key in all_groups_tuples}
         aliases = self.study_service.get_study_aliases(study_id)
         filtered_groups = {}
+        temp_groups = {} # Usar un dict temporal para evitar duplicados basados en el display
 
         if mode == '1VI' and primary_vi_name:
-            for key, _ in all_groups.items():
+            logger.debug(f"Filtrando modo 1VI por '{primary_vi_name}'")
+            for key, _ in all_groups.items(): # Iterar sobre todas las claves originales
                 parts = key.split(';')
-                # Solo incluir si tiene exactamente 1 parte y coincide la VI
-                if len(parts) == 1:
-                    vi_name, descriptor = parts[0].split('=')
-                    if vi_name == primary_vi_name:
-                        # Display name: solo el descriptor (con alias)
+                # Buscar la parte que corresponde a la VI primaria
+                primary_part = None
+                for part in parts:
+                    if part.startswith(f"{primary_vi_name}="):
+                        primary_part = part
+                        break
+                # Si se encontró la parte de la VI primaria
+                if primary_part:
+                    try:
+                        vi_name, descriptor = primary_part.split('=')
+                        # Crear una clave y display basados SOLO en esta VI primaria
+                        effective_key = primary_part # Usar "VI=Desc" como clave efectiva
                         alias = aliases.get(descriptor, descriptor)
-                        # Mantener VI en display por claridad, pero usar alias
-                        filtered_groups[key] = f"{primary_vi_name}: {alias}"
+                        display_name = f"{primary_vi_name}: {alias}"
+                        # Guardar en temp_groups usando la clave original (key)
+                        # pero solo si el display_name no se ha visto (para agrupar visualmente)
+                        # OJO: Esto agrupa visualmente, pero la clave original se mantiene para obtener datos
+                        # Si queremos agrupar datos realmente, necesitaríamos otra lógica
+                        if display_name not in temp_groups.values():
+                             # Guardar la clave original asociada a este display único
+                             # Si múltiples claves originales mapean al mismo display, solo se guarda una.
+                             # ¿Es esto correcto? ¿O deberíamos devolver todas las claves originales que coinciden?
+                             # Por ahora, guardamos la primera clave original que genera este display.
+                             # Esto funciona para la UI, pero puede ser problemático para obtener datos si se agrupan.
+                             # REVISAR: Quizás el display debe ser único y la clave original se pasa al servicio.
+                             # Vamos a devolver {original_key: display_name} como antes, pero filtrado.
+                             filtered_groups[key] = display_name
+
+                    except ValueError:
+                        logger.warning(f"Error parseando parte '{primary_part}' de la clave '{key}'")
+
         elif mode == '2VIs' and fixed_vi_name and fixed_descriptor_value:
+            logger.debug(f"Filtrando modo 2VIs fijando '{fixed_vi_name}={fixed_descriptor_value}'")
             fixed_pair_str = f"{fixed_vi_name}={fixed_descriptor_value}"
             for key, _ in all_groups.items():
                 parts = key.split(';')
-                # Incluir si tiene exactamente 2 partes y una de ellas es el par fijo
-                if len(parts) == 2:
-                    part1, part2 = parts[0], parts[1]
-                    if part1 == fixed_pair_str or part2 == fixed_pair_str:
-                        # Encontrar la otra parte (la que varía)
-                        other_part = part2 if part1 == fixed_pair_str else part1
-                        other_vi_name, other_desc = other_part.split('=')
-                        other_alias = aliases.get(other_desc, other_desc)
-                        # Nuevo display name: solo la parte que varía (con alias)
-                        filtered_groups[key] = f"{other_vi_name}: {other_alias}"
+                # Verificar si la parte fija está presente
+                if fixed_pair_str in parts:
+                    # Encontrar la(s) otra(s) parte(s)
+                    other_parts = [p for p in parts if p != fixed_pair_str]
+                    # ASUMPCIÓN: Solo nos interesa comparar a través de UNA otra VI
+                    if len(other_parts) == 1:
+                        try:
+                            other_part = other_parts[0]
+                            other_vi_name, other_desc = other_part.split('=')
+                            other_alias = aliases.get(other_desc, other_desc)
+                            # El display name es solo la parte variable
+                            display_name = f"{other_vi_name}: {other_alias}"
+                            # Guardar la clave original asociada a este display
+                            filtered_groups[key] = display_name
+                        except ValueError:
+                             logger.warning(f"Error parseando parte variable '{other_parts}' de la clave '{key}'")
+                    elif len(other_parts) > 1:
+                         logger.warning(f"Modo 2VIs: Se encontraron múltiples partes variables para clave '{key}' con fijo '{fixed_pair_str}'. Se omite por ahora.")
+                    # else: No hay otra parte? Caso raro, ignorar.
 
         logger.debug(f"Grupos filtrados resultantes: {filtered_groups}")
         # Devolver ordenado por display name para consistencia en UI
