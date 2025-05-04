@@ -1194,6 +1194,62 @@ class AnalysisService:
             logger.warning(f"No se pudieron obtener grupos para estudio {study_id}: {e}")
             return [] # Devolver vacío si hay error
 
+
+    def get_filtered_discrete_analysis_groups(self, study_id: int, frequency: str, mode: str,
+                                              primary_vi_name: Optional[str] = None,
+                                              fixed_vi_name: Optional[str] = None,
+                                              fixed_descriptor_value: Optional[str] = None) -> dict[str, str]:
+        """
+        Obtiene los grupos de análisis discreto FILTRADOS según el modo y selecciones.
+
+        :param study_id: ID del estudio.
+        :param frequency: Frecuencia seleccionada.
+        :param mode: '1VI' o '2VIs'.
+        :param primary_vi_name: Nombre de la VI seleccionada si mode='1VI'.
+        :param fixed_vi_name: Nombre de la VI a fijar si mode='2VIs'.
+        :param fixed_descriptor_value: Valor del descriptor a fijar si mode='2VIs' (valor original, sin alias).
+        :return: Diccionario {original_key: display_name} de los grupos filtrados.
+                 El display_name se ajusta según el modo.
+        """
+        logger.info(f"Filtrando grupos: mode={mode}, freq={frequency}, primary={primary_vi_name}, fixed_vi={fixed_vi_name}, fixed_desc={fixed_descriptor_value}")
+        # Obtener todos los grupos como lista de tuplas (display, key)
+        all_groups_tuples = self.get_discrete_analysis_groups(study_id, frequency)
+        # Convertir a dict {key: display} para facilitar búsqueda
+        all_groups = {key: display for display, key in all_groups_tuples}
+        aliases = self.study_service.get_study_aliases(study_id)
+        filtered_groups = {}
+
+        if mode == '1VI' and primary_vi_name:
+            for key, _ in all_groups.items():
+                parts = key.split(';')
+                # Solo incluir si tiene exactamente 1 parte y coincide la VI
+                if len(parts) == 1:
+                    vi_name, descriptor = parts[0].split('=')
+                    if vi_name == primary_vi_name:
+                        # Display name: solo el descriptor (con alias)
+                        alias = aliases.get(descriptor, descriptor)
+                        # Mantener VI en display por claridad, pero usar alias
+                        filtered_groups[key] = f"{primary_vi_name}: {alias}"
+        elif mode == '2VIs' and fixed_vi_name and fixed_descriptor_value:
+            fixed_pair_str = f"{fixed_vi_name}={fixed_descriptor_value}"
+            for key, _ in all_groups.items():
+                parts = key.split(';')
+                # Incluir si tiene exactamente 2 partes y una de ellas es el par fijo
+                if len(parts) == 2:
+                    part1, part2 = parts[0], parts[1]
+                    if part1 == fixed_pair_str or part2 == fixed_pair_str:
+                        # Encontrar la otra parte (la que varía)
+                        other_part = part2 if part1 == fixed_pair_str else part1
+                        other_vi_name, other_desc = other_part.split('=')
+                        other_alias = aliases.get(other_desc, other_desc)
+                        # Nuevo display name: solo la parte que varía (con alias)
+                        filtered_groups[key] = f"{other_vi_name}: {other_alias}"
+
+        logger.debug(f"Grupos filtrados resultantes: {filtered_groups}")
+        # Devolver ordenado por display name para consistencia en UI
+        return dict(sorted(filtered_groups.items(), key=lambda item: item[1]))
+
+
     def get_common_columns_for_groups(self, study_id: int, frequency: str, calculation: str, group_keys: list[str]) -> list[str]:
         """
         Encuentra las columnas de datos comunes presentes en las tablas de resumen
