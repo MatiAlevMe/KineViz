@@ -117,11 +117,9 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
     * **7.1 Añadir dependencia `plotly`**: (Hecho).
     * **7.2 Crear `create_interactive_comparison_boxplot`**: (Hecho) En `charting.py` para generar HTML.
     * **7.3 Modificar `perform_individual_analysis`**: (Hecho) Generar y guardar HTML.
-    * **7.4 Anotaciones en Plotly**: (Pendiente - Fase B) Implementar lógica personalizada si se requiere.
 * **8. Gestión de Análisis Guardados:** (Hecho)
     * **8.1 `AnalysisService.list_individual_analyses` / `delete_individual_analysis`**: (Hecho).
     * **8.2 Conectar UI `IndividualAnalysisManagerDialog`**: (Hecho) Cargar, ver PNG, ver HTML, eliminar, abrir carpeta. Mostrar grupos combinados y p-valor.
-* **9. Reporte General (PDF):** (Pendiente) Implementar generación automática de PDF con análisis para combinaciones relevantes. Aún se debe decir si los datos del estudio son pareados y parámetricos. Luego se produce un archivo PDF con todas las combinaciones posibles para el estudio pero para solo una columna seleccionada.
 * **10. Corrección de Errores:** (En Progreso) Revisar y corregir errores conocidos (ej: formato cabeceras CSV, error generación tablas discretas, inconsistencia nombres archivo análisis individual).
 * **11. Integración y Pruebas:** (Pendiente) Integrar y probar toda la funcionalidad de análisis discreto.
 
