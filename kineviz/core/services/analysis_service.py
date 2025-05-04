@@ -1545,41 +1545,16 @@ class AnalysisService:
 
         # --- Generar Gráfico ---
         try:
-            # Obtener alias del estudio
-            study_aliases = self.study_service.get_study_aliases(study_id)
-            # Generar nombres de grupo legibles (con prefijo) y etiquetas eje X
-            group_legend_names = [] # Nombres completos para la leyenda
-            group_xaxis_labels = [] # Nombres cortos para el eje X
-            # Ordenar claves originales para numeración consistente
-            sorted_group_keys = sorted(config['groups'])
-            for i, group_key in enumerate(sorted_group_keys):
-                display_parts = []
-                if group_key != "SinGrupo":
-                    for part in group_key.split(';'):
-                        vi_name, desc_value = part.split('=', 1)
-                        alias = study_aliases.get(desc_value, desc_value)
-                        display_parts.append(f"{vi_name}: {alias}")
-                base_display_name = ", ".join(display_parts) if display_parts else "General"
-                # Nombre completo para leyenda
-                full_legend_name = f"Grupo {i+1} - {base_display_name}"
-                group_legend_names.append(full_legend_name)
-                # Nombre corto para eje X
-                group_xaxis_labels.append(f"Grupo {i+1}")
-
-            chart_title = (f"{config['calculation']} - {config['column']}\n"
-                           f"({analysis_name})")
-            # Usar unidad de la columna
-            chart_ylabel = f"{config['calculation']} ({target_column_parts[2]})"
-
-            # Pasar ambos tipos de nombres a la función de charting
+            # Usar título y leyendas generados arriba
+            # Pasar los datos ordenados
             charting.create_comparison_boxplot(
-                data_by_group=data_by_group,
-                group_xaxis_labels=group_xaxis_labels, # Para eje X
-                group_legend_names=group_legend_names, # Para leyenda
-                title=chart_title,
+                data_by_group=ordered_data_by_group, # Usar datos ordenados
+                group_xaxis_labels=group_xaxis_labels, # Etiquetas cortas G1, G2...
+                group_legend_names=group_legend_names, # Leyendas específicas del modo
+                title=title, # Título específico del modo
                 ylabel=chart_ylabel,
                 output_path=plot_path,
-                stats_results=stats_results  # Pasar resultados estadísticos
+                stats_results=stats_results
             )
             logger.info(f"Gráfico boxplot generado en: {plot_path}")
         except Exception as e:
@@ -1590,12 +1565,12 @@ class AnalysisService:
         # --- Guardar Gráfico Interactivo (HTML) ---
         interactive_plot_path = analysis_output_dir / "boxplot_interactive.html"
         try:
-            # Pasar ambos tipos de nombres a la función de charting interactivo
+            # Pasar datos ordenados y etiquetas/leyendas correctas
             charting.create_interactive_comparison_boxplot(
-                data_by_group=data_by_group,
-                group_xaxis_labels=group_xaxis_labels, # Para eje X
-                group_legend_names=group_legend_names, # Para leyenda (hover)
-                title=chart_title,
+                data_by_group=ordered_data_by_group, # Usar datos ordenados
+                group_xaxis_labels=group_xaxis_labels, # Etiquetas cortas G1, G2...
+                group_legend_names=group_legend_names, # Leyendas específicas del modo
+                title=title, # Título específico del modo
                 ylabel=chart_ylabel,
                 output_path=interactive_plot_path
             )

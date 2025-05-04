@@ -181,7 +181,14 @@ def create_interactive_comparison_boxplot(data_by_group: list,
             gridcolor='lightgrey', # Color de la cuadrícula Y
             zerolinecolor='grey'
         ),
-        margin=dict(l=40, r=40, t=80, b=80), # Ajustar márgenes
+        legend=dict(
+            orientation="h", # Leyenda horizontal
+            yanchor="bottom",
+            y=-0.2, # Posición debajo del gráfico (ajustar si es necesario)
+            xanchor="center",
+            x=0.5
+        ),
+        margin=dict(l=40, r=40, t=80, b=120), # Aumentar margen inferior para leyenda
     )
 
     # Guardar como HTML
@@ -317,17 +324,20 @@ def create_comparison_boxplot(data_by_group: list,
                      bbox=dict(boxstyle='round,pad=0.3', fc='white', alpha=0.5))
 
 
-    # 4. Añadir Leyenda (usando nombres completos)
+    # 4. Añadir Leyenda (debajo del gráfico)
     handles = [plt.Rectangle((0,0),1,1, color=palette[i])
                for i in range(len(xaxis_order))]
-    # Mapear etiquetas cortas a nombres completos para la leyenda
-    legend_labels = [legend_map[label] for label in xaxis_order]
-    plt.legend(handles, legend_labels, title="Grupos",
-               bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0.)
+    # Usar los group_legend_names pasados directamente
+    legend_labels = group_legend_names
+    # Colocar leyenda debajo, centrada, con múltiples columnas si es necesario
+    fig.legend(handles, legend_labels, title="Grupos", loc='lower center',
+               bbox_to_anchor=(0.5, -0.15), # Ajustar posición vertical (-0.15 o menos)
+               ncol=min(len(legend_labels), 4), # Máximo 4 columnas
+               frameon=False) # Sin borde
 
 
-    # Ajustar layout para asegurar que todo quepa (incluida leyenda)
-    plt.tight_layout(rect=[0, 0, 0.85, 1]) # Ajustar rect para dejar espacio a la derecha
+    # Ajustar layout para asegurar que todo quepa (incluida leyenda inferior)
+    plt.tight_layout(rect=[0, 0.05, 1, 1]) # Ajustar rect para dejar espacio abajo
 
     plt.savefig(output_path, bbox_inches='tight', dpi=150)
     plt.close(fig)

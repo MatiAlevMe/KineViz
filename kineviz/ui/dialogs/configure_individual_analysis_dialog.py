@@ -22,138 +22,165 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         # self.geometry("500x600") # Ajustar según necesidad
         self.grab_set()  # Hacer modal
 
-        # Variables de control
-        self.analysis_name_var = tk.StringVar()
+        # --- Nuevas variables de estado para el flujo ---
+        self.vi_grouping_mode = tk.StringVar(value="") # '1VI' o '2VIs'
+        self.primary_vi_var = tk.StringVar() # VI seleccionada en modo 1VI
+        self.fixed_vi_var = tk.StringVar() # VI a fijar en modo 2VIs
+        self.fixed_descriptor_var = tk.StringVar() # Descriptor a fijar en modo 2VIs
+        self.all_vi_names = [] # Nombres de las VIs del estudio
+        self.all_descriptors_by_vi = {} # {vi_name: [desc1, desc2]}
+        self.study_aliases = {} # Alias del estudio
+
+        # --- Variables existentes (algunas se reutilizan) ---
         self.frequency_var = tk.StringVar()
         self.calculation_var = tk.StringVar()
+        self.available_frequencies = [] # Se carga dinámicamente
+        self.available_calculations = ["Maximo", "Minimo", "Rango"] # Mantener fijos por ahora
+
+        self.group_selector_frames = [] # Lista de frames para cada selector de grupo
+        self.group_selector_vars = [] # Lista de StringVars para grupos seleccionados (reutilizado)
+        self.available_groups_filtered = {} # Diccionario {display_name: original_key} - AHORA FILTRADO
+
+        # Variables para la columna y supuestos (reutilizadas)
         self.column_var = tk.StringVar()
-        self.parametric_var = tk.BooleanVar(value=True)  # Asumir paramétrico
-        self.paired_var = tk.BooleanVar(value=False)  # Asumir independiente
+        self.available_columns = []
+        self.parametric_var = tk.BooleanVar(value=True)
+        self.paired_var = tk.BooleanVar(value=False)
 
-        # Listas para selectores dinámicos
-        self.available_frequencies = ["Cinematica"]  # Por ahora solo Cinemática
-        self.available_calculations = ["Maximo", "Minimo", "Rango"]
-        self.available_groups = []  # Se carga dinámicamente
-        self.available_columns = []  # Se carga dinámicamente
-
-        # Gestión de grupos seleccionados
-        # Lista de StringVars para grupos seleccionados
-        self.selected_group_vars = []
-        self.group_selector_frames = []
+        # Variable para el nombre del análisis (reutilizada)
+        self.analysis_name_var = tk.StringVar()
 
         self.create_widgets()
-        self.load_initial_data()
+        self.load_initial_data() # Cargará VIs, alias, frecuencias
 
     def create_widgets(self):
         """Crea los widgets del diálogo."""
         main_frame = ttk.Frame(self, padding="15")
         main_frame.pack(fill=tk.BOTH, expand=True)
+        main_frame.columnconfigure(1, weight=1) # Columna de Combobox/Entry expandible
 
-        # --- Nombre del Análisis ---
-        ttk.Label(main_frame, text="Nombre del Análisis:") \
-            .grid(row=0, column=0, sticky="w", pady=(0, 5))
-        ttk.Entry(main_frame, textvariable=self.analysis_name_var, width=40) \
-            .grid(row=0, column=1, columnspan=2, sticky="ew", pady=(0, 5))
+        row_idx = 0
 
-        # --- Selección de Parámetros Base ---
-        param_frame = ttk.LabelFrame(main_frame, text="Parámetros Base")
-        param_frame.grid(row=1, column=0, columnspan=3, sticky="ew", pady=10)
-        param_frame.columnconfigure(1, weight=1)
+        # --- Selección de Frecuencia y Cálculo (Sin cambios iniciales) ---
+        ttk.Label(main_frame, text="Frecuencia:").grid(row=row_idx, column=0, sticky="w", padx=5, pady=5)
+        self.freq_combo = ttk.Combobox(main_frame, textvariable=self.frequency_var, state="readonly", postcommand=self.load_frequencies)
+        self.freq_combo.grid(row=row_idx, column=1, sticky="ew", padx=5, pady=5)
+        # Bind se hará después o se llamará manualmente
+        row_idx += 1
 
-        ttk.Label(param_frame, text="Frecuencia:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
-        self.freq_combo = ttk.Combobox(
-            param_frame, textvariable=self.frequency_var,
-            values=self.available_frequencies, state="readonly")
-        self.freq_combo.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
-        # Actualizar grupos al cambiar frecuencia
-        self.freq_combo.bind("<<ComboboxSelected>>",
-                             self.update_available_groups)
+        ttk.Label(main_frame, text="Cálculo:").grid(row=row_idx, column=0, sticky="w", padx=5, pady=5)
+        self.calc_combo = ttk.Combobox(main_frame, textvariable=self.calculation_var, values=self.available_calculations, state="readonly")
+        self.calc_combo.grid(row=row_idx, column=1, sticky="ew", padx=5, pady=5)
+        # Bind se hará después o se llamará manualmente
+        row_idx += 1
 
-        ttk.Label(param_frame, text="Cálculo:") \
-            .grid(row=1, column=0, sticky="w", padx=5, pady=5)
-        self.calc_combo = ttk.Combobox(
-            param_frame, textvariable=self.calculation_var,
-            values=self.available_calculations, state="readonly")
-        self.calc_combo.grid(row=1, column=1, sticky="ew", padx=5, pady=5)
-        # Actualizar columnas al cambiar cálculo
-        self.calc_combo.bind("<<ComboboxSelected>>",
-                             self.update_available_columns)
+        # --- NUEVO: Selección de Modo de Agrupación (1 VI vs 2 VIs) ---
+        vi_mode_frame = ttk.Frame(main_frame)
+        vi_mode_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", padx=5, pady=10)
+        ttk.Label(vi_mode_frame, text="Agrupar por:").pack(side=tk.LEFT, padx=(0, 10))
+        self.one_vi_button = ttk.Button(vi_mode_frame, text="1 Variable Independiente", command=lambda: self.set_vi_grouping_mode('1VI'))
+        self.one_vi_button.pack(side=tk.LEFT, padx=5)
+        self.two_vi_button = ttk.Button(vi_mode_frame, text="2 Variables Independientes", command=lambda: self.set_vi_grouping_mode('2VIs'))
+        self.two_vi_button.pack(side=tk.LEFT, padx=5)
+        row_idx += 1
 
-        # --- Selección de Grupos ---
-        group_frame = ttk.LabelFrame(main_frame,
-                                     text="Grupos a Comparar (mínimo 2)")
-        group_frame.grid(row=2, column=0, columnspan=3, sticky="ew", pady=10)
-        group_frame.columnconfigure(0, weight=1)
+        # --- Contenedores para los pasos siguientes (inicialmente ocultos) ---
+        # Frame para selección de VI primaria (modo 1VI)
+        self.one_vi_config_frame = ttk.Frame(main_frame)
+        self.one_vi_config_frame.grid(row=row_idx, column=0, columnspan=2, sticky="nsew", padx=5, pady=0)
+        self.one_vi_config_frame.grid_remove() # Ocultar inicialmente
+        self.one_vi_config_frame.columnconfigure(1, weight=1) # Permitir que el combo se expanda
+        ttk.Label(self.one_vi_config_frame, text="Agrupar por VI:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
+        self.primary_vi_combo = ttk.Combobox(self.one_vi_config_frame, textvariable=self.primary_vi_var, state="readonly")
+        self.primary_vi_combo.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
+        self.primary_vi_combo.bind("<<ComboboxSelected>>", self.update_available_groups) # Actualizar grupos al seleccionar VI primaria
 
-        # Frame contenedor para las entradas de grupo (se añadirá dinámicamente)
-        self.group_entries_frame = ttk.Frame(group_frame)
-        self.group_entries_frame.grid(row=0, column=0, columnspan=2,
-                                      sticky="ew")
-        self.group_entries_frame.columnconfigure(0, weight=1)
+        # Frame para selección de VI fija y descriptor fijo (modo 2VIs)
+        self.two_vi_config_frame = ttk.Frame(main_frame)
+        self.two_vi_config_frame.grid(row=row_idx, column=0, columnspan=2, sticky="nsew", padx=5, pady=0)
+        self.two_vi_config_frame.grid_remove() # Ocultar inicialmente
+        self.two_vi_config_frame.columnconfigure(1, weight=1)
 
-        # Botón para añadir más grupos
-        add_group_button = ttk.Button(group_frame, text="+ Añadir Grupo",
+        ttk.Label(self.two_vi_config_frame, text="VI a Fijar:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
+        self.fixed_vi_combo = ttk.Combobox(self.two_vi_config_frame, textvariable=self.fixed_vi_var, state="readonly")
+        self.fixed_vi_combo.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
+        self.fixed_vi_combo.bind("<<ComboboxSelected>>", self._update_fixed_descriptor_options) # Actualizar descriptores al seleccionar VI fija
+
+        self.fixed_descriptor_label = ttk.Label(self.two_vi_config_frame, text="Valor Fijo:")
+        self.fixed_descriptor_label.grid(row=1, column=0, sticky="w", padx=5, pady=5)
+        self.fixed_descriptor_combo = ttk.Combobox(self.two_vi_config_frame, textvariable=self.fixed_descriptor_var, state="readonly")
+        self.fixed_descriptor_combo.grid(row=1, column=1, sticky="ew", padx=5, pady=5)
+        self.fixed_descriptor_combo.bind("<<ComboboxSelected>>", self.update_available_groups) # Actualizar grupos al seleccionar descriptor fijo
+
+        row_idx += 1 # Incrementar fila para el siguiente elemento
+
+        # --- Selección Dinámica de Grupos (Reutilizado, pero dentro de su propio frame) ---
+        self.group_selection_outer_frame = ttk.LabelFrame(main_frame, text="Selección de Grupos a Comparar")
+        self.group_selection_outer_frame.grid(row=row_idx, column=0, columnspan=2, sticky="nsew", padx=5, pady=10)
+        self.group_selection_outer_frame.columnconfigure(0, weight=1)
+        self.group_selection_outer_frame.grid_remove() # Ocultar inicialmente
+        # Frame interno para los selectores (el que se usaba antes como group_frame)
+        self.group_selectors_frame = ttk.Frame(self.group_selection_outer_frame)
+        self.group_selectors_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+        # Botón para añadir más grupos (movido aquí)
+        add_group_button = ttk.Button(self.group_selection_outer_frame, text="+ Añadir Grupo",
                                       command=self.add_group_selector)
-        add_group_button.grid(row=1, column=0, columnspan=2, pady=5)
+        add_group_button.pack(pady=5, anchor='w', padx=5) # Anclar a la izquierda
+        row_idx += 1
 
-        # --- Selección de Columna ---
-        col_frame = ttk.LabelFrame(main_frame,
-                                   text="Variable a Analizar")
-        col_frame.grid(row=3, column=0, columnspan=3, sticky="ew",
-                       pady=10)
-        col_frame.columnconfigure(1, weight=1)
+        # --- Selección de Columna (En su propio frame) ---
+        self.column_frame = ttk.LabelFrame(main_frame, text="Variable a Analizar") # Usar LabelFrame
+        self.column_frame.grid(row=row_idx, column=0, columnspan=2, sticky="nsew", padx=5, pady=5)
+        self.column_frame.columnconfigure(1, weight=1)
+        self.column_frame.grid_remove() # Ocultar inicialmente
+        ttk.Label(self.column_frame, text="Columna:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
+        self.column_combo = ttk.Combobox(self.column_frame, textvariable=self.column_var, state="readonly", width=50) # Ajustar width si es necesario
+        self.column_combo.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
+        self.column_combo.bind("<<ComboboxSelected>>", self._on_column_selected) # Llamar al seleccionar columna
+        row_idx += 1
 
-        ttk.Label(col_frame, text="Columna:") \
-            .grid(row=0, column=0, sticky="w", padx=5, pady=5)
-        self.col_combo = ttk.Combobox(col_frame,
-                                      textvariable=self.column_var,
-                                      values=[], state="readonly", width=50)
-        self.col_combo.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
+        # --- Supuestos Estadísticos (En su propio frame) ---
+        self.assumptions_frame = ttk.LabelFrame(main_frame, text="Supuestos Estadísticos")
+        self.assumptions_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", padx=5, pady=10)
+        self.assumptions_frame.grid_remove() # Ocultar inicialmente
+        ttk.Checkbutton(self.assumptions_frame, text="Datos Paramétricos (Normalidad/Homocedasticidad)", variable=self.parametric_var).pack(anchor="w", padx=5)
+        ttk.Checkbutton(self.assumptions_frame, text="Muestras Pareadas (Mismos sujetos en todos los grupos)", variable=self.paired_var).pack(anchor="w", padx=5)
+        row_idx += 1
 
-        # --- Opciones Estadísticas ---
-        stats_frame = ttk.LabelFrame(main_frame,
-                                     text="Supuestos Estadísticos")
-        stats_frame.grid(row=4, column=0, columnspan=3, sticky="ew",
-                       pady=10)
+        # --- Nombre del Análisis (En su propio frame) ---
+        self.analysis_name_frame = ttk.LabelFrame(main_frame, text="Guardar Análisis Como") # Usar LabelFrame
+        self.analysis_name_frame.grid(row=row_idx, column=0, columnspan=2, sticky="nsew", padx=5, pady=5)
+        self.analysis_name_frame.columnconfigure(1, weight=1)
+        self.analysis_name_frame.grid_remove() # Ocultar inicialmente
+        ttk.Label(self.analysis_name_frame, text="Nombre:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
+        ttk.Entry(self.analysis_name_frame, textvariable=self.analysis_name_var).grid(row=0, column=1, sticky="ew", padx=5, pady=5)
+        row_idx += 1
 
-        ttk.Checkbutton(
-            stats_frame,
-            text="Asumir Datos Paramétricos (distribución normal)",
-            variable=self.parametric_var) \
-            .pack(side=tk.LEFT, padx=10, pady=5)
-        ttk.Checkbutton(
-            stats_frame,
-            text="Datos Pareados (misma unidad de muestreo en todos los grupos)",
-            variable=self.paired_var) \
-            .pack(side=tk.LEFT, padx=10, pady=5)
-
-        # --- Botones de Acción ---
-        action_button_frame = ttk.Frame(main_frame)
-        action_button_frame.grid(row=5, column=0, columnspan=3, sticky="e",
-                                 pady=(20, 0))
-
-        ttk.Button(action_button_frame, text="Generar Gráfico y Guardar",
-                   command=self.generate_analysis).pack(side=tk.LEFT, padx=5)
-        ttk.Button(action_button_frame, text="Cancelar",
-                   command=self.destroy).pack(side=tk.LEFT, padx=5)
+        # --- Botones de Acción (En su propio frame) ---
+        self.button_frame = ttk.Frame(main_frame)
+        self.button_frame.grid(row=row_idx, column=0, columnspan=2, sticky="e", pady=10)
+        self.button_frame.grid_remove() # Ocultar inicialmente
+        self.save_button = ttk.Button(self.button_frame, text="Generar Gráfico y Guardar", command=self.generate_analysis, state=tk.DISABLED) # Llamar a generate_analysis
+        self.save_button.pack(side=tk.RIGHT, padx=5)
+        ttk.Button(self.button_frame, text="Cancelar", command=self.destroy).pack(side=tk.RIGHT)
 
     def load_initial_data(self):
-        """Carga los datos iniciales para los selectores."""
-        # Establecer valores iniciales si hay disponibles
-        if self.available_frequencies:
-            self.frequency_var.set(self.available_frequencies[0])
-        if self.available_calculations:
-            self.calculation_var.set(self.available_calculations[0])
+        """Carga datos iniciales: VIs, alias, frecuencias."""
+        try:
+            # Cargar detalles del estudio (VIs y Alias)
+            details = self.analysis_service.study_service.get_study_details(self.study_id)
+            self.all_vi_names = [vi['name'] for vi in details.get('independent_variables', [])]
+            self.all_descriptors_by_vi = {vi['name']: vi['descriptors'] for vi in details.get('independent_variables', [])}
+            self.study_aliases = details.get('aliases', {})
+            logger.debug(f"Datos iniciales cargados: VIs={self.all_vi_names}, Descriptores={self.all_descriptors_by_vi}, Alias={self.study_aliases}")
 
-        # Cargar grupos disponibles para la frecuencia inicial
-        self.update_available_groups()
+            # Cargar frecuencias (sin cambios)
+            self.load_frequencies()
 
-        # Añadir los dos primeros selectores de grupo obligatorios
-        self.add_group_selector()
-        self.add_group_selector()
-
-        # Cargar columnas iniciales (probablemente vacío hasta seleccionar grupos)
-        self.update_available_columns()
+        except Exception as e:
+            logger.error(f"Error cargando datos iniciales para estudio {self.study_id}: {e}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudieron cargar los datos iniciales del estudio: {e}", parent=self)
+            self.destroy()
 
     def update_available_groups(self, event=None):
         """Actualiza la lista de grupos disponibles basada en la frecuencia."""
@@ -181,45 +208,57 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             # Asumiendo que el Combobox es el primer hijo
             combo = frame.winfo_children()[0]
             combo['values'] = display_names
-            # Intentar mantener la selección si aún es válida
-            current_display_selection = combo.get()
-            if current_display_selection not in display_names:
-                combo.set('')  # Limpiar si la selección ya no existe
-
-        # Limpiar columnas ya que los grupos cambiaron
-        self.column_var.set('')
-        self.col_combo['values'] = []
-        self.available_columns = []
+    def load_frequencies(self):
+        """Carga las frecuencias disponibles para el estudio."""
+        try:
+            params = self.analysis_service.file_service.get_unique_study_parameters(self.study_id)
+            self.available_frequencies = sorted(list(params.get('frequencies', [])))
+            self.freq_combo['values'] = self.available_frequencies
+            if not self.available_frequencies:
+                self.frequency_var.set("")
+                messagebox.showwarning("Sin Datos", "No se encontraron archivos procesados con frecuencias válidas para este estudio.", parent=self)
+            # No seleccionar frecuencia por defecto aquí, esperar interacción del usuario
+        except Exception as e:
+            logger.error(f"Error cargando frecuencias para estudio {self.study_id}: {e}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudieron cargar las frecuencias: {e}", parent=self)
+            self.available_frequencies = []
+            self.freq_combo['values'] = []
 
     def add_group_selector(self, initial_value=""):
         """Añade una nueva fila para seleccionar un grupo."""
-        row_index = len(self.group_selector_frames)
-        frame = ttk.Frame(self.group_entries_frame)
-        frame.grid(row=row_index, column=0, sticky="ew", pady=2)
-        frame.columnconfigure(0, weight=1)
+    def add_group_selector(self, initial_value=""):
+        """Añade un nuevo selector de grupo (Combobox + botón eliminar)."""
+        if not self.group_selectors_frame: return
 
-        group_var = tk.StringVar()
-        display_names = [g[0] for g in self.available_groups]
-        combo = ttk.Combobox(frame, textvariable=group_var, values=display_names,
-                             state="readonly", width=35)
-        combo.grid(row=0, column=0, sticky="ew", padx=(0, 5))
-        # Actualizar columnas al cambiar grupo
-        combo.bind("<<ComboboxSelected>>", self.update_available_columns)
+        selector_frame = ttk.Frame(self.group_selectors_frame)
+        selector_frame.pack(fill=tk.X, pady=2)
 
-        # Botón para eliminar esta fila (deshabilitado para las 2 primeras)
-        remove_button = ttk.Button(
-            frame, text="-", width=3,
-            command=lambda f=frame, v=group_var: self.remove_group_selector(f, v)
-        )
-        remove_button.grid(row=0, column=1, sticky="w")
-        if row_index < 2:
-            remove_button.config(state=tk.DISABLED)
+        group_var = tk.StringVar(value=initial_value)
+        # Usar los grupos filtrados
+        group_combo = ttk.Combobox(selector_frame, textvariable=group_var, state="readonly",
+                                   values=sorted(list(self.available_groups_filtered.keys())))
+        group_combo.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
+        group_combo.bind("<<ComboboxSelected>>", self.update_available_columns)
 
-        self.selected_group_vars.append(group_var)
-        self.group_selector_frames.append(frame)
+        # Botón para eliminar este selector (icono basura)
+        remove_button = ttk.Button(selector_frame, text="🗑️", width=3, # Usar icono
+                                   command=lambda f=selector_frame, v=group_var: self.remove_group_selector(f, v))
+        remove_button.pack(side=tk.LEFT)
 
-        if initial_value and initial_value in display_names:
-            group_var.set(initial_value)
+        # Deshabilitar botón si solo quedan 2 selectores
+        if len(self.group_selector_vars) < 2:
+             remove_button.config(state=tk.DISABLED)
+        # Habilitar botones de los anteriores si ahora hay más de 2
+        elif len(self.group_selector_vars) == 2:
+             # Habilitar botón del segundo selector (índice 1)
+             if len(self.group_selector_frames) > 1:
+                 second_frame = self.group_selector_frames[1]
+                 if len(second_frame.winfo_children()) > 1:
+                     second_frame.winfo_children()[1].config(state=tk.NORMAL)
+
+
+        self.group_selector_vars.append(group_var)
+        self.group_selector_frames.append(selector_frame) # Guardar frame
 
     def remove_group_selector(self, frame_to_remove, var_to_remove):
         """Elimina una fila de selector de grupo."""
@@ -227,26 +266,71 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             messagebox.showwarning("Acción no permitida",
                                    "Se requieren al menos dos grupos.",
                                    parent=self)
+    def remove_group_selector(self, frame_to_remove, var_to_remove):
+        """Elimina un selector de grupo."""
+        if len(self.group_selector_vars) <= 2:
+            messagebox.showwarning("Acción no permitida", "Debe seleccionar al menos dos grupos para comparar.", parent=self)
             return
 
         try:
-            # La doble llamada a index/destroy era un error, corregido:
             index = self.group_selector_frames.index(frame_to_remove)
-            frame_to_remove.destroy()
+            self.group_selector_vars.pop(index)
             self.group_selector_frames.pop(index)
-            self.selected_group_vars.pop(index)
-            # Re-indexar grid de los frames restantes (opcional)
-            for i, frame in enumerate(self.group_selector_frames):
-                frame.grid(row=i, column=0, sticky="ew", pady=2)
+            frame_to_remove.destroy()
 
-            # Actualizar columnas disponibles
+            # Deshabilitar botón de eliminar si solo quedan 2
+            if len(self.group_selector_vars) == 2:
+                 for i in range(2):
+                     if len(self.group_selector_frames[i].winfo_children()) > 1:
+                         self.group_selector_frames[i].winfo_children()[1].config(state=tk.DISABLED)
+
+
             self.update_available_columns()
+        except (ValueError, IndexError):
+            logger.warning("Intento de eliminar un selector de grupo que ya no existe o índice inválido.")
 
-        except ValueError:
-            logger.error("Intento de eliminar un frame de grupo no listado.")
+
+    def _update_group_combobox_values(self):
+        """Actualiza las opciones en todos los combobox de grupo existentes con los grupos FILTRADOS."""
+        group_names = sorted(list(self.available_groups_filtered.keys()))
+        # Limpiar combos existentes antes de actualizar
+        self._clear_group_selectors(update_columns=False) # No actualizar columnas todavía
+
+        # Re-añadir selectores si es necesario (mínimo 2)
+        while len(self.group_selector_vars) < 2:
+             self.add_group_selector()
+
+        # Actualizar valores en los combos existentes
+        for i, var in enumerate(self.group_selector_vars):
+             # Encontrar el combo asociado a esta variable (asumiendo orden)
+             # Necesitamos iterar sobre los frames guardados
+             if i < len(self.group_selector_frames):
+                 selector_frame = self.group_selector_frames[i]
+                 combo = selector_frame.winfo_children()[0]
+                 if isinstance(combo, ttk.Combobox):
+                     combo['values'] = group_names
+             else:
+                 logger.warning(f"Índice {i} fuera de rango para group_selector_frames al actualizar valores.")
+
+
+        # Disparar actualización de columnas ahora que los combos están listos
+        self.update_available_columns()
+
+
+    def _clear_group_selectors(self, update_columns=True):
+        """Limpia las opciones y valores de los selectores de grupo."""
+        # Destruir frames existentes y limpiar variables
+        for frame in self.group_selector_frames:
+            frame.destroy()
+        self.group_selector_frames = [] # Limpiar lista de frames
+        self.group_selector_vars = [] # Limpiar lista de variables
+
+        if update_columns:
+            self.update_available_columns() # Columnas dependen de grupos
+
 
     def get_selected_group_keys(self) -> List[str]:
-        """Obtiene las claves originales de los grupos seleccionados."""
+        """Obtiene las claves originales de los grupos seleccionados y válidos de los FILTRADOS."""
         selected_keys = []
         selected_display_names = set()  # Para detectar duplicados
         valid = True
@@ -264,25 +348,23 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
                     parent=self)
                 return []  # Devolver vacío si hay duplicados
 
-            selected_display_names.add(display_name)
+                    selected_display_names.add(display_name)
+                    # Buscar en los grupos filtrados
+                    original_key = self.available_groups_filtered.get(display_name)
+                    if original_key:
+                        selected_keys.append(original_key)
+                    else:
+                        logger.error(f"Clave original no encontrada para el grupo filtrado seleccionado: '{display_name}'")
 
-            # Encontrar la clave original correspondiente al display_name
-            original_key = None
-            for name, key in self.available_groups:
-                if name == display_name:
-                    original_key = key
-                    break
-            if original_key:
-                selected_keys.append(original_key)
-            else:
-                # Esto no debería pasar si la UI funciona bien
-                logger.error("No se encontró clave original para: "
-                             f"{display_name}")
-                valid = False
-                break
-
-        if not valid or len(selected_keys) < 2:
-            return []  # Devolver vacío si no es válido o no hay suficientes
+        if has_duplicates:
+             messagebox.showwarning("Grupos Duplicados", "Ha seleccionado el mismo grupo más de una vez. Los duplicados serán ignorados.", parent=self)
+             unique_keys = []
+             seen_keys = set()
+             for key in selected_keys:
+                 if key not in seen_keys:
+                     unique_keys.append(key)
+                     seen_keys.add(key)
+             return unique_keys
 
         return selected_keys
 
@@ -319,8 +401,31 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
                 logger.error(f"Error obteniendo columnas comunes: {e}",
                              exc_info=True)
                 messagebox.showerror("Error", f"No se pudieron cargar las "
-                                   f"columnas comunes:\n{e}", parent=self)
                 self.available_columns = []
+                self._hide_final_steps() # Ocultar pasos finales en caso de error
+
+
+    def _on_column_selected(self, event=None):
+        """Se llama cuando se selecciona una columna, muestra los pasos finales."""
+        if self.column_var.get():
+            self._show_final_steps()
+        else:
+            self._hide_final_steps()
+
+    def _show_final_steps(self):
+        """Muestra los frames de supuestos, nombre y botones."""
+        self.assumptions_frame.grid()
+        self.analysis_name_frame.grid()
+        self.button_frame.grid()
+        self.save_button.config(state=tk.NORMAL) # Habilitar botón de guardar
+
+    def _hide_final_steps(self):
+        """Oculta los frames de supuestos, nombre y botones."""
+        self.assumptions_frame.grid_remove()
+        self.analysis_name_frame.grid_remove()
+        self.button_frame.grid_remove()
+        self.save_button.config(state=tk.DISABLED) # Deshabilitar botón de guardar
+
 
     def generate_analysis(self):
         """Valida la config y llama al servicio para generar el análisis."""
@@ -373,12 +478,69 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             "column": selected_col,
             "groups": selected_group_keys,  # Guardar las claves originales
             "parametric": is_parametric,
-            "paired": is_paired
+        is_parametric = self.parametric_var.get()
+        is_paired = self.paired_var.get()
+        mode = self.vi_grouping_mode.get() # Obtener modo
+        primary_vi = self.primary_vi_var.get() if mode == '1VI' else None
+        fixed_vi = self.fixed_vi_var.get() if mode == '2VIs' else None
+        fixed_descriptor_display = self.fixed_descriptor_var.get() if mode == '2VIs' else None
+
+        # --- Validaciones (igual que antes) ---
+        if not analysis_name:
+            messagebox.showerror("Error de Validación",
+                                   "Ingrese un nombre para el análisis.",
+                                   parent=self)
+            return
+        # Validar caracteres inválidos en nombre (repetido de AnalysisService)
+        invalid_chars = r'<>:"/\|?*'
+        if any(char in analysis_name for char in invalid_chars):
+            messagebox.showerror(
+                "Error de Validación",
+                f"El nombre del análisis contiene caracteres inválidos: "
+                f"{invalid_chars}",
+                parent=self)
+            return
+
+        if not selected_freq or not selected_calc:
+            messagebox.showerror("Error de Validación",
+                                   "Seleccione Frecuencia y Cálculo.",
+                                   parent=self)
+            return
+        if len(selected_group_keys) < 2:
+            messagebox.showerror(
+                "Error de Validación",
+                "Seleccione al menos dos grupos válidos y distintos.",
+                parent=self)
+            return
+        if not selected_col:
+            messagebox.showerror("Error de Validación",
+                                   "Seleccione la columna a analizar.",
+                                   parent=self)
+            return
+
+        # --- Crear Configuración (añadir modo y VIs seleccionadas) ---
+        config = {
+            "name": analysis_name, # Cambiado de analysis_name a name
+            "frequency": selected_freq,
+            "calculation": selected_calc,
+            "groups": selected_group_keys,  # Guardar las claves originales
+            "column": selected_col,
+            "parametric": is_parametric,
+            "paired": is_paired,
+            # Nuevos campos para reconstruir título/leyenda y para lógica interna
+            "grouping_mode": mode,
+            "primary_vi_name": primary_vi,
+            "fixed_vi_name": fixed_vi,
+            "fixed_descriptor_display": fixed_descriptor_display, # Guardar display name con alias
         }
+
 
         # --- Llamar al Servicio ---
         try:
-            # TODO: Añadir feedback visual de "procesando..."
+            self.title("Ejecutando Análisis...")
+            self.save_button.config(state=tk.DISABLED) # Deshabilitar botón
+            self.update_idletasks()
+
             result = self.analysis_service.perform_individual_analysis(
                 self.study_id, config
             )
