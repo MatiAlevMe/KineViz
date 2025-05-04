@@ -1536,13 +1536,29 @@ class AnalysisService:
         filtered_groups_display = {}
         if mode == '1VI' and primary_vi:
              title += f" ({primary_vi})"
-             for key in groups: # groups son las claves originales seleccionadas
-                 vi_name, descriptor = key.split('=')
-                 if vi_name == primary_vi:
+             for key in groups: # groups son las claves originales seleccionadas (ej: 'NAF=Bajo;FM=Alto')
+                 descriptor = None
+                 # Buscar la parte de la clave que corresponde a la VI primaria
+                 for part in key.split(';'):
+                     if part.startswith(f"{primary_vi}="):
+                         try:
+                             # Extraer solo el descriptor de esa parte
+                             descriptor = part.split('=', 1)[1]
+                             break # Encontrado, salir del bucle de partes
+                         except IndexError:
+                             logger.warning(f"Formato inesperado en parte '{part}' de clave '{key}'")
+                             break
+                 # Si encontramos el descriptor para la VI primaria
+                 if descriptor is not None:
                      alias = aliases.get(descriptor, descriptor)
                      filtered_groups_display[key] = f"{alias}" # Leyenda corta
+                 else:
+                      # Fallback si no se encuentra la parte (no debería pasar si la lógica de filtrado es correcta)
+                      logger.warning(f"No se encontró parte para VI primaria '{primary_vi}' en clave '{key}'")
+                      filtered_groups_display[key] = key # Usar clave original como fallback
         elif mode == '2VIs' and fixed_vi and fixed_desc_display:
              title += f" ({fixed_desc_display})"
+             # Obtener descriptor original (sin alias)
              fixed_desc_original = fixed_desc_display.split(" (")[0]
              fixed_pair_str = f"{fixed_vi}={fixed_desc_original}"
              for key in groups:
