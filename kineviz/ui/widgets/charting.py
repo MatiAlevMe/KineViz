@@ -144,8 +144,8 @@ def create_interactive_comparison_boxplot(data_by_group: list,
                 name=legend_name, # Nombre completo para hover/leyenda
                 x=[group_xaxis_labels[i]] * len(cleaned_data), # Asociar con etiqueta eje X
                 boxpoints='all',  # Mostrar todos los puntos
-                jitter=0.3,
-                pointpos=-1.8,
+                jitter=0.3,       # Mantener algo de jitter horizontal
+                pointpos=0,       # Centrar puntos horizontalmente dentro de la caja
                 marker_size=4,
                 marker_color=palette[i] if palette else None,
                 line_width=1
