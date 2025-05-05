@@ -18,8 +18,8 @@ datas_to_include = [
 
 # Opcional: Añadir un icono
 # Asegúrate de que la ruta correcta esté activa para el SO en el que estás construyendo.
-# icon_file_win = str(project_root / 'assets' / 'kineviz_icon_windows.ico') # Para Windows (.ico)
-icon_file_mac = str(project_root / 'assets' / 'kineviz_icon_mac.icns') # Para macOS (.icns)
+# icon_file_win = str(project_root / 'kineviz' / 'assets' / 'kineviz_icon_windows.ico') # Para Windows (.ico)
+icon_file_mac = str(project_root / 'kineviz' / 'assets' / 'kineviz_icon_mac.icns') # Para macOS (.icns)
 # icon_to_use = icon_file_win # Descomentar para build de Windows
 icon_to_use = icon_file_mac # Activo para build de macOS
 
