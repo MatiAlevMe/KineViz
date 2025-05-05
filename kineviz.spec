@@ -30,8 +30,10 @@ icon_to_use = icon_file_mac # Activo para build de macOS
 a = Analysis(
     [entry_point],
     pathex=[str(project_root)], # Asegura que PyInstaller busque módulos desde la raíz
-    # Dejar que PyInstaller maneje los binarios automáticamente
-    binaries=[],
+    # Añadir explícitamente la librería compartida de Python para macOS con pyenv
+    # El primer elemento es la ruta origen, el segundo es el directorio destino DENTRO del bundle
+    # '.' significa la raíz del bundle, PyInstaller debería colocarla correctamente (ej. en Frameworks)
+    binaries=[('/Users/arakito/.pyenv/versions/3.12.6/lib/libpython3.12.dylib', '.')],
     datas=datas_to_include,
     # Añadir importaciones ocultas comunes para data science y GUI
     hiddenimports=[
