@@ -1,7 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 # kineviz.spec
 
-import sys # Necesario para sys._MEIPASS si se usa más adelante
+import sys
 from pathlib import Path
 
 # Determinar la raíz del proyecto usando SPECPATH (proporcionado por PyInstaller)
@@ -10,10 +10,13 @@ project_root = Path(SPECPATH)
 app_name = 'KineViz'
 entry_point = str(project_root / 'kineviz' / 'app.py')
 
-# Archivos de datos a incluir (ej. archivos de ayuda)
+# Archivos de datos a incluir (config.ini, docs, assets, etc.)
 # La tupla es (ruta_origen, ruta_destino_en_bundle)
+# '.' como destino significa la raíz del bundle.
 datas_to_include = [
-    (str(project_root / 'kineviz' / 'docs/help'), 'kineviz/docs/help') # Corregida la ruta de origen
+    ('config.ini', '.'), # Incluir config.ini en la raíz del bundle
+    (str(project_root / 'kineviz' / 'docs' / 'recurso'), 'kineviz/docs/recurso'), # Ruta actualizada
+    (str(project_root / 'kineviz' / 'assets'), 'kineviz/assets') # Incluir assets
 ]
 
 # Opcional: Añadir un icono
@@ -29,7 +32,15 @@ a = Analysis(
     pathex=[str(project_root)], # Asegura que PyInstaller busque módulos desde la raíz
     binaries=[],
     datas=datas_to_include,
-    hiddenimports=[], # Añadir aquí si PyInstaller no detecta alguna librería
+    # Añadir importaciones ocultas comunes para data science y GUI
+    hiddenimports=[
+        'pandas', 'numpy', # Fundamentales para datos
+        'seaborn', 'matplotlib', 'matplotlib.pyplot', 'PIL', # Para gráficos estáticos
+        'plotly', # Para gráficos interactivos
+        'scipy', 'scipy.stats', 'statannot', # Para análisis estadístico
+        'tkinter', 'tkinter.ttk', 'tkinter.filedialog', 'tkinter.messagebox', # GUI
+        'configparser', 'logging', 'pathlib' # Utilidades estándar
+    ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
