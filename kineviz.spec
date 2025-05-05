@@ -27,10 +27,15 @@ icon_file_mac = str(project_root / 'kineviz' / 'assets' / 'kineviz_icon_mac.icns
 icon_to_use = icon_file_mac # Activo para build de macOS
 
 
+# Ruta a la librería Python del entorno actual (ajustar si es necesario)
+# PyInstaller suele encontrarla, pero especificarla puede ayudar en entornos complejos
+python_dylib_path = '/Users/arakito/.pyenv/versions/3.12.6/lib/libpython3.12.dylib'
+
 a = Analysis(
     [entry_point],
     pathex=[str(project_root)], # Asegura que PyInstaller busque módulos desde la raíz
-    binaries=[],
+    # Añadir explícitamente la librería Python y su destino en Frameworks
+    binaries=[(python_dylib_path, '.')],
     datas=datas_to_include,
     # Añadir importaciones ocultas comunes para data science y GUI
     hiddenimports=[
