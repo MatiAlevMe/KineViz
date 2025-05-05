@@ -27,15 +27,11 @@ icon_file_mac = str(project_root / 'kineviz' / 'assets' / 'kineviz_icon_mac.icns
 icon_to_use = icon_file_mac # Activo para build de macOS
 
 
-# Ruta a la librería Python del entorno actual (ajustar si es necesario)
-# PyInstaller suele encontrarla, pero especificarla puede ayudar en entornos complejos
-python_dylib_path = '/Users/arakito/.pyenv/versions/3.12.6/lib/libpython3.12.dylib'
-
 a = Analysis(
     [entry_point],
     pathex=[str(project_root)], # Asegura que PyInstaller busque módulos desde la raíz
-    # Añadir explícitamente la librería Python y su destino en Frameworks
-    binaries=[(python_dylib_path, '.')],
+    # Dejar que PyInstaller maneje los binarios automáticamente
+    binaries=[],
     datas=datas_to_include,
     # Añadir importaciones ocultas comunes para data science y GUI
     hiddenimports=[
@@ -44,8 +40,8 @@ a = Analysis(
         'plotly', # Para gráficos interactivos
         'scipy', 'scipy.stats', 'statannot', # Para análisis estadístico
         'tkinter', 'tkinter.ttk', 'tkinter.filedialog', 'tkinter.messagebox', # GUI
-        'configparser', 'logging', 'pathlib', # Utilidades estándar
-        'statannot' # Asegurarse de que statannot esté aquí
+        'configparser', 'logging', 'pathlib' # Utilidades estándar
+        # 'statannot' ya está incluido arriba
     ],
     hookspath=[],
     hooksconfig={},
