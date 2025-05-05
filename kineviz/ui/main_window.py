@@ -191,9 +191,9 @@ class MainWindow:
         manual_window = Toplevel(self.root)
         manual_window.title('Manual de Usuario')
         manual_window.geometry('800x600')
-        # Asume que manual_usuario.txt está en el directorio raíz del proyecto
+        # Asume que manual_usuario.txt está en .../KineViz/kineviz/docs/help
         project_root_dir = Path(__file__).resolve().parent.parent.parent
-        manual_path = project_root_dir / 'manual_usuario.txt'
+        manual_path = project_root_dir / 'kineviz' / 'docs' / 'help' / 'manual_usuario.txt'
 
         try:
             if manual_path.exists():

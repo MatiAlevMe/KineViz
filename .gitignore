@@ -4,7 +4,12 @@ __pycache__/
 .DS_Store
 
 ## KineViz - Personal Folders & Files
-kineviz.db
+kineviz.db 
 estudios/
 recursos/
 .*
+
+## Build & Dist KineViz (Windows y Mac OS)
+kineviz.spec
+build/
+dist/

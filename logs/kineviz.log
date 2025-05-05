@@ -48937,3 +48937,5 @@ ValueError: could not convert string to float: '10,8521'
 2025-05-04 03:05:23,350 - INFO - [kineviz.ui.dialogs.configure_individual_analysis_dialog] - Llamada a perform_individual_analysis completada.
 2025-05-04 03:05:25,973 - INFO - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Intentando abrir gráfico: /Users/arakito/Mati/Codigo/python/KineViz/estudios/Estudio_2VI_Test/Analisis Discreto/Individual/A/boxplot.png
 2025-05-04 03:05:31,239 - INFO - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Intentando abrir gráfico interactivo: file:///Users/arakito/Mati/Codigo/python/KineViz/estudios/Estudio_2VI_Test/Analisis%20Discreto/Individual/A/boxplot_interactive.html
+2025-05-04 23:31:54,465 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/python/KineViz/logs/kineviz.log
+2025-05-04 23:31:54,465 - INFO - [__main__] - Iniciando KineViz...
