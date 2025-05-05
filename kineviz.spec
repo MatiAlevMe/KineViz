@@ -2,6 +2,7 @@
 # kineviz.spec
 
 import sys
+import os # Necesario para os.path.join y os.path.exists
 from pathlib import Path
 
 # Determinar la raíz del proyecto usando SPECPATH (proporcionado por PyInstaller)
@@ -26,14 +27,33 @@ icon_file_mac = str(project_root / 'kineviz' / 'assets' / 'kineviz_icon_mac.icns
 # icon_to_use = icon_file_win # Descomentar para build de Windows
 icon_to_use = icon_file_mac # Activo para build de macOS
 
+# --- Determinar dinámicamente la ruta de la librería Python ---
+# Usar sys.prefix que apunta a la raíz del entorno Python activo
+python_version_short = f"{sys.version_info.major}.{sys.version_info.minor}"
+python_lib_filename = f"libpython{python_version_short}.dylib"
+python_lib_path = os.path.join(sys.prefix, 'lib', python_lib_filename)
+
+# Verificar si existe, si no, lanzar error claro
+if not os.path.exists(python_lib_path):
+    # Podríamos intentar un fallback, pero es mejor fallar si no se encuentra
+    # python_lib_path_fallback = '/Users/arakito/.pyenv/versions/3.12.6/lib/libpython3.12.dylib' # Ruta anterior
+    # if os.path.exists(python_lib_path_fallback):
+    #     print(f"Warning: Dynamic Python lib path not found: {python_lib_path}. Using fallback: {python_lib_path_fallback}")
+    #     python_lib_path = python_lib_path_fallback
+    # else:
+    raise FileNotFoundError(
+        f"Python library '{python_lib_filename}' not found in expected location: {os.path.join(sys.prefix, 'lib')}. "
+        f"Checked path: {python_lib_path}. Please ensure Python was compiled with --enable-shared or check your pyenv setup."
+    )
+print(f"Using Python library: {python_lib_path}")
+# --- Fin determinación dinámica ---
+
 
 a = Analysis(
     [entry_point],
     pathex=[str(project_root)], # Asegura que PyInstaller busque módulos desde la raíz
-    # Añadir explícitamente la librería compartida de Python para macOS con pyenv
-    # El primer elemento es la ruta origen, el segundo es el directorio destino DENTRO del bundle
-    # Para macOS .app, las librerías van en 'Frameworks'
-    binaries=[('/Users/arakito/.pyenv/versions/3.12.6/lib/libpython3.12.dylib', 'Frameworks')],
+    # Añadir la librería compartida de Python dinámicamente determinada
+    binaries=[(python_lib_path, 'Frameworks')],
     datas=datas_to_include,
     # Añadir importaciones ocultas comunes para data science y GUI
     hiddenimports=[
