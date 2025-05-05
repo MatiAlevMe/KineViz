@@ -10,7 +10,6 @@ recursos/
 .*
 
 ## Build & Dist KineViz (Windows y Mac OS)
-## Before finishing the MVP delete these files from GitHub
 ## kineviz.spec
 build/
 dist/
