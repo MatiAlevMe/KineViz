@@ -10,9 +10,9 @@ PyPDF2>=2.0.0
 python-dateutil>=2.8.2
 pytz>=2022.7
 setuptools>=65.5.0
-scipy
-seaborn 
+# scipy # Duplicado eliminado
+# seaborn # Duplicado eliminado
 statannotations
-plotly                                                                                                                               
+# plotly # Duplicado eliminado
 openpyxl
 pyinstaller>=5.0

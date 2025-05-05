@@ -14,9 +14,12 @@ datas_to_include = [
     (str(project_root / 'docs/help'), 'docs/help')
 ]
 
-# Opcional: Añadir un icono (descomentar y ajustar la ruta si tienes uno)
-icon_file = str(project_root / 'assets' / 'kineviz_icon_windows.ico') # Para Windows (.ico)
-icon_file = str(project_root / 'assets' / 'kineviz_icon_mac.icns') # Para macOS (.icns)
+# Opcional: Añadir un icono
+# Asegúrate de que la ruta correcta esté activa para el SO en el que estás construyendo.
+# icon_file_win = str(project_root / 'assets' / 'kineviz_icon_windows.ico') # Para Windows (.ico)
+icon_file_mac = str(project_root / 'assets' / 'kineviz_icon_mac.icns') # Para macOS (.icns)
+# icon_to_use = icon_file_win # Descomentar para build de Windows
+icon_to_use = icon_file_mac # Activo para build de macOS
 
 
 a = Analysis(
@@ -49,15 +52,43 @@ exe = EXE(
     upx=True, # Comprime el ejecutable (puede requerir instalar UPX)
     console=False, # False para aplicaciones GUI (no muestra consola)
     disable_windowed_traceback=False,
-    target_arch=None, # None para arquitectura nativa
+    target_arch=None, # None para arquitectura nativa (arm64 en tu Mac)
     codesign_identity=None,
     entitlements_file=None,
-    icon=icon_file # Descomentar si se define un icono arriba
+    icon=icon_to_use # Usa el icono definido arriba
 )
 
-#Específico para Windos
-#coll = COLLECT(
-#    exe,
+# --- Sección para Windows ---
+# Descomentar esta sección y comentar la sección BUNDLE al construir en Windows
+# coll = COLLECT(
+#     exe,
+#     a.binaries,
+#     a.zipfiles,
+#     a.datas,
+#     strip=False,
+#     upx=True,
+#     upx_exclude=[],
+#     name=app_name
+# )
+# --- Fin Sección Windows ---
+
+# --- Sección para macOS ---
+# Descomentar esta sección y comentar la sección COLLECT al construir en macOS
+# Específico para macOS: Crear un .app bundle
+app = BUNDLE(
+    exe, # Usar el ejecutable directamente
+    name=f'{app_name}.app',
+    icon=icon_to_use, # Usar el .icns definido arriba
+    bundle_identifier=None, # Opcional: ej. 'com.tuorganizacion.kineviz'
+    info_plist={ # Añadir entradas básicas al Info.plist si es necesario
+        'NSPrincipalClass': 'NSApplication',
+        'NSHighResolutionCapable': 'True'
+    },
+    datas=a.datas, # Incluir los datos definidos en Analysis
+    binaries=a.binaries, # Incluir binarios definidos en Analysis
+    zipfiles=a.zipfiles # Incluir zipfiles definidos en Analysis
+)
+# --- Fin Sección macOS ---
 #    a.binaries,
 #    a.zipfiles,
 #    a.datas,
@@ -65,16 +96,9 @@ exe = EXE(
 #    upx=True,
 #    upx_exclude=[],
 #    name=app_name
-#)
-
-Específico para macOS: Crear un .app bundle
-app = BUNDLE(
-    coll,
-    name=f'{app_name}.app',
-    icon=icon_file, # Usar el .icns definido arriba
-    bundle_identifier=None # Opcional: ej. 'com.tuorganizacion.kineviz'
-)
-
-# Nota: Para macOS, descomenta la sección 'app = BUNDLE(...)' y comenta/elimina 'coll = COLLECT(...)'
-#       Asegúrate de que 'icon_file' apunte a un archivo .icns válido.
-# Nota: Para Windows, usa la sección 'coll = COLLECT(...)' y asegúrate de que 'icon_file' (si se usa) apunte a un .ico.
+# Nota: Para macOS, asegúrate de que la sección 'app = BUNDLE(...)' esté descomentada
+#       y la sección 'coll = COLLECT(...)' esté comentada.
+#       Verifica que 'icon_to_use' apunte a un archivo .icns válido.
+# Nota: Para Windows, asegúrate de que la sección 'coll = COLLECT(...)' esté descomentada
+#       y la sección 'app = BUNDLE(...)' esté comentada.
+#       Verifica que 'icon_to_use' apunte a un archivo .ico válido.
