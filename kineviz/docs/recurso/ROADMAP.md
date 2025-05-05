@@ -168,12 +168,12 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
     * **12.1 `StudyView`**: (Hecho) Eliminar botón "Analizar Estudio".
     * **12.2 (Opcional/Futuro)**: Eliminar `AnalysisDialog` y métodos relacionados en `AnalysisService` si ya no se usan.
 
-**Fase 4: Empaquetado y Distribución (Nuevo)**
+**Fase 4: Empaquetado y Distribución (En Progreso)**
 
 * **1. Crear Paquetes Distribuibles:**
-    * **1.1 Configurar PyInstaller**: (Hecho) Creado `kineviz.spec` para definir el proceso de build.
+    * **1.1 Configurar PyInstaller**: (En Progreso) Creado y refinando `kineviz.spec` para definir el proceso de build (corrigiendo errores de hidden imports, backends, etc.).
     * **1.2 Generar Build Windows**: (Pendiente) Ejecutar PyInstaller en Windows para crear el paquete.
-    * **1.3 Generar Build macOS**: (Pendiente) Ejecutar PyInstaller en macOS para crear el paquete (`.app` bundle).
+    * **1.3 Generar Build macOS**: (En Progreso) Ejecutando PyInstaller en macOS para crear el paquete (`.app` bundle).
     * **1.4 Pruebas de Paquetes**: (Pendiente) Probar los paquetes generados en máquinas limpias de Windows 10/11 y macOS 11+.
 * **2. Refinar Requerimiento de Compatibilidad (RNF-PO-001):** (Actualizado)
     * **Detalle**: Especificar versiones mínimas soportadas: Windows 10 (64-bit) y posteriores, macOS 11 (Big Sur) y posteriores (solo Apple Silicon / ARM64). Actualizar documentación formal si es posible.
