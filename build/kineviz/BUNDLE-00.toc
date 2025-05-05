@@ -1,9 +1,0 @@
-([('KineViz',
-   '/Users/arakito/Mati/Codigo/python/KineViz/build/kineviz/KineViz',
-   'EXECUTABLE'),
-  ('lib-dynload/_struct.cpython-312-darwin.so',
-   '/Users/arakito/.pyenv/versions/3.12.6/lib/python3.12/lib-dynload/_struct.cpython-312-darwin.so',
-   'EXTENSION'),
-  ('lib-dynload/zlib.cpython-312-darwin.so',
-   '/Users/arakito/.pyenv/versions/3.12.6/lib/python3.12/lib-dynload/zlib.cpython-312-darwin.so',
-   'EXTENSION')],)
