@@ -39,11 +39,13 @@ a = Analysis(
         'plotly', # Para gráficos interactivos
         'scipy', 'scipy.stats', 'statannot', # Para análisis estadístico
         'tkinter', 'tkinter.ttk', 'tkinter.filedialog', 'tkinter.messagebox', # GUI
-        'configparser', 'logging', 'pathlib' # Utilidades estándar
+        'configparser', 'logging', 'pathlib', # Utilidades estándar
+        'statannot' # Asegurarse de que statannot esté aquí
     ],
     hookspath=[],
     hooksconfig={},
-    runtime_hooks=[],
+    # Añadir runtime hook para ayudar a encontrar librerías en macOS
+    runtime_hooks=['pyi_rth_dynamic_library_path'],
     excludes=[],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
