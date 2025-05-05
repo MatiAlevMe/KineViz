@@ -13,7 +13,7 @@ entry_point = str(project_root / 'kineviz' / 'app.py')
 # Archivos de datos a incluir (ej. archivos de ayuda)
 # La tupla es (ruta_origen, ruta_destino_en_bundle)
 datas_to_include = [
-    (str(project_root / 'docs/help'), 'docs/help')
+    (str(project_root / 'kineviz' / 'docs/help'), 'kineviz/docs/help') # Corregida la ruta de origen
 ]
 
 # Opcional: Añadir un icono
