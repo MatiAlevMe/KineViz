@@ -32,8 +32,8 @@ a = Analysis(
     pathex=[str(project_root)], # Asegura que PyInstaller busque módulos desde la raíz
     # Añadir explícitamente la librería compartida de Python para macOS con pyenv
     # El primer elemento es la ruta origen, el segundo es el directorio destino DENTRO del bundle
-    # '.' significa la raíz del bundle, PyInstaller debería colocarla correctamente (ej. en Frameworks)
-    binaries=[('/Users/arakito/.pyenv/versions/3.12.6/lib/libpython3.12.dylib', '.')],
+    # Para macOS .app, las librerías van en 'Frameworks'
+    binaries=[('/Users/arakito/.pyenv/versions/3.12.6/lib/libpython3.12.dylib', 'Frameworks')],
     datas=datas_to_include,
     # Añadir importaciones ocultas comunes para data science y GUI
     hiddenimports=[
@@ -111,9 +111,8 @@ app = BUNDLE(
         'NSPrincipalClass': 'NSApplication',
         'NSHighResolutionCapable': 'True'
     },
-    datas=a.datas, # Incluir los datos definidos en Analysis
-    binaries=a.binaries, # Incluir binarios definidos en Analysis
-    zipfiles=a.zipfiles # Incluir zipfiles definidos en Analysis
+    datas=a.datas # Incluir los datos definidos en Analysis (irán a Contents/Resources)
+    # binaries y zipfiles son manejados por 'exe'
 )
 # --- Fin Sección macOS ---
 
