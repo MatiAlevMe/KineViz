@@ -15,7 +15,8 @@ entry_point = str(project_root / 'kineviz' / 'app.py')
 # '.' como destino significa la raíz del bundle.
 datas_to_include = [
     ('config.ini', '.'), # Incluir config.ini en la raíz del bundle
-    (str(project_root / 'kineviz' / 'docs' / 'recurso'), 'kineviz/docs/recurso'), # Ruta actualizada
+    (str(project_root / 'kineviz' / 'docs' / 'recurso'), 'kineviz/docs/recurso'), # Documentación general
+    (str(project_root / 'kineviz' / 'docs' / 'help'), 'kineviz/docs/help'), # Archivos de ayuda específicos
     (str(project_root / 'kineviz' / 'assets'), 'kineviz/assets') # Incluir assets
 ]
 
@@ -36,17 +37,26 @@ a = Analysis(
     # Añadir importaciones ocultas comunes para data science y GUI
     hiddenimports=[
         'pandas', 'numpy', # Fundamentales para datos
-        'seaborn', 'matplotlib', 'matplotlib.pyplot', 'PIL', # Para gráficos estáticos
+        'seaborn', 'matplotlib', 'matplotlib.pyplot', 'PIL', 'PIL._imagingtk', 'PIL._tkinter_finder', # Para gráficos estáticos y Tkinter
         'plotly', # Para gráficos interactivos
-        'scipy', 'scipy.stats', 'statannot', # Para análisis estadístico
-        'tkinter', 'tkinter.ttk', 'tkinter.filedialog', 'tkinter.messagebox', # GUI
-        'configparser', 'logging', 'pathlib' # Utilidades estándar
-        # 'statannot' ya está incluido arriba
+        'scipy', 'scipy.stats', 'statannotations', # Para análisis estadístico (nombre corregido)
+        'tkinter', 'tkinter.ttk', 'tkinter.filedialog', 'tkinter.messagebox', 'tkinter.font', # GUI y fuentes
+        'configparser', 'logging', 'pathlib', # Utilidades estándar
+        'openpyxl', # Para leer/escribir Excel con pandas
+        'reportlab', # Si se usa para generar PDFs
+        'PyPDF2', # Si se usa para manipular PDFs
+        'dateutil', # A menudo usado por pandas
+        'pytz' # A menudo usado por pandas
     ],
     hookspath=[],
-    hooksconfig={},
-    # Añadir runtime hook para ayudar a encontrar librerías en macOS
-    runtime_hooks=['pyi_rth_dynamic_library_path'],
+    # Configuración específica para hooks
+    hooksconfig={
+        'matplotlib': {
+            'backends': ['TkAgg']  # Especificar el backend de Tkinter para Matplotlib
+        }
+    },
+    # Los runtime hooks suelen ser automáticos, eliminamos la entrada explícita por ahora
+    runtime_hooks=[],
     excludes=[],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
