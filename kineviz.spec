@@ -52,7 +52,7 @@ exe = EXE(
     target_arch=None, # None para arquitectura nativa
     codesign_identity=None,
     entitlements_file=None,
-    # icon=icon_file # Descomentar si se define un icono arriba
+    icon=icon_file # Descomentar si se define un icono arriba
 )
 
 #Específico para Windos
