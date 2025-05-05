@@ -15,7 +15,6 @@ entry_point = str(project_root / 'kineviz' / 'app.py')
 # '.' como destino significa la raíz del bundle.
 datas_to_include = [
     ('config.ini', '.'), # Incluir config.ini en la raíz del bundle
-    # (str(project_root / 'kineviz' / 'docs' / 'recurso'), 'kineviz/docs/recurso'), # Eliminado: Documentación no esencial para la app
     (str(project_root / 'kineviz' / 'docs' / 'help'), 'kineviz/docs/help'), # Archivos de ayuda específicos
     (str(project_root / 'kineviz' / 'assets'), 'kineviz/assets') # Incluir assets
 ]
