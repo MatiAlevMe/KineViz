@@ -1,9 +1,27 @@
 import configparser
 from pathlib import Path
 import os
+import sys # Necesario para sys._MEIPASS
 import logging # Importar logging
 
 logger = logging.getLogger(__name__) # Logger para este módulo
+
+def get_resource_path(relative_path):
+    """ Obtiene la ruta absoluta al recurso, funciona para desarrollo y PyInstaller """
+    try:
+        # PyInstaller crea una carpeta temporal y guarda la ruta en _MEIPASS
+        # Asegurarse de que sea un objeto Path
+        base_path = Path(sys._MEIPASS)
+    except AttributeError:
+        # No se está ejecutando en un paquete de PyInstaller (modo desarrollo)
+        # Asume que settings.py está en kineviz/config/
+        # Sube tres niveles para llegar a la raíz del proyecto
+        base_path = Path(__file__).resolve().parent.parent.parent
+
+    # Une la ruta base con la ruta relativa del recurso
+    resource_path = base_path / relative_path
+    logger.debug(f"Calculated resource path for '{relative_path}': {resource_path}")
+    return resource_path
 
 class AppSettings:
     """Gestiona la carga y guardado de configuraciones desde config.ini."""
@@ -22,12 +40,19 @@ class AppSettings:
         """
         Inicializa AppSettings.
 
-        :param config_filename: Nombre del archivo de configuración.
+        :param config_filename: Nombre del archivo de configuración (relativo a la raíz del proyecto/bundle).
         """
-        # Determinar la ruta raíz del proyecto para construir rutas absolutas
-        # Asumiendo que este archivo está en kineviz/config/
-        self.project_root = Path(__file__).resolve().parent.parent.parent
-        self.config_path = self.project_root / config_filename
+        # Usar la función auxiliar para obtener la ruta correcta a config.ini
+        self.config_path = get_resource_path(config_filename)
+        logger.info(f"Using configuration file path: {self.config_path}")
+
+        # Mantener project_root si se usa en otro lugar, pero basado en __file__ (solo fiable en desarrollo)
+        # O considerar obtenerlo de forma más robusta si es necesario fuera de config
+        try:
+             self.project_root = Path(__file__).resolve().parent.parent.parent
+        except NameError: # __file__ no está definido si se congela con ciertas herramientas? Mejor ser cautos.
+             self.project_root = Path.cwd() # O una ruta por defecto más apropiada
+
         self.config = configparser.ConfigParser()
         self.load_settings()
 
