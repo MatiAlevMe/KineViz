@@ -15,7 +15,7 @@ entry_point = str(project_root / 'kineviz' / 'app.py')
 # '.' como destino significa la raíz del bundle.
 datas_to_include = [
     ('config.ini', '.'), # Incluir config.ini en la raíz del bundle
-    (str(project_root / 'kineviz' / 'docs' / 'recurso'), 'kineviz/docs/recurso'), # Documentación general
+    # (str(project_root / 'kineviz' / 'docs' / 'recurso'), 'kineviz/docs/recurso'), # Eliminado: Documentación no esencial para la app
     (str(project_root / 'kineviz' / 'docs' / 'help'), 'kineviz/docs/help'), # Archivos de ayuda específicos
     (str(project_root / 'kineviz' / 'assets'), 'kineviz/assets') # Incluir assets
 ]
@@ -76,7 +76,7 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=True, # Comprime el ejecutable (puede requerir instalar UPX)
-    console=False, # False para aplicaciones GUI (no muestra consola)
+    console=True, # True para depuración (muestra consola al ejecutar .app)
     disable_windowed_traceback=False,
     target_arch=None, # None para arquitectura nativa (arm64 en tu Mac)
     codesign_identity=None,
