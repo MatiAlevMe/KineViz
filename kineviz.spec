@@ -89,13 +89,7 @@ app = BUNDLE(
     zipfiles=a.zipfiles # Incluir zipfiles definidos en Analysis
 )
 # --- Fin Sección macOS ---
-#    a.binaries,
-#    a.zipfiles,
-#    a.datas,
-#    strip=False,
-#    upx=True,
-#    upx_exclude=[],
-#    name=app_name
+
 # Nota: Para macOS, asegúrate de que la sección 'app = BUNDLE(...)' esté descomentada
 #       y la sección 'coll = COLLECT(...)' esté comentada.
 #       Verifica que 'icon_to_use' apunte a un archivo .icns válido.
