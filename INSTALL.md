@@ -5,14 +5,14 @@ Gracias por usar KineViz. Sigue estos pasos para instalar la aplicación en tu s
 ## Requisitos del Sistema
 
 *   **Windows:** Windows 10 (64-bit) o posterior.
-*   **macOS:** macOS 11 (Big Sur) o posterior (compatible con Intel y Apple Silicon).
+*   **macOS:** macOS 11 (Big Sur) o posterior (solo para Macs con Apple Silicon - M1, M2, etc. / arquitectura ARM64).
 
-## Instalación en macOS
+## Instalación en macOS (Apple Silicon)
 
-1.  **Descargar:** Descarga el archivo `KineViz_macOS.zip`.
+1.  **Descargar:** Descarga el archivo `KineViz_macOS_ARM64.zip`.
 2.  **Descomprimir:** Haz doble clic en el archivo `.zip` descargado. Esto creará una aplicación llamada `KineViz.app`. Puedes mover `KineViz.app` a tu carpeta de `Aplicaciones` si lo deseas.
 3.  **Ejecutar (Primera Vez):**
-    *   La primera vez que intentes abrir `KineViz.app`, macOS podría mostrar una advertencia de seguridad indicando que la aplicación proviene de un desarrollador no identificado.
+    *   La primera vez que intentes abrir `KineViz.app`, macOS podría mostrar una advertencia de seguridad indicando que la aplicación proviene de un desarrollador no identificado (ya que no está firmada por Apple).
     *   Para abrirla, haz **clic derecho** (o mantén presionada la tecla `Control` y haz clic) sobre `KineViz.app` y selecciona **`Abrir`** en el menú que aparece.
     *   Aparecerá otro cuadro de diálogo preguntando si estás seguro. Haz clic en el botón **`Abrir`**.
     *   Solo necesitarás hacer esto la primera vez. Las siguientes veces, podrás abrir la aplicación haciendo doble clic normalmente.
