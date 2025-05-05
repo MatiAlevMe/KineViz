@@ -1,10 +1,12 @@
 # -*- mode: python ; coding: utf-8 -*-
 # kineviz.spec
 
+import sys # Necesario para sys._MEIPASS si se usa más adelante
 from pathlib import Path
 
-# Determinar la raíz del proyecto relativo a este archivo .spec
-project_root = Path(__file__).parent.resolve()
+# Determinar la raíz del proyecto usando SPECPATH (proporcionado por PyInstaller)
+# SPECPATH es la ruta al directorio que contiene este archivo .spec
+project_root = Path(SPECPATH)
 app_name = 'KineViz'
 entry_point = str(project_root / 'kineviz' / 'app.py')
 
