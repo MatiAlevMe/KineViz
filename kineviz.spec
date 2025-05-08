@@ -138,10 +138,10 @@ app = BUNDLE(
     info_plist={ # Añadir entradas básicas al Info.plist si es necesario
         'NSPrincipalClass': 'NSApplication',
         'NSHighResolutionCapable': 'True'
-    }
-    # Los 'datas' de Analysis 'a' ahora se incluyen a través del TOC del objeto 'exe',
-    # por lo que no es necesario especificar a.datas separadamente para BUNDLE aquí.
-    # Los binarios de Analysis 'a' (como libpython) también están en 'exe.toc'.
+    },
+    binaries=a.binaries, # Pasar explícitamente los binarios de Analysis a BUNDLE
+    datas=a.datas,       # Pasar explícitamente los datas de Analysis a BUNDLE
+    zipfiles=a.zipfiles  # Pasar explícitamente los zipfiles de Analysis a BUNDLE
 )
 # --- Fin Sección macOS ---
 
