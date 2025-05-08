@@ -114,12 +114,12 @@ coll = COLLECT(
 # app = BUNDLE(
 #     exe, # Usar el ejecutable directamente
 #     name=f'{app_name}.app',
-    icon=icon_to_use, # Usar el .icns definido arriba
-    bundle_identifier=None, # Opcional: ej. 'com.tuorganizacion.kineviz'
-    info_plist={ # Añadir entradas básicas al Info.plist si es necesario
-        'NSPrincipalClass': 'NSApplication',
-        'NSHighResolutionCapable': 'True'
-    }
+#    icon=icon_to_use, # Usar el .icns definido arriba
+#    bundle_identifier=None, # Opcional: ej. 'com.tuorganizacion.kineviz'
+#    info_plist={ # Añadir entradas básicas al Info.plist si es necesario
+#        'NSPrincipalClass': 'NSApplication',
+#        'NSHighResolutionCapable': 'True'
+#    }
     # Los binarios, datas, y zipfiles de Analysis 'a' deben ser recogidos
     # a través del TOC del objeto 'exe' (ya que exclude_binaries=False en EXE).
     # BUNDLE debería entonces colocarlos correctamente según sus destinos especificados
