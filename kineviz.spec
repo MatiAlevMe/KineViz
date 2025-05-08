@@ -33,22 +33,25 @@ python_version_short = f"{sys.version_info.major}.{sys.version_info.minor}"
 python_lib_filename = f"libpython{python_version_short}.dylib"
 # sys.base_prefix debería apuntar a /Users/arakito/.pyenv/versions/3.12.6/ en este caso
 python_lib_base_dir = getattr(sys, "base_prefix", sys.prefix) # Fallback a sys.prefix si base_prefix no existe (Python < 3.3)
-python_lib_path = os.path.join(python_lib_base_dir, 'lib', python_lib_filename)
+_python_lib_path_temp = os.path.join(python_lib_base_dir, 'lib', python_lib_filename)
 
 # Verificar si existe, si no, lanzar error claro
-if not os.path.exists(python_lib_path):
+if not os.path.exists(_python_lib_path_temp):
     # Podríamos intentar un fallback, pero es mejor fallar si no se encuentra
     # python_lib_path_fallback = '/Users/arakito/.pyenv/versions/3.12.6/lib/libpython3.12.dylib' # Ruta anterior
     # if os.path.exists(python_lib_path_fallback):
-    #     print(f"Warning: Dynamic Python lib path not found: {python_lib_path}. Using fallback: {python_lib_path_fallback}")
-    #     python_lib_path = python_lib_path_fallback
+    #     print(f"Warning: Dynamic Python lib path not found: {_python_lib_path_temp}. Using fallback: {python_lib_path_fallback}")
+    #     _python_lib_path_temp = python_lib_path_fallback
     # else:
     expected_location_dir = os.path.join(python_lib_base_dir, 'lib')
     raise FileNotFoundError(
         f"Python library '{python_lib_filename}' not found in expected location: {expected_location_dir}. "
-        f"Checked path: {python_lib_path}. Please ensure Python was compiled with --enable-shared or check your pyenv setup."
+        f"Checked path: {_python_lib_path_temp}. Please ensure Python was compiled with --enable-shared or check your pyenv setup."
     )
-print(f"Using Python library: {python_lib_path}")
+
+# Usar la ruta real para evitar problemas con enlaces simbólicos
+python_lib_path = os.path.realpath(_python_lib_path_temp)
+print(f"Using Python library (real path): {python_lib_path}")
 # --- Fin determinación dinámica ---
 
 
