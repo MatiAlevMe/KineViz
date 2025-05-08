@@ -105,7 +105,8 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=True, # Comprime el ejecutable (puede requerir instalar UPX)
-    console=True, # True para depuración (muestra consola al ejecutar .app)
+    console=False, # False para una aplicación GUI estándar en macOS.
+                   # Esto podría influir en cómo BUNDLE trata al exe.
     disable_windowed_traceback=False,
     target_arch=None, # None para arquitectura nativa (arm64 en tu Mac)
     codesign_identity=None,
@@ -138,10 +139,11 @@ app = BUNDLE(
     info_plist={ # Añadir entradas básicas al Info.plist si es necesario
         'NSPrincipalClass': 'NSApplication',
         'NSHighResolutionCapable': 'True'
-    },
-    binaries=a.binaries, # Pasar explícitamente los binarios de Analysis a BUNDLE
-    datas=a.datas,       # Pasar explícitamente los datas de Analysis a BUNDLE
-    zipfiles=a.zipfiles  # Pasar explícitamente los zipfiles de Analysis a BUNDLE
+    }
+    # Los binarios, datas, y zipfiles de Analysis 'a' deben ser recogidos
+    # a través del TOC del objeto 'exe' (ya que exclude_binaries=False en EXE).
+    # BUNDLE debería entonces colocarlos correctamente según sus destinos especificados
+    # en 'a.binaries' y 'a.datas'.
 )
 # --- Fin Sección macOS ---
 
