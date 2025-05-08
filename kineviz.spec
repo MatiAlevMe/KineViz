@@ -96,8 +96,10 @@ pyz = PYZ(a.pure, a.zipped_data, cipher_block_size=None)
 exe = EXE(
     pyz,
     a.scripts,
-    [],
-    exclude_binaries=True,
+    [], # Esto es para entradas *adicionales* al toc no presentes en el objeto Analysis 'a'.
+      # a.binaries, a.datas, a.zipfiles son implícitamente parte de lo que EXE procesa desde Analysis 'a'
+      # si no se excluyen.
+    exclude_binaries=False, # Asegura que los binarios de Analysis se incluyan en el TOC de EXE para BUNDLE
     name=app_name,
     debug=False,
     bootloader_ignore_signals=False,
@@ -136,9 +138,10 @@ app = BUNDLE(
     info_plist={ # Añadir entradas básicas al Info.plist si es necesario
         'NSPrincipalClass': 'NSApplication',
         'NSHighResolutionCapable': 'True'
-    },
-    datas=a.datas # Incluir los datos definidos en Analysis (irán a Contents/Resources)
-    # binaries y zipfiles son manejados por 'exe'
+    }
+    # Los 'datas' de Analysis 'a' ahora se incluyen a través del TOC del objeto 'exe',
+    # por lo que no es necesario especificar a.datas separadamente para BUNDLE aquí.
+    # Los binarios de Analysis 'a' (como libpython) también están en 'exe.toc'.
 )
 # --- Fin Sección macOS ---
 
