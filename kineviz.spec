@@ -28,10 +28,12 @@ icon_file_mac = str(project_root / 'kineviz' / 'assets' / 'kineviz_icon_mac.icns
 icon_to_use = icon_file_mac # Activo para build de macOS
 
 # --- Determinar dinámicamente la ruta de la librería Python ---
-# Usar sys.prefix que apunta a la raíz del entorno Python activo
+# Usar sys.base_prefix que apunta a la raíz de la instalación de Python base
 python_version_short = f"{sys.version_info.major}.{sys.version_info.minor}"
 python_lib_filename = f"libpython{python_version_short}.dylib"
-python_lib_path = os.path.join(sys.prefix, 'lib', python_lib_filename)
+# sys.base_prefix debería apuntar a /Users/arakito/.pyenv/versions/3.12.6/ en este caso
+python_lib_base_dir = getattr(sys, "base_prefix", sys.prefix) # Fallback a sys.prefix si base_prefix no existe (Python < 3.3)
+python_lib_path = os.path.join(python_lib_base_dir, 'lib', python_lib_filename)
 
 # Verificar si existe, si no, lanzar error claro
 if not os.path.exists(python_lib_path):
@@ -41,8 +43,9 @@ if not os.path.exists(python_lib_path):
     #     print(f"Warning: Dynamic Python lib path not found: {python_lib_path}. Using fallback: {python_lib_path_fallback}")
     #     python_lib_path = python_lib_path_fallback
     # else:
+    expected_location_dir = os.path.join(python_lib_base_dir, 'lib')
     raise FileNotFoundError(
-        f"Python library '{python_lib_filename}' not found in expected location: {os.path.join(sys.prefix, 'lib')}. "
+        f"Python library '{python_lib_filename}' not found in expected location: {expected_location_dir}. "
         f"Checked path: {python_lib_path}. Please ensure Python was compiled with --enable-shared or check your pyenv setup."
     )
 print(f"Using Python library: {python_lib_path}")
