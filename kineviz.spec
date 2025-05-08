@@ -22,44 +22,24 @@ datas_to_include = [
 
 # Opcional: Añadir un icono
 # Asegúrate de que la ruta correcta esté activa para el SO en el que estás construyendo.
-# icon_file_win = str(project_root / 'kineviz' / 'assets' / 'kineviz_icon_windows.ico') # Para Windows (.ico)
-icon_file_mac = str(project_root / 'kineviz' / 'assets' / 'kineviz_icon_mac.icns') # Para macOS (.icns)
-# icon_to_use = icon_file_win # Descomentar para build de Windows
-icon_to_use = icon_file_mac # Activo para build de macOS
+icon_file_win = str(project_root / 'kineviz' / 'assets' / 'kineviz_icon_windows.ico') # Para Windows (.ico)
+# icon_file_mac = str(project_root / 'kineviz' / 'assets' / 'kineviz_icon_mac.icns') # Para macOS (.icns)
+icon_to_use = icon_file_win # Activo para build de Windows
+# icon_to_use = icon_file_mac # Comentado para build de macOS
 
-# --- Determinar dinámicamente la ruta de la librería Python ---
-# Usar sys.base_prefix que apunta a la raíz de la instalación de Python base
-python_version_short = f"{sys.version_info.major}.{sys.version_info.minor}"
-python_lib_filename = f"libpython{python_version_short}.dylib"
-# sys.base_prefix debería apuntar a /Users/arakito/.pyenv/versions/3.12.6/ en este caso
-python_lib_base_dir = getattr(sys, "base_prefix", sys.prefix) # Fallback a sys.prefix si base_prefix no existe (Python < 3.3)
-_python_lib_path_temp = os.path.join(python_lib_base_dir, 'lib', python_lib_filename)
-
-# Verificar si existe, si no, lanzar error claro
-if not os.path.exists(_python_lib_path_temp):
-    # Podríamos intentar un fallback, pero es mejor fallar si no se encuentra
-    # python_lib_path_fallback = '/Users/arakito/.pyenv/versions/3.12.6/lib/libpython3.12.dylib' # Ruta anterior
-    # if os.path.exists(python_lib_path_fallback):
-    #     print(f"Warning: Dynamic Python lib path not found: {_python_lib_path_temp}. Using fallback: {python_lib_path_fallback}")
-    #     _python_lib_path_temp = python_lib_path_fallback
-    # else:
-    expected_location_dir = os.path.join(python_lib_base_dir, 'lib')
-    raise FileNotFoundError(
-        f"Python library '{python_lib_filename}' not found in expected location: {expected_location_dir}. "
-        f"Checked path: {_python_lib_path_temp}. Please ensure Python was compiled with --enable-shared or check your pyenv setup."
-    )
-
-# Usar la ruta real para evitar problemas con enlaces simbólicos
-python_lib_path = os.path.realpath(_python_lib_path_temp)
-print(f"Using Python library (real path): {python_lib_path}")
-# --- Fin determinación dinámica ---
+# --- La inclusión explícita de la librería Python es generalmente para macOS con pyenv ---
+# --- En Windows, PyInstaller suele manejar la pythonXX.dll automáticamente. ---
+# --- Si hay problemas en Windows, suelen ser por vcruntime140.dll u otras DLLs de MSVC. ---
+# print(f"Script para Windows, no se busca libpython dinámicamente como en macOS.")
+# --- Fin sección librería Python ---
 
 
 a = Analysis(
     [entry_point],
     pathex=[str(project_root)], # Asegura que PyInstaller busque módulos desde la raíz
-    # Añadir la librería compartida de Python dinámicamente determinada
-    binaries=[(python_lib_path, 'Frameworks')],
+    # Para Windows, no es común necesitar añadir explícitamente pythonXX.dll a binaries.
+    # PyInstaller lo maneja. Si se necesitan DLLs de C++, se añadirían aquí.
+    binaries=[], # Dejar vacío por ahora para Windows, a menos que se identifiquen DLLs específicas.
     datas=datas_to_include,
     # Añadir importaciones ocultas comunes para data science y GUI
     hiddenimports=[
@@ -116,24 +96,24 @@ exe = EXE(
 
 # --- Sección para Windows ---
 # Descomentar esta sección y comentar la sección BUNDLE al construir en Windows
-# coll = COLLECT(
-#     exe,
-#     a.binaries,
-#     a.zipfiles,
-#     a.datas,
-#     strip=False,
-#     upx=True,
-#     upx_exclude=[],
-#     name=app_name
-# )
+coll = COLLECT(
+    exe,
+    a.binaries, # Incluye binarios definidos en Analysis (si los hubiera)
+    a.zipfiles, # Incluye archivos zip de Analysis
+    a.datas,    # Incluye archivos de datos de Analysis
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    name=app_name # El nombre del directorio que se creará en dist/
+)
 # --- Fin Sección Windows ---
 
 # --- Sección para macOS ---
 # Descomentar esta sección y comentar la sección COLLECT al construir en macOS
 # Específico para macOS: Crear un .app bundle
-app = BUNDLE(
-    exe, # Usar el ejecutable directamente
-    name=f'{app_name}.app',
+# app = BUNDLE(
+#     exe, # Usar el ejecutable directamente
+#     name=f'{app_name}.app',
     icon=icon_to_use, # Usar el .icns definido arriba
     bundle_identifier=None, # Opcional: ej. 'com.tuorganizacion.kineviz'
     info_plist={ # Añadir entradas básicas al Info.plist si es necesario
@@ -144,7 +124,7 @@ app = BUNDLE(
     # a través del TOC del objeto 'exe' (ya que exclude_binaries=False en EXE).
     # BUNDLE debería entonces colocarlos correctamente según sus destinos especificados
     # en 'a.binaries' y 'a.datas'.
-)
+# )
 # --- Fin Sección macOS ---
 
 # Nota: Para macOS, asegúrate de que la sección 'app = BUNDLE(...)' esté descomentada
