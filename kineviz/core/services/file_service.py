@@ -402,7 +402,7 @@ class FileService:
                     for err in vi_rule_errors:
                         logger.warning(f"- {err}")
                     # Añadir un error genérico para la UI
-                    results['errors'].append("No se cumplen las especificaciones de manejo de descriptores para el estudio. Revise los logs para más detalles.")
+                    results['errors'].append("No se cumplen las especificaciones de manejo de descriptores para el estudio.")
                     return results # Detener procesamiento
 
             except Exception as e_val_vi:
