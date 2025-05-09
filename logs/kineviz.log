@@ -49073,3 +49073,246 @@ ValueError: could not convert string to float: '10,8521'
 2025-05-08 21:34:43,077 - WARNING - [kineviz.ui.utils.validators] - Errores de validación de reglas de VI: ["Paciente 'Pte01': Para la VI 'Peso' (no permite combinación), se encontraron múltiples descriptores diferentes: Delgado, Obeso. Solo se permite un descriptor (o 'Nulo') por paciente para esta VI."]
 2025-05-08 21:34:43,077 - WARNING - [kineviz.core.services.file_service] - Validación de reglas de VI fallida para estudio 24. Errores específicos:
 2025-05-08 21:34:43,078 - WARNING - [kineviz.core.services.file_service] - - Paciente 'Pte01': Para la VI 'Peso' (no permite combinación), se encontraron múltiples descriptores diferentes: Delgado, Obeso. Solo se permite un descriptor (o 'Nulo') por paciente para esta VI.
+2025-05-08 22:03:11,424 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-05-08 22:03:11,424 - INFO - [__main__] - Iniciando KineViz...
+2025-05-08 22:03:11,913 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:03:11,913 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:03:15,562 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 27
+2025-05-08 22:03:15,579 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 27
+2025-05-08 22:03:15,580 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 27: {}
+2025-05-08 22:03:15,580 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, Delgado, Obeso, SJ'
+2025-05-08 22:03:40,088 - DEBUG - [kineviz.ui.dialogs.file_dialog] - Estructura VIs cargada en FileDialog para estudio 27: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Salto', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': True, 'is_mandatory': True}]
+2025-05-08 22:03:44,599 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte02 Nulo CMJ 01.txt' ---
+2025-05-08 22:03:44,599 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Salto', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': True, 'is_mandatory': True}]
+2025-05-08 22:03:44,599 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte02 Nulo CMJ 01'
+2025-05-08 22:03:44,599 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte02', 'Nulo', 'CMJ', '01']
+2025-05-08 22:03:44,599 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Nulo', 'CMJ']
+2025-05-08 22:03:44,599 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-05-08 22:03:44,599 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Nulo' es Nulo.
+2025-05-08 22:03:44,599 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'CMJ' es válido para VI 'Salto'.
+2025-05-08 22:03:44,600 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte02, Descriptores: [None, 'CMJ'], Intento: 1
+2025-05-08 22:03:45,429 - INFO - [kineviz.core.services.file_service] - Estudio 27: Máx Sujetos=10, Máx Intentos=10
+2025-05-08 22:03:45,432 - DEBUG - [kineviz.core.services.file_service] - Buscando detalles de archivos para estudio 27 en /Users/arakito/Mati/Codigo/Python/KineViz/estudios/4_Test
+2025-05-08 22:03:45,432 - DEBUG - [kineviz.core.services.file_service] - Detalles encontrados: 0 sujetos, máx 0 intentos. Data: {}
+2025-05-08 22:03:45,432 - DEBUG - [kineviz.core.services.file_service] - Validando preliminarmente: 'Pte02 Nulo CMJ 01.txt'
+2025-05-08 22:03:45,432 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte02 Nulo CMJ 01.txt' ---
+2025-05-08 22:03:45,432 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Salto', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': True, 'is_mandatory': True}]
+2025-05-08 22:03:45,432 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte02 Nulo CMJ 01'
+2025-05-08 22:03:45,432 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte02', 'Nulo', 'CMJ', '01']
+2025-05-08 22:03:45,432 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Nulo', 'CMJ']
+2025-05-08 22:03:45,433 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-05-08 22:03:45,433 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Nulo' es Nulo.
+2025-05-08 22:03:45,433 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'CMJ' es válido para VI 'Salto'.
+2025-05-08 22:03:45,433 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte02, Descriptores: [None, 'CMJ'], Intento: 1
+2025-05-08 22:03:45,433 - INFO - [kineviz.core.services.file_service] - Iniciando validación de reglas de VI para 1 archivos.
+2025-05-08 22:03:45,434 - WARNING - [kineviz.ui.utils.validators] - Errores de validación de reglas de VI: ["Paciente 'Pte02': Para la VI 'Salto' (múltiple y obligatoria), faltan los siguientes descriptores: SJ. Cada paciente debe tener al menos un archivo para cada descriptor de esta VI."]
+2025-05-08 22:03:45,434 - WARNING - [kineviz.core.services.file_service] - Validación de reglas de VI fallida para estudio 27. Errores específicos:
+2025-05-08 22:03:45,434 - WARNING - [kineviz.core.services.file_service] - - Paciente 'Pte02': Para la VI 'Salto' (múltiple y obligatoria), faltan los siguientes descriptores: SJ. Cada paciente debe tener al menos un archivo para cada descriptor de esta VI.
+2025-05-08 22:03:49,123 - DEBUG - [kineviz.ui.dialogs.file_dialog] - Estructura VIs cargada en FileDialog para estudio 27: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Salto', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': True, 'is_mandatory': True}]
+2025-05-08 22:04:09,607 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Nulo CMJ 01.txt' ---
+2025-05-08 22:04:09,607 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Salto', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': True, 'is_mandatory': True}]
+2025-05-08 22:04:09,607 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Nulo CMJ 01'
+2025-05-08 22:04:09,607 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Nulo', 'CMJ', '01']
+2025-05-08 22:04:09,608 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Nulo', 'CMJ']
+2025-05-08 22:04:09,608 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-05-08 22:04:09,608 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Nulo' es Nulo.
+2025-05-08 22:04:09,608 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'CMJ' es válido para VI 'Salto'.
+2025-05-08 22:04:09,608 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Descriptores: [None, 'CMJ'], Intento: 1
+2025-05-08 22:04:09,608 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Obeso SJ 02.txt' ---
+2025-05-08 22:04:09,608 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Salto', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': True, 'is_mandatory': True}]
+2025-05-08 22:04:09,608 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Obeso SJ 02'
+2025-05-08 22:04:09,608 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Obeso', 'SJ', '02']
+2025-05-08 22:04:09,608 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Obeso', 'SJ']
+2025-05-08 22:04:09,608 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-05-08 22:04:09,608 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Obeso' es válido para VI 'Peso'.
+2025-05-08 22:04:09,608 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'SJ' es válido para VI 'Salto'.
+2025-05-08 22:04:09,608 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Descriptores: ['Obeso', 'SJ'], Intento: 2
+2025-05-08 22:04:10,139 - INFO - [kineviz.core.services.file_service] - Estudio 27: Máx Sujetos=10, Máx Intentos=10
+2025-05-08 22:04:10,140 - DEBUG - [kineviz.core.services.file_service] - Buscando detalles de archivos para estudio 27 en /Users/arakito/Mati/Codigo/Python/KineViz/estudios/4_Test
+2025-05-08 22:04:10,140 - DEBUG - [kineviz.core.services.file_service] - Detalles encontrados: 0 sujetos, máx 0 intentos. Data: {}
+2025-05-08 22:04:10,140 - DEBUG - [kineviz.core.services.file_service] - Validando preliminarmente: 'Pte01 Nulo CMJ 01.txt'
+2025-05-08 22:04:10,140 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Nulo CMJ 01.txt' ---
+2025-05-08 22:04:10,140 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Salto', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': True, 'is_mandatory': True}]
+2025-05-08 22:04:10,140 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Nulo CMJ 01'
+2025-05-08 22:04:10,140 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Nulo', 'CMJ', '01']
+2025-05-08 22:04:10,140 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Nulo', 'CMJ']
+2025-05-08 22:04:10,140 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-05-08 22:04:10,141 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Nulo' es Nulo.
+2025-05-08 22:04:10,141 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'CMJ' es válido para VI 'Salto'.
+2025-05-08 22:04:10,141 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Descriptores: [None, 'CMJ'], Intento: 1
+2025-05-08 22:04:10,141 - DEBUG - [kineviz.core.services.file_service] - Validando preliminarmente: 'Pte01 Obeso SJ 02.txt'
+2025-05-08 22:04:10,141 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Obeso SJ 02.txt' ---
+2025-05-08 22:04:10,141 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Salto', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': True, 'is_mandatory': True}]
+2025-05-08 22:04:10,141 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Obeso SJ 02'
+2025-05-08 22:04:10,141 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Obeso', 'SJ', '02']
+2025-05-08 22:04:10,141 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Obeso', 'SJ']
+2025-05-08 22:04:10,141 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-05-08 22:04:10,141 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Obeso' es válido para VI 'Peso'.
+2025-05-08 22:04:10,141 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'SJ' es válido para VI 'Salto'.
+2025-05-08 22:04:10,141 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Descriptores: ['Obeso', 'SJ'], Intento: 2
+2025-05-08 22:04:10,141 - INFO - [kineviz.core.services.file_service] - Iniciando validación de reglas de VI para 2 archivos.
+2025-05-08 22:04:10,142 - INFO - [kineviz.core.services.file_service] - Todas las validaciones exitosas. Procesando 2 archivos para estudio 27.
+2025-05-08 22:04:10,142 - DEBUG - [kineviz.core.services.file_service] - Procesando archivo validado: 'Pte01 Nulo CMJ 01.txt'
+2025-05-08 22:04:10,208 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte01 Nulo CMJ 01.txt: {'Cinematica', 'Cinetica'}
+2025-05-08 22:04:10,208 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte01 Nulo CMJ 01.txt' procesado y agregado exitosamente al estudio 27.
+2025-05-08 22:04:10,208 - DEBUG - [kineviz.core.services.file_service] - Procesando archivo validado: 'Pte01 Obeso SJ 02.txt'
+2025-05-08 22:04:10,228 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte01 Obeso SJ 02.txt: {'Cinematica', 'Cinetica'}
+2025-05-08 22:04:10,229 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte01 Obeso SJ 02.txt' procesado y agregado exitosamente al estudio 27.
+2025-05-08 22:04:10,229 - INFO - [kineviz.core.services.file_service] - Proceso de agregado finalizado para estudio 27. Éxitos: 2, Errores: 0.
+2025-05-08 22:04:19,970 - DEBUG - [kineviz.ui.dialogs.file_dialog] - Estructura VIs cargada en FileDialog para estudio 27: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Salto', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': True, 'is_mandatory': True}]
+2025-05-08 22:04:38,878 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Obeso CMJ 01.txt' ---
+2025-05-08 22:04:38,879 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Salto', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': True, 'is_mandatory': True}]
+2025-05-08 22:04:38,879 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Obeso CMJ 01'
+2025-05-08 22:04:38,879 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Obeso', 'CMJ', '01']
+2025-05-08 22:04:38,879 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Obeso', 'CMJ']
+2025-05-08 22:04:38,879 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-05-08 22:04:38,879 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Obeso' es válido para VI 'Peso'.
+2025-05-08 22:04:38,879 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'CMJ' es válido para VI 'Salto'.
+2025-05-08 22:04:38,879 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Descriptores: ['Obeso', 'CMJ'], Intento: 1
+2025-05-08 22:04:39,895 - INFO - [kineviz.core.services.file_service] - Estudio 27: Máx Sujetos=10, Máx Intentos=10
+2025-05-08 22:04:39,896 - DEBUG - [kineviz.core.services.file_service] - Buscando detalles de archivos para estudio 27 en /Users/arakito/Mati/Codigo/Python/KineViz/estudios/4_Test
+2025-05-08 22:04:39,897 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Nulo CMJ 01_Cinematica.txt' ---
+2025-05-08 22:04:39,897 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Salto', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': True, 'is_mandatory': True}]
+2025-05-08 22:04:39,897 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Nulo CMJ 01'
+2025-05-08 22:04:39,897 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Nulo', 'CMJ', '01']
+2025-05-08 22:04:39,897 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Nulo', 'CMJ']
+2025-05-08 22:04:39,897 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-05-08 22:04:39,898 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Nulo' es Nulo.
+2025-05-08 22:04:39,898 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'CMJ' es válido para VI 'Salto'.
+2025-05-08 22:04:39,898 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Descriptores: [None, 'CMJ'], Intento: 1
+2025-05-08 22:04:39,898 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Obeso SJ 02_Cinematica.txt' ---
+2025-05-08 22:04:39,898 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Salto', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': True, 'is_mandatory': True}]
+2025-05-08 22:04:39,898 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Obeso SJ 02'
+2025-05-08 22:04:39,898 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Obeso', 'SJ', '02']
+2025-05-08 22:04:39,898 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Obeso', 'SJ']
+2025-05-08 22:04:39,898 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-05-08 22:04:39,898 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Obeso' es válido para VI 'Peso'.
+2025-05-08 22:04:39,899 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'SJ' es válido para VI 'Salto'.
+2025-05-08 22:04:39,899 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Descriptores: ['Obeso', 'SJ'], Intento: 2
+2025-05-08 22:04:39,899 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Obeso SJ 02_Cinetica.txt' ---
+2025-05-08 22:04:39,899 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Salto', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': True, 'is_mandatory': True}]
+2025-05-08 22:04:39,899 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Obeso SJ 02'
+2025-05-08 22:04:39,899 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Obeso', 'SJ', '02']
+2025-05-08 22:04:39,899 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Obeso', 'SJ']
+2025-05-08 22:04:39,899 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-05-08 22:04:39,899 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Obeso' es válido para VI 'Peso'.
+2025-05-08 22:04:39,899 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'SJ' es válido para VI 'Salto'.
+2025-05-08 22:04:39,899 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Descriptores: ['Obeso', 'SJ'], Intento: 2
+2025-05-08 22:04:39,900 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Nulo CMJ 01_Cinetica.txt' ---
+2025-05-08 22:04:39,900 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Salto', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': True, 'is_mandatory': True}]
+2025-05-08 22:04:39,900 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Nulo CMJ 01'
+2025-05-08 22:04:39,900 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Nulo', 'CMJ', '01']
+2025-05-08 22:04:39,900 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Nulo', 'CMJ']
+2025-05-08 22:04:39,900 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-05-08 22:04:39,900 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Nulo' es Nulo.
+2025-05-08 22:04:39,900 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'CMJ' es válido para VI 'Salto'.
+2025-05-08 22:04:39,900 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Descriptores: [None, 'CMJ'], Intento: 1
+2025-05-08 22:04:39,900 - DEBUG - [kineviz.core.services.file_service] - Detalles encontrados: 1 sujetos, máx 2 intentos. Data: {'Pte01': {1, 2}}
+2025-05-08 22:04:39,901 - DEBUG - [kineviz.core.services.file_service] - Validando preliminarmente: 'Pte01 Obeso CMJ 01.txt'
+2025-05-08 22:04:39,901 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Obeso CMJ 01.txt' ---
+2025-05-08 22:04:39,901 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Salto', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': True, 'is_mandatory': True}]
+2025-05-08 22:04:39,901 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Obeso CMJ 01'
+2025-05-08 22:04:39,901 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Obeso', 'CMJ', '01']
+2025-05-08 22:04:39,901 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Obeso', 'CMJ']
+2025-05-08 22:04:39,901 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-05-08 22:04:39,901 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Obeso' es válido para VI 'Peso'.
+2025-05-08 22:04:39,901 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'CMJ' es válido para VI 'Salto'.
+2025-05-08 22:04:39,901 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Descriptores: ['Obeso', 'CMJ'], Intento: 1
+2025-05-08 22:04:39,901 - INFO - [kineviz.core.services.file_service] - Iniciando validación de reglas de VI para 1 archivos.
+2025-05-08 22:04:39,902 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Nulo CMJ 01_Cinematica.txt' ---
+2025-05-08 22:04:39,902 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Salto', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': True, 'is_mandatory': True}]
+2025-05-08 22:04:39,902 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Nulo CMJ 01'
+2025-05-08 22:04:39,903 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Nulo', 'CMJ', '01']
+2025-05-08 22:04:39,903 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Nulo', 'CMJ']
+2025-05-08 22:04:39,903 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-05-08 22:04:39,903 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Nulo' es Nulo.
+2025-05-08 22:04:39,903 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'CMJ' es válido para VI 'Salto'.
+2025-05-08 22:04:39,903 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Descriptores: [None, 'CMJ'], Intento: 1
+2025-05-08 22:04:39,903 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Obeso SJ 02_Cinematica.txt' ---
+2025-05-08 22:04:39,903 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Salto', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': True, 'is_mandatory': True}]
+2025-05-08 22:04:39,903 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Obeso SJ 02'
+2025-05-08 22:04:39,903 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Obeso', 'SJ', '02']
+2025-05-08 22:04:39,903 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Obeso', 'SJ']
+2025-05-08 22:04:39,903 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-05-08 22:04:39,903 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Obeso' es válido para VI 'Peso'.
+2025-05-08 22:04:39,903 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'SJ' es válido para VI 'Salto'.
+2025-05-08 22:04:39,903 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Descriptores: ['Obeso', 'SJ'], Intento: 2
+2025-05-08 22:04:39,903 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Obeso SJ 02_Cinetica.txt' ---
+2025-05-08 22:04:39,903 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Salto', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': True, 'is_mandatory': True}]
+2025-05-08 22:04:39,903 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Obeso SJ 02'
+2025-05-08 22:04:39,904 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Obeso', 'SJ', '02']
+2025-05-08 22:04:39,904 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Obeso', 'SJ']
+2025-05-08 22:04:39,904 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-05-08 22:04:39,904 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Obeso' es válido para VI 'Peso'.
+2025-05-08 22:04:39,904 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'SJ' es válido para VI 'Salto'.
+2025-05-08 22:04:39,904 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Descriptores: ['Obeso', 'SJ'], Intento: 2
+2025-05-08 22:04:39,904 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Nulo CMJ 01_Cinetica.txt' ---
+2025-05-08 22:04:39,904 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Salto', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': True, 'is_mandatory': True}]
+2025-05-08 22:04:39,904 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Nulo CMJ 01'
+2025-05-08 22:04:39,904 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Nulo', 'CMJ', '01']
+2025-05-08 22:04:39,904 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Nulo', 'CMJ']
+2025-05-08 22:04:39,904 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-05-08 22:04:39,904 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Nulo' es Nulo.
+2025-05-08 22:04:39,904 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'CMJ' es válido para VI 'Salto'.
+2025-05-08 22:04:39,904 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Descriptores: [None, 'CMJ'], Intento: 1
+2025-05-08 22:04:39,904 - INFO - [kineviz.core.services.file_service] - Todas las validaciones exitosas. Procesando 1 archivos para estudio 27.
+2025-05-08 22:04:39,904 - DEBUG - [kineviz.core.services.file_service] - Procesando archivo validado: 'Pte01 Obeso CMJ 01.txt'
+2025-05-08 22:04:40,002 - INFO - [kineviz.core.services.file_service] - Frecuencias procesadas para Pte01 Obeso CMJ 01.txt: {'Cinematica', 'Cinetica'}
+2025-05-08 22:04:40,003 - INFO - [kineviz.core.services.file_service] - Archivo 'Pte01 Obeso CMJ 01.txt' procesado y agregado exitosamente al estudio 27.
+2025-05-08 22:04:40,003 - INFO - [kineviz.core.services.file_service] - Proceso de agregado finalizado para estudio 27. Éxitos: 1, Errores: 0.
+2025-05-08 22:07:20,075 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-05-08 22:07:20,075 - INFO - [__main__] - Iniciando KineViz...
+2025-05-08 22:07:20,323 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:07:20,323 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:09:18,550 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-05-08 22:09:18,551 - INFO - [__main__] - Iniciando KineViz...
+2025-05-08 22:09:18,795 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:09:18,795 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:11:01,691 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-05-08 22:11:01,691 - INFO - [__main__] - Iniciando KineViz...
+2025-05-08 22:11:01,949 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:11:01,949 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:12:05,991 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-05-08 22:12:05,991 - INFO - [__main__] - Iniciando KineViz...
+2025-05-08 22:12:06,207 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:12:06,207 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:12:23,839 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-05-08 22:12:23,839 - INFO - [__main__] - Iniciando KineViz...
+2025-05-08 22:12:24,003 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:12:24,004 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:12:46,794 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-05-08 22:12:46,794 - INFO - [__main__] - Iniciando KineViz...
+2025-05-08 22:12:46,971 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:12:46,971 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:13:06,570 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-05-08 22:13:06,570 - INFO - [__main__] - Iniciando KineViz...
+2025-05-08 22:13:06,754 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:13:06,754 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:13:20,728 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-05-08 22:13:20,728 - INFO - [__main__] - Iniciando KineViz...
+2025-05-08 22:13:20,897 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:13:20,897 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:14:17,584 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-05-08 22:14:17,584 - INFO - [__main__] - Iniciando KineViz...
+2025-05-08 22:14:17,801 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:14:17,801 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:15:17,923 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-05-08 22:15:17,923 - INFO - [__main__] - Iniciando KineViz...
+2025-05-08 22:15:18,107 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:15:18,107 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:15:39,077 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-05-08 22:15:39,077 - INFO - [__main__] - Iniciando KineViz...
+2025-05-08 22:15:39,251 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:15:39,251 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:15:54,190 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-05-08 22:15:54,190 - INFO - [__main__] - Iniciando KineViz...
+2025-05-08 22:15:54,354 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:15:54,354 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:16:16,800 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-05-08 22:16:16,800 - INFO - [__main__] - Iniciando KineViz...
+2025-05-08 22:16:16,973 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:16:16,973 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:16:34,635 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-05-08 22:16:34,636 - INFO - [__main__] - Iniciando KineViz...
+2025-05-08 22:16:34,799 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-08 22:16:34,799 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini

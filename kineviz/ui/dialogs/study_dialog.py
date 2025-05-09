@@ -202,12 +202,12 @@ class StudyDialog(Toplevel):
             remove_vi_button.config(state=tk.DISABLED)
 
         # --- Contenedor para descriptores de esta VI ---
-        descriptors_container = ttk.Frame(vi_frame, padding="5 0 0 20") # Indentación izquierda
+        descriptors_container = ttk.Frame(vi_frame, padding="5 0 0 5") # Indentación izquierda
         descriptors_container.pack(fill=tk.X)
 
         # --- Checkboxes para flags de VI ---
         # Further reduced pady for vi_flags_frame to match inter-descriptor spacing
-        vi_flags_frame = ttk.Frame(vi_frame, padding="0 5 5 20") # Padding: top, right, bottom, left
+        vi_flags_frame = ttk.Frame(vi_frame, padding="5 0 0 5") # Padding: top, right, bottom, left
         vi_flags_frame.pack(fill=tk.X, pady=(1,0), anchor="w") # Anchor west, top padding changed from 2 to 1
 
         allows_combination_var = tk.BooleanVar(value=allows_combination_value)
