@@ -167,6 +167,10 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 * **12. Eliminar Funcionalidad "Analizar Estudio" Antigua:** (Hecho)
     * **12.1 `StudyView`**: (Hecho) Eliminar botón "Analizar Estudio".
     * **12.2 (Opcional/Futuro)**: Eliminar `AnalysisDialog` y métodos relacionados en `AnalysisService` si ya no se usan.
+* **13. Refinamientos UI y Texto en Diálogo/Vista Estudio:** (En Progreso)
+    * **13.1 `StudyDialog`**: (Hecho) Mejorar layout de checkboxes "¿Multiple?" y "¿Obligatorio?" (visibilidad condicional). Actualizar etiquetas ("Cantidad de Participantes", "Cantidad de Intento(s) de Prueba", "Nombre del Estudio", "Variable(s) Independientes (VIs)").
+    * **13.2 `StudyView`**: (Hecho) Actualizar etiquetas ("Nombre del Estudio", "Cantidad de Participantes", "Cantidad de Intento(s) de Prueba", "Variable(s) Independientes (VIs)"). Mejorar popup de info de VIs para mostrar manejo de descriptores.
+    * **13.3 Actualizar Manuales de Ayuda**: (Hecho) Reflejar cambios de etiquetas y comportamiento en `manual_usuario.txt`, `study_dialog_iv_help.txt`, `study_view_help.txt`.
 
 **Fase 4: Empaquetado y Distribución (En Progreso)**
 

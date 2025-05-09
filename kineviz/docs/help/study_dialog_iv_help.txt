@@ -1,4 +1,4 @@
-Guía Rápida: Variables Independientes y Descriptores
+Guía Rápida: Variable(s) Independientes (VIs) y Descriptores
 
 **¿Qué son?**
 
@@ -10,10 +10,18 @@ Guía Rápida: Variables Independientes y Descriptores
 1. **Añadir VI:** Haz clic en "+ Añadir Variable Independiente" para crear una nueva categoría. Dale un nombre claro.
 2. **Añadir Descriptores:** Haz clic en el icono `+` junto al nombre de la VI para añadir los posibles valores (descriptores) para esa variable.
     * Cada VI debe tener **al menos dos** descriptores.
-    * Los nombres de VI y Descriptores no pueden estar vacíos ni repetidos dentro del mismo estudio.
+    * Los nombres de VI y Descriptores no pueden estar vacíos ni repetidos dentro del mismo estudio (el nombre de la VI debe ser único, y los descriptores deben ser únicos *dentro* de su VI).
     * **Importante:** Un descriptor **no puede** llamarse "Nulo" (ni "nulo", "NULO", etc.).
-3. **Eliminar:** Usa el icono `🗑️` para eliminar una VI completa o un descriptor específico.
-4. **Orden:** El orden en que defines las VIs es **importante**. Determina cómo debes nombrar tus archivos de datos.
+3. **Configurar Comportamiento de VI:**
+    * **¿Multiple?**:
+        * **Si está marcado**: Un mismo participante puede tener archivos con diferentes descriptores de esta VI. Por ejemplo, si la VI es "TipoSalto" con descriptores "CMJ" y "SJ", el participante Pte01 podría tener archivos `Pte01 CMJ ...` y también `Pte01 SJ ...`.
+        * **Si NO está marcado**: Un participante solo puede tener un único descriptor de esta VI asignado a través de todos sus archivos. Si Pte01 tiene un archivo con el descriptor "PesoObeso" para la VI "PesoCorporal", todos los demás archivos de Pte01 deben usar "PesoObeso" para esa VI (o "Nulo", si aplica para esa VI en ese archivo específico). El sistema validará esto al agregar archivos.
+    * **¿Obligatorio?**:
+        * Esta casilla **solo aparece si marca "¿Multiple?"**.
+        * **Si está marcado**: Cada participante del estudio DEBE tener al menos un archivo para CADA UNO de los descriptores definidos en esta VI. Por ejemplo, si la VI "TipoSalto" tiene descriptores "CMJ" y "SJ", y "¿Obligatorio?" está marcado, entonces Pte01 debe tener al menos un archivo `...CMJ...` y al menos un archivo `...SJ...`.
+        * **Si NO está marcado** (pero "¿Multiple?" sí lo está): Los participantes pueden tener algunos o todos los descriptores de esta VI. Es flexible.
+4. **Eliminar:** Usa el icono `🗑️` para eliminar una VI completa o un descriptor específico.
+5. **Orden:** El orden en que defines las VIs es **importante**. Determina cómo debes nombrar tus archivos de datos.
 
 **Nombrar Archivos:**
 
@@ -34,13 +42,13 @@ El formato debe ser: `PteXX [Desc_VI1] [Desc_VI2] ... [Desc_VIn] NN_Frecuencia.e
 **Ejemplo (VIs: "Tipo Salto", "Condición"):**
 
 * `Pte01 CMJ Obeso 01_Cinematica.txt` (Válido)
-* `Pte02 SJ Nulo 03_Cinematica.txt` (Válido - Sin condición específica)
-* `Pte03 Nulo Normal 01_Cinematica.txt` (Válido - Sin tipo de salto específico)
-* `Pte04 CMJ 02_Cinematica.txt` (INVÁLIDO - Falta posición para "Condición")
-* `Pte05 Nulo Nulo 01_Cinematica.txt` (INVÁLIDO - Debe tener al menos un descriptor no-Nulo)
+* `Pte02 SJ Nulo 03_Cinematica.txt` (Válido - Sin condición específica para la segunda VI)
+* `Pte03 Nulo Normal 01_Cinematica.txt` (Válido - Sin tipo de salto específico para la primera VI)
+* `Pte04 CMJ 02_Cinematica.txt` (INVÁLIDO - Falta posición para la segunda VI, "Condición")
+* `Pte05 Nulo Nulo 01_Cinematica.txt` (INVÁLIDO - Debe tener al menos un descriptor que no sea "Nulo")
 
 **Edición:**
 
-* Al editar un estudio, **no puedes** añadir ni eliminar VIs o Descriptores.
-* **Sí puedes** cambiar el nombre de las Variables Independientes, el número de sujetos y la cantidad de intentos.
-* **Importante:** Al editar, no podrás reducir el número de sujetos por debajo de la cantidad de sujetos distintos ya presentes en los archivos del estudio. Tampoco podrás reducir la cantidad de intentos por debajo del número máximo de intentos que cualquier sujeto ya tenga registrado.
+* Al editar un estudio, **no puedes** añadir ni eliminar VIs o Descriptores, ni cambiar las opciones de "¿Multiple?" o "¿Obligatorio?".
+* **Sí puedes** cambiar el Nombre del Estudio, la Cantidad de Participantes y la Cantidad de Intento(s) de Prueba.
+* **Importante:** Al editar, no podrás reducir la Cantidad de Participantes por debajo de la cantidad de participantes distintos ya presentes en los archivos del estudio. Tampoco podrás reducir la Cantidad de Intento(s) de Prueba por debajo del número máximo de intentos que cualquier participante ya tenga registrado.
