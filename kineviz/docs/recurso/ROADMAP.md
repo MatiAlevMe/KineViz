@@ -121,7 +121,9 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
     * **8.1 `AnalysisService.list_individual_analyses` / `delete_individual_analysis`**: (Hecho).
     * **8.2 Conectar UI `IndividualAnalysisManagerDialog`**: (Hecho) Cargar, ver PNG, ver HTML, eliminar, abrir carpeta. Mostrar grupos combinados y p-valor.
 * **10. Corrección de Errores:** (En Progreso) Revisar y corregir errores conocidos (ej: formato cabeceras CSV, error generación tablas discretas, inconsistencia nombres archivo análisis individual).
-* **11. Integración y Pruebas:** (Pendiente) Integrar y probar toda la funcionalidad de análisis discreto.
+* **11. Implementar agregación de datos para análisis de efectos principales en `perform_individual_analysis`**: (Pendiente) Cuando se selecciona el modo "1VI" en la configuración de análisis individual, agregar datos de las tablas de resumen combinadas correspondientes para permitir comparaciones de efectos principales (ej. "todos los jóvenes" vs "todos los mayores").
+* **12. Adaptar `get_common_columns_for_groups` para efectos principales**: (Pendiente) Asegurar que la selección de columnas comunes funcione correctamente cuando se comparan efectos principales en modo "1VI".
+* **13. Integración y Pruebas:** (Pendiente) Integrar y probar toda la funcionalidad de análisis discreto, incluyendo análisis de efectos principales.
 
 **Fase 3: Refactorización a Variables Independientes (VI) y Mejoras UI/Validación** (En Progreso)
 
