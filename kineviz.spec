@@ -54,6 +54,7 @@ a = Analysis(
         'PyPDF2', # Si se usa para manipular PDFs
         'dateutil', # A menudo usado por pandas
         'pytz' # A menudo usado por pandas
+        'scikit-posthocs'
     ],
     hookspath=[],
     # Configuración específica para hooks
