@@ -1302,9 +1302,8 @@ class AnalysisService:
         :return: Lista de nombres de columnas comunes ('Attr/Col/Unit').
                  Retorna lista vacía si no hay comunes o falta archivo.
         """
-        logger.debug(f"Buscando columnas comunes para estudio {study_id}, "
-                     f"freq={frequency}, calc={calculation}, grupos={group_keys}")
-        common_columns = None
+        logger.debug(f"Buscando columnas comunes para estudio {study_id}, freq={frequency}, calc={calculation}, grupos_config={group_keys}")
+        common_columns_set = None
         tables_path = self.get_discrete_analysis_tables_path(study_id)
 
         if not tables_path or not group_keys:
@@ -1315,67 +1314,72 @@ class AnalysisService:
             logger.warning(f"Directorio de frecuencia no encontrado: {freq_path}")
             return []
 
-        for group_key in group_keys:
-            # Usar la misma lógica de nombre de archivo seguro que en generate_tables
-            safe_group_key_part = group_key.replace('=', '_').replace(';', '__')
+        # Determinar si estamos en modo 1VI (main effect) o 2VIs/combinado
+        # Heurística: si alguna clave NO contiene ';', es probable que sea modo 1VI.
+        # Y si es modo 1VI, group_keys contendrá claves parciales como "VI=Descriptor".
+        is_main_effect_mode_heuristic = any(';' not in key for key in group_keys)
+        
+        keys_of_tables_to_inspect = set()
+
+        if is_main_effect_mode_heuristic:
+            logger.debug("Detectado modo de efecto principal (heurística) para encontrar columnas comunes.")
+            # group_keys son parciales, ej: ["Edad=joven", "Edad=mayor"]
+            all_full_combined_keys_map, _ = self._identify_study_groups(study_id, frequency) # dict: file_base -> full_key
+            all_full_combined_keys_set = set(all_full_combined_keys_map.values())
+
+            for partial_key_selected in group_keys: # ej: "Edad=joven"
+                for full_key in all_full_combined_keys_set:
+                    if partial_key_selected in full_key.split(';'):
+                        keys_of_tables_to_inspect.add(full_key)
+            if not keys_of_tables_to_inspect:
+                logger.warning(f"Modo efecto principal: No se encontraron tablas de resumen completas para las claves parciales: {group_keys}")
+                return []
+        else:
+            logger.debug("Detectado modo 2VIs/combinado para encontrar columnas comunes.")
+            # group_keys son claves completas
+            keys_of_tables_to_inspect.update(group_keys)
+
+        logger.debug(f"Se inspeccionarán las siguientes claves de tabla (completas): {keys_of_tables_to_inspect}")
+
+        for full_group_key in keys_of_tables_to_inspect:
+            safe_group_key_part = full_group_key.replace('=', '_').replace(';', '__')
             table_filename = f"{calculation}_{frequency}_{safe_group_key_part}.csv"
             table_path = freq_path / table_filename
 
             if not table_path.exists():
-                logger.warning(f"Tabla de resumen no encontrada: {table_path}")
-                return [] # Si falta una tabla, no hay columnas comunes
+                logger.warning(f"Tabla de resumen no encontrada al buscar columnas comunes: {table_path} (esperada para clave completa '{full_group_key}'). No se pueden determinar columnas comunes.")
+                return [] # Si falta CUALQUIER tabla relevante, no hay columnas comunes garantizadas.
 
             try:
-                # Leer solo las cabeceras para obtener columnas
-                # Usar punto decimal '.' para el CSV interno
-                df_header = pd.read_csv(table_path, sep=',', decimal='.',
-                                        encoding='utf-8', header=[0, 1, 2],
-                                        index_col=0, nrows=0)
-                logger.debug(f"Cabeceras leídas de {table_filename}: "
-                             f"{df_header.columns}")
-
-                # Crear nombres combinados 'Atributo/Columna/Unidad'
-                # Añadir manejo de error si attr/col/unit no son strings
-                current_columns = set()
+                df_header = pd.read_csv(table_path, sep=',', decimal='.', encoding='utf-8', header=[0, 1, 2], index_col=0, nrows=0)
+                current_table_columns = set()
                 for header_tuple in df_header.columns:
                     try:
-                        # Asegurar 3 elementos y convertir a string
                         if len(header_tuple) == 3:
-                            # Ya no necesitamos validar ':', asumimos que la generación es correcta
                             attr, col, unit = map(str, header_tuple)
-                            current_columns.add(f"{attr}/{col}/{unit}")
+                            current_table_columns.add(f"{attr}/{col}/{unit}")
                         else:
-                            logger.warning(f"Tupla de cabecera con longitud inesperada en "
-                                           f"{table_filename}: {header_tuple}. "
-                                           f"Se omitirá.")
+                            logger.warning(f"Tupla de cabecera con longitud inesperada en {table_filename}: {header_tuple}. Se omitirá.")
                     except Exception as e_header:
-                        logger.warning(f"Error procesando tupla de cabecera "
-                                       f"{header_tuple} en {table_filename}: "
-                                       f"{e_header}. Se omitirá.")
+                        logger.warning(f"Error procesando tupla de cabecera {header_tuple} en {table_filename}: {e_header}. Se omitirá.")
+                
+                logger.debug(f"Columnas parseadas de {table_filename}: {current_table_columns}")
 
-                logger.debug(f"Columnas parseadas de {table_filename}: "
-                             f"{current_columns}")
-
-                if common_columns is None:
-                    common_columns = current_columns
+                if common_columns_set is None:
+                    common_columns_set = current_table_columns
                 else:
-                    common_columns.intersection_update(current_columns)
+                    common_columns_set.intersection_update(current_table_columns)
 
-                if not common_columns:
-                    logger.warning(f"No se encontraron columnas comunes "
-                                   f"después de procesar {table_filename}")
-                    return []  # Si la intersección es vacía, terminar
-
+                if not common_columns_set: # Si la intersección se vuelve vacía
+                    logger.warning(f"No se encontraron columnas comunes después de procesar {table_filename}")
+                    return []
             except Exception as e:
-                logger.error(f"Error leyendo cabeceras de {table_path}: {e}",
-                             exc_info=True)
-                return []  # Error al leer una tabla
+                logger.error(f"Error leyendo cabeceras de {table_path}: {e}", exc_info=True)
+                return []
 
-        if common_columns is None:
+        if common_columns_set is None:
             return []
-
-        # Devolver lista ordenada
-        return sorted(list(common_columns))
+        return sorted(list(common_columns_set))
 
     def perform_individual_analysis(self, study_id: int, config: dict):
         """
@@ -1432,173 +1436,178 @@ class AnalysisService:
         frequency = config['frequency']
         calculation = config['calculation']
         column_str = config['column']
+        mode = config.get("grouping_mode")
+        primary_vi_name_for_main_effect = config.get("primary_vi_name") if mode == "1VI" else None
+        # groups_from_config son las claves originales seleccionadas en el diálogo
+        # Para modo 1VI, estas son parciales (ej: "Edad=joven")
+        # Para modo 2VIs o modo combinado, estas son completas (ej: "Edad=joven;EstadoNutricional=NP")
+        groups_from_config = config['groups']
+
 
         # --- Validación y Parseo de Columna (maneja '/' en unidad) ---
         try:
-            # Dividir en máximo 3 partes: Atributo, Columna, Unidad (puede contener '/')
             target_column_parts = column_str.split('/', 2)
             if len(target_column_parts) != 3:
-                # Si no hay 3 partes, el formato es incorrecto (faltan al menos dos '/')
                 raise ValueError("Formato incorrecto, faltan separadores '/'")
-            # La tupla para buscar en el DataFrame sigue siendo (attr, col, unit)
             target_multi_index_col = tuple(target_column_parts)
             logger.debug(f"Columna parseada para análisis: {target_multi_index_col}")
         except Exception as e:
-             # Captura el ValueError de arriba u otros errores inesperados
-             raise ValueError(f"Formato de columna inválido recibido: "
-                              f"'{column_str}'. Se esperaba "
-                              f"'Atributo/Columna/Unidad'. Error: {e}")
+            raise ValueError(f"Formato de columna inválido: '{column_str}'. Error: {e}")
 
-        data_by_group = []
-        group_names = config['groups']
         tables_path = self.get_discrete_analysis_tables_path(study_id)
+        if not tables_path:
+            raise FileNotFoundError(f"Directorio de tablas de análisis discreto no encontrado para estudio {study_id}")
         freq_path = tables_path / frequency
+        if not freq_path.exists():
+            raise FileNotFoundError(f"Directorio de frecuencia '{frequency}' no encontrado en {tables_path}")
 
-        # Identificar mapeo archivo -> grupo (no usado directamente aquí, pero útil)
-        # files_to_groups, _ = self._identify_study_groups(study_id, frequency)
+        data_by_group = [] # Esta será la lista final de datos para cada grupo a comparar
+        actual_group_keys_for_legend = [] # Claves/nombres que se usarán para la leyenda
 
-        logger.debug("Inicio lectura de datos desde tablas resumen...") # LOG ANTES DE LEER TABLAS
-        for group_key in group_names:
-            # --- Usar la misma lógica de nombre seguro que en generate_tables ---
-            safe_group_key_part = group_key.replace('=', '_').replace(';', '__')
-            table_filename = f"{calculation}_{frequency}_{safe_group_key_part}.csv"
-            table_path = freq_path / table_filename
-            logger.debug(f"Intentando leer tabla para grupo '{group_key}': {table_path}") # LOG TABLA
-            if not table_path.exists():
-                # Log detallado del archivo buscado y el error
-                logger.error(f"No se encontró tabla resumen requerida. Buscando: {table_path}")
-                # Intentar listar archivos en el directorio para depuración
+        logger.debug(f"Inicio lectura de datos. Modo: {mode}, Primary VI (1VI): {primary_vi_name_for_main_effect}")
+
+        if mode == "1VI" and primary_vi_name_for_main_effect:
+            logger.info(f"Procesando en modo 1VI (efecto principal) para VI: '{primary_vi_name_for_main_effect}'")
+            # groups_from_config son las claves parciales seleccionadas, ej: ["Edad=joven", "Edad=mayor"]
+            all_full_combined_keys, _ = self._identify_study_groups(study_id, frequency) # dict: file_base -> full_key
+
+            for partial_key_selected in groups_from_config: # ej: "Edad=joven"
+                pooled_data_for_this_partial_key = []
+                # Extraer el descriptor de la clave parcial para la leyenda, ej: "joven"
                 try:
-                    existing_files = [f.name for f in freq_path.iterdir() if f.is_file()]
-                    logger.debug(f"Archivos existentes en {freq_path}: {existing_files}")
-                except Exception as list_e:
-                    logger.debug(f"No se pudo listar archivos en {freq_path}: {list_e}")
-                raise FileNotFoundError(f"No se encontró tabla resumen requerida: {table_path}")
+                    # Asegurar que primary_vi_name_for_main_effect termina con '=' para la clave parcial
+                    descriptor_for_legend = partial_key_selected.split(f"{primary_vi_name_for_main_effect}=", 1)[1]
+                except IndexError:
+                    logger.warning(f"No se pudo extraer descriptor de la clave parcial '{partial_key_selected}' usando VI '{primary_vi_name_for_main_effect}'. Usando clave parcial como leyenda.")
+                    descriptor_for_legend = partial_key_selected
+                actual_group_keys_for_legend.append(descriptor_for_legend)
 
-            try:
-                # Usar punto decimal '.' para leer el CSV interno
-                df = pd.read_csv(table_path, sep=',', decimal='.', encoding='utf-8', header=[0, 1, 2], index_col=0)
-                # Verificar si la columna existe
-                if target_multi_index_col not in df.columns:
-                    raise ValueError(f"La columna '{config['column']}' no se "
-                                     f"encontró en la tabla {table_filename}")
+                # Iterar sobre todas las tablas de resumen (full combined keys)
+                # y acumular datos si la VI primaria coincide con el descriptor seleccionado
+                unique_full_keys_for_partial = set()
+                for full_key in all_full_combined_keys.values(): # Values son las claves de grupo completas
+                    if partial_key_selected in full_key.split(';'): # Chequear si la parte "VI=Desc" está en la clave completa
+                        unique_full_keys_for_partial.add(full_key)
+                
+                if not unique_full_keys_for_partial:
+                    logger.warning(f"No se encontraron tablas de resumen completas para la clave parcial '{partial_key_selected}' en modo 1VI.")
 
-                # Extraer la serie de datos y filtrar NaNs
-                group_data = df[target_multi_index_col].dropna().tolist()
+                for full_key_to_load in unique_full_keys_for_partial:
+                    safe_full_key_part = full_key_to_load.replace('=', '_').replace(';', '__')
+                    table_filename = f"{calculation}_{frequency}_{safe_full_key_part}.csv"
+                    table_path = freq_path / table_filename
+                    logger.debug(f"Modo 1VI: Intentando leer tabla '{table_path}' para clave parcial '{partial_key_selected}' (full key: '{full_key_to_load}')")
 
-                # --- Manejo de Datos Pareados ---
-                # TODO: Implementar lógica de emparejamiento robusta si es pareado.
-                # Por ahora, se asume orden consistente de índices (ARCHIVO).
-                if config['paired']:
-                    logger.warning("Manejo de datos pareados asume índices "
-                                   "consistentes. Requiere verificación.")
-                    pass  # Continuar con group_data tal cual
+                    if table_path.exists():
+                        try:
+                            df = pd.read_csv(table_path, sep=',', decimal='.', encoding='utf-8', header=[0, 1, 2], index_col=0)
+                            if target_multi_index_col not in df.columns:
+                                logger.warning(f"Columna '{column_str}' no encontrada en tabla {table_filename} para clave parcial '{partial_key_selected}'. Se omite esta tabla.")
+                                continue
+                            
+                            data_from_table = df[target_multi_index_col].dropna().tolist()
+                            pooled_data_for_this_partial_key.extend(data_from_table)
+                        except Exception as e:
+                            logger.error(f"Error procesando tabla {table_path} para clave parcial '{partial_key_selected}': {e}", exc_info=True)
+                    else:
+                        logger.warning(f"Modo 1VI: Tabla de resumen no encontrada: {table_path} (esperada para clave parcial '{partial_key_selected}')")
+                
+                data_by_group.append(pooled_data_for_this_partial_key)
+                logger.info(f"Modo 1VI: Para '{partial_key_selected}', se recolectaron {len(pooled_data_for_this_partial_key)} puntos de datos de {len(unique_full_keys_for_partial)} tablas.")
 
-                if not group_data:
-                    logger.warning(f"No se encontraron datos válidos para grupo "
-                                   f"'{group_key}' y columna '{config['column']}'"
-                                   f" en {table_filename}")
-                    # Añadir lista vacía para mantener correspondencia
-                    data_by_group.append([])
-                else:
+        else: # Modo 2VIs o modo combinado (claves en groups_from_config son completas)
+            logger.info(f"Procesando en modo 2VIs o combinado. Claves de grupo: {groups_from_config}")
+            actual_group_keys_for_legend = groups_from_config # Las claves completas se usarán para generar leyendas después
+            for group_key in groups_from_config: # group_key es una clave completa, ej: "VI1=DescA;VI2=DescB"
+                safe_group_key_part = group_key.replace('=', '_').replace(';', '__')
+                table_filename = f"{calculation}_{frequency}_{safe_group_key_part}.csv"
+                table_path = freq_path / table_filename
+                logger.debug(f"Modo 2VIs/Combinado: Intentando leer tabla para grupo '{group_key}': {table_path}")
+
+                if not table_path.exists():
+                    logger.error(f"No se encontró tabla resumen requerida: {table_path}")
+                    # Intentar listar archivos en el directorio para depuración
+                    try:
+                        existing_files = [f.name for f in freq_path.iterdir() if f.is_file()]
+                        logger.debug(f"Archivos existentes en {freq_path}: {existing_files}")
+                    except Exception as list_e:
+                        logger.debug(f"No se pudo listar archivos en {freq_path}: {list_e}")
+                    raise FileNotFoundError(f"No se encontró tabla resumen requerida: {table_path}")
+
+                try:
+                    df = pd.read_csv(table_path, sep=',', decimal='.', encoding='utf-8', header=[0, 1, 2], index_col=0)
+                    if target_multi_index_col not in df.columns:
+                        raise ValueError(f"Columna '{column_str}' no encontrada en tabla {table_filename}")
+                    
+                    group_data = df[target_multi_index_col].dropna().tolist()
+                    if not group_data:
+                        logger.warning(f"No se encontraron datos válidos para grupo '{group_key}' y columna '{column_str}' en {table_filename}")
                     data_by_group.append(group_data)
+                except Exception as e:
+                    logger.error(f"Error procesando tabla {table_path} para grupo '{group_key}': {e}", exc_info=True)
+                    raise ValueError(f"Error leyendo datos para grupo {group_key}: {e}")
 
-            except Exception as e:
-                logger.error(f"Error procesando tabla {table_path} para grupo "
-                             f"{group_key}: {e}", exc_info=True)
-                raise ValueError(f"Error leyendo datos para grupo {group_key}: {e}")
-
-        # Verificar si tenemos datos para graficar
         if not any(data_by_group):
-            raise ValueError("No se encontraron datos válidos en ninguna tabla "
-                             "para los grupos y columna seleccionados.")
+            raise ValueError("No se encontraron datos válidos en ninguna tabla para los grupos y columna seleccionados.")
 
         # --- Generar Título y Leyendas Específicos del Modo ---
         aliases = self.study_service.get_study_aliases(study_id)
-        mode = config.get("grouping_mode")
-        primary_vi = config.get("primary_vi_name")
-        fixed_vi = config.get("fixed_vi_name")
-        fixed_desc_display = config.get("fixed_descriptor_display") # Display name con alias
-        calculation = config['calculation'] # Obtener cálculo
-        column = config['column'] # Obtener columna completa (Attr/Col/Unit)
-        groups = config['groups'] # Obtener claves originales seleccionadas
-        frequency = config['frequency'] # Obtener frecuencia
+        # mode, primary_vi_name_for_main_effect, fixed_vi, fixed_desc_display ya están definidos arriba
+        fixed_vi = config.get("fixed_vi_name") # Para modo 2VIs
+        fixed_desc_display = config.get("fixed_descriptor_display") # Para modo 2VIs
 
-        # Título base
-        title = f"{calculation.capitalize()} de {column}"
-        group_legend_names = [] # Nombres para la leyenda del gráfico
-        group_xaxis_labels = [] # Etiquetas cortas para eje X ("G1", "G2", ...)
+        title = f"{calculation.capitalize()} de {column_str}"
+        group_legend_names = []
+        group_xaxis_labels = []
 
-        # Obtener display names filtrados (como se mostraron en el diálogo)
-        # Necesitamos volver a llamar a get_filtered_discrete_analysis_groups
-        # o pasar los display names en la config (mejor opción)
-        # Por ahora, reconstruimos la lógica aquí:
-        filtered_groups_display = {}
-        if mode == '1VI' and primary_vi:
-             title += f" ({primary_vi})"
-             for key in groups: # groups son las claves originales seleccionadas (ej: 'NAF=Bajo;FM=Alto')
-                 descriptor = None
-                 # Buscar la parte de la clave que corresponde a la VI primaria
-                 for part in key.split(';'):
-                     if part.startswith(f"{primary_vi}="):
-                         try:
-                             # Extraer solo el descriptor de esa parte
-                             descriptor = part.split('=', 1)[1]
-                             break # Encontrado, salir del bucle de partes
-                         except IndexError:
-                             logger.warning(f"Formato inesperado en parte '{part}' de clave '{key}'")
-                             break
-                 # Si encontramos el descriptor para la VI primaria
-                 if descriptor is not None:
-                     alias = aliases.get(descriptor, descriptor)
-                     filtered_groups_display[key] = f"{alias}" # Leyenda corta
-                 else:
-                      # Fallback si no se encuentra la parte (no debería pasar si la lógica de filtrado es correcta)
-                      logger.warning(f"No se encontró parte para VI primaria '{primary_vi}' en clave '{key}'")
-                      filtered_groups_display[key] = key # Usar clave original como fallback
-        elif mode == '2VIs' and fixed_vi and fixed_desc_display:
-             # Incluir nombre de VI fija en el título
-             title += f" ({fixed_vi}: {fixed_desc_display})"
-             # Obtener descriptor original (sin alias)
-             fixed_desc_original = fixed_desc_display.split(" (")[0]
-             fixed_pair_str = f"{fixed_vi}={fixed_desc_original}"
-             for key in groups:
-                 parts = key.split(';')
-                 if len(parts) == 2:
-                     part1, part2 = parts[0], parts[1]
-                     other_part = part2 if part1 == fixed_pair_str else part1
-                     other_vi_name, other_desc = other_part.split('=')
-                     other_alias = aliases.get(other_desc, other_desc)
-                     filtered_groups_display[key] = f"{other_vi_name}: {other_alias}" # Leyenda con parte variable
-        else: # Fallback
-             title += " (Comparación)"
-             # Obtener todos los display names (tuplas)
-             all_display_groups_tuples = self.get_discrete_analysis_groups(study_id, frequency)
-             # Convertir a dict {key: display}
-             all_display_groups = {key: display for display, key in all_display_groups_tuples}
-             for key in groups:
-                 # Extraer solo el nombre base del display name completo ("Grupo X - Nombre Base")
-                 full_display = all_display_groups.get(key, key)
-                 base_display = full_display.split(" - ", 1)[1] if " - " in full_display else full_display
-                 filtered_groups_display[key] = base_display # Usar nombre base como fallback
+        # Reconstruir leyendas basadas en actual_group_keys_for_legend y el modo
+        if mode == "1VI" and primary_vi_name_for_main_effect:
+            title += f" (Comparando niveles de {primary_vi_name_for_main_effect})"
+            for i, desc_for_legend in enumerate(actual_group_keys_for_legend): # desc_for_legend es ej: "joven"
+                alias = aliases.get(desc_for_legend, desc_for_legend)
+                group_legend_names.append(f"{primary_vi_name_for_main_effect}: {alias}")
+                group_xaxis_labels.append(f"G{i+1}")
+        elif mode == "2VIs" and fixed_vi and fixed_desc_display:
+            title += f" ({fixed_vi}: {fixed_desc_display})"
+            # actual_group_keys_for_legend son las claves completas, ej: "VI2=DescX;VI_Fija=ValorFijo"
+            # Necesitamos extraer la parte variable para la leyenda
+            fixed_desc_original = fixed_desc_display.split(" (")[0] # Obtener valor original del descriptor fijo
+            fixed_pair_str_to_remove = f"{fixed_vi}={fixed_desc_original}"
 
-        # Generar leyendas y etiquetas X ordenadas según las claves originales
-        sorted_groups = sorted(groups) # Ordenar claves originales para consistencia
-        for i, key in enumerate(sorted_groups):
-             group_legend_names.append(filtered_groups_display.get(key, f"Grupo {i+1}"))
-             group_xaxis_labels.append(f"G{i+1}") # Usar G1, G2... para eje X
+            for i, full_key in enumerate(actual_group_keys_for_legend):
+                variable_part_display = []
+                for part in full_key.split(';'):
+                    if part != fixed_pair_str_to_remove:
+                        try:
+                            vi_name, desc_val = part.split('=',1)
+                            alias = aliases.get(desc_val, desc_val)
+                            variable_part_display.append(f"{vi_name}: {alias}")
+                        except ValueError:
+                            variable_part_display.append(part) # Fallback
+                legend_name = ", ".join(variable_part_display) if variable_part_display else f"Grupo {i+1}"
+                group_legend_names.append(legend_name)
+                group_xaxis_labels.append(f"G{i+1}")
+        else: # Modo combinado o fallback
+            title += " (Comparación de Grupos Combinados)"
+            # actual_group_keys_for_legend son las claves completas
+            all_display_groups_tuples = self.get_discrete_analysis_groups(study_id, frequency)
+            all_display_groups_map = {key: display for display, key in all_display_groups_tuples}
+            for i, full_key in enumerate(actual_group_keys_for_legend):
+                full_display_name = all_display_groups_map.get(full_key, full_key)
+                # Extraer solo el nombre base del display name completo ("Grupo X - Nombre Base")
+                base_display = full_display_name.split(" - ", 1)[1] if " - " in full_display_name else full_display_name
+                group_legend_names.append(base_display)
+                group_xaxis_labels.append(f"G{i+1}")
 
-        # Reordenar data_by_group para que coincida con sorted_groups
-        # Crear un diccionario temporal para mapear clave original a datos
-        # group_names aquí son las claves originales leídas de las tablas, deben coincidir con 'groups'
-        data_map = {key: data for key, data in zip(group_names, data_by_group)}
-        ordered_data_by_group = [data_map[key] for key in sorted_groups if key in data_map]
+
+        # Asegurar que data_by_group esté ordenado según group_legend_names si es necesario
+        # En este punto, data_by_group y group_legend_names/group_xaxis_labels se construyen en el mismo orden.
 
         # Obtener ylabel del gráfico (unidad)
         try:
-            chart_ylabel = f"{calculation.capitalize()} ({target_column_parts[2]})"
+            chart_ylabel = f"{calculation.capitalize()} ({target_column_parts[2]})" # target_column_parts definido antes
         except IndexError:
-            chart_ylabel = f"{calculation.capitalize()}" # Fallback si no hay unidad
+            chart_ylabel = f"{calculation.capitalize()}"
 
 
         logger.info(f"Título del gráfico: {title}")
