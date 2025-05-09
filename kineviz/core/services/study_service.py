@@ -75,9 +75,21 @@ class StudyService:
             iv_json = study_details.get('independent_variables')
             try:
                 # Usar or '[]' para manejar None o string vacío antes de json.loads
-                study_details['independent_variables'] = json.loads(iv_json or '[]')
-                # Asegurar que sea una lista después del parseo
-                if not isinstance(study_details['independent_variables'], list):
+                parsed_ivs = json.loads(iv_json or '[]')
+                # Asegurar que sea una lista después del parseo y añadir defaults para nuevas flags
+                if isinstance(parsed_ivs, list):
+                    for iv in parsed_ivs:
+                        if isinstance(iv, dict): # Asegurar que el elemento sea un diccionario
+                            iv.setdefault('allows_combination', False)
+                            iv.setdefault('is_mandatory', False)
+                            # Si allows_combination es False, is_mandatory también debe serlo
+                            if not iv['allows_combination']:
+                                iv['is_mandatory'] = False
+                        else: # Si un elemento no es dict, la estructura está corrupta
+                            logger.warning(f"Elemento no diccionario encontrado en 'independent_variables' para estudio {study_id}.")
+                            # Podríamos intentar filtrar o marcar como error. Por ahora, se mantendrá si es parte de la lista.
+                    study_details['independent_variables'] = parsed_ivs
+                else:
                     logger.warning(f"Campo 'independent_variables' para estudio {study_id} no es una lista JSON válida. Usando lista vacía.")
                     study_details['independent_variables'] = []
             except (json.JSONDecodeError, TypeError) as e_iv:

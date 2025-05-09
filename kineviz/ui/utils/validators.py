@@ -49,7 +49,8 @@ def validate_study_iv_data(data: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
         return False, "Debe definir al menos una Variable Independiente."
 
     all_vi_names = set()
-    all_descriptor_names = set()
+    # Descriptor names can be duplicated across different VIs, but not within the same VI.
+    # We don't need all_descriptor_names at the top level for this validation.
 
     for i, iv in enumerate(independent_variables):
         if not isinstance(iv, dict):
@@ -84,11 +85,24 @@ def validate_study_iv_data(data: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
                 return False, f"El descriptor '{cleaned_desc}' en '{vi_name}' no puede llamarse 'Nulo'."
             if cleaned_desc in cleaned_descriptors_in_iv:
                 return False, f"Descriptor duplicado '{cleaned_desc}' dentro de la Variable Independiente '{vi_name}'."
-            if cleaned_desc in all_descriptor_names:
-                return False, f"Descriptor duplicado '{cleaned_desc}' encontrado en múltiples Variables Independientes."
+            # No es un error tener el mismo nombre de descriptor en diferentes VIs.
+            # if cleaned_desc in all_descriptor_names:
+            #     return False, f"Descriptor duplicado '{cleaned_desc}' encontrado en múltiples Variables Independientes."
 
             cleaned_descriptors_in_iv.add(cleaned_desc)
-            all_descriptor_names.add(cleaned_desc)
+            # all_descriptor_names.add(cleaned_desc) # No es necesario para la validación actual
+
+        # Validar flags de la VI
+        allows_combination = iv.get('allows_combination', False)
+        is_mandatory = iv.get('is_mandatory', False)
+
+        if not isinstance(allows_combination, bool):
+            return False, f"El valor de 'Permite combinación' para la VI '{vi_name}' debe ser verdadero o falso."
+        if not isinstance(is_mandatory, bool):
+            return False, f"El valor de 'Obligatorio' para la VI '{vi_name}' debe ser verdadero o falso."
+
+        if is_mandatory and not allows_combination:
+            return False, f"Para la VI '{vi_name}', 'Obligatorio' solo puede ser verdadero si 'Permite combinación' también lo es."
 
     # Si todas las validaciones pasan
     return True, None
