@@ -53025,3 +53025,17 @@ ValueError: No se encontraron datos válidos en ninguna tabla para los grupos y 
 2025-05-09 01:45:57,024 - INFO - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Intentando abrir gráfico: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Edad y Peso/Analisis Discreto/Individual/Prueba 1/boxplot.png
 2025-05-09 01:46:05,483 - INFO - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Intentando abrir gráfico interactivo: file:///Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio%20de%20Edad%20y%20Peso/Analisis%20Discreto/Individual/Prueba%201/boxplot_interactive.html
 2025-05-09 01:46:11,494 - INFO - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Intentando abrir gráfico: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Edad y Peso/Analisis Discreto/Individual/Prueba 1/boxplot.png
+2025-05-09 01:51:15,485 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-05-09 01:51:15,485 - INFO - [__main__] - Iniciando KineViz...
+2025-05-09 01:51:16,090 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-09 01:51:16,090 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-09 01:51:18,354 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 28
+2025-05-09 01:51:18,374 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 28
+2025-05-09 01:51:18,374 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 28: {'NP': 'Normopeso', 'OS': 'Obesidad Sarcopénica'}
+2025-05-09 01:51:18,375 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Joven, Mayor, NP (Normopeso), OS (Obesidad Sarcopénica)'
+2025-05-09 01:51:21,405 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-09 01:51:21,406 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-05-09 01:51:22,736 - WARNING - [kineviz.core.services.analysis_service] - Directorio análisis 'Prueba Edad LKneeAngleX Max' encontrado sin archivo config.json válido en estudio 28.
+2025-05-09 01:51:25,362 - INFO - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Intentando abrir gráfico: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Edad y Peso/Analisis Discreto/Individual/Prueba 1/boxplot.png
+2025-05-09 01:51:39,430 - INFO - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Intentando abrir gráfico: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Edad y Peso/Analisis Discreto/Individual/Prueba 2 VIs Edad LKneeAngleX Max/boxplot.png
+2025-05-09 01:51:56,934 - INFO - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Intentando abrir gráfico: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Edad y Peso/Analisis Discreto/Individual/Prueba 1/boxplot.png
