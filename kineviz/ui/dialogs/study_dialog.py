@@ -206,8 +206,9 @@ class StudyDialog(Toplevel):
         descriptors_container.pack(fill=tk.X)
 
         # --- Checkboxes para flags de VI ---
+        # Reduced pady for vi_flags_frame to bring it closer to descriptors
         vi_flags_frame = ttk.Frame(vi_frame, padding="0 5 5 20") # Padding: top, right, bottom, left
-        vi_flags_frame.pack(fill=tk.X, pady=(5,0), anchor="w") # Anchor west
+        vi_flags_frame.pack(fill=tk.X, pady=(2,0), anchor="w") # Anchor west, reduced top padding from 5 to 2
 
         allows_combination_var = tk.BooleanVar(value=allows_combination_value)
         is_mandatory_var = tk.BooleanVar(value=is_mandatory_value)
@@ -371,7 +372,8 @@ class StudyDialog(Toplevel):
         if allows_combination:
             # Mostrar y habilitar/deshabilitar según modo edición
             if not is_mandatory_cb_widget.winfo_ismapped():
-                is_mandatory_cb_widget.pack(anchor="w", pady=(2,0)) # Empaquetar debajo, con un poco de padding
+                # Reduced pady for is_mandatory_cb_widget to bring it closer to ¿Multiple?
+                is_mandatory_cb_widget.pack(anchor="w", pady=(1,0)) # Empaquetar debajo, reduced top padding from 2 to 1
             is_mandatory_cb_widget.config(state=tk.NORMAL if not self.is_editing else tk.DISABLED)
         else:
             # Ocultar y asegurar que la variable sea False
