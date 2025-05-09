@@ -1748,7 +1748,7 @@ class AnalysisService:
             # Usar título y leyendas generados arriba
             # Pasar los datos ordenados
             charting.create_comparison_boxplot(
-                data_by_group=ordered_data_by_group, # Usar datos ordenados
+                data_by_group=data_by_group, # Usar datos ordenados
                 group_xaxis_labels=group_xaxis_labels, # Etiquetas cortas G1, G2...
                 group_legend_names=group_legend_names, # Leyendas específicas del modo
                 title=title, # Título específico del modo
@@ -1767,7 +1767,7 @@ class AnalysisService:
         try:
             # Pasar datos ordenados y etiquetas/leyendas correctas
             charting.create_interactive_comparison_boxplot(
-                data_by_group=ordered_data_by_group, # Usar datos ordenados
+                data_by_group=data_by_group, # Usar datos ordenados
                 group_xaxis_labels=group_xaxis_labels, # Etiquetas cortas G1, G2...
                 group_legend_names=group_legend_names, # Leyendas específicas del modo
                 title=title, # Título específico del modo
