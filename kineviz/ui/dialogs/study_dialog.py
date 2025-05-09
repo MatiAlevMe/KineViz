@@ -206,9 +206,9 @@ class StudyDialog(Toplevel):
         descriptors_container.pack(fill=tk.X)
 
         # --- Checkboxes para flags de VI ---
-        # Reduced pady for vi_flags_frame to bring it closer to descriptors
+        # Further reduced pady for vi_flags_frame to match inter-descriptor spacing
         vi_flags_frame = ttk.Frame(vi_frame, padding="0 5 5 20") # Padding: top, right, bottom, left
-        vi_flags_frame.pack(fill=tk.X, pady=(2,0), anchor="w") # Anchor west, reduced top padding from 5 to 2
+        vi_flags_frame.pack(fill=tk.X, pady=(1,0), anchor="w") # Anchor west, top padding changed from 2 to 1
 
         allows_combination_var = tk.BooleanVar(value=allows_combination_value)
         is_mandatory_var = tk.BooleanVar(value=is_mandatory_value)
