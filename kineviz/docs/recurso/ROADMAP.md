@@ -180,6 +180,8 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
         * Integrada `validate_files_for_vi_rules` en `add_files_to_study`.
         * Si validación falla, se loguean errores específicos y se devuelve un error genérico a la UI.
     * **14.3 Notificación UI**: (Hecho) `FileDialog` mostrará el error genérico si la validación de reglas de VI falla.
+* **15. Ajuste UI en Diálogo de Estudio:** (En Progreso)
+    * **15.1 `StudyDialog` UI**: (Hecho) Ajustado el espaciado vertical de los checkboxes "¿Multiple?" y "¿Obligatorio?" para que estén más cerca de los descriptores.
 
 **Fase 4: Empaquetado y Distribución (En Progreso)**
 
