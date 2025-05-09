@@ -45,8 +45,8 @@ Esta vista te permite gestionar los archivos y análisis de un estudio específi
 
 * **<< Volver a Estudios:** Regresa a la lista de todos tus estudios.
 * **Agregar Archivos:** Abre un diálogo para seleccionar archivos `.txt` o `.csv` y añadirlos a este estudio.
-    * Los nombres de archivo deben seguir el formato definido por las Variables Independientes (VIs) del estudio.
-    * **Validación:** Al agregar, el sistema verificará que no se exceda el **número máximo de sujetos** ni la **cantidad máxima de intentos por sujeto** definidos para este estudio, considerando tanto los archivos existentes como los nuevos.
+    * Los nombres de archivo deben seguir el formato definido por las Variable(s) Independientes (VIs) del estudio.
+    * **Validación:** Al agregar, el sistema verificará que no se exceda la **Cantidad de Participantes** ni la **Cantidad de Intento(s) de Prueba por participante** definidos para este estudio, considerando tanto los archivos existentes como los nuevos. También se aplicarán las reglas de combinación y obligatoriedad de descriptores definidas para cada VI.
 * **Abrir Carpeta Estudio:** Abre la carpeta en tu sistema donde se almacenan los archivos procesados y originales de este estudio.
 * **Gestionar Alias Descriptores:** Asigna nombres más legibles (alias) a los descriptores definidos para este estudio (ej: "CMJ" -> "Salto Contra Movimiento"). Estos alias se usan en gráficos y reportes y son **específicos para este estudio**.
 * **Análisis Discreto:** Abre la vista para generar y gestionar análisis estadísticos comparativos entre grupos definidos por los descriptores.
@@ -54,9 +54,9 @@ Esta vista te permite gestionar los archivos y análisis de un estudio específi
 
 **Detalles del Estudio:**
 
-* Muestra información básica: Nombre, Sujetos, Intentos.
-* **Variables Independientes:** Lista los nombres de las categorías definidas (ej: "Tipo Salto, Condición").
-* **Botón `ℹ️` (Junto a VIs):** Muestra un popup con los descriptores específicos definidos para cada VI, usando los alias que hayas asignado.
+* Muestra información básica: Nombre del Estudio, Cantidad de Participantes, Cantidad de Intento(s) de Prueba.
+* **Variable(s) Independientes (VIs):** Lista los nombres de las categorías definidas (ej: "Tipo Salto, Condición").
+* **Botón `ℹ️` (Junto a VIs):** Muestra un popup con los descriptores específicos definidos para cada VI (usando los alias asignados) y cómo se manejan sus descriptores (ej: "Múltiple y Obligatorio", "No Múltiple").
 * **Alias Asignados:** Muestra todos los descriptores definidos para el estudio y sus alias correspondientes.
 
 **Navegador de Archivos:**

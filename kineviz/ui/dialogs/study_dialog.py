@@ -87,20 +87,20 @@ class StudyDialog(Toplevel):
         row_idx = 0
 
         # --- Campos Fijos ---
-        ttk.Label(main_frame, text="Nombre del estudio:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        ttk.Label(main_frame, text="Nombre del Estudio:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
         ttk.Entry(main_frame, textvariable=self.var_nombre).grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5)
         row_idx += 1
 
-        ttk.Label(main_frame, text="Número de Sujetos:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        ttk.Label(main_frame, text="Cantidad de Participantes:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
         ttk.Entry(main_frame, textvariable=self.var_num_sujetos).grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5)
         row_idx += 1
 
-        ttk.Label(main_frame, text="Cantidad de Intentos por Prueba:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        ttk.Label(main_frame, text="Cantidad de Intento(s) de Prueba:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
         ttk.Entry(main_frame, textvariable=self.var_cantidad_intentos).grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5)
         row_idx += 1
 
         # --- Sección de Variables Independientes Dinámicas ---
-        iv_frame = ttk.LabelFrame(main_frame, text="Variables Independientes (VIs)")
+        iv_frame = ttk.LabelFrame(main_frame, text="Variable(s) Independientes (VIs)")
         iv_frame.grid(row=row_idx, column=0, columnspan=2, sticky="nsew", padx=5, pady=10)
         iv_frame.columnconfigure(0, weight=1) # Permitir que el contenido se expanda
         main_frame.rowconfigure(row_idx, weight=1) # Permitir que esta sección se expanda verticalmente
@@ -207,37 +207,34 @@ class StudyDialog(Toplevel):
 
         # --- Checkboxes para flags de VI ---
         vi_flags_frame = ttk.Frame(vi_frame, padding="0 5 5 20") # Padding: top, right, bottom, left
-        vi_flags_frame.pack(fill=tk.X, pady=(5,0))
+        vi_flags_frame.pack(fill=tk.X, pady=(5,0), anchor="w") # Anchor west
 
         allows_combination_var = tk.BooleanVar(value=allows_combination_value)
         is_mandatory_var = tk.BooleanVar(value=is_mandatory_value)
 
-        # Checkbox "Permite combinación de descriptores"
+        # Checkbox "¿Multiple?"
         allows_combination_cb = ttk.Checkbutton(
             vi_flags_frame,
-            text="Permite combinación de descriptores por sujeto",
+            text="¿Multiple?",
             variable=allows_combination_var,
-            command=lambda acv=allows_combination_var, imv=is_mandatory_var: self._on_allows_combination_changed(acv, imv)
+            # El command ahora pasará el widget del checkbox "Obligatorio" para gestionarlo
         )
-        allows_combination_cb.pack(side=tk.LEFT, anchor="w")
+        allows_combination_cb.pack(anchor="w") # Pack simple, se alinea a la izquierda por defecto
 
-        # Checkbox "Obligatorio (todos los descriptores deben usarse por sujeto)"
-        # Se mostrará/ocultará o habilitará/deshabilitará basado en el anterior
-        self.is_mandatory_cb = ttk.Checkbutton(
-            vi_flags_frame,
-            text="Obligatorio (todos los descriptores de esta VI deben usarse por cada sujeto)",
+        # Checkbox "¿Obligatorio?" (se empaquetará/desempaquetará dinámicamente)
+        # Crear el widget pero no empaquetarlo inicialmente si no es necesario
+        is_mandatory_cb_widget = ttk.Checkbutton(
+            vi_flags_frame, # Mismo frame padre
+            text="¿Obligatorio?",
             variable=is_mandatory_var
         )
-        # Empaquetar después para que aparezca a la derecha o abajo, ajustar según diseño deseado
-        self.is_mandatory_cb.pack(side=tk.LEFT, anchor="w", padx=(10,0))
+        # El command de allows_combination_cb se define después de crear is_mandatory_cb_widget
+        allows_combination_cb.config(command=lambda acv=allows_combination_var, im_cb=is_mandatory_cb_widget: self._on_allows_combination_changed(acv, im_cb))
 
-        # Estado inicial del checkbox "Obligatorio"
-        self._update_mandatory_checkbox_state(allows_combination_var.get(), self.is_mandatory_cb)
 
         if self.is_editing:
             allows_combination_cb.config(state=tk.DISABLED)
-            self.is_mandatory_cb.config(state=tk.DISABLED)
-
+            # El estado de is_mandatory_cb_widget se manejará en _update_mandatory_checkbox_visibility_and_state
 
         # Guardar referencias
         vi_ui_data = {
@@ -248,15 +245,15 @@ class StudyDialog(Toplevel):
             'desc_frames': [],
             'allows_combination_var': allows_combination_var,
             'is_mandatory_var': is_mandatory_var,
-            'is_mandatory_cb_widget': self.is_mandatory_cb # Guardar referencia al widget para actualizar estado
+            'is_mandatory_cb_widget': is_mandatory_cb_widget # Guardar referencia al widget
         }
         self.independent_variables_ui.append(vi_ui_data)
 
-        # Actualizar estado del checkbox "Obligatorio" para esta VI específica
-        # Encontrar el widget correcto para esta VI
-        current_vi_ui_data = next(item for item in self.independent_variables_ui if item["name_var"] == vi_name_var)
-        self._update_mandatory_checkbox_state(allows_combination_var.get(), current_vi_ui_data['is_mandatory_cb_widget'])
-
+        # Estado inicial y visibilidad del checkbox "Obligatorio" para esta VI específica
+        self._update_mandatory_checkbox_visibility_and_state(
+            allows_combination_var, # Pasar la variable
+            is_mandatory_cb_widget  # Pasar el widget
+        )
 
         # Añadir descriptores iniciales para esta VI
         if not descriptors_values and not self.is_editing:
@@ -342,39 +339,46 @@ class StudyDialog(Toplevel):
         except ValueError:
             logger.warning("Intento de eliminar un descriptor que no está en la lista de la VI.")
 
-    def _on_allows_combination_changed(self, allows_combination_var, is_mandatory_var_or_cb_widget):
+    def _on_allows_combination_changed(self, allows_combination_var, is_mandatory_cb_widget):
         """
         Callback cuando el estado de 'allows_combination' cambia.
-        Actualiza el estado del checkbox 'is_mandatory' y su variable.
+        Actualiza la visibilidad y estado del checkbox 'is_mandatory' y su variable.
         """
-        # Encontrar la VI correcta en self.independent_variables_ui para obtener su widget de checkbox 'is_mandatory'
-        # Esto es un poco indirecto; idealmente, el widget estaría directamente asociado o pasado.
-        # Por ahora, asumimos que el último widget creado o uno específico es el objetivo.
-        # Esta lógica necesita ser más robusta si múltiples VIs se manejan dinámicamente.
+        self._update_mandatory_checkbox_visibility_and_state(allows_combination_var, is_mandatory_cb_widget)
 
-        # Iterar para encontrar el widget correcto
-        target_cb_widget = None
+    def _update_mandatory_checkbox_visibility_and_state(self, allows_combination_var, is_mandatory_cb_widget):
+        """
+        Actualiza la visibilidad y el estado (habilitado/deshabilitado) del checkbox 'is_mandatory'.
+        También actualiza la variable 'is_mandatory_var' si es necesario.
+        """
+        # Encontrar la VI correcta para acceder a 'is_mandatory_var'
+        target_vi_data = None
         for vi_data_item in self.independent_variables_ui:
-            # Comparamos la variable de 'allows_combination' para identificar la VI correcta
             if vi_data_item['allows_combination_var'] == allows_combination_var:
-                target_cb_widget = vi_data_item['is_mandatory_cb_widget']
-                is_mandatory_var = vi_data_item['is_mandatory_var'] # Usar la variable correcta
+                target_vi_data = vi_data_item
                 break
         
-        if not target_cb_widget:
-            logger.warning("No se pudo encontrar el checkbox 'Obligatorio' correspondiente para actualizar.")
+        if not target_vi_data:
+            logger.warning("No se pudo encontrar la VI data para el checkbox 'Obligatorio'.")
+            # Si no se encuentra, por seguridad, ocultar el checkbox
+            if is_mandatory_cb_widget.winfo_ismapped():
+                is_mandatory_cb_widget.pack_forget()
             return
 
+        is_mandatory_var = target_vi_data['is_mandatory_var']
         allows_combination = allows_combination_var.get()
-        self._update_mandatory_checkbox_state(allows_combination, target_cb_widget)
-        if not allows_combination:
-            is_mandatory_var.set(False) # Si se desmarca "permite combinación", "obligatorio" debe ser False
 
-    def _update_mandatory_checkbox_state(self, allows_combination_state, is_mandatory_cb_widget):
-        """Actualiza el estado (habilitado/deshabilitado) del checkbox 'is_mandatory'."""
-        if allows_combination_state:
+        if allows_combination:
+            # Mostrar y habilitar/deshabilitar según modo edición
+            if not is_mandatory_cb_widget.winfo_ismapped():
+                is_mandatory_cb_widget.pack(anchor="w", pady=(2,0)) # Empaquetar debajo, con un poco de padding
             is_mandatory_cb_widget.config(state=tk.NORMAL if not self.is_editing else tk.DISABLED)
         else:
+            # Ocultar y asegurar que la variable sea False
+            if is_mandatory_cb_widget.winfo_ismapped():
+                is_mandatory_cb_widget.pack_forget()
+            is_mandatory_var.set(False)
+            # El estado del widget (DISABLED) no importa mucho si está oculto, pero por consistencia:
             is_mandatory_cb_widget.config(state=tk.DISABLED)
 
 

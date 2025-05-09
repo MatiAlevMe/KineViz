@@ -67,9 +67,9 @@ class StudyView:
         details_frame.pack(fill='x', padx=10, pady=10)
 
         # Corregido: Mostrar solo una vez el nombre
-        ttk.Label(details_frame, text=f"Nombre: {study_details.get('name', 'N/A')}").pack(anchor='w', padx=5, pady=2)
-        ttk.Label(details_frame, text=f"Número de Sujetos: {study_details.get('num_subjects', 'N/A')}").pack(anchor='w', padx=5, pady=2)
-        ttk.Label(details_frame, text=f"Intentos: {study_details.get('attempts_count', 'N/A')}").pack(anchor='w', padx=5, pady=2)
+        ttk.Label(details_frame, text=f"Nombre del Estudio: {study_details.get('name', 'N/A')}").pack(anchor='w', padx=5, pady=2)
+        ttk.Label(details_frame, text=f"Cantidad de Participantes: {study_details.get('num_subjects', 'N/A')}").pack(anchor='w', padx=5, pady=2)
+        ttk.Label(details_frame, text=f"Cantidad de Intento(s) de Prueba: {study_details.get('attempts_count', 'N/A')}").pack(anchor='w', padx=5, pady=2)
 
         # --- Mostrar Variables Independientes y Botón Info ---
         vi_frame = ttk.Frame(details_frame)
@@ -78,7 +78,7 @@ class StudyView:
         # Extraer nombres de VIs
         independent_variables = study_details.get('independent_variables', [])
         vi_names = [iv.get('name', 'N/A') for iv in independent_variables]
-        vi_display_text = "Variables Independientes: " + (", ".join(vi_names) if vi_names else "Ninguna")
+        vi_display_text = "Variable(s) Independientes (VIs): " + (", ".join(vi_names) if vi_names else "Ninguna")
         ttk.Label(vi_frame, text=vi_display_text).pack(side=tk.LEFT, anchor='w')
 
         # Botón Info (si hay VIs)
@@ -164,13 +164,16 @@ class StudyView:
             study_aliases = study_details.get('aliases', {})
 
             if not independent_variables:
-                messagebox.showinfo("Información VIs", "No hay Variables Independientes definidas para este estudio.", parent=self.frame)
+                messagebox.showinfo("Información VIs", "No hay Variable(s) Independientes (VIs) definidas para este estudio.", parent=self.frame)
                 return
 
-            info_text = "Variables Independientes y sus Descriptores (Alias):\n\n"
+            info_text = "Variable(s) Independientes (VIs) y sus Descriptores (Alias):\n\n"
             for iv in independent_variables:
                 vi_name = iv.get('name', 'VI Sin Nombre')
                 descriptors = iv.get('descriptors', [])
+                allows_combination = iv.get('allows_combination', False)
+                is_mandatory = iv.get('is_mandatory', False)
+
                 info_text += f"▶ {vi_name}:\n"
                 if descriptors:
                     for desc in sorted(descriptors):
@@ -179,9 +182,18 @@ class StudyView:
                         info_text += f"    - {display}\n"
                 else:
                     info_text += "    (Sin descriptores definidos)\n"
+                
+                # Añadir manejo de descriptores
+                if allows_combination:
+                    if is_mandatory:
+                        info_text += "    Manejo Descriptores: Múltiple y Obligatorio\n"
+                    else:
+                        info_text += "    Manejo Descriptores: Múltiple y No Obligatorio\n"
+                else:
+                    info_text += "    Manejo Descriptores: No Múltiple\n"
                 info_text += "\n" # Espacio entre VIs
 
-            messagebox.showinfo("Detalle Variables Independientes", info_text.strip(), parent=self.frame)
+            messagebox.showinfo("Detalle Variable(s) Independientes (VIs)", info_text.strip(), parent=self.frame)
 
         except Exception as e:
             logger.error(f"Error mostrando información de VIs para estudio {self.study_id}: {e}", exc_info=True)
