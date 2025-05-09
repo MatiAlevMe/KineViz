@@ -171,6 +171,15 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
     * **13.1 `StudyDialog`**: (Hecho) Mejorar layout de checkboxes "¿Multiple?" y "¿Obligatorio?" (visibilidad condicional). Actualizar etiquetas ("Cantidad de Participantes", "Cantidad de Intento(s) de Prueba", "Nombre del Estudio", "Variable(s) Independientes (VIs)").
     * **13.2 `StudyView`**: (Hecho) Actualizar etiquetas ("Nombre del Estudio", "Cantidad de Participantes", "Cantidad de Intento(s) de Prueba", "Variable(s) Independientes (VIs)"). Mejorar popup de info de VIs para mostrar manejo de descriptores.
     * **13.3 Actualizar Manuales de Ayuda**: (Hecho) Reflejar cambios de etiquetas y comportamiento en `manual_usuario.txt`, `study_dialog_iv_help.txt`, `study_view_help.txt`.
+* **14. Implementar Validación Avanzada de Archivos según Reglas de VI:** (En Progreso)
+    * **14.1 `validators.py`**: (Hecho) Creada función `validate_files_for_vi_rules` para verificar:
+        * Regla de Descriptor Fijo (si VI no permite combinación).
+        * Regla de Descriptores Obligatorios (si VI permite combinación y es obligatoria).
+    * **14.2 `FileService`**: (Hecho)
+        * Creado helper `_get_all_study_files_descriptors` para obtener estado de descriptores de archivos existentes.
+        * Integrada `validate_files_for_vi_rules` en `add_files_to_study`.
+        * Si validación falla, se loguean errores específicos y se devuelve un error genérico a la UI.
+    * **14.3 Notificación UI**: (Hecho) `FileDialog` mostrará el error genérico si la validación de reglas de VI falla.
 
 **Fase 4: Empaquetado y Distribución (En Progreso)**
 

@@ -278,6 +278,9 @@ class FileService:
         # Ya no es necesario importar pandas aquí, se importa dentro de _process_and_copy_file
         # El validador se importa a nivel de módulo ahora
         import copy # Para deepcopy
+        # Importar el nuevo validador de reglas de VI
+        from kineviz.ui.utils.validators import validate_files_for_vi_rules
+
 
         results = {'success': 0, 'errors': []}
         study_path = self._get_study_path(study_id)
@@ -311,7 +314,8 @@ class FileService:
             simulated_subjects_attempts = copy.deepcopy(existing_subjects_attempts)
 
             # 2. Validar nombres y extraer info de archivos a añadir
-            files_to_process = [] # Guardar info de archivos válidos para procesar después
+            # files_to_process ahora almacenará diccionarios con más info
+            files_to_process_info = [] # [{'source_path': Path, 'filename': str, 'subject_id': str, 'attempt_num': int, 'descriptors': List[Optional[str]]}]
             validation_errors = [] # Errores específicos de esta validación
             new_subjects_in_batch = set() # Sujetos nuevos solo en este lote
 
@@ -320,27 +324,33 @@ class FileService:
                 file_name = source_file_path.name
                 logger.debug(f"Validando preliminarmente: '{file_name}'")
 
-                is_valid, subject_id, _, attempt_num = validate_filename_for_study_criteria(
+                is_valid_name, subject_id, extracted_descriptors, attempt_num = validate_filename_for_study_criteria(
                     file_name, independent_variables
                 )
 
-                if not is_valid or not subject_id or attempt_num is None:
-                    msg = f"Nombre de archivo '{file_name}' inválido o no sigue el formato esperado (PteXX ... NN)."
+                if not is_valid_name or not subject_id or attempt_num is None:
+                    msg = f"Nombre de archivo '{file_name}' inválido o no sigue el formato esperado (PteXX ... Descriptores ... NN)."
                     logger.warning(msg)
                     validation_errors.append(msg)
                     continue # Saltar al siguiente archivo
 
-                # Añadir a la simulación
+                # Añadir a la simulación para conteo de sujetos/intentos
                 if subject_id not in simulated_subjects_attempts:
                     simulated_subjects_attempts[subject_id] = set()
-                    # Marcar si es nuevo respecto a los existentes Y a los ya vistos en este lote
                     if subject_id not in existing_subjects_attempts and subject_id not in new_subjects_in_batch:
                          new_subjects_in_batch.add(subject_id)
-
                 simulated_subjects_attempts[subject_id].add(attempt_num)
-                files_to_process.append((source_file_path, file_name, subject_id, attempt_num)) # Guardar info
+                
+                # Guardar info completa para la validación de reglas de VI y procesamiento posterior
+                files_to_process_info.append({
+                    'source_path': source_file_path,
+                    'filename': file_name,
+                    'subject_id': subject_id,
+                    'attempt_num': attempt_num,
+                    'descriptors': extracted_descriptors
+                })
 
-            # 3. Realizar validaciones con los datos simulados
+            # 3. Realizar validaciones de conteo con los datos simulados
             simulated_num_subjects = len(simulated_subjects_attempts)
             if simulated_num_subjects > max_subjects_allowed:
                 msg = (f"Se excede el número máximo de sujetos ({max_subjects_allowed}). "
@@ -358,22 +368,61 @@ class FileService:
                     validation_errors.append(msg)
                     max_attempts_violation = True # Marcar que hubo al menos una violación
 
-            # 4. Si hubo errores de validación, añadirlos a results y retornar
+            # 4. Si hubo errores de validación de conteo, añadirlos a results y retornar
             if validation_errors:
                 results['errors'].extend(validation_errors)
-                logger.warning(f"Validación preliminar fallida para estudio {study_id}. Errores: {validation_errors}")
-                return results
+                logger.warning(f"Validación de conteo de sujetos/intentos fallida para estudio {study_id}. Errores: {validation_errors}")
+                # No retornar aún, continuar con validación de reglas de VI si no hay errores fatales aquí.
+                # O sí retornar si es crítico. Por ahora, acumulamos errores.
 
-        except Exception as e_val:
-            error_msg = f"Error durante la validación preliminar de archivos: {e_val}"
+        except Exception as e_val_count:
+            error_msg = f"Error durante la validación de conteo de archivos: {e_val_count}"
             logger.error(error_msg, exc_info=True)
             results['errors'].append(error_msg)
+            return results # Error crítico, no continuar
+
+        # --- Validación de Reglas de VI (Solo si no hay errores de conteo y hay archivos para procesar) ---
+        if not results['errors'] and files_to_process_info:
+            try:
+                logger.info(f"Iniciando validación de reglas de VI para {len(files_to_process_info)} archivos.")
+                existing_files_data = self._get_all_study_files_descriptors(study_id)
+                
+                # Preparar files_to_add_info para el validador
+                # El validador espera: {'subject_id': str, 'descriptors': List[Optional[str]], 'filename': str}
+                # files_to_process_info ya tiene 'subject_id', 'descriptors', 'filename'.
+                
+                vi_rule_errors = validate_files_for_vi_rules(
+                    files_to_process_info, # Ya tiene la estructura correcta
+                    existing_files_data,
+                    independent_variables
+                )
+
+                if vi_rule_errors:
+                    logger.warning(f"Validación de reglas de VI fallida para estudio {study_id}. Errores específicos:")
+                    for err in vi_rule_errors:
+                        logger.warning(f"- {err}")
+                    # Añadir un error genérico para la UI
+                    results['errors'].append("No se cumplen las especificaciones de manejo de descriptores para el estudio. Revise los logs para más detalles.")
+                    return results # Detener procesamiento
+
+            except Exception as e_val_vi:
+                error_msg = f"Error durante la validación de reglas de VI: {e_val_vi}"
+                logger.error(error_msg, exc_info=True)
+                results['errors'].append(error_msg)
+                return results # Error crítico
+
+        # --- Procesamiento de Archivos (Solo si TODAS las validaciones pasaron) ---
+        if results['errors']: # Si hubo algún error en cualquier validación previa
+            logger.warning(f"Procesamiento detenido debido a errores de validación previos para estudio {study_id}.")
             return results
 
-        # --- Procesamiento de Archivos (Solo si la validación preliminar pasó) ---
-        logger.info(f"Validación preliminar exitosa. Procesando {len(files_to_process)} archivos para estudio {study_id}.")
-        for source_file_path, file_name, subject_id, attempt_num in files_to_process:
-            logger.debug(f"Procesando archivo validado: '{file_name}' (Sujeto: {subject_id}, Intento: {attempt_num})")
+        logger.info(f"Todas las validaciones exitosas. Procesando {len(files_to_process_info)} archivos para estudio {study_id}.")
+        for file_info in files_to_process_info:
+            source_file_path = file_info['source_path']
+            file_name = file_info['filename']
+            # subject_id = file_info['subject_id'] # No se usa directamente aquí
+            # attempt_num = file_info['attempt_num'] # No se usa directamente aquí
+            logger.debug(f"Procesando archivo validado: '{file_name}'")
             try:
                 # Procesar y copiar el archivo
                 self._process_and_copy_file(study_path, source_file_path)
@@ -450,6 +499,43 @@ class FileService:
         logger.debug(f"Detalles encontrados: {num_unique_subjects} sujetos, máx {max_attempts_found} intentos. Data: {subjects_attempts}")
         return subjects_attempts, num_unique_subjects, max_attempts_found
 
+    def _get_all_study_files_descriptors(self, study_id: int) -> Dict[str, List[List[Optional[str]]]]:
+        """
+        Recopila los descriptores extraídos de todos los archivos procesados válidos para un estudio.
+
+        :param study_id: ID del estudio.
+        :return: Dict mapeando subject_id a una lista de sus listas de descriptores.
+                 Ej: {"Pte01": [["CMJ", "PRE"], ["SJ", "PRE"]]}
+        """
+        all_files_data: Dict[str, List[List[Optional[str]]]] = {}
+        study_path = self._get_study_path(study_id)
+        if not study_path:
+            return {}
+
+        try:
+            study_details = self.study_service.get_study_details(study_id)
+            independent_variables = study_details.get('independent_variables', [])
+        except Exception as e:
+            logger.error(f"Error al obtener VIs del estudio {study_id} para _get_all_study_files_descriptors: {e}", exc_info=True)
+            return {} # No se pueden validar nombres sin VIs
+
+        processed_folders = ["Cinematica", "Cinetica", "Electromiografica"]
+        for patient_dir in study_path.iterdir():
+            if patient_dir.is_dir() and not patient_dir.name.lower() in ["reportes", "temp", "og"]:
+                for freq_folder_name in processed_folders:
+                    freq_folder_path = patient_dir / freq_folder_name
+                    if freq_folder_path.exists() and freq_folder_path.is_dir():
+                        for file_path in freq_folder_path.iterdir():
+                            if file_path.is_file() and file_path.suffix.lower() in ['.txt', '.csv']:
+                                filename = file_path.name
+                                is_valid, subject_id, extracted_descriptors, _ = validate_filename_for_study_criteria(
+                                    filename, independent_variables
+                                )
+                                if is_valid and subject_id:
+                                    if subject_id not in all_files_data:
+                                        all_files_data[subject_id] = []
+                                    all_files_data[subject_id].append(extracted_descriptors)
+        return all_files_data
 
     def get_unique_study_parameters(self, study_id: int) -> dict:
         """

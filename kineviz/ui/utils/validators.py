@@ -210,3 +210,94 @@ def validate_filename_for_study_criteria(
 
 # --- ELIMINAR VALIDADOR ANTIGUO ---
 # La función validate_study_data ya no es necesaria y se elimina.
+
+
+# --- NUEVO VALIDADOR DE REGLAS DE VI PARA LOTES DE ARCHIVOS ---
+def validate_files_for_vi_rules(
+    files_to_add_info: List[Dict[str, Any]],
+    existing_files_descriptors: Dict[str, List[List[Optional[str]]]],
+    independent_variables: List[Dict[str, Any]]
+) -> List[str]:
+    """
+    Valida un lote de archivos a agregar contra las reglas de VI de un estudio,
+    considerando los archivos ya existentes.
+
+    :param files_to_add_info: Lista de diccionarios para archivos a agregar.
+                              Cada dict debe tener: {'subject_id': str, 'descriptors': List[Optional[str]], 'filename': str}.
+    :param existing_files_descriptors: Dict mapeando subject_id a una lista de sus listas de descriptores existentes.
+                                       Ej: {"Pte01": [["CMJ", "PRE"], ["SJ", "PRE"]]}
+    :param independent_variables: Lista de definiciones de VIs del estudio.
+    :return: Lista de mensajes de error. Lista vacía si es válido.
+    """
+    error_messages = []
+    if not independent_variables: # No VIs, no rules to check beyond basic filename structure
+        return []
+
+    # Combine existing files with new files for a complete view per patient
+    all_files_by_patient: Dict[str, List[List[Optional[str]]]] = {}
+
+    # 1. Populate with existing files
+    for subject_id, desc_lists in existing_files_descriptors.items():
+        if subject_id not in all_files_by_patient:
+            all_files_by_patient[subject_id] = []
+        all_files_by_patient[subject_id].extend(desc_lists)
+
+    # 2. Add new files to the structure
+    all_patient_ids_in_study = set(all_files_by_patient.keys())
+    for file_info in files_to_add_info:
+        subject_id = file_info['subject_id']
+        descriptors = file_info['descriptors']
+        all_patient_ids_in_study.add(subject_id)
+        if subject_id not in all_files_by_patient:
+            all_files_by_patient[subject_id] = []
+        all_files_by_patient[subject_id].append(descriptors)
+
+    # 3. Validate against VI rules for each patient and each VI
+    for vi_idx, vi_def in enumerate(independent_variables):
+        vi_name = vi_def.get('name', f"VI #{vi_idx+1}")
+        allows_combination = vi_def.get('allows_combination', False)
+        is_mandatory = vi_def.get('is_mandatory', False)
+        vi_defined_descriptors = set(d for d in vi_def.get('descriptors', []) if d) # Excluye None/empty
+
+        for patient_id in sorted(list(all_patient_ids_in_study)):
+            patient_files_descriptors = all_files_by_patient.get(patient_id, [])
+            if not patient_files_descriptors: # No files for this patient (should not happen if they are in all_patient_ids_in_study from new files)
+                continue
+
+            # Get all descriptors used by this patient for the current VI
+            descriptors_used_by_patient_for_vi: Set[Optional[str]] = set()
+            for file_desc_list in patient_files_descriptors:
+                if vi_idx < len(file_desc_list):
+                    descriptors_used_by_patient_for_vi.add(file_desc_list[vi_idx])
+                # else: descriptor list shorter than VI index, implies "Nulo" or malformed filename already caught
+
+            # Rule 1: Fixed Descriptor (allows_combination == False)
+            if not allows_combination:
+                non_nulo_descriptors = {d for d in descriptors_used_by_patient_for_vi if d is not None}
+                if len(non_nulo_descriptors) > 1:
+                    error_messages.append(
+                        f"Paciente '{patient_id}': Para la VI '{vi_name}' (no permite combinación), "
+                        f"se encontraron múltiples descriptores diferentes: {', '.join(sorted(list(non_nulo_descriptors)))}. "
+                        f"Solo se permite un descriptor (o 'Nulo') por paciente para esta VI."
+                    )
+            
+            # Rule 2: Mandatory Descriptors (allows_combination == True AND is_mandatory == True)
+            if allows_combination and is_mandatory:
+                # Check if all defined descriptors for this VI are present for this patient
+                # Convert None from file to "Nulo" string if that's how vi_defined_descriptors stores them,
+                # but vi_defined_descriptors should store actual descriptor names.
+                # descriptors_used_by_patient_for_vi contains actual names or None.
+                
+                actual_descriptors_present = {d for d in descriptors_used_by_patient_for_vi if d is not None}
+
+                missing_descriptors = vi_defined_descriptors - actual_descriptors_present
+                if missing_descriptors:
+                    error_messages.append(
+                        f"Paciente '{patient_id}': Para la VI '{vi_name}' (múltiple y obligatoria), "
+                        f"faltan los siguientes descriptores: {', '.join(sorted(list(missing_descriptors)))}. "
+                        f"Cada paciente debe tener al menos un archivo para cada descriptor de esta VI."
+                    )
+    
+    if error_messages:
+        logger.warning(f"Errores de validación de reglas de VI: {error_messages}")
+    return error_messages
