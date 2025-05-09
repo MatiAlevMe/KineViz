@@ -23,7 +23,7 @@ class StudyDialog(Toplevel):
         self.is_editing = bool(study_to_edit) # Flag para modo edición
 
         # Estructura para almacenar VIs y sus descriptores en la UI
-        # Lista de diccionarios: [{'name_var': StringVar, 'descriptor_vars': [StringVar], 'frame': Frame, 'desc_frames': [Frame]}]
+        # Lista de diccionarios: [{'name_var': StringVar, 'descriptor_vars': [StringVar], 'frame': Frame, 'desc_frames': [Frame], 'allows_combination_var': BooleanVar, 'is_mandatory_var': BooleanVar}]
         self.independent_variables_ui = []
 
         self.title("Editar Estudio" if self.is_editing else "Nuevo Estudio")
@@ -143,7 +143,9 @@ class StudyDialog(Toplevel):
              for iv_data in initial_ivs_to_load:
                  self.add_independent_variable_ui(
                      name_value=iv_data.get('name', ''),
-                     descriptors_values=iv_data.get('descriptors', [])
+                     descriptors_values=iv_data.get('descriptors', []),
+                     allows_combination_value=iv_data.get('allows_combination', False), # Default to False if not present
+                     is_mandatory_value=iv_data.get('is_mandatory', False) # Default to False
                  )
 
         # --- Frame para botones (Guardar, Cancelar, Ayuda) ---
@@ -163,8 +165,11 @@ class StudyDialog(Toplevel):
         ttk.Button(button_frame, text="Cancelar", command=self.destroy).pack(side=tk.RIGHT)
 
 
-    def add_independent_variable_ui(self, name_value="", descriptors_values=None):
-        """Añade una nueva sección para una Variable Independiente."""
+    def add_independent_variable_ui(self, name_value="", descriptors_values=None, allows_combination_value=False, is_mandatory_value=False):
+        """
+        Añade una nueva sección para una Variable Independiente.
+        Incluye checkboxes para 'allows_combination' y 'is_mandatory'.
+        """
         if descriptors_values is None:
             descriptors_values = []
 
@@ -200,15 +205,58 @@ class StudyDialog(Toplevel):
         descriptors_container = ttk.Frame(vi_frame, padding="5 0 0 20") # Indentación izquierda
         descriptors_container.pack(fill=tk.X)
 
+        # --- Checkboxes para flags de VI ---
+        vi_flags_frame = ttk.Frame(vi_frame, padding="0 5 5 20") # Padding: top, right, bottom, left
+        vi_flags_frame.pack(fill=tk.X, pady=(5,0))
+
+        allows_combination_var = tk.BooleanVar(value=allows_combination_value)
+        is_mandatory_var = tk.BooleanVar(value=is_mandatory_value)
+
+        # Checkbox "Permite combinación de descriptores"
+        allows_combination_cb = ttk.Checkbutton(
+            vi_flags_frame,
+            text="Permite combinación de descriptores por sujeto",
+            variable=allows_combination_var,
+            command=lambda acv=allows_combination_var, imv=is_mandatory_var: self._on_allows_combination_changed(acv, imv)
+        )
+        allows_combination_cb.pack(side=tk.LEFT, anchor="w")
+
+        # Checkbox "Obligatorio (todos los descriptores deben usarse por sujeto)"
+        # Se mostrará/ocultará o habilitará/deshabilitará basado en el anterior
+        self.is_mandatory_cb = ttk.Checkbutton(
+            vi_flags_frame,
+            text="Obligatorio (todos los descriptores de esta VI deben usarse por cada sujeto)",
+            variable=is_mandatory_var
+        )
+        # Empaquetar después para que aparezca a la derecha o abajo, ajustar según diseño deseado
+        self.is_mandatory_cb.pack(side=tk.LEFT, anchor="w", padx=(10,0))
+
+        # Estado inicial del checkbox "Obligatorio"
+        self._update_mandatory_checkbox_state(allows_combination_var.get(), self.is_mandatory_cb)
+
+        if self.is_editing:
+            allows_combination_cb.config(state=tk.DISABLED)
+            self.is_mandatory_cb.config(state=tk.DISABLED)
+
+
         # Guardar referencias
         vi_ui_data = {
             'name_var': vi_name_var,
             'descriptor_vars': [],
             'frame': vi_frame,
             'descriptors_container': descriptors_container,
-            'desc_frames': []
+            'desc_frames': [],
+            'allows_combination_var': allows_combination_var,
+            'is_mandatory_var': is_mandatory_var,
+            'is_mandatory_cb_widget': self.is_mandatory_cb # Guardar referencia al widget para actualizar estado
         }
         self.independent_variables_ui.append(vi_ui_data)
+
+        # Actualizar estado del checkbox "Obligatorio" para esta VI específica
+        # Encontrar el widget correcto para esta VI
+        current_vi_ui_data = next(item for item in self.independent_variables_ui if item["name_var"] == vi_name_var)
+        self._update_mandatory_checkbox_state(allows_combination_var.get(), current_vi_ui_data['is_mandatory_cb_widget'])
+
 
         # Añadir descriptores iniciales para esta VI
         if not descriptors_values and not self.is_editing:
@@ -294,6 +342,42 @@ class StudyDialog(Toplevel):
         except ValueError:
             logger.warning("Intento de eliminar un descriptor que no está en la lista de la VI.")
 
+    def _on_allows_combination_changed(self, allows_combination_var, is_mandatory_var_or_cb_widget):
+        """
+        Callback cuando el estado de 'allows_combination' cambia.
+        Actualiza el estado del checkbox 'is_mandatory' y su variable.
+        """
+        # Encontrar la VI correcta en self.independent_variables_ui para obtener su widget de checkbox 'is_mandatory'
+        # Esto es un poco indirecto; idealmente, el widget estaría directamente asociado o pasado.
+        # Por ahora, asumimos que el último widget creado o uno específico es el objetivo.
+        # Esta lógica necesita ser más robusta si múltiples VIs se manejan dinámicamente.
+
+        # Iterar para encontrar el widget correcto
+        target_cb_widget = None
+        for vi_data_item in self.independent_variables_ui:
+            # Comparamos la variable de 'allows_combination' para identificar la VI correcta
+            if vi_data_item['allows_combination_var'] == allows_combination_var:
+                target_cb_widget = vi_data_item['is_mandatory_cb_widget']
+                is_mandatory_var = vi_data_item['is_mandatory_var'] # Usar la variable correcta
+                break
+        
+        if not target_cb_widget:
+            logger.warning("No se pudo encontrar el checkbox 'Obligatorio' correspondiente para actualizar.")
+            return
+
+        allows_combination = allows_combination_var.get()
+        self._update_mandatory_checkbox_state(allows_combination, target_cb_widget)
+        if not allows_combination:
+            is_mandatory_var.set(False) # Si se desmarca "permite combinación", "obligatorio" debe ser False
+
+    def _update_mandatory_checkbox_state(self, allows_combination_state, is_mandatory_cb_widget):
+        """Actualiza el estado (habilitado/deshabilitado) del checkbox 'is_mandatory'."""
+        if allows_combination_state:
+            is_mandatory_cb_widget.config(state=tk.NORMAL if not self.is_editing else tk.DISABLED)
+        else:
+            is_mandatory_cb_widget.config(state=tk.DISABLED)
+
+
     def show_iv_help(self):
         """Muestra el archivo de ayuda para VIs."""
         try:
@@ -337,12 +421,21 @@ class StudyDialog(Toplevel):
                 # Obtener descriptores originales basados en la posición inicial
                 original_vi_data = self.initial_independent_variables[i]
                 original_descriptors = original_vi_data.get('descriptors', [])
+                # En modo edición, los flags no cambian, se toman de los datos iniciales
+                original_allows_combination = original_vi_data.get('allows_combination', False)
+                original_is_mandatory = original_vi_data.get('is_mandatory', False)
 
-                if updated_vi_name and original_descriptors: # Asegurar que el nombre actualizado y los descriptores originales sean válidos
-                    reconstructed_ivs.append({'name': updated_vi_name, 'descriptors': original_descriptors})
+
+                if updated_vi_name and original_descriptors:
+                    reconstructed_ivs.append({
+                        'name': updated_vi_name,
+                        'descriptors': original_descriptors,
+                        'allows_combination': original_allows_combination,
+                        'is_mandatory': original_is_mandatory
+                    })
                 else:
                     # Loggear error si falta nombre actualizado o descriptores originales
-                    logger.error(f"Error reconstruyendo VI #{i+1} en modo edición: Nombre='{updated_vi_name}', Descriptores Originales={original_descriptors}")
+                    logger.error(f"Error reconstruyendo VI #{i+1} en modo edición: Nombre='{updated_vi_name}', Descriptores Originales={original_descriptors}, Flags: AC={original_allows_combination}, IM={original_is_mandatory}")
                     messagebox.showerror("Error Interno", f"Error procesando Variable Independiente #{i+1}.", parent=self)
                     return
 
@@ -358,9 +451,22 @@ class StudyDialog(Toplevel):
                 descriptors = [desc_var.get().strip() for desc_var in vi_ui_data['descriptor_vars']]
                 # Filtrar descriptores vacíos
                 valid_descriptors = [d for d in descriptors if d]
+                # Obtener valores de los checkboxes
+                allows_combination = vi_ui_data['allows_combination_var'].get()
+                is_mandatory = vi_ui_data['is_mandatory_var'].get()
+
+                # Si no se permite combinación, 'is_mandatory' debe ser False
+                if not allows_combination:
+                    is_mandatory = False
+
                 # Solo añadir VI si tiene nombre y descriptores válidos
                 if vi_name and valid_descriptors:
-                    collected_ivs.append({'name': vi_name, 'descriptors': valid_descriptors})
+                    collected_ivs.append({
+                        'name': vi_name,
+                        'descriptors': valid_descriptors,
+                        'allows_combination': allows_combination,
+                        'is_mandatory': is_mandatory
+                    })
 
             study_data_to_validate = {**study_data_base, 'independent_variables': collected_ivs}
 
