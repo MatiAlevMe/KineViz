@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import List, Tuple, Dict, Any, Optional # Para type hints
+from typing import List, Tuple, Dict, Any, Optional, Set # Para type hints
 
 logger = logging.getLogger(__name__) # Logger para este módulo
 
