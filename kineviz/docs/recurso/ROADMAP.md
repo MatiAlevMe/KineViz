@@ -195,6 +195,63 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 * **2. Refinar Requerimiento de Compatibilidad (RNF-PO-001):** (Actualizado)
     * **Detalle**: Especificar versiones mínimas soportadas: Windows 10 (64-bit) y posteriores, macOS 11 (Big Sur) y posteriores (solo Apple Silicon / ARM64). Actualizar documentación formal si es posible.
 
+**Fase 5: Análisis Continuo (SPM) (Pendiente/En Diseño)**
+
+*   **1. Diseño y Prototipado de UI para Análisis Continuo:**
+    *   **1.1 Botón en `StudyView`**: (Pendiente) Añadir botón "Análisis Continuo" (o similar) en la vista de estudio, probablemente junto al de "Análisis Discreto".
+    *   **1.2 Crear `ContinuousAnalysisConfigDialog` (o similar)**: (Pendiente) Diálogo para configurar el análisis continuo:
+        *   Selección de Frecuencia de datos (ej: Cinemática, Cinética). Inicialmente enfocado en Cinemática.
+        *   Selección de Variable/Columna de Agrupación: Permitir al usuario seleccionar la variable específica a analizar (ej: "LAnkleAngles_X", "KneeMoment_Y"). Esto implica identificar y listar las columnas de datos relevantes de los archivos procesados, excluyendo "Frame" y "Sub Frame".
+        *   Selector de Descriptores: Permitir al usuario seleccionar dos o más grupos de descriptores (basados en las VIs del estudio) para comparar.
+    *   **1.3 Crear `ContinuousAnalysisResultsView` (o similar)**: (Pendiente) Vista o sección en la UI para:
+        *   Listar los análisis continuos generados (nombre, variable, descriptores, fecha).
+        *   Mostrar filtros y opciones de ordenación para la lista de análisis.
+        *   Proveer opciones para cada análisis: ver gráfico SPM, ver tabla de datos normalizados/resultados, abrir carpeta de resultados, eliminar análisis.
+*   **2. Implementación de Normalización de Datos Temporales:**
+    *   **2.1 Lógica de Normalización Temporal**: (Pendiente) Implementar una función (posiblemente en `processors.py` o un nuevo módulo) para normalizar la duración de las secuencias de datos a 101 puntos (0-100%).
+        *   Esto se aplicará a la variable seleccionada para cada archivo/sujeto/intento.
+        *   Investigar y aplicar métodos de interpolación adecuados (ej: splines, interpolación lineal).
+    *   **2.2 Procesamiento de Archivos para Normalización**: (Pendiente) En `AnalysisService`, crear lógica para:
+        *   Identificar los archivos relevantes del estudio según la frecuencia y descriptores seleccionados.
+        *   Leer la columna de datos de la variable de interés de cada archivo.
+        *   Aplicar la normalización temporal.
+    *   **2.3 Estructura de Datos Normalizados**: (Pendiente) Definir cómo se organizarán los datos normalizados para el análisis SPM. Típicamente, matrices donde las filas son sujetos/observaciones y las columnas son los 101 puntos de tiempo.
+*   **3. Lógica de Análisis Estadístico Continuo (usando `spm1d`):**
+    *   **3.1 Integración de la Librería `spm1d`**: (Pendiente) Añadir `spm1d` como dependencia del proyecto.
+    *   **3.2 `AnalysisService.perform_continuous_analysis`**: (Pendiente) Nuevo método que:
+        *   Recopile los datos normalizados para la variable y los grupos de descriptores seleccionados.
+        *   Prepare los datos en el formato requerido por `spm1d`.
+        *   Ejecute los tests estadísticos apropiados de `spm1d` (ej: `spm1d.stats.ttest`, `spm1d.stats.anova1` según el número de grupos de descriptores).
+        *   Obtenga los resultados del análisis SPM, incluyendo la curva del estadístico (ej: t-valor) y los p-valores a lo largo del continuo temporal.
+    *   **3.3 Almacenamiento de Resultados SPM**: (Pendiente) Guardar los resultados del análisis (ej: la curva SPM, clusters significativos, p-valores) en un formato accesible (ej: JSON, CSV).
+*   **4. Generación de Gráficos y Tablas para Análisis Continuo:**
+    *   **4.1 `charting.py` - Nuevas Funciones para Gráficos SPM**: (Pendiente)
+        *   Función para generar gráficos de curvas comparativas: una curva promedio por cada grupo de descriptores, mostrando la variable a lo largo del tiempo normalizado.
+        *   Visualizar opcionalmente la desviación estándar o intervalos de confianza alrededor de las curvas promedio.
+        *   Superponer la curva del estadístico SPM (ej: t-valor) y resaltar las regiones donde las diferencias son estadísticamente significativas (basado en los p-valores y la teoría de campos aleatorios de `spm1d`).
+        *   Generar gráficos estáticos (PNG) e interactivos (HTML con Plotly, si es factible).
+    *   **4.2 Generación de Tablas de Resultados**: (Pendiente)
+        *   Tablas con los datos normalizados para la variable y los descriptores seleccionados.
+        *   Tablas resumiendo los resultados del análisis SPM (ej: p-valores, información de clusters significativos).
+    *   **4.3 Nomenclatura y Gestión de Archivos**: (Pendiente)
+        *   Definir una nomenclatura clara para los archivos generados (gráficos, tablas, datos SPM), ej: `[Variable]_[DescriptoresComparados]_cont_analysis.[png|html|csv]`.
+        *   Guardar estos archivos en una subcarpeta específica dentro de la carpeta del estudio (ej: `AnalisisContinuo`).
+*   **5. Gestión de Análisis Continuos Guardados en `AnalysisService`:**
+    *   **5.1 Nuevos Métodos en `AnalysisService`**: (Pendiente)
+        *   `list_continuous_analyses(study_id)`: Lista los análisis continuos guardados.
+        *   `delete_continuous_analysis(study_id, analysis_name_or_id)`: Elimina un análisis continuo.
+        *   `get_continuous_analysis_details(study_id, analysis_name_or_id)`: Obtiene detalles/archivos de un análisis.
+    *   **5.2 Integración con UI**: (Pendiente) Conectar estos métodos a `ContinuousAnalysisResultsView` para la gestión de los análisis.
+*   **6. Validación y Consideraciones Adicionales:**
+    *   **6.1 Exclusión de Columnas Irrelevantes**: (Pendiente) Asegurar que las columnas "Frame" y "Sub Frame" se excluyan del selector de variables y del análisis.
+    *   **6.2 Validación de Entradas del Usuario**: (Pendiente) Validar las selecciones en `ContinuousAnalysisConfigDialog` (ej: al menos dos grupos de descriptores, variable válida).
+*   **7. Pruebas:**
+    *   **7.1 Pruebas Unitarias**: (Pendiente) Para la lógica de normalización, interacción con `spm1d`, y generación de gráficos/tablas.
+    *   **7.2 Pruebas de Integración**: (Pendiente) Probar el flujo completo desde la configuración en la UI hasta la visualización y gestión de los resultados del análisis continuo.
+*   **8. Documentación:**
+    *   **8.1 Actualizar Manual de Usuario**: (Pendiente) Añadir una sección detallada sobre cómo realizar y interpretar el Análisis Continuo.
+    *   **8.2 Ayuda en la Interfaz**: (Pendiente) Considerar añadir tooltips o botones de ayuda en las nuevas ventanas de diálogo/vistas.
+
 ---
 
 ## Known Issues / Bugs
