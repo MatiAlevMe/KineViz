@@ -168,7 +168,7 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
     * **11.3 Actualizar Documentación Ayuda**: (Hecho) Reflejar nuevas validaciones en `study_dialog_iv_help.txt` y `study_view_help.txt`.
 * **12. Eliminar Funcionalidad "Analizar Estudio" Antigua:** (Hecho)
     * **12.1 `StudyView`**: (Hecho) Eliminar botón "Analizar Estudio".
-    * **12.2 (Opcional/Futuro)**: Eliminar `AnalysisDialog` y métodos relacionados en `AnalysisService` si ya no se usan.
+    * **12.2 `AnalysisDialog` y `MainWindow.show_analysis_dialog`**: (Hecho) Eliminados/Comentados ya que la funcionalidad fue reemplazada.
 * **13. Refinamientos UI y Texto en Diálogo/Vista Estudio:** (En Progreso)
     * **13.1 `StudyDialog`**: (Hecho) Mejorar layout de checkboxes "¿Multiple?" y "¿Obligatorio?" (visibilidad condicional). Actualizar etiquetas ("Cantidad de Participantes", "Cantidad de Intento(s) de Prueba", "Nombre del Estudio", "Variable(s) Independientes (VIs)").
     * **13.2 `StudyView`**: (Hecho) Actualizar etiquetas ("Nombre del Estudio", "Cantidad de Participantes", "Cantidad de Intento(s) de Prueba", "Variable(s) Independientes (VIs)"). Mejorar popup de info de VIs para mostrar manejo de descriptores.
@@ -195,14 +195,14 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 * **2. Refinar Requerimiento de Compatibilidad (RNF-PO-001):** (Actualizado)
     * **Detalle**: Especificar versiones mínimas soportadas: Windows 10 (64-bit) y posteriores, macOS 11 (Big Sur) y posteriores (solo Apple Silicon / ARM64). Actualizar documentación formal si es posible.
 
-**Fase 5: Análisis Continuo (SPM) (Pendiente/En Diseño)**
+**Fase 5: Análisis Continuo (SPM) (En Progreso)**
 
 *   **1. Diseño y Prototipado de UI para Análisis Continuo:**
-    *   **1.1 Botón en `StudyView`**: (Pendiente) Añadir botón "Análisis Continuo" (o similar) en la vista de estudio, probablemente junto al de "Análisis Discreto".
-    *   **1.2 Crear `ContinuousAnalysisConfigDialog` (o similar)**: (Pendiente) Diálogo para configurar el análisis continuo:
-        *   Selección de Frecuencia de datos (ej: Cinemática, Cinética). Inicialmente enfocado en Cinemática.
-        *   Selección de Variable/Columna de Agrupación: Permitir al usuario seleccionar la variable específica a analizar (ej: "LAnkleAngles_X", "KneeMoment_Y"). Esto implica identificar y listar las columnas de datos relevantes de los archivos procesados, excluyendo "Frame" y "Sub Frame".
-        *   Selector de Descriptores: Permitir al usuario seleccionar dos o más grupos de descriptores (basados en las VIs del estudio) para comparar.
+    *   **1.1 Botón en `StudyView`**: (Hecho) Añadir botón "Análisis Continuo" en la vista de estudio, junto al de "Análisis Discreto".
+    *   **1.2 Crear `ContinuousAnalysisConfigDialog` (o similar)**: (Hecho - Estructura Básica) Creado diálogo base para configurar el análisis continuo. Pendiente añadir campos de selección (Frecuencia, Variable, Grupos).
+        *   Selección de Frecuencia de datos (ej: Cinemática, Cinética). Inicialmente enfocado en Cinemática. (Pendiente)
+        *   Selección de Variable/Columna de Agrupación: Permitir al usuario seleccionar la variable específica a analizar (ej: "LAnkleAngles_X", "KneeMoment_Y"). Esto implica identificar y listar las columnas de datos relevantes de los archivos procesados, excluyendo "Frame" y "Sub Frame". (Pendiente)
+        *   Selector de Descriptores: Permitir al usuario seleccionar dos o más grupos de descriptores (basados en las VIs del estudio) para comparar. (Pendiente)
     *   **1.3 Crear `ContinuousAnalysisResultsView` (o similar)**: (Pendiente) Vista o sección en la UI para:
         *   Listar los análisis continuos generados (nombre, variable, descriptores, fecha).
         *   Mostrar filtros y opciones de ordenación para la lista de análisis.

@@ -13,8 +13,9 @@ from kineviz.ui.views.landing_page import LandingPage
 from kineviz.ui.views.study_view import StudyView
 from kineviz.ui.views.main_view import MainView
 from kineviz.ui.dialogs.study_dialog import StudyDialog
-from kineviz.ui.dialogs.analysis_dialog import AnalysisDialog
+# from kineviz.ui.dialogs.analysis_dialog import AnalysisDialog # Comentado si ya no se usa
 from kineviz.ui.dialogs.config_dialog import ConfigDialog
+from kineviz.ui.dialogs.continuous_analysis_config_dialog import ContinuousAnalysisConfigDialog # Importar nuevo diálogo
 from kineviz.ui.views.discrete_analysis_view import DiscreteAnalysisView # Importar nueva vista
 # Servicios Core
 from kineviz.core.services.study_service import StudyService
@@ -137,7 +138,18 @@ class MainWindow:
         """Muestra el diálogo para realizar análisis en un estudio."""
         # Instanciar y mostrar el AnalysisDialog real
         # Pasarle el servicio de análisis, el ID del estudio y los settings
-        AnalysisDialog(self.root, self.analysis_service, study_id, self.settings)
+        # AnalysisDialog(self.root, self.analysis_service, study_id, self.settings) # Comentado si ya no se usa
+        # En su lugar, o adicionalmente, podríamos tener diálogos más específicos.
+        # Por ahora, este método puede quedar como estaba o ser eliminado si AnalysisDialog ya no se usa.
+        messagebox.showinfo("Información", "La funcionalidad 'Analizar Estudio' (antigua) ha sido reemplazada por 'Análisis Discreto' y 'Análisis Continuo'.")
+
+
+    def show_continuous_analysis_config_dialog(self, study_id: int):
+        """Muestra el diálogo para configurar un análisis continuo."""
+        ContinuousAnalysisConfigDialog(self.root, self.analysis_service, study_id)
+        # El diálogo es modal, la ejecución esperará aquí hasta que se cierre.
+        # Podríamos querer recargar algo o actuar según el resultado del diálogo.
+        logger.info(f"Diálogo de configuración de análisis continuo cerrado para estudio {study_id}.")
 
 
     def show_config_dialog(self):
