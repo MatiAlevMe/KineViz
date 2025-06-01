@@ -199,8 +199,8 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 
 *   **1. Diseño y Prototipado de UI para Análisis Continuo:**
     *   **1.1 Botón en `StudyView`**: (Hecho) Añadir botón "Análisis Continuo" en la vista de estudio, junto al de "Análisis Discreto".
-    *   **1.2 Crear `ContinuousAnalysisConfigDialog` (o similar)**: (Hecho - Estructura Básica) Creado diálogo base para configurar el análisis continuo. Pendiente añadir campos de selección (Frecuencia, Variable, Grupos).
-        *   Selección de Frecuencia de datos (ej: Cinemática, Cinética). Inicialmente enfocado en Cinemática. (Pendiente)
+    *   **1.2 Crear `ContinuousAnalysisConfigDialog` (o similar)**: (En Progreso) Creado diálogo base para configurar el análisis continuo.
+        *   Selección de Frecuencia de datos (ej: Cinemática, Cinética). Inicialmente enfocado en Cinemática. (Hecho - UI Element y carga de datos)
         *   Selección de Variable/Columna de Agrupación: Permitir al usuario seleccionar la variable específica a analizar (ej: "LAnkleAngles_X", "KneeMoment_Y"). Esto implica identificar y listar las columnas de datos relevantes de los archivos procesados, excluyendo "Frame" y "Sub Frame". (Pendiente)
         *   Selector de Descriptores: Permitir al usuario seleccionar dos o más grupos de descriptores (basados en las VIs del estudio) para comparar. (Pendiente)
     *   **1.3 Crear `ContinuousAnalysisResultsView` (o similar)**: (Pendiente) Vista o sección en la UI para:
