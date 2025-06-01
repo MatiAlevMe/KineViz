@@ -87,6 +87,23 @@ class AnalysisService:
             return {'patients': set(), 'frequencies': set(),
                     'descriptors': set(), 'calculations': set()}
 
+    def get_available_frequencies_for_study(self, study_id: int) -> list[str]:
+        """
+        Obtiene las frecuencias de datos disponibles (ej: Cinemática, Cinética)
+        para un estudio específico, basado en los archivos procesados.
+
+        :param study_id: ID del estudio.
+        :return: Lista de nombres de frecuencias disponibles, ordenada.
+                 Retorna lista vacía si no hay frecuencias o hay error.
+        """
+        try:
+            params = self.file_service.get_unique_study_parameters(study_id)
+            available_frequencies = params.get('frequencies', set())
+            return sorted(list(available_frequencies))
+        except Exception as e:
+            logger.error(f"Error obteniendo frecuencias disponibles para estudio {study_id}: {e}", exc_info=True)
+            return []
+
     def _read_processed_file_data(self, file_path: Path) -> pd.DataFrame | None:
         """
         Lee los datos numéricos de un archivo procesado (.txt separado por ';').
