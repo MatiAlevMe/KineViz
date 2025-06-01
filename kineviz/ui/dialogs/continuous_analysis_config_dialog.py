@@ -33,7 +33,12 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
 
         self.result = None # Para almacenar la configuración si se guarda
 
+        # --- Variables de Tkinter ---
+        self.selected_frequency = tk.StringVar()
+        # Añadir más StringVars para otras selecciones (variable, grupos, etc.)
+
         self.create_widgets()
+        self.load_frequencies() # Cargar frecuencias después de crear widgets
 
         # Centrar el diálogo con respecto al padre
         self.parent.winfo_toplevel().update_idletasks() # Asegurar que las dimensiones del padre estén actualizadas
@@ -59,8 +64,23 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         main_frame = ttk.Frame(self, padding="10")
         main_frame.pack(expand=True, fill=tk.BOTH)
 
-        # Placeholder Label
-        ttk.Label(main_frame, text="Configuración de Análisis Continuo (SPM) - En desarrollo").pack(pady=20)
+        # --- Sección de Selección de Frecuencia ---
+        freq_frame = ttk.LabelFrame(main_frame, text="1. Seleccionar Frecuencia de Datos")
+        freq_frame.pack(fill=tk.X, padx=5, pady=(0, 10))
+
+        ttk.Label(freq_frame, text="Frecuencia:").grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
+        self.frequency_combobox = ttk.Combobox(
+            freq_frame,
+            textvariable=self.selected_frequency,
+            state="readonly",
+            width=25 # Ajustar ancho según sea necesario
+        )
+        self.frequency_combobox.grid(row=0, column=1, padx=5, pady=5, sticky=tk.EW)
+        # self.frequency_combobox.bind("<<ComboboxSelected>>", self.on_frequency_selected) # Para cargar variables después
+
+        # Placeholder para futuras secciones (Variable, Grupos)
+        ttk.Label(main_frame, text="Más opciones de configuración (Variable, Grupos) - En desarrollo").pack(pady=10)
+
 
         # --- Botones de Acción ---
         button_frame = ttk.Frame(main_frame)
@@ -71,11 +91,55 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
 
     def _on_accept(self):
         """Acción al presionar Aceptar."""
-        # Aquí se recolectaría la configuración
-        # self.result = {...} # Configuración recolectada
-        logger.info(f"Análisis continuo configurado (placeholder) para estudio {self.study_id}.")
-        # Por ahora, solo cerramos
+        selected_freq = self.selected_frequency.get()
+        if not selected_freq:
+            # Usar messagebox de tkinter
+            from tkinter import messagebox
+            messagebox.showwarning("Advertencia", "Debe seleccionar una frecuencia.", parent=self)
+            return
+
+        # Aquí se recolectaría la configuración completa
+        self.result = {
+            "frequency": selected_freq
+            # Añadir más parámetros a medida que se implementen
+        }
+        logger.info(f"Configuración de análisis continuo guardada: {self.result} para estudio {self.study_id}.")
         self.destroy()
+
+    def load_frequencies(self):
+        """Carga las frecuencias disponibles en el Combobox."""
+        try:
+            frequencies = self.analysis_service.get_available_frequencies_for_study(self.study_id)
+            if frequencies:
+                self.frequency_combobox['values'] = frequencies
+                # Opcional: seleccionar la primera por defecto
+                # self.selected_frequency.set(frequencies[0])
+                # self.on_frequency_selected() # Cargar variables si se selecciona una por defecto
+            else:
+                self.frequency_combobox['values'] = []
+                self.selected_frequency.set("")
+                # Considerar deshabilitar el combobox o mostrar mensaje
+                # self.frequency_combobox.config(state="disabled")
+                # (Manejar caso donde no hay frecuencias)
+        except Exception as e:
+            logger.error(f"Error cargando frecuencias para estudio {self.study_id}: {e}", exc_info=True)
+            self.frequency_combobox['values'] = []
+            self.selected_frequency.set("")
+            # Mostrar error al usuario si es necesario
+
+    # def on_frequency_selected(self, event=None):
+    #     """Llamado cuando se selecciona una frecuencia. Carga las variables/columnas."""
+    #     selected_freq = self.selected_frequency.get()
+    #     if selected_freq:
+    #         logger.debug(f"Frecuencia seleccionada: {selected_freq}. Cargando variables...")
+    #         # Aquí se llamaría a cargar las variables/columnas para esta frecuencia
+    #         # self.load_variables_for_frequency(selected_freq)
+    #     else:
+    #         # Limpiar combobox de variables si no hay frecuencia
+    #         # self.variable_combobox['values'] = []
+    #         # self.selected_variable.set("")
+    #         pass
+
 
     def _on_cancel(self, event=None):
         """Acción al presionar Cancelar o cerrar la ventana."""
