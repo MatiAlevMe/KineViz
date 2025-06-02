@@ -47,7 +47,7 @@ class StudyView:
                    command=self.open_study_folder).pack(side=tk.LEFT, padx=(0, 10))
 
         # Botón Gestionar Alias
-        ttk.Button(header_frame, text="Gestionar Alias Descriptores",
+        ttk.Button(header_frame, text="Gestionar Alias Sub-valores",
                    command=self.manage_descriptor_aliases).pack(side=tk.LEFT, padx=(0, 10))
 
         # Botón Análisis Discreto (Fase 6)
@@ -171,7 +171,7 @@ class StudyView:
                 messagebox.showinfo("Información VIs", "No hay Variable(s) Independientes (VIs) definidas para este estudio.", parent=self.frame)
                 return
 
-            info_text = "Variable(s) Independientes (VIs) y sus Descriptores (Alias):\n\n"
+            info_text = "Variable(s) Independientes (VIs) y sus Sub-valores (Alias):\n\n"
             for iv in independent_variables:
                 vi_name = iv.get('name', 'VI Sin Nombre')
                 descriptors = iv.get('descriptors', [])
@@ -190,11 +190,11 @@ class StudyView:
                 # Añadir manejo de descriptores
                 if allows_combination:
                     if is_mandatory:
-                        info_text += "    Manejo Descriptores: Múltiple y Obligatorio\n"
+                        info_text += "    Manejo Sub-valores: Múltiple y Obligatorio\n"
                     else:
-                        info_text += "    Manejo Descriptores: Múltiple y No Obligatorio\n"
+                        info_text += "    Manejo Sub-valores: Múltiple y No Obligatorio\n"
                 else:
-                    info_text += "    Manejo Descriptores: No Múltiple\n"
+                    info_text += "    Manejo Sub-valores: No Múltiple\n"
                 info_text += "\n" # Espacio entre VIs
 
             messagebox.showinfo("Detalle Variable(s) Independientes (VIs)", info_text.strip(), parent=self.frame)

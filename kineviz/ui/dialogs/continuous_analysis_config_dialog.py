@@ -94,7 +94,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         # Opcional: self.variable_combobox.bind("<<ComboboxSelected>>", self.on_variable_selected)
 
         # Placeholder para futuras secciones (Grupos)
-        ttk.Label(main_frame, text="Más opciones de configuración (Grupos de Descriptores) - En desarrollo").pack(pady=10)
+        ttk.Label(main_frame, text="Más opciones de configuración (Grupos de Sub-valores) - En desarrollo").pack(pady=10)
 
 
         # --- Botones de Acción ---

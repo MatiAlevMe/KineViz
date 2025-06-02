@@ -499,7 +499,7 @@ class AnalysisService:
             param_text = (
                 f"<b>Pacientes:</b> {', '.join(parameters.get('patients', []))}<br/>"
                 f"<b>Tipos de Datos:</b> {', '.join(parameters.get('frequencies', []))}<br/>"
-                # Podríamos añadir VIs/Descriptores si se seleccionaron explícitamente,
+                # Podríamos añadir VIs/Sub-valores si se seleccionaron explícitamente,
                 # pero por ahora omitimos esa parte ya que el análisis agrupa por todas las combinaciones.
                 f"<b>Cálculos:</b> {', '.join(parameters.get('calculations', []))}"
             )
@@ -1219,7 +1219,7 @@ class AnalysisService:
                     groups_by_file_base[file_base_key] = group_key
                     unique_group_keys.add(group_key)
                 except IndexError: # Si extracted_descriptors no coincide con VIs
-                    logger.warning(f"Discrepancia VIs/Descriptores al extraer grupo de: {filename}")
+                    logger.warning(f"Discrepancia VIs/Sub-valores al extraer grupo de: {filename}")
                     continue
 
             logger.debug(f"Grupos identificados ({len(unique_group_keys)}): "

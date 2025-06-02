@@ -139,7 +139,7 @@ class DiscreteAnalysisView(ttk.Frame):
         # Crear Treeview con nuevas columnas
         self.tables_tree = ttk.Treeview(
             list_frame,
-            columns=("Nombre Archivo", "Tipo Cálculo", "Descriptores",
+            columns=("Nombre Archivo", "Tipo Cálculo", "Sub-valores",
                      "Fecha Modificación", "Tamaño"),
             show="headings"
         )
@@ -147,7 +147,7 @@ class DiscreteAnalysisView(ttk.Frame):
         self.tables_tree.grid(row=0, column=0, sticky='nsew', padx=5, pady=(5, 0))
 
         # Definir cabeceras y comando de ordenación
-        cols = ("Nombre Archivo", "Tipo Cálculo", "Descriptores",
+        cols = ("Nombre Archivo", "Tipo Cálculo", "Sub-valores",
                 "Fecha Modificación", "Tamaño")
         for col in cols:
             self.tables_tree.heading(
@@ -158,7 +158,7 @@ class DiscreteAnalysisView(ttk.Frame):
         # Definir ancho de columnas
         self.tables_tree.column("Nombre Archivo", width=250, anchor=tk.W)
         self.tables_tree.column("Tipo Cálculo", width=100, anchor=tk.W)
-        self.tables_tree.column("Descriptores", width=200, anchor=tk.W)
+        self.tables_tree.column("Sub-valores", width=200, anchor=tk.W)
         self.tables_tree.column("Fecha Modificación", width=150,
                                 anchor=tk.CENTER)
         self.tables_tree.column("Tamaño", width=100, anchor=tk.E)
@@ -267,7 +267,7 @@ class DiscreteAnalysisView(ttk.Frame):
             return f"{size_bytes / (1024**3):.1f} GB"
 
     def _parse_table_filename(self, filename: str) -> tuple[str, str, str]:
-        """Extrae Cálculo, Tipos de Datos y Descriptores del nombre de archivo."""
+        """Extrae Cálculo, Tipos de Datos y Sub-valores del nombre de archivo."""
         # Formato: CALCULO_FRECUENCIA_DESC1_DESC2...DESCn.[csv|tsv|xlsx|scsv]
         # Remover cualquier extensión conocida
         base_name = filename
@@ -287,7 +287,7 @@ class DiscreteAnalysisView(ttk.Frame):
 
         # Unir descriptores con coma
         descriptor_str = ", ".join(descriptors) if descriptors \
-                                                else "SinDescriptores"
+                                                else "SinSubValores"
 
         return calc_type, freq_type, descriptor_str
 
