@@ -62,7 +62,7 @@ class DescriptorAliasDialog(Toplevel):
         main_frame.pack(fill=tk.BOTH, expand=True)
 
         # Instrucciones
-        ttk.Label(main_frame, text="Asigne un alias descriptivo a cada descriptor definido para este estudio.", wraplength=450).pack(pady=(0, 10))
+        ttk.Label(main_frame, text="Asigne un alias descriptivo a cada sub-valor definido para este estudio.", wraplength=450).pack(pady=(0, 10))
 
         # Frame para la tabla de alias (usaremos grid aquí)
         self.alias_grid_frame = ttk.Frame(main_frame)

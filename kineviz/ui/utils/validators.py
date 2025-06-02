@@ -79,13 +79,13 @@ def validate_study_iv_data(data: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
             if not cleaned_desc:
                 return False, f"Sub-valor vacío encontrado en '{vi_name}'."
             if ' ' in cleaned_desc:
-                return False, f"El descriptor '{cleaned_desc}' en '{vi_name}' no puede contener espacios."
+                return False, f"El sub-valor '{cleaned_desc}' en '{vi_name}' no puede contener espacios."
             # Añadir validación para no permitir "Nulo" (case-insensitive)
             if cleaned_desc.lower() == "nulo":
-                return False, f"El descriptor '{cleaned_desc}' en '{vi_name}' no puede llamarse 'Nulo'."
+                return False, f"El sub-valor '{cleaned_desc}' en '{vi_name}' no puede llamarse 'Nulo'."
             if cleaned_desc in cleaned_descriptors_in_iv:
                 return False, f"Sub-valor duplicado '{cleaned_desc}' dentro de la Variable Independiente '{vi_name}'."
-            # No es un error tener el mismo nombre de descriptor en diferentes VIs.
+            # No es un error tener el mismo nombre de sub-valor en diferentes VIs.
             # if cleaned_desc in all_descriptor_names:
             #     return False, f"Sub-valor duplicado '{cleaned_desc}' encontrado en múltiples Variables Independientes."
 
@@ -195,12 +195,12 @@ def validate_filename_for_study_criteria(
             has_non_nulo_descriptor = True
             logger.debug(f"Parte {i+1}: '{part}' es válido para VI '{vi_definition.get('name', 'N/A')}'.")
         else:
-            logger.debug(f"Fallo: Parte {i+1} '{part}' no es 'Nulo' ni un descriptor válido para VI '{vi_definition.get('name', 'N/A')}' ({valid_descriptors_for_vi}).")
+            logger.debug(f"Fallo: Parte {i+1} '{part}' no es 'Nulo' ni un sub-valor válido para VI '{vi_definition.get('name', 'N/A')}' ({valid_descriptors_for_vi}).")
             return invalid_return
 
-    # 7. Validar que al menos un descriptor no sea "Nulo"
+    # 7. Validar que al menos un sub-valor no sea "Nulo"
     if not has_non_nulo_descriptor and num_vis_defined > 0: # Solo aplicar si hay VIs definidas
-        logger.debug("Fallo: Todas las partes intermedias son 'Nulo'. Se requiere al menos un descriptor válido.")
+        logger.debug("Fallo: Todas las partes intermedias son 'Nulo'. Se requiere al menos un sub-valor válido.")
         return invalid_return
 
     # 8. Si todas las validaciones pasan
@@ -269,7 +269,7 @@ def validate_files_for_vi_rules(
             for file_desc_list in patient_files_descriptors:
                 if vi_idx < len(file_desc_list):
                     descriptors_used_by_patient_for_vi.add(file_desc_list[vi_idx])
-                # else: descriptor list shorter than VI index, implies "Nulo" or malformed filename already caught
+                # else: sub-valor list shorter than VI index, implies "Nulo" or malformed filename already caught
 
             # Rule 1: Fixed Sub-valor (allows_combination == False)
             if not allows_combination:
@@ -278,14 +278,14 @@ def validate_files_for_vi_rules(
                     error_messages.append(
                         f"Paciente '{patient_id}': Para la VI '{vi_name}' (no permite combinación), "
                         f"se encontraron múltiples sub-valores diferentes: {', '.join(sorted(list(non_nulo_descriptors)))}. "
-                        f"Solo se permite un descriptor (o 'Nulo') por paciente para esta VI."
+                        f"Solo se permite un sub-valor (o 'Nulo') por paciente para esta VI."
                     )
             
             # Rule 2: Mandatory Sub-valor (allows_combination == True AND is_mandatory == True)
             if allows_combination and is_mandatory:
                 # Check if all defined Sub-valor for this VI are present for this patient
                 # Convert None from file to "Nulo" string if that's how vi_defined_descriptors stores them,
-                # but vi_defined_descriptors should store actual descriptor names.
+                # but vi_defined_descriptors should store actual sub-valor names.
                 # descriptors_used_by_patient_for_vi contains actual names or None.
                 
                 actual_descriptors_present = {d for d in descriptors_used_by_patient_for_vi if d is not None}
@@ -295,7 +295,7 @@ def validate_files_for_vi_rules(
                     error_messages.append(
                         f"Paciente '{patient_id}': Para la VI '{vi_name}' (múltiple y obligatoria), "
                         f"faltan los siguientes sub-valores: {', '.join(sorted(list(missing_descriptors)))}. "
-                        f"Cada paciente debe tener al menos un archivo para cada descriptor de esta VI."
+                        f"Cada paciente debe tener al menos un archivo para cada sub-valor de esta VI."
                     )
     
     if error_messages:

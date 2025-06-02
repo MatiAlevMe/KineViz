@@ -122,7 +122,7 @@ class TestValidators(unittest.TestCase):
         self.assertTrue(validate_filename_for_study_criteria("P06_CMJ_PRE_06_Cinematica.txt", descriptors))
 
     def test_validate_filename_invalid_wrong_descriptor(self):
-        """Prueba nombre inválido (descriptor incorrecto)."""
+        """Prueba nombre inválido (sub-valor incorrecto)."""
         descriptors = ['CMJ', 'PRE']
         self.assertFalse(validate_filename_for_study_criteria("P01 CMJ POST 01_Cinematica.txt", descriptors))
         self.assertFalse(validate_filename_for_study_criteria("P01 XYZ PRE 01_Cinematica.txt", descriptors))
