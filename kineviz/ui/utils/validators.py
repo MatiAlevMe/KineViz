@@ -204,7 +204,7 @@ def validate_filename_for_study_criteria(
         return invalid_return
 
     # 8. Si todas las validaciones pasan
-    logger.debug(f"Validación exitosa. Sujeto: {subject_id}, Descriptores: {extracted_descriptors}, Intento: {attempt_num}")
+    logger.debug(f"Validación exitosa. Sujeto: {subject_id}, Sub-valores: {extracted_descriptors}, Intento: {attempt_num}")
     return True, subject_id, extracted_descriptors, attempt_num
 
 

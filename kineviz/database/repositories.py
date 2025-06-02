@@ -35,7 +35,7 @@ class StudyRepository:
                     nombre_estudio TEXT NOT NULL UNIQUE,
                     num_sujetos INTEGER NOT NULL,
                     cantidad_intentos_prueba INTEGER NOT NULL,
-                    independent_variables TEXT, -- Almacenará JSON con estructura de VIs y Descriptores
+                    independent_variables TEXT, -- Almacenará JSON con estructura de VIs y Sub-valores
                     aliases TEXT -- Almacenará JSON con mapeo descriptor -> alias para este estudio
                 )
             ''')

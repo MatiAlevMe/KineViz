@@ -91,7 +91,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.analysis_tree.heading("Supuestos", text="Supuestos")
         # Añadir cabecera para Valores Clave
         self.analysis_tree.heading("Valores Clave", text="Resultado Test")
-        self.analysis_tree.heading("Grupos Comparados", text="Grupos Comparados") # Renombrar Descriptores
+        self.analysis_tree.heading("Grupos Comparados", text="Grupos Comparados") # Renombrar Sub-valores
 
         # Ancho columnas (ajustar según necesidad)
         self.analysis_tree.column("Nombre", width=150, anchor=tk.W)
@@ -102,7 +102,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.analysis_tree.column("Supuestos", width=140, anchor=tk.W)
         # Añadir ancho para Valores Clave
         self.analysis_tree.column("Valores Clave", width=120, anchor=tk.W)
-        self.analysis_tree.column("Grupos Comparados", width=250, anchor=tk.W) # Renombrar Descriptores
+        self.analysis_tree.column("Grupos Comparados", width=250, anchor=tk.W) # Renombrar Sub-valores
 
         # Scrollbars
         vsb = ttk.Scrollbar(tree_frame, orient="vertical",

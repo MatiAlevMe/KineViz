@@ -250,7 +250,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             self.all_vi_names = [vi['name'] for vi in details.get('independent_variables', [])]
             self.all_descriptors_by_vi = {vi['name']: vi['descriptors'] for vi in details.get('independent_variables', [])}
             self.study_aliases = details.get('aliases', {})
-            logger.debug(f"Datos iniciales cargados: VIs={self.all_vi_names}, Descriptores={self.all_descriptors_by_vi}, Alias={self.study_aliases}")
+            logger.debug(f"Datos iniciales cargados: VIs={self.all_vi_names}, Sub-valores={self.all_descriptors_by_vi}, Alias={self.study_aliases}")
 
             # Cargar frecuencias (sin cambios)
             self.load_frequencies()

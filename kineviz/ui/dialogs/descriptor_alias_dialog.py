@@ -21,7 +21,7 @@ class DescriptorAliasDialog(Toplevel):
         self.study_service = study_service # Usar StudyService
         self.study_id = study_id
 
-        self.title(f"Gestionar Alias de Descriptores (Estudio {study_id})")
+        self.title(f"Gestionar Alias de Sub-valores (Estudio {study_id})")
         self.geometry("500x400")
         self.resizable(True, True)
 
@@ -98,7 +98,7 @@ class DescriptorAliasDialog(Toplevel):
                         if isinstance(desc, str) and desc.strip(): # Asegurar que sea string no vacío
                             self.defined_descriptors.add(desc.strip())
 
-            logger.info(f"Descriptores definidos para estudio {self.study_id}: {self.defined_descriptors}")
+            logger.info(f"Sub-valores definidos para estudio {self.study_id}: {self.defined_descriptors}")
             logger.debug(f"Aliases actuales para estudio {self.study_id}: {self.current_aliases}")
 
             # Limpiar entradas anteriores si se recarga
