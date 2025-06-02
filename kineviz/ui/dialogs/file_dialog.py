@@ -141,7 +141,7 @@ class FileDialog(Toplevel):
     def _validate_files_for_processing(self) -> Tuple[bool, str]:
         """
         Valida los archivos seleccionados contra los límites de sujetos e intentos
-        (granular por combinación sujeto+descriptores) del estudio.
+        (granular por combinación sujeto+sub-valores) del estudio.
         Considera los archivos existentes + los seleccionados.
 
         :return: Tupla (bool: es_valido, str: mensaje_error si no es válido)
@@ -220,7 +220,7 @@ class FileDialog(Toplevel):
         for combination_key, attempts_set in simulated_attempts_by_combination.items():
             if len(attempts_set) > max_attempts_allowed:
                 subject, descriptors = combination_key
-                # Formatear descriptores para el mensaje
+                # Formatear sub-valores para el mensaje
                 desc_str = ", ".join(d if d is not None else "Nulo" for d in descriptors)
                 msg = (f"Límite de intentos excedido ({max_attempts_allowed}) para:\n"
                        f"  Sujeto: {subject}\n"

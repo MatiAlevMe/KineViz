@@ -49,7 +49,7 @@ def validate_study_iv_data(data: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
         return False, "Debe definir al menos una Variable Independiente."
 
     all_vi_names = set()
-    # Descriptor names can be duplicated across different VIs, but not within the same VI.
+    # Sub-valor names can be duplicated across different VIs, but not within the same VI.
     # We don't need all_descriptor_names at the top level for this validation.
 
     for i, iv in enumerate(independent_variables):
@@ -64,30 +64,30 @@ def validate_study_iv_data(data: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
             return False, f"Nombre de Variable Independiente duplicado: '{vi_name}'."
         all_vi_names.add(vi_name)
 
-        # Validar descriptores de VI
+        # Validar sub-valores de VI
         descriptors = iv.get('descriptors', [])
         if not isinstance(descriptors, list):
-            return False, f"Los descriptores para '{vi_name}' deben ser una lista."
+            return False, f"Los sub-valores para '{vi_name}' deben ser una lista."
         if len(descriptors) < 2:
-            return False, f"La Variable Independiente '{vi_name}' debe tener al menos dos descriptores."
+            return False, f"La Variable Independiente '{vi_name}' debe tener al menos dos sub-valores."
 
         cleaned_descriptors_in_iv = set()
         for j, desc in enumerate(descriptors):
             if not isinstance(desc, str):
-                 return False, f"Descriptor inválido (no es texto) en '{vi_name}'."
+                 return False, f"Sub-valor inválido (no es texto) en '{vi_name}'."
             cleaned_desc = desc.strip()
             if not cleaned_desc:
-                return False, f"Descriptor vacío encontrado en '{vi_name}'."
+                return False, f"Sub-valor vacío encontrado en '{vi_name}'."
             if ' ' in cleaned_desc:
                 return False, f"El descriptor '{cleaned_desc}' en '{vi_name}' no puede contener espacios."
             # Añadir validación para no permitir "Nulo" (case-insensitive)
             if cleaned_desc.lower() == "nulo":
                 return False, f"El descriptor '{cleaned_desc}' en '{vi_name}' no puede llamarse 'Nulo'."
             if cleaned_desc in cleaned_descriptors_in_iv:
-                return False, f"Descriptor duplicado '{cleaned_desc}' dentro de la Variable Independiente '{vi_name}'."
+                return False, f"Sub-valor duplicado '{cleaned_desc}' dentro de la Variable Independiente '{vi_name}'."
             # No es un error tener el mismo nombre de descriptor en diferentes VIs.
             # if cleaned_desc in all_descriptor_names:
-            #     return False, f"Descriptor duplicado '{cleaned_desc}' encontrado en múltiples Variables Independientes."
+            #     return False, f"Sub-valor duplicado '{cleaned_desc}' encontrado en múltiples Variables Independientes."
 
             cleaned_descriptors_in_iv.add(cleaned_desc)
             # all_descriptor_names.add(cleaned_desc) # No es necesario para la validación actual
@@ -115,16 +115,16 @@ def validate_filename_for_study_criteria(
 ) -> Tuple[bool, Optional[str], List[Optional[str]], Optional[int]]:
     """
     Valida si un nombre de archivo cumple con la estructura de VIs del estudio
-    y extrae el ID del sujeto, los descriptores y el número de intento.
+    y extrae el ID del sujeto, los sub-valores y el número de intento.
 
     Formato esperado: PteXX [VAL_VI1] [VAL_VI2] ... [VAL_VIn] NN[_TipoDeDato].ext
-    Permite 'Nulo' como valor. Verifica orden y pertenencia a descriptores de cada VI.
+    Permite 'Nulo' como valor. Verifica orden y pertenencia a sub-valores de cada VI.
 
     :param filename: Nombre del archivo (sin ruta, solo nombre base con extensión).
     :param independent_variables: Lista de VIs definidas para el estudio
                                   (ej: [{'name': 'Tipo', 'descriptors': ['A', 'B']}]).
     :return: Tupla (bool, subject_id|None, list[str|None], attempt_num|None).
-             - Si es válido: (True, "PteXX", lista_descriptores, NN).
+             - Si es válido: (True, "PteXX", lista_sub-valores, NN).
              - Si es inválido: (False, None, [], None).
     """
     logger.debug(f"--- Validando nombre archivo: '{filename}' ---")
@@ -168,11 +168,11 @@ def validate_filename_for_study_criteria(
          logger.debug(f"Fallo: No se pudo convertir la última parte '{attempt_num_part}' a número de intento.")
          return invalid_return
 
-    # 4. Extraer partes intermedias (potenciales descriptores)
+    # 4. Extraer partes intermedias (potenciales sub-valores)
     intermediate_parts = parts[1:-1] # Entre PteXX y NN
     num_vis_defined = len(independent_variables)
     num_intermediate = len(intermediate_parts)
-    logger.debug(f"Partes intermedias (descriptores): {intermediate_parts}")
+    logger.debug(f"Partes intermedias (sub-valores): {intermediate_parts}")
     logger.debug(f"Número VIs definidas: {num_vis_defined}, Partes intermedias encontradas: {num_intermediate}")
 
     # 5. Validar número de partes intermedias vs VIs definidas
@@ -224,7 +224,7 @@ def validate_files_for_vi_rules(
 
     :param files_to_add_info: Lista de diccionarios para archivos a agregar.
                               Cada dict debe tener: {'subject_id': str, 'descriptors': List[Optional[str]], 'filename': str}.
-    :param existing_files_descriptors: Dict mapeando subject_id a una lista de sus listas de descriptores existentes.
+    :param existing_files_descriptors: Dict mapeando subject_id a una lista de sus listas de sub-valores existentes.
                                        Ej: {"Pte01": [["CMJ", "PRE"], ["SJ", "PRE"]]}
     :param independent_variables: Lista de definiciones de VIs del estudio.
     :return: Lista de mensajes de error. Lista vacía si es válido.
@@ -271,19 +271,19 @@ def validate_files_for_vi_rules(
                     descriptors_used_by_patient_for_vi.add(file_desc_list[vi_idx])
                 # else: descriptor list shorter than VI index, implies "Nulo" or malformed filename already caught
 
-            # Rule 1: Fixed Descriptor (allows_combination == False)
+            # Rule 1: Fixed Sub-valor (allows_combination == False)
             if not allows_combination:
                 non_nulo_descriptors = {d for d in descriptors_used_by_patient_for_vi if d is not None}
                 if len(non_nulo_descriptors) > 1:
                     error_messages.append(
                         f"Paciente '{patient_id}': Para la VI '{vi_name}' (no permite combinación), "
-                        f"se encontraron múltiples descriptores diferentes: {', '.join(sorted(list(non_nulo_descriptors)))}. "
+                        f"se encontraron múltiples sub-valores diferentes: {', '.join(sorted(list(non_nulo_descriptors)))}. "
                         f"Solo se permite un descriptor (o 'Nulo') por paciente para esta VI."
                     )
             
-            # Rule 2: Mandatory Descriptors (allows_combination == True AND is_mandatory == True)
+            # Rule 2: Mandatory Sub-valor (allows_combination == True AND is_mandatory == True)
             if allows_combination and is_mandatory:
-                # Check if all defined descriptors for this VI are present for this patient
+                # Check if all defined Sub-valor for this VI are present for this patient
                 # Convert None from file to "Nulo" string if that's how vi_defined_descriptors stores them,
                 # but vi_defined_descriptors should store actual descriptor names.
                 # descriptors_used_by_patient_for_vi contains actual names or None.
@@ -294,7 +294,7 @@ def validate_files_for_vi_rules(
                 if missing_descriptors:
                     error_messages.append(
                         f"Paciente '{patient_id}': Para la VI '{vi_name}' (múltiple y obligatoria), "
-                        f"faltan los siguientes descriptores: {', '.join(sorted(list(missing_descriptors)))}. "
+                        f"faltan los siguientes sub-valores: {', '.join(sorted(list(missing_descriptors)))}. "
                         f"Cada paciente debe tener al menos un archivo para cada descriptor de esta VI."
                     )
     

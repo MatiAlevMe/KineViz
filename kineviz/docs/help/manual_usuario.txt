@@ -9,14 +9,14 @@ KineViz es una aplicación diseñada para la gestión y análisis de estudios ki
 3.  **Cantidad de Intento(s) de Prueba**: Especifique la cantidad de intentos por prueba (ej: 1). Debe ser un número entero positivo.
 4.  **Variable(s) Independientes (VIs) y Sub-valores**:
     *   Utilice el botón "+ Añadir Variable Independiente" para definir una nueva VI.
-    *   Para cada VI, use el botón `+` para añadir sus descriptores (valores específicos, ej: para una VI "TipoSalto", los descriptores podrían ser "CMJ", "SJ").
-    *   **¿Multiple?**: Marque esta casilla si para esta VI un mismo participante puede tener archivos con diferentes descriptores de esta VI (ej: Pte01 CMJ ... y Pte01 SJ ...). Si no se marca, un participante solo puede tener un descriptor de esta VI asignado a través de todos sus archivos (ej: si Pte01 tiene un archivo con "PesoObeso", todos los demás archivos de Pte01 deben usar "PesoObeso" para esa VI, o "Nulo" si aplica).
-    *   **¿Obligatorio?**: Esta casilla solo aparece si marca "¿Multiple?". Si la marca, significa que cada participante del estudio DEBE tener al menos un archivo para CADA descriptor definido en esta VI. Si no se marca (pero "¿Multiple?" sí), los participantes pueden tener algunos o todos los descriptores de esta VI.
-    *   Puede añadir tantas VIs y descriptores como necesite. Cada VI debe tener al menos dos descriptores.
+    *   Para cada VI, use el botón `+` para añadir sus sub-valores (valores específicos, ej: para una VI "TipoSalto", los sub-valores podrían ser "CMJ", "SJ").
+    *   **¿Multiple?**: Marque esta casilla si para esta VI un mismo participante puede tener archivos con diferentes sub-valores de esta VI (ej: Pte01 CMJ ... y Pte01 SJ ...). Si no se marca, un participante solo puede tener un descriptor de esta VI asignado a través de todos sus archivos (ej: si Pte01 tiene un archivo con "PesoObeso", todos los demás archivos de Pte01 deben usar "PesoObeso" para esa VI, o "Nulo" si aplica).
+    *   **¿Obligatorio?**: Esta casilla solo aparece si marca "¿Multiple?". Si la marca, significa que cada participante del estudio DEBE tener al menos un archivo para CADA descriptor definido en esta VI. Si no se marca (pero "¿Multiple?" sí), los participantes pueden tener algunos o todos los sub-valores de esta VI.
+    *   Puede añadir tantas VIs y sub-valores como necesite. Cada VI debe tener al menos dos sub-valores.
     *   Utilice el botón "🗑️" para eliminar un descriptor que no necesite.
-    *   Los descriptores no pueden estar vacíos y no pueden repetirse exactamente (sensible a mayúsculas/minúsculas). Ej: "CMJ" y "cmj" son válidos, pero "CMJ" y "CMJ" no.
-    *   Estos descriptores se usarán (en futuras versiones) para validar los nombres de los archivos que cargue.
-5.  **Guardar**: Haga clic en el botón "Guardar" para guardar el estudio. Si hay errores de validación (nombre duplicado, campos inválidos, descriptores duplicados), se mostrará un mensaje.
+    *   Los sub-valores no pueden estar vacíos y no pueden repetirse exactamente (sensible a mayúsculas/minúsculas). Ej: "CMJ" y "cmj" son válidos, pero "CMJ" y "CMJ" no.
+    *   Estos sub-valores se usarán (en futuras versiones) para validar los nombres de los archivos que cargue.
+5.  **Guardar**: Haga clic en el botón "Guardar" para guardar el estudio. Si hay errores de validación (nombre duplicado, campos inválidos, sub-valores duplicados), se mostrará un mensaje.
 
 ## Ventana Principal: Lista de Estudio(s)
 Muestra una lista de todos los estudios cargados al sistema.
@@ -27,7 +27,7 @@ Muestra una lista de todos los estudios cargados al sistema.
 ## Ventana: Vista del Estudio (Lista de Archivos)
 Muestra una lista de todos los archivos del Estudio específico.
 1.  **Agregar Archivos**: Haga clic en el botón "Agregar Archivos" para agregar archivos al estudio.
-2.  **Formato de Archivo**: Los nombres de archivo deben seguir un formato consistente que incluya el identificador del sujeto y, opcionalmente, los descriptores definidos para el estudio (ej: "P01 CMJ PRE 01.txt"). La validación exacta basada en descriptores se implementará en futuras versiones.
+2.  **Formato de Archivo**: Los nombres de archivo deben seguir un formato consistente que incluya el identificador del sujeto y, opcionalmente, los sub-valores definidos para el estudio (ej: "P01 CMJ PRE 01.txt"). La validación exacta basada en sub-valores se implementará en futuras versiones.
 3.  **Eliminar Archivos**: Haga clic en el botón "Eliminar" junto a un archivo para eliminarlo del estudio.
 4.  **Ver Archivos**: Haga clic en el botón "Ver" para abrir el archivo con la aplicación predeterminada del sistema.
 5. Abrir Carpeta de Estudio: Abre la carpeta que contiene el Estudio seleccionado.

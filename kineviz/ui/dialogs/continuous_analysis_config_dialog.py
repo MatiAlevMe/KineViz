@@ -192,7 +192,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
     # selected_var = self.selected_variable.get()
     # if selected_var:
     # logger.debug(f"Variable seleccionada: {selected_var}")
-    # # Aquí se podría cargar la siguiente sección, por ejemplo, grupos de descriptores
+    # # Aquí se podría cargar la siguiente sección, por ejemplo, grupos de sub-valores
     # else:
     # # Limpiar la siguiente sección si la variable se deselecciona
     # pass

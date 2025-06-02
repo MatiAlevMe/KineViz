@@ -34,18 +34,18 @@ class TestStudyRepository(unittest.TestCase):
         # Instanciar el repositorio con las rutas temporales
         self.repo = StudyRepository(db_path=str(self.test_db_path), studies_base_dir=str(self.test_studies_dir))
 
-        # Datos de ejemplo (actualizados para usar 'descriptores')
+        # Datos de ejemplo (actualizados para usar 'sub-valores')
         self.study_data_1 = {
             'name': 'Estudio_Prueba_1', 'num_subjects': '5',
-            'descriptores': 'CMJ,PRE', 'attempts_count': '3'
+            'sub-valores': 'CMJ,PRE', 'attempts_count': '3'
         }
         self.study_data_2 = {
             'name': 'Estudio_Prueba_2', 'num_subjects': '10',
-            'descriptores': 'SJ,POST', 'attempts_count': '1'
+            'sub-valores': 'SJ,POST', 'attempts_count': '1'
         }
         self.study_data_3 = {
             'name': 'Otro_Estudio_3', 'num_subjects': '2',
-            'descriptores': '', 'attempts_count': '2'
+            'sub-valores': '', 'attempts_count': '2'
         }
 
 
@@ -83,7 +83,7 @@ class TestStudyRepository(unittest.TestCase):
         self.assertEqual(retrieved_study['id'], study_id)
         self.assertEqual(retrieved_study['name'], self.study_data_1['name'])
         self.assertEqual(retrieved_study['num_subjects'], int(self.study_data_1['num_subjects']))
-        self.assertEqual(retrieved_study['descriptores'], self.study_data_1['descriptores']) # Usar 'descriptores'
+        self.assertEqual(retrieved_study['sub-valores'], self.study_data_1['sub-valores']) # Usar 'sub-valores'
         self.assertEqual(retrieved_study['attempts_count'], int(self.study_data_1['attempts_count']))
 
     def test_get_study_by_id_not_found(self):
@@ -143,7 +143,7 @@ class TestStudyRepository(unittest.TestCase):
         update_data = {
             'name': 'Estudio_Actualizado',
             'num_subjects': '8',
-            'descriptores': 'SJ,DropJump,MID', # Usar 'descriptores'
+            'sub-valores': 'SJ,DropJump,MID', # Usar 'sub-valores'
             'attempts_count': '5'
         }
         # Asegurar que el update_data tenga el mismo nombre inicial para esta prueba específica
@@ -154,7 +154,7 @@ class TestStudyRepository(unittest.TestCase):
 
         self.assertEqual(updated_study['name'], update_data['name'])
         self.assertEqual(updated_study['num_subjects'], int(update_data['num_subjects']))
-        self.assertEqual(updated_study['descriptores'], update_data['descriptores']) # Usar 'descriptores'
+        self.assertEqual(updated_study['sub-valores'], update_data['sub-valores']) # Usar 'sub-valores'
         self.assertEqual(updated_study['attempts_count'], int(update_data['attempts_count']))
 
     def test_update_study_not_found(self):

@@ -53,11 +53,11 @@ class TestAnalysisService(unittest.TestCase):
         self.study_path = self.temp_path / "studies" / self.study_name
         self.study_path.mkdir(parents=True) # Crear el directorio del estudio real
 
-        # Actualizar mock para usar descriptores
+        # Actualizar mock para usar sub-valores
         self.study_descriptors = ['CMJ', 'SJ', 'PRE', 'POST']
         self.mock_study_service.get_study_details.return_value = {
             'id': self.study_id, 'name': self.study_name,
-            'descriptores': ','.join(self.study_descriptors) # Guardado como string
+            'sub-valores': ','.join(self.study_descriptors) # Guardado como string
         }
         # Asegurar que el mock de file_service devuelva la ruta real
         self.mock_file_service._get_study_path.return_value = self.study_path
@@ -204,10 +204,10 @@ class TestAnalysisService(unittest.TestCase):
     @patch('kineviz.core.services.analysis_service.validate_filename_for_study_criteria')
     @patch('kineviz.core.services.analysis_service.AnalysisService._read_processed_file_data')
     def test_get_data_for_parameters(self, mock_read_data, mock_validate_filename):
-        """Prueba la estructuración de datos basada en descriptores."""
+        """Prueba la estructuración de datos basada en sub-valores."""
         mock_read_data.return_value = self.dummy_df
         mock_validate_filename.return_value = True # Asumir que todos los nombres son válidos
-        # Usar descriptores en los parámetros
+        # Usar sub-valores en los parámetros
         params = {'patients': ['P01'], 'frequencies': ['Cinematica'], 'descriptors': ['CMJ', 'PRE']}
 
         # Simular estructura de archivos
@@ -224,7 +224,7 @@ class TestAnalysisService(unittest.TestCase):
             # Verificar que validate_filename fue llamado
             mock_validate_filename.assert_called_once_with(mock_file.name, self.study_descriptors)
 
-            # Verificar estructura con clave de descriptores
+            # Verificar estructura con clave de sub-valores
             self.assertIn('Cinematica', structured_data)
             self.assertIn('CMJ_PRE', structured_data['Cinematica']) # Clave ahora es 'CMJ_PRE'
             self.assertIn('P01', structured_data['Cinematica']['CMJ_PRE'])
@@ -237,10 +237,10 @@ class TestAnalysisService(unittest.TestCase):
     def test_perform_analysis(self, mock_calculate, mock_get_data):
         """Prueba el flujo completo de perform_analysis."""
         # Simular datos estructurados devueltos por _get_data_for_parameters
-        # Simular datos estructurados con clave de descriptores
+        # Simular datos estructurados con clave de sub-valores
         mock_get_data.return_value = {
             'Cinematica': {
-                'CMJ_PRE': { # Clave basada en descriptores
+                'CMJ_PRE': { # Clave basada en sub-valores
                     'P01': self.dummy_df,
                     'P02': self.dummy_df.copy()
                 }
@@ -249,7 +249,7 @@ class TestAnalysisService(unittest.TestCase):
         # Simular resultado de cálculo
         mock_calculate.return_value = self.dummy_stats_series
 
-        # Usar descriptores en los parámetros
+        # Usar sub-valores en los parámetros
         params = {'patients': ['P01', 'P02'], 'frequencies': ['Cinematica'],
                   'descriptors': ['CMJ', 'PRE'], 'calculations': ['Maximo']}
 
@@ -263,9 +263,9 @@ class TestAnalysisService(unittest.TestCase):
             call(ANY, 'Maximo') # ANY para el df copiado de P02
         ], any_order=True)
 
-        # Verificar estructura del resultado con clave de descriptores
+        # Verificar estructura del resultado con clave de sub-valores
         self.assertIn('Cinematica', results)
-        self.assertIn('CMJ_PRE', results['Cinematica']) # Clave de descriptores
+        self.assertIn('CMJ_PRE', results['Cinematica']) # Clave de sub-valores
         self.assertIn('Maximo', results['Cinematica']['CMJ_PRE'])
         self.assertIn('P01', results['Cinematica']['CMJ_PRE']['Maximo'])
         self.assertIn('P02', results['Cinematica']['CMJ_PRE']['Maximo'])
@@ -281,7 +281,7 @@ class TestAnalysisService(unittest.TestCase):
     @patch('pathlib.Path.mkdir') # Mockear método de Path
     def test_generate_report(self, mock_mkdir, mock_image, mock_doc_template, mock_barchart, mock_boxplot, mock_calculate, mock_get_data):
         """Prueba la generación de reportes (flujo y llamadas a mocks)."""
-        # Simular datos con clave de descriptores
+        # Simular datos con clave de sub-valores
         mock_get_data.return_value = {'Cinematica': {'CMJ_PRE': {'P01': self.dummy_df, 'P02': self.dummy_df}}}
         mock_calculate.return_value = self.dummy_stats_series
         # Simular mocks de gráficos
@@ -294,7 +294,7 @@ class TestAnalysisService(unittest.TestCase):
         mock_pdf_doc = MagicMock()
         mock_doc_template.return_value = mock_pdf_doc
 
-        # Usar descriptores en los parámetros
+        # Usar sub-valores en los parámetros
         params = {'patients': ['P01', 'P02'], 'frequencies': ['Cinematica'],
                   'descriptors': ['CMJ', 'PRE'], 'calculations': ['Maximo']}
         # Usar ruta temporal

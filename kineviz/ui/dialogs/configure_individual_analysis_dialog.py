@@ -28,7 +28,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.vi_grouping_mode = tk.StringVar(value="") # '1VI' o '2VIs'
         self.primary_vi_var = tk.StringVar() # VI seleccionada en modo 1VI
         self.fixed_vi_var = tk.StringVar() # VI a fijar en modo 2VIs
-        self.fixed_descriptor_var = tk.StringVar() # Descriptor a fijar en modo 2VIs
+        self.fixed_descriptor_var = tk.StringVar() # Sub-valor a fijar en modo 2VIs
         self.all_vi_names = [] # Nombres de las VIs del estudio
         self.all_descriptors_by_vi = {} # {vi_name: [desc1, desc2]}
         self.study_aliases = {} # Alias del estudio
@@ -106,7 +106,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         ttk.Label(self.two_vi_config_frame, text="VI a Fijar:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
         self.fixed_vi_combo = ttk.Combobox(self.two_vi_config_frame, textvariable=self.fixed_vi_var, state="readonly")
         self.fixed_vi_combo.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
-        self.fixed_vi_combo.bind("<<ComboboxSelected>>", self._update_fixed_descriptor_options) # Actualizar descriptores al seleccionar VI fija
+        self.fixed_vi_combo.bind("<<ComboboxSelected>>", self._update_fixed_descriptor_options) # Actualizar sub-valores al seleccionar VI fija
 
         self.fixed_descriptor_label = ttk.Label(self.two_vi_config_frame, text="Valor Fijo:")
         self.fixed_descriptor_label.grid(row=1, column=0, sticky="w", padx=5, pady=5)
@@ -207,7 +207,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
                  return
             self.two_vi_config_frame.grid()
             self.fixed_vi_combo['values'] = self.all_vi_names
-            self.fixed_descriptor_combo['values'] = [] # Limpiar descriptores fijos
+            self.fixed_descriptor_combo['values'] = [] # Limpiar sub-valores fijos
             # Habilitar/deshabilitar botón 1VI
             self.one_vi_button.state(['!pressed', '!disabled'])
             self.two_vi_button.state(['pressed', 'disabled'])
@@ -217,7 +217,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
 
 
     def _update_fixed_descriptor_options(self, event=None):
-        """Actualiza el combobox de descriptores fijos basado en la VI fija seleccionada."""
+        """Actualiza el combobox de sub-valores fijos basado en la VI fija seleccionada."""
         fixed_vi_name = self.fixed_vi_var.get()
         self.fixed_descriptor_var.set("") # Limpiar selección anterior
         self.fixed_descriptor_combo['values'] = []

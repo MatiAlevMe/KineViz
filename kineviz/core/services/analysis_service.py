@@ -288,7 +288,7 @@ class AnalysisService:
         :return: Diccionario anidado:
                  {
                      'frequency1': {
-                         'descriptor_combo_key': { # Clave basada en descriptores encontrados
+                         'descriptor_combo_key': { # Clave basada en sub-valores encontrados
                              'patient1': DataFrame,
                              'patient2': DataFrame, ...
                          }, ...
@@ -341,7 +341,7 @@ class AnalysisService:
                     if not is_valid_name:
                         continue # Omitir archivo si no cumple criterios
 
-                    # Crear clave de grupo combinada basada en VIs y descriptores extraídos
+                    # Crear clave de grupo combinada basada en VIs y sub-valores extraídos
                     # Formato: "VI1=DescA;VI2=DescB" o "VI1=Nulo;VI2=DescC"
                     group_parts = []
                     for i, desc in enumerate(extracted_descriptors):
@@ -858,7 +858,7 @@ class AnalysisService:
     def generate_discrete_summary_tables(self, study_id: int):
         """
         Genera tablas resumen CSV para cálculos discretos (Max, Min, Rango)
-        agrupados por frecuencia y combinación de descriptores.
+        agrupados por frecuencia y combinación de sub-valores.
         Enfocado inicialmente en 'Cinematica'.
 
         :param study_id: ID del estudio.
@@ -879,7 +879,7 @@ class AnalysisService:
 
             study_details = self.study_service.get_study_details(study_id)
             defined_descriptors = [d.strip() for d in
-                                   (study_details.get('descriptores', '') or '')
+                                   (study_details.get('sub-valores', '') or '')
                                    .split(',') if d.strip()]
 
             # 1. Encontrar y agrupar archivos procesados de Cinemática
@@ -1158,7 +1158,7 @@ class AnalysisService:
 
     def _identify_study_groups(self, study_id: int, frequency: str = "Cinematica") -> tuple[dict[str, str], set[str]]:
         """
-        Identifica los grupos únicos basados en descriptores de archivos procesados.
+        Identifica los grupos únicos basados en sub-valores de archivos procesados.
 
         :param study_id: ID del estudio.
         :param frequency: Tipo de Dato a considerar (por defecto 'Cinematica').
@@ -1384,7 +1384,7 @@ class AnalysisService:
 
         # Determinar si estamos en modo 1VI (main effect) o 2VIs/combinado
         # Heurística: si alguna clave NO contiene ';', es probable que sea modo 1VI.
-        # Y si es modo 1VI, group_keys contendrá claves parciales como "VI=Descriptor".
+        # Y si es modo 1VI, group_keys contendrá claves parciales como "VI=Sub-valor".
         is_main_effect_mode_heuristic = any(';' not in key for key in group_keys)
         
         keys_of_tables_to_inspect = set()

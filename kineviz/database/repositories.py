@@ -55,7 +55,7 @@ class StudyRepository:
                 else: raise
 
             # Intentar eliminar las columnas antiguas si existen (ignorar errores)
-            old_columns = ['descriptores', 'tipos_prueba', 'periodos_prueba']
+            old_columns = ['sub-valores', 'tipos_prueba', 'periodos_prueba']
             for col in old_columns:
                 try:
                     # Usar IF EXISTS para simplificar (requiere SQLite >= 3.3)
