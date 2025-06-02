@@ -104,6 +104,57 @@ class AnalysisService:
             logger.error(f"Error obteniendo frecuencias disponibles para estudio {study_id}: {e}", exc_info=True)
             return []
 
+    def get_data_columns_for_frequency(self, study_id: int, frequency: str) -> list[str]:
+        """
+        Obtiene las columnas de datos (variables) disponibles para una frecuencia específica
+        de un estudio, utilizando _parse_processed_file_headers.
+        Excluye columnas comunes no analizables como 'Frame', 'Sub Frame', 'Tiempo'.
+
+        :param study_id: ID del estudio.
+        :param frequency: Frecuencia seleccionada (ej: "Cinematica").
+        :return: Lista ordenada de nombres de columnas de datos.
+                 Retorna lista vacía si no hay archivos, columnas o hay error.
+        """
+        logger.debug(f"Obteniendo columnas de datos para estudio {study_id}, frecuencia '{frequency}'")
+        try:
+            processed_files, _ = self.file_service.get_study_files(
+                study_id=study_id, page=1, per_page=1,
+                file_type='Processed', frequency=frequency
+            )
+
+            if not processed_files:
+                logger.warning(f"No se encontraron archivos procesados para frecuencia '{frequency}' en estudio {study_id}.")
+                return []
+
+            sample_file_path = processed_files[0]['path']
+            logger.debug(f"Leyendo cabeceras del archivo de muestra: {sample_file_path}")
+
+            if not sample_file_path.exists():
+                logger.error(f"El archivo de muestra {sample_file_path} no existe.")
+                return []
+
+            headers = self._parse_processed_file_headers(sample_file_path)
+            if not headers:
+                logger.warning(f"No se pudieron parsear las cabeceras de {sample_file_path.name}.")
+                return []
+
+            _, column_names, _ = headers # We need the 'columnas' part
+
+            # Excluir columnas no deseadas (insensible a mayúsculas/minúsculas)
+            # Estas columnas ya vienen limpias de prefijos por _parse_processed_file_headers
+            excluded_cols_lower = {"frame", "sub frame", "tiempo"}
+            data_columns = [
+                name for name in column_names
+                if name.lower() not in excluded_cols_lower and name.strip() # Asegurar que no esté vacío
+            ]
+            
+            logger.info(f"Columnas de datos encontradas para {frequency} (después de filtro): {data_columns}")
+            return sorted(list(set(data_columns))) # Usar set para asegurar unicidad y luego ordenar
+
+        except Exception as e:
+            logger.error(f"Error obteniendo columnas de datos para estudio {study_id}, frecuencia '{frequency}': {e}", exc_info=True)
+            return []
+
     def _read_processed_file_data(self, file_path: Path) -> pd.DataFrame | None:
         """
         Lee los datos numéricos de un archivo procesado (.txt separado por ';').
