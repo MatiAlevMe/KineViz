@@ -137,7 +137,7 @@ class StudyView:
                 if alias:
                     alias_parts.append(f"{desc} ({alias})")
                 else:
-                    alias_parts.append(desc) # Mostrar descriptor original si no hay alias
+                    alias_parts.append(desc) # Mostrar sub-valor original si no hay alias
 
             alias_display_text = "Alias Asignados: " + ", ".join(alias_parts)
             self.alias_label.config(text=alias_display_text)

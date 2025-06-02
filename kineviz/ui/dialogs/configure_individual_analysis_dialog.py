@@ -97,7 +97,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.primary_vi_combo.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
         self.primary_vi_combo.bind("<<ComboboxSelected>>", self.update_available_groups) # Actualizar grupos al seleccionar VI primaria
 
-        # Frame para selección de VI fija y descriptor fijo (modo 2VIs)
+        # Frame para selección de VI fija y sub-valor fijo (modo 2VIs)
         self.two_vi_config_frame = ttk.Frame(main_frame)
         self.two_vi_config_frame.grid(row=row_idx, column=0, columnspan=2, sticky="nsew", padx=5, pady=0)
         self.two_vi_config_frame.grid_remove() # Ocultar inicialmente
