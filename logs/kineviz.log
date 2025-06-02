@@ -60037,3 +60037,129 @@ ValueError: No se encontraron datos válidos en ninguna tabla para los grupos y 
 2025-05-30 01:31:46,977 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Delgado, Obeso'
 2025-05-30 01:31:51,313 - INFO - [kineviz.ui.main_window] - Diálogo de configuración de análisis continuo cerrado para estudio 24.
 2025-05-30 01:31:55,068 - INFO - [kineviz.ui.dialogs.continuous_analysis_config_dialog] - Análisis continuo configurado (placeholder) para estudio 24.
+2025-06-02 17:24:55,298 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-02 17:24:55,299 - INFO - [__main__] - Iniciando KineViz...
+2025-06-02 17:24:55,994 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-02 17:24:55,994 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-02 17:25:03,512 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 24
+2025-06-02 17:25:03,532 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 24
+2025-06-02 17:25:03,532 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 24: {}
+2025-06-02 17:25:03,532 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Delgado, Obeso'
+2025-06-02 17:25:08,215 - DEBUG - [kineviz.core.services.file_service] - Buscando parámetros únicos para estudio 24 en /Users/arakito/Mati/Codigo/Python/KineViz/estudios/1_Test con 1 VIs
+2025-06-02 17:25:08,215 - DEBUG - [kineviz.core.services.file_service] - Paso 2: Validando archivos para pacientes ['Pte01'] en frecuencias ['Cinematica', 'Cinetica', 'Electromiografica']
+2025-06-02 17:25:08,216 - DEBUG - [kineviz.core.services.file_service] - Escaneando carpeta: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/1_Test/Pte01/Cinematica
+2025-06-02 17:25:08,216 - DEBUG - [kineviz.core.services.file_service] - Validando archivo: Pte01 Obeso 01_Cinematica.txt
+2025-06-02 17:25:08,216 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Obeso 01_Cinematica.txt' ---
+2025-06-02 17:25:08,216 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-02 17:25:08,216 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Obeso 01'
+2025-06-02 17:25:08,216 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Obeso', '01']
+2025-06-02 17:25:08,216 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Obeso']
+2025-06-02 17:25:08,216 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 1, Partes intermedias encontradas: 1
+2025-06-02 17:25:08,216 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Obeso' es válido para VI 'Peso'.
+2025-06-02 17:25:08,216 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Descriptores: ['Obeso'], Intento: 1
+2025-06-02 17:25:08,216 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte01 Obeso 01_Cinematica.txt': True, Extraído: ['Obeso']
+2025-06-02 17:25:08,216 - DEBUG - [kineviz.core.services.file_service] - Archivo válido encontrado: Pte01 Obeso 01_Cinematica.txt. Añadiendo paciente 'Pte01' y frecuencia 'Cinematica'.
+2025-06-02 17:25:08,217 - DEBUG - [kineviz.core.services.file_service] - Validando archivo: Pte01 Obeso 02_Cinematica.txt
+2025-06-02 17:25:08,217 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Obeso 02_Cinematica.txt' ---
+2025-06-02 17:25:08,217 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-02 17:25:08,217 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Obeso 02'
+2025-06-02 17:25:08,217 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Obeso', '02']
+2025-06-02 17:25:08,217 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Obeso']
+2025-06-02 17:25:08,217 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 1, Partes intermedias encontradas: 1
+2025-06-02 17:25:08,217 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Obeso' es válido para VI 'Peso'.
+2025-06-02 17:25:08,217 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Descriptores: ['Obeso'], Intento: 2
+2025-06-02 17:25:08,217 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte01 Obeso 02_Cinematica.txt': True, Extraído: ['Obeso']
+2025-06-02 17:25:08,217 - DEBUG - [kineviz.core.services.file_service] - Archivo válido encontrado: Pte01 Obeso 02_Cinematica.txt. Añadiendo paciente 'Pte01' y frecuencia 'Cinematica'.
+2025-06-02 17:25:08,217 - DEBUG - [kineviz.core.services.file_service] - Escaneando carpeta: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/1_Test/Pte01/Cinetica
+2025-06-02 17:25:08,217 - DEBUG - [kineviz.core.services.file_service] - Validando archivo: Pte01 Obeso 01_Cinetica.txt
+2025-06-02 17:25:08,217 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Obeso 01_Cinetica.txt' ---
+2025-06-02 17:25:08,217 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-02 17:25:08,217 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Obeso 01'
+2025-06-02 17:25:08,218 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Obeso', '01']
+2025-06-02 17:25:08,218 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Obeso']
+2025-06-02 17:25:08,218 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 1, Partes intermedias encontradas: 1
+2025-06-02 17:25:08,218 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Obeso' es válido para VI 'Peso'.
+2025-06-02 17:25:08,218 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Descriptores: ['Obeso'], Intento: 1
+2025-06-02 17:25:08,218 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte01 Obeso 01_Cinetica.txt': True, Extraído: ['Obeso']
+2025-06-02 17:25:08,218 - DEBUG - [kineviz.core.services.file_service] - Archivo válido encontrado: Pte01 Obeso 01_Cinetica.txt. Añadiendo paciente 'Pte01' y frecuencia 'Cinetica'.
+2025-06-02 17:25:08,218 - DEBUG - [kineviz.core.services.file_service] - Validando archivo: Pte01 Obeso 02_Cinetica.txt
+2025-06-02 17:25:08,218 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Obeso 02_Cinetica.txt' ---
+2025-06-02 17:25:08,218 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-02 17:25:08,218 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Obeso 02'
+2025-06-02 17:25:08,218 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Obeso', '02']
+2025-06-02 17:25:08,218 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Obeso']
+2025-06-02 17:25:08,218 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 1, Partes intermedias encontradas: 1
+2025-06-02 17:25:08,218 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Obeso' es válido para VI 'Peso'.
+2025-06-02 17:25:08,218 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Descriptores: ['Obeso'], Intento: 2
+2025-06-02 17:25:08,218 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte01 Obeso 02_Cinetica.txt': True, Extraído: ['Obeso']
+2025-06-02 17:25:08,218 - DEBUG - [kineviz.core.services.file_service] - Archivo válido encontrado: Pte01 Obeso 02_Cinetica.txt. Añadiendo paciente 'Pte01' y frecuencia 'Cinetica'.
+2025-06-02 17:25:08,218 - DEBUG - [kineviz.core.services.file_service] - Escaneando carpeta: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/1_Test/Pte01/Electromiografica
+2025-06-02 17:25:08,219 - DEBUG - [kineviz.core.services.file_service] - Parámetros únicos encontrados: {'patients': {'Pte01'}, 'frequencies': {'Cinematica', 'Cinetica'}, 'descriptors_by_vi': {0: {'Obeso'}}}
+2025-06-02 17:25:08,249 - INFO - [kineviz.ui.main_window] - Diálogo de configuración de análisis continuo cerrado para estudio 24.
+2025-06-02 17:25:49,901 - INFO - [kineviz.ui.dialogs.continuous_analysis_config_dialog] - Configuración de análisis continuo guardada: {'frequency': 'Cinematica'} para estudio 24.
+2025-06-02 17:25:51,317 - DEBUG - [kineviz.core.services.file_service] - Buscando parámetros únicos para estudio 24 en /Users/arakito/Mati/Codigo/Python/KineViz/estudios/1_Test con 1 VIs
+2025-06-02 17:25:51,318 - DEBUG - [kineviz.core.services.file_service] - Paso 2: Validando archivos para pacientes ['Pte01'] en frecuencias ['Cinematica', 'Cinetica', 'Electromiografica']
+2025-06-02 17:25:51,318 - DEBUG - [kineviz.core.services.file_service] - Escaneando carpeta: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/1_Test/Pte01/Cinematica
+2025-06-02 17:25:51,318 - DEBUG - [kineviz.core.services.file_service] - Validando archivo: Pte01 Obeso 01_Cinematica.txt
+2025-06-02 17:25:51,319 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Obeso 01_Cinematica.txt' ---
+2025-06-02 17:25:51,319 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-02 17:25:51,319 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Obeso 01'
+2025-06-02 17:25:51,319 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Obeso', '01']
+2025-06-02 17:25:51,319 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Obeso']
+2025-06-02 17:25:51,319 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 1, Partes intermedias encontradas: 1
+2025-06-02 17:25:51,319 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Obeso' es válido para VI 'Peso'.
+2025-06-02 17:25:51,319 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Descriptores: ['Obeso'], Intento: 1
+2025-06-02 17:25:51,319 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte01 Obeso 01_Cinematica.txt': True, Extraído: ['Obeso']
+2025-06-02 17:25:51,319 - DEBUG - [kineviz.core.services.file_service] - Archivo válido encontrado: Pte01 Obeso 01_Cinematica.txt. Añadiendo paciente 'Pte01' y frecuencia 'Cinematica'.
+2025-06-02 17:25:51,319 - DEBUG - [kineviz.core.services.file_service] - Validando archivo: Pte01 Obeso 02_Cinematica.txt
+2025-06-02 17:25:51,319 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Obeso 02_Cinematica.txt' ---
+2025-06-02 17:25:51,319 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-02 17:25:51,319 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Obeso 02'
+2025-06-02 17:25:51,319 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Obeso', '02']
+2025-06-02 17:25:51,319 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Obeso']
+2025-06-02 17:25:51,319 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 1, Partes intermedias encontradas: 1
+2025-06-02 17:25:51,319 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Obeso' es válido para VI 'Peso'.
+2025-06-02 17:25:51,320 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Descriptores: ['Obeso'], Intento: 2
+2025-06-02 17:25:51,320 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte01 Obeso 02_Cinematica.txt': True, Extraído: ['Obeso']
+2025-06-02 17:25:51,320 - DEBUG - [kineviz.core.services.file_service] - Archivo válido encontrado: Pte01 Obeso 02_Cinematica.txt. Añadiendo paciente 'Pte01' y frecuencia 'Cinematica'.
+2025-06-02 17:25:51,320 - DEBUG - [kineviz.core.services.file_service] - Escaneando carpeta: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/1_Test/Pte01/Cinetica
+2025-06-02 17:25:51,320 - DEBUG - [kineviz.core.services.file_service] - Validando archivo: Pte01 Obeso 01_Cinetica.txt
+2025-06-02 17:25:51,320 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Obeso 01_Cinetica.txt' ---
+2025-06-02 17:25:51,320 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-02 17:25:51,320 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Obeso 01'
+2025-06-02 17:25:51,320 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Obeso', '01']
+2025-06-02 17:25:51,320 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Obeso']
+2025-06-02 17:25:51,320 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 1, Partes intermedias encontradas: 1
+2025-06-02 17:25:51,320 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Obeso' es válido para VI 'Peso'.
+2025-06-02 17:25:51,320 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Descriptores: ['Obeso'], Intento: 1
+2025-06-02 17:25:51,320 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte01 Obeso 01_Cinetica.txt': True, Extraído: ['Obeso']
+2025-06-02 17:25:51,320 - DEBUG - [kineviz.core.services.file_service] - Archivo válido encontrado: Pte01 Obeso 01_Cinetica.txt. Añadiendo paciente 'Pte01' y frecuencia 'Cinetica'.
+2025-06-02 17:25:51,320 - DEBUG - [kineviz.core.services.file_service] - Validando archivo: Pte01 Obeso 02_Cinetica.txt
+2025-06-02 17:25:51,321 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Obeso 02_Cinetica.txt' ---
+2025-06-02 17:25:51,321 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Peso', 'descriptors': ['Obeso', 'Delgado'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-02 17:25:51,321 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Obeso 02'
+2025-06-02 17:25:51,321 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Obeso', '02']
+2025-06-02 17:25:51,321 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (descriptores): ['Obeso']
+2025-06-02 17:25:51,321 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 1, Partes intermedias encontradas: 1
+2025-06-02 17:25:51,321 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Obeso' es válido para VI 'Peso'.
+2025-06-02 17:25:51,321 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Descriptores: ['Obeso'], Intento: 2
+2025-06-02 17:25:51,321 - DEBUG - [kineviz.core.services.file_service] - Resultado validación para 'Pte01 Obeso 02_Cinetica.txt': True, Extraído: ['Obeso']
+2025-06-02 17:25:51,321 - DEBUG - [kineviz.core.services.file_service] - Archivo válido encontrado: Pte01 Obeso 02_Cinetica.txt. Añadiendo paciente 'Pte01' y frecuencia 'Cinetica'.
+2025-06-02 17:25:51,321 - DEBUG - [kineviz.core.services.file_service] - Escaneando carpeta: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/1_Test/Pte01/Electromiografica
+2025-06-02 17:25:51,321 - DEBUG - [kineviz.core.services.file_service] - Parámetros únicos encontrados: {'patients': {'Pte01'}, 'frequencies': {'Cinematica', 'Cinetica'}, 'descriptors_by_vi': {0: {'Obeso'}}}
+2025-06-02 17:25:51,345 - INFO - [kineviz.ui.main_window] - Diálogo de configuración de análisis continuo cerrado para estudio 24.
+2025-06-02 17:25:55,735 - INFO - [kineviz.ui.dialogs.continuous_analysis_config_dialog] - Configuración de análisis continuo guardada: {'frequency': 'Cinetica'} para estudio 24.
+2025-06-02 17:26:18,916 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 27
+2025-06-02 17:26:18,930 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 27
+2025-06-02 17:26:18,930 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 27: {}
+2025-06-02 17:26:18,930 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, Delgado, Obeso, SJ'
+2025-06-02 17:26:33,736 - INFO - [kineviz.database.repositories] - Directorio creado para estudio 29: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Test
+2025-06-02 17:26:33,737 - INFO - [kineviz.core.services.study_service] - Estudio 29 ('Test') creado en servicio.
+2025-06-02 17:26:39,777 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 29
+2025-06-02 17:26:39,788 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 29
+2025-06-02 17:26:39,789 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 29: {}
+2025-06-02 17:26:39,789 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Hola, Joi'
+2025-06-02 17:26:41,747 - DEBUG - [kineviz.core.services.file_service] - Buscando parámetros únicos para estudio 29 en /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Test con 1 VIs
+2025-06-02 17:26:41,747 - DEBUG - [kineviz.core.services.file_service] - Paso 2: Validando archivos para pacientes [] en frecuencias ['Cinematica', 'Cinetica', 'Electromiografica']
+2025-06-02 17:26:41,748 - DEBUG - [kineviz.core.services.file_service] - Parámetros únicos encontrados: {'patients': set(), 'frequencies': set(), 'descriptors_by_vi': {0: set()}}
+2025-06-02 17:26:41,766 - INFO - [kineviz.ui.main_window] - Diálogo de configuración de análisis continuo cerrado para estudio 29.
