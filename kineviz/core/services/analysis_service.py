@@ -111,7 +111,7 @@ class AnalysisService:
         Excluye columnas comunes no analizables como 'Frame', 'Sub Frame', 'Tiempo'.
 
         :param study_id: ID del estudio.
-        :param frequency: Frecuencia seleccionada (ej: "Cinematica").
+        :param frequency: Tipo de Dato seleccionada (ej: "Cinematica").
         :return: Lista ordenada de nombres de columnas de datos.
                  Retorna lista vacía si no hay archivos, columnas o hay error.
         """
@@ -498,7 +498,7 @@ class AnalysisService:
             # Mostrar parámetros seleccionados (ya no incluye 'descriptors' directamente)
             param_text = (
                 f"<b>Pacientes:</b> {', '.join(parameters.get('patients', []))}<br/>"
-                f"<b>Frecuencias:</b> {', '.join(parameters.get('frequencies', []))}<br/>"
+                f"<b>Tipos de Datos:</b> {', '.join(parameters.get('frequencies', []))}<br/>"
                 # Podríamos añadir VIs/Descriptores si se seleccionaron explícitamente,
                 # pero por ahora omitimos esa parte ya que el análisis agrupa por todas las combinaciones.
                 f"<b>Cálculos:</b> {', '.join(parameters.get('calculations', []))}"
@@ -509,7 +509,7 @@ class AnalysisService:
             # --- Iterar y Generar Contenido ---
             plot_counter = 0
             for freq, descriptor_data in structured_data.items():
-                story.append(Paragraph(f"Resultados para Frecuencia: {freq}",
+                story.append(Paragraph(f"Resultados para Tipos de Dato: {freq}",
                                        styles['h2']))
                 story.append(Spacer(1, 0.1*inch))
 
@@ -779,7 +779,7 @@ class AnalysisService:
         try:
             table_path.unlink()
             logger.info(f"Tabla de resumen discreto eliminada: {table_path}")
-            # Opcional: Limpiar directorios vacíos (Frecuencia, etc.)
+            # Opcional: Limpiar directorios vacíos (Tipo de Dato, etc.)
             # Requeriría lógica adicional para verificar si están vacíos.
         except OSError as e:
             logger.error(f"Error al eliminar la tabla {table_path}: {e}",
@@ -1161,7 +1161,7 @@ class AnalysisService:
         Identifica los grupos únicos basados en descriptores de archivos procesados.
 
         :param study_id: ID del estudio.
-        :param frequency: Frecuencia a considerar (por defecto 'Cinematica').
+        :param frequency: Tipo de Dato a considerar (por defecto 'Cinematica').
         :return: Tupla:
                  - Dict mapeando nombre base archivo a clave grupo (formato VI=Desc).
                  - Set de claves de grupo únicas encontradas.
@@ -1236,7 +1236,7 @@ class AnalysisService:
         Obtiene la lista de claves de grupos únicos para análisis discreto.
 
         :param study_id: ID del estudio.
-        :param frequency: Frecuencia a considerar.
+        :param frequency: Tipo de Dato a considerar.
         :return: Lista ordenada de tuplas (display_name, original_key).
         """
         try:
@@ -1276,7 +1276,7 @@ class AnalysisService:
         Obtiene los grupos de análisis discreto FILTRADOS según el modo y selecciones.
 
         :param study_id: ID del estudio.
-        :param frequency: Frecuencia seleccionada.
+        :param frequency: Tipo de Dato seleccionada.
         :param mode: '1VI' o '2VIs'.
         :param primary_vi_name: Nombre de la VI seleccionada si mode='1VI'.
         :param fixed_vi_name: Nombre de la VI a fijar si mode='2VIs'.
@@ -1364,7 +1364,7 @@ class AnalysisService:
         discreto para una combinación específica de frecuencia, cálculo y grupos.
 
         :param study_id: ID del estudio.
-        :param frequency: Frecuencia (ej: 'Cinematica').
+        :param frequency: Tipo de Dato (ej: 'Cinematica').
         :param calculation: Cálculo (ej: 'Maximo').
         :param group_keys: Lista de claves de grupo (ej: ['CMJ_PRE', 'CMJ_POST']).
         :return: Lista de nombres de columnas comunes ('Attr/Col/Unit').

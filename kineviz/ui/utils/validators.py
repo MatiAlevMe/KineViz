@@ -117,7 +117,7 @@ def validate_filename_for_study_criteria(
     Valida si un nombre de archivo cumple con la estructura de VIs del estudio
     y extrae el ID del sujeto, los descriptores y el número de intento.
 
-    Formato esperado: PteXX [VAL_VI1] [VAL_VI2] ... [VAL_VIn] NN[_Frecuencia].ext
+    Formato esperado: PteXX [VAL_VI1] [VAL_VI2] ... [VAL_VIn] NN[_TipoDeDato].ext
     Permite 'Nulo' como valor. Verifica orden y pertenencia a descriptores de cada VI.
 
     :param filename: Nombre del archivo (sin ruta, solo nombre base con extensión).

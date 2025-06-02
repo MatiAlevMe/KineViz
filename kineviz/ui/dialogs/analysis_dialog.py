@@ -82,7 +82,7 @@ class AnalysisDialog(Toplevel):
 
         # Crear selectores para cada parámetro
         self.patient_selector = self._create_parameter_selector(params_frame, "Pacientes", self.available_params.get('patients', set()))
-        self.frequency_selector = self._create_parameter_selector(params_frame, "Frecuencias", self.available_params.get('frequencies', set()), use_alias=False)
+        self.frequency_selector = self._create_parameter_selector(params_frame, "Tipos de Datos", self.available_params.get('frequencies', set()), use_alias=False)
         # Reemplazar selectores de tipo/periodo por descriptor, indicando usar alias
         self.descriptor_selector = self._create_parameter_selector(params_frame, "Descriptores", self.available_params.get('descriptors', set()), use_alias=True)
         self.calculation_selector = self._create_parameter_selector(params_frame, "Cálculos", self.available_params.get('calculations', set()), use_alias=False)
