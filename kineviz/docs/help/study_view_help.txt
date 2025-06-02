@@ -8,7 +8,7 @@ Esta vista te permite gestionar los archivos y análisis de un estudio específi
 * **Analizar Estudio:** (Funcionalidad anterior) Abre un diálogo para generar un reporte PDF general basado en selecciones simples (será reemplazado/mejorado).
 * **Agregar Archivos:** Abre un diálogo para seleccionar archivos `.txt` o `.csv` de tu computadora y añadirlos a este estudio. Los nombres de archivo deben seguir el formato definido por las Variables Independientes del estudio (ver ayuda `(?)` en Crear/Editar Estudio).
 * **Abrir Carpeta Estudio:** Abre la carpeta en tu sistema donde se almacenan los archivos procesados y originales de este estudio.
-* **Gestionar Alias Descriptores:** Abre un diálogo para asignar nombres más descriptivos (alias) a los valores de descriptores detectados en los archivos (ej: "CMJ" -> "Salto Contra Movimiento"). Estos alias se usan para mejorar la legibilidad en gráficos y reportes. Los alias son **específicos para este estudio**.
+* **Gestionar Alias Sub-valores:** Abre un diálogo para asignar nombres más descriptivos (alias) a los valores de descriptores detectados en los archivos (ej: "CMJ" -> "Salto Contra Movimiento"). Estos alias se usan para mejorar la legibilidad en gráficos y reportes. Los alias son **específicos para este estudio**.
 * **Análisis Discreto:** Abre la vista para generar y gestionar análisis estadísticos más detallados basados en comparaciones entre grupos definidos por los descriptores.
 
 **Detalles del Estudio:**
@@ -48,7 +48,7 @@ Esta vista te permite gestionar los archivos y análisis de un estudio específi
     * Los nombres de archivo deben seguir el formato definido por las Variable(s) Independientes (VIs) del estudio.
     * **Validación:** Al agregar, el sistema verificará que no se exceda la **Cantidad de Participantes** ni la **Cantidad de Intento(s) de Prueba por participante** definidos para este estudio, considerando tanto los archivos existentes como los nuevos. También se aplicarán las reglas de combinación y obligatoriedad de descriptores definidas para cada VI.
 * **Abrir Carpeta Estudio:** Abre la carpeta en tu sistema donde se almacenan los archivos procesados y originales de este estudio.
-* **Gestionar Alias Descriptores:** Asigna nombres más legibles (alias) a los descriptores definidos para este estudio (ej: "CMJ" -> "Salto Contra Movimiento"). Estos alias se usan en gráficos y reportes y son **específicos para este estudio**.
+* **Gestionar Alias Sub-valores:** Asigna nombres más legibles (alias) a los descriptores definidos para este estudio (ej: "CMJ" -> "Salto Contra Movimiento"). Estos alias se usan en gráficos y reportes y son **específicos para este estudio**.
 * **Análisis Discreto:** Abre la vista para generar y gestionar análisis estadísticos comparativos entre grupos definidos por los descriptores.
 * **Botón `?` (Verde, arriba a la derecha):** Muestra esta guía de ayuda.
 

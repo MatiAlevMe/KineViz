@@ -329,7 +329,7 @@ class FileService:
                 )
 
                 if not is_valid_name or not subject_id or attempt_num is None:
-                    msg = f"Nombre de archivo '{file_name}' inválido o no sigue el formato esperado (PteXX ... Descriptores ... NN)."
+                    msg = f"Nombre de archivo '{file_name}' inválido o no sigue el formato esperado (PteXX ... Sub-valores ... NN)."
                     logger.warning(msg)
                     validation_errors.append(msg)
                     continue # Saltar al siguiente archivo

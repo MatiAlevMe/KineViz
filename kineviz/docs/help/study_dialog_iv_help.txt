@@ -1,4 +1,4 @@
-Guía Rápida: Variable(s) Independientes (VIs) y Descriptores
+Guía Rápida: Variable(s) Independientes (VIs) y Sub-valores
 
 **¿Qué son?**
 
@@ -8,9 +8,9 @@ Guía Rápida: Variable(s) Independientes (VIs) y Descriptores
 **¿Cómo usarlos?**
 
 1. **Añadir VI:** Haz clic en "+ Añadir Variable Independiente" para crear una nueva categoría. Dale un nombre claro.
-2. **Añadir Descriptores:** Haz clic en el icono `+` junto al nombre de la VI para añadir los posibles valores (descriptores) para esa variable.
+2. **Añadir Sub-valores:** Haz clic en el icono `+` junto al nombre de la VI para añadir los posibles valores (descriptores) para esa variable.
     * Cada VI debe tener **al menos dos** descriptores.
-    * Los nombres de VI y Descriptores no pueden estar vacíos ni repetidos dentro del mismo estudio (el nombre de la VI debe ser único, y los descriptores deben ser únicos *dentro* de su VI).
+    * Los nombres de VI y Sub-valores no pueden estar vacíos ni repetidos dentro del mismo estudio (el nombre de la VI debe ser único, y los descriptores deben ser únicos *dentro* de su VI).
     * **Importante:** Un descriptor **no puede** llamarse "Nulo" (ni "nulo", "NULO", etc.).
 3. **Configurar Comportamiento de VI:**
     * **¿Multiple?**:
@@ -49,6 +49,6 @@ El formato debe ser: `PteXX [Desc_VI1] [Desc_VI2] ... [Desc_VIn] NN_TipoDeDato.e
 
 **Edición:**
 
-* Al editar un estudio, **no puedes** añadir ni eliminar VIs o Descriptores, ni cambiar las opciones de "¿Multiple?" o "¿Obligatorio?".
+* Al editar un estudio, **no puedes** añadir ni eliminar VIs o Sub-valores, ni cambiar las opciones de "¿Multiple?" o "¿Obligatorio?".
 * **Sí puedes** cambiar el Nombre del Estudio, la Cantidad de Participantes y la Cantidad de Intento(s) de Prueba.
 * **Importante:** Al editar, no podrás reducir la Cantidad de Participantes por debajo de la cantidad de participantes distintos ya presentes en los archivos del estudio. Tampoco podrás reducir la Cantidad de Intento(s) de Prueba por debajo del número máximo de intentos que cualquier participante ya tenga registrado.

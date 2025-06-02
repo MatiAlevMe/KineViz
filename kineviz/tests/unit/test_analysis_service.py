@@ -65,10 +65,10 @@ class TestAnalysisService(unittest.TestCase):
         self.mock_file_service.project_root = self.temp_path
         self.mock_file_service.studies_base_dir = self.temp_path / "studies"
 
-        # Actualizar mock para devolver descriptores
+        # Actualizar mock para devolver Sub-valores
         self.mock_file_service.get_unique_study_parameters.return_value = {
             'patients': {'P01', 'P02'}, 'frequencies': {'Cinematica'},
-            'descriptors': {'CMJ', 'PRE'} # Descriptores encontrados en archivos
+            'descriptors': {'CMJ', 'PRE'} # Sub-valores encontrados en archivos
         }
 
         self.analysis_service = AnalysisService(self.mock_study_service, self.mock_file_service)

@@ -7,7 +7,7 @@ KineViz es una aplicación diseñada para la gestión y análisis de estudios ki
 1.  **Nombre del Estudio**: Ingrese un nombre único para el estudio (mínimo 3 caracteres).
 2.  **Cantidad de Participantes**: Especifique la cantidad de participantes de prueba (ej: 4). Debe ser un número entero positivo.
 3.  **Cantidad de Intento(s) de Prueba**: Especifique la cantidad de intentos por prueba (ej: 1). Debe ser un número entero positivo.
-4.  **Variable(s) Independientes (VIs) y Descriptores**:
+4.  **Variable(s) Independientes (VIs) y Sub-valores**:
     *   Utilice el botón "+ Añadir Variable Independiente" para definir una nueva VI.
     *   Para cada VI, use el botón `+` para añadir sus descriptores (valores específicos, ej: para una VI "TipoSalto", los descriptores podrían ser "CMJ", "SJ").
     *   **¿Multiple?**: Marque esta casilla si para esta VI un mismo participante puede tener archivos con diferentes descriptores de esta VI (ej: Pte01 CMJ ... y Pte01 SJ ...). Si no se marca, un participante solo puede tener un descriptor de esta VI asignado a través de todos sus archivos (ej: si Pte01 tiene un archivo con "PesoObeso", todos los demás archivos de Pte01 deben usar "PesoObeso" para esa VI, o "Nulo" si aplica).

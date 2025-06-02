@@ -224,7 +224,7 @@ class FileDialog(Toplevel):
                 desc_str = ", ".join(d if d is not None else "Nulo" for d in descriptors)
                 msg = (f"Límite de intentos excedido ({max_attempts_allowed}) para:\n"
                        f"  Sujeto: {subject}\n"
-                       f"  Descriptores: [{desc_str}]\n"
+                       f"  Sub-valores: [{desc_str}]\n"
                        f"Se encontraron {len(attempts_set)} intentos.")
                 logger.warning(msg)
                 validation_errors.append(msg)

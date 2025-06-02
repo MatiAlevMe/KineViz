@@ -84,7 +84,7 @@ class AnalysisDialog(Toplevel):
         self.patient_selector = self._create_parameter_selector(params_frame, "Pacientes", self.available_params.get('patients', set()))
         self.frequency_selector = self._create_parameter_selector(params_frame, "Tipos de Datos", self.available_params.get('frequencies', set()), use_alias=False)
         # Reemplazar selectores de tipo/periodo por descriptor, indicando usar alias
-        self.descriptor_selector = self._create_parameter_selector(params_frame, "Descriptores", self.available_params.get('descriptors', set()), use_alias=True)
+        self.descriptor_selector = self._create_parameter_selector(params_frame, "Sub-valores", self.available_params.get('descriptors', set()), use_alias=True)
         self.calculation_selector = self._create_parameter_selector(params_frame, "Cálculos", self.available_params.get('calculations', set()), use_alias=False)
 
         # --- Botones de Acción ---
@@ -174,7 +174,7 @@ class AnalysisDialog(Toplevel):
         display_map = {} # Mapa local para display_name -> original_item
         for item in sorted(list(available_items)):
             display_name = item
-            if use_alias and title == "Descriptores": # Solo aplicar alias a descriptores
+            if use_alias and title == "Sub-valores": # Solo aplicar alias a descriptores
                 alias = self.descriptor_alias_map.get(item)
                 if alias:
                     display_name = f"{alias} ({item})"

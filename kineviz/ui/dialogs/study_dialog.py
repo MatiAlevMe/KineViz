@@ -441,7 +441,7 @@ class StudyDialog(Toplevel):
                     })
                 else:
                     # Loggear error si falta nombre actualizado o descriptores originales
-                    logger.error(f"Error reconstruyendo VI #{i+1} en modo edición: Nombre='{updated_vi_name}', Descriptores Originales={original_descriptors}, Flags: AC={original_allows_combination}, IM={original_is_mandatory}")
+                    logger.error(f"Error reconstruyendo VI #{i+1} en modo edición: Nombre='{updated_vi_name}', Sub-valores Originales={original_descriptors}, Flags: AC={original_allows_combination}, IM={original_is_mandatory}")
                     messagebox.showerror("Error Interno", f"Error procesando Variable Independiente #{i+1}.", parent=self)
                     return
 
