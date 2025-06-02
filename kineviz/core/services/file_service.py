@@ -402,7 +402,7 @@ class FileService:
                     for err in vi_rule_errors:
                         logger.warning(f"- {err}")
                     # Añadir un error genérico para la UI
-                    results['errors'].append("No se cumplen las especificaciones de manejo de descriptores para el estudio.")
+                    results['errors'].append("No se cumplen las especificaciones de manejo de sub-valores para el estudio.")
                     return results # Detener procesamiento
 
             except Exception as e_val_vi:
@@ -501,10 +501,10 @@ class FileService:
 
     def _get_all_study_files_descriptors(self, study_id: int) -> Dict[str, List[List[Optional[str]]]]:
         """
-        Recopila los descriptores extraídos de todos los archivos procesados válidos para un estudio.
+        Recopila los sub-valores extraídos de todos los archivos procesados válidos para un estudio.
 
         :param study_id: ID del estudio.
-        :return: Dict mapeando subject_id a una lista de sus listas de descriptores.
+        :return: Dict mapeando subject_id a una lista de sus listas de sub-valores.
                  Ej: {"Pte01": [["CMJ", "PRE"], ["SJ", "PRE"]]}
         """
         all_files_data: Dict[str, List[List[Optional[str]]]] = {}
@@ -539,13 +539,13 @@ class FileService:
 
     def get_unique_study_parameters(self, study_id: int) -> dict:
         """
-        Obtiene conjuntos de parámetros únicos (pacientes, frecuencias, descriptores por VI)
+        Obtiene conjuntos de parámetros únicos (pacientes, frecuencias, sub-valores por VI)
         basados en los archivos procesados válidos de un estudio.
 
         :param study_id: ID del estudio.
         :return: Diccionario {'patients': set(), 'frequencies': set(), 'descriptors_by_vi': dict{int: set()}}
                  o un diccionario vacío si hay error o no hay archivos.
-                 'descriptors_by_vi' mapea el índice de la VI (0-based) a un set de descriptores únicos encontrados para esa posición.
+                 'descriptors_by_vi' mapea el índice de la VI (0-based) a un set de sub-valores únicos encontrados para esa posición.
         """
         # Ya no se necesita obtener_nombre_paciente aquí
         # from kineviz.core.data_processing.file_handlers import obtener_nombre_paciente
@@ -592,7 +592,7 @@ class FileService:
                 if patient_dir.exists() and patient_dir.is_dir():
                     parameters['patients'].add(patient_name)
 
-        # 2. Iterar de nuevo para encontrar frecuencias y descriptores por posición *solo* de archivos válidos
+        # 2. Iterar de nuevo para encontrar frecuencias y sub-valores por posición *solo* de archivos válidos
         patients_found_step1 = list(parameters['patients'])
         parameters['patients'] = set() # Resetear, se añadirán solo si tienen archivos válidos
         parameters['frequencies'] = set() # Resetear
@@ -623,7 +623,7 @@ class FileService:
                                  parameters['patients'].add(patient_name)
                                  parameters['frequencies'].add(freq_folder_name)
 
-                                 # Añadir descriptores extraídos (no None) a su posición correspondiente
+                                 # Añadir sub-valores extraídos (no None) a su posición correspondiente
                                  if len(extracted_descriptors) == num_vis:
                                      for vi_index, descriptor_value in enumerate(extracted_descriptors):
                                          if descriptor_value is not None: # Ignorar los 'Nulo' (representados por None)
@@ -634,7 +634,7 @@ class FileService:
                                                  logger.warning(f"Índice de VI {vi_index} no encontrado en estructura de parámetros para archivo {filename}.")
                                  else:
                                      # Esto tampoco debería ocurrir si la validación es correcta
-                                     logger.warning(f"Número de descriptores extraídos ({len(extracted_descriptors)}) no coincide con número de VIs ({num_vis}) para archivo válido {filename}.")
+                                     logger.warning(f"Número de sub-valores extraídos ({len(extracted_descriptors)}) no coincide con número de VIs ({num_vis}) para archivo válido {filename}.")
 
         logger.debug(f"Parámetros únicos encontrados: {parameters}")
         return parameters

@@ -61003,3 +61003,26 @@ ValueError: No se encontraron datos válidos en ninguna tabla para los grupos y 
 2025-06-02 18:18:40,030 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 24
 2025-06-02 18:18:40,030 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 24: {}
 2025-06-02 18:18:40,030 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Delgado, Obeso'
+2025-06-02 18:26:57,383 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-02 18:26:57,383 - INFO - [__main__] - Iniciando KineViz...
+2025-06-02 18:26:57,836 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-02 18:26:57,836 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-02 18:27:11,231 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 24
+2025-06-02 18:27:11,249 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 24
+2025-06-02 18:27:11,250 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 24: {}
+2025-06-02 18:27:11,250 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Delgado, Obeso'
+2025-06-02 18:27:24,737 - INFO - [kineviz.ui.dialogs.descriptor_alias_dialog] - Sub-valores definidos para estudio 24: {'Obeso', 'Delgado'}
+2025-06-02 18:27:24,738 - DEBUG - [kineviz.ui.dialogs.descriptor_alias_dialog] - Aliases actuales para estudio 24: {}
+2025-06-02 18:27:28,487 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 24
+2025-06-02 18:27:28,487 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 24: {}
+2025-06-02 18:27:28,488 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Delgado, Obeso'
+2025-06-02 18:30:10,589 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-02 18:30:10,589 - INFO - [__main__] - Iniciando KineViz...
+2025-06-02 18:30:10,781 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-02 18:30:10,781 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-02 18:30:12,543 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 24
+2025-06-02 18:30:12,558 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 24
+2025-06-02 18:30:12,558 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 24: {}
+2025-06-02 18:30:12,558 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Delgado, Obeso'
+2025-06-02 18:30:14,126 - INFO - [kineviz.ui.dialogs.descriptor_alias_dialog] - Sub-valores definidos para estudio 24: {'Obeso', 'Delgado'}
+2025-06-02 18:30:14,126 - DEBUG - [kineviz.ui.dialogs.descriptor_alias_dialog] - Aliases actuales para estudio 24: {}

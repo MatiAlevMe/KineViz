@@ -50,11 +50,11 @@ class TestFileService(unittest.TestCase):
         # Datos de estudio simulados comunes
         self.study_id_1 = 1
         self.study_name_1 = "Estudio_FS_1"
-        # Actualizar mock para usar descriptores
+        # Actualizar mock para usar sub-valores
         self.study_descriptors_1 = ['CMJ', 'SJ', 'PRE', 'POST']
         self.study_details_1 = {
             'id': self.study_id_1, 'name': self.study_name_1,
-            'descriptores': ','.join(self.study_descriptors_1), # Guardado como string
+            'sub-valores': ','.join(self.study_descriptors_1), # Guardado como string
             'num_subjects': 2, 'attempts_count': 3
         }
         self.study_path_1 = self.test_studies_base_dir / self.study_name_1
@@ -221,7 +221,7 @@ class TestFileService(unittest.TestCase):
         self.assertEqual(results['success'], 2)
         self.assertEqual(len(results['errors']), 0)
         # Verificar que la validación y el procesamiento fueron llamados
-        # Verificar que la validación fue llamada con descriptores
+        # Verificar que la validación fue llamada con sub-valores
         self.assertEqual(mock_validate.call_count, 2)
         mock_validate.assert_has_calls([
             call(file1_path.name, self.study_descriptors_1),
@@ -254,9 +254,9 @@ class TestFileService(unittest.TestCase):
 
         self.assertEqual(results['success'], 1)
         self.assertEqual(len(results['errors']), 1)
-        # Mensaje de error ahora menciona descriptores
-        self.assertIn("Nombre de archivo 'P02 INVALIDO POST 01.txt' no cumple con los descriptores", results['errors'][0])
-        # Verificar que la validación fue llamada para ambos con descriptores
+        # Mensaje de error ahora menciona sub-valores
+        self.assertIn("Nombre de archivo 'P02 INVALIDO POST 01.txt' no cumple con los sub-valores", results['errors'][0])
+        # Verificar que la validación fue llamada para ambos con sub-valores
         self.assertEqual(mock_validate.call_count, 2)
         mock_validate.assert_has_calls([
             call(file1_path.name, self.study_descriptors_1),
@@ -288,7 +288,7 @@ class TestFileService(unittest.TestCase):
 
     @patch('kineviz.core.services.file_service.validate_filename_for_study_criteria')
     def test_get_unique_study_parameters(self, mock_validate):
-        """Prueba obtener parámetros únicos (incluyendo descriptores)."""
+        """Prueba obtener parámetros únicos (incluyendo sub-valores)."""
         # Crear estructura más compleja
         p1_path = self.study_path_1 / "P01"
         p2_path = self.study_path_1 / "P02"
@@ -317,7 +317,7 @@ class TestFileService(unittest.TestCase):
 
         params = self.file_service.get_unique_study_parameters(self.study_id_1)
 
-        # Verificar llamadas a validate con descriptores
+        # Verificar llamadas a validate con sub-valores
         self.assertTrue(mock_validate.called)
         # Ejemplo de verificación de una llamada (puede ser más complejo verificar todas)
         mock_validate.assert_any_call("P01 CMJ PRE 01_Cinematica.txt", self.study_descriptors_1)
@@ -325,7 +325,7 @@ class TestFileService(unittest.TestCase):
         # Verificar parámetros extraídos
         self.assertEqual(params['patients'], {'P01', 'P02'})
         self.assertEqual(params['frequencies'], {'Cinematica', 'Electromiografica'})
-        # Verificar descriptores extraídos de los nombres de archivo válidos
+        # Verificar sub-valores extraídos de los nombres de archivo válidos
         self.assertEqual(params['descriptors'], {'CMJ', 'SJ', 'PRE', 'POST'})
 
 

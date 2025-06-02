@@ -8,14 +8,14 @@ Esta vista te permite gestionar los archivos y análisis de un estudio específi
 * **Analizar Estudio:** (Funcionalidad anterior) Abre un diálogo para generar un reporte PDF general basado en selecciones simples (será reemplazado/mejorado).
 * **Agregar Archivos:** Abre un diálogo para seleccionar archivos `.txt` o `.csv` de tu computadora y añadirlos a este estudio. Los nombres de archivo deben seguir el formato definido por las Variables Independientes del estudio (ver ayuda `(?)` en Crear/Editar Estudio).
 * **Abrir Carpeta Estudio:** Abre la carpeta en tu sistema donde se almacenan los archivos procesados y originales de este estudio.
-* **Gestionar Alias Sub-valores:** Abre un diálogo para asignar nombres más descriptivos (alias) a los valores de descriptores detectados en los archivos (ej: "CMJ" -> "Salto Contra Movimiento"). Estos alias se usan para mejorar la legibilidad en gráficos y reportes. Los alias son **específicos para este estudio**.
-* **Análisis Discreto:** Abre la vista para generar y gestionar análisis estadísticos más detallados basados en comparaciones entre grupos definidos por los descriptores.
+* **Gestionar Alias Sub-valores:** Abre un diálogo para asignar nombres más descriptivos (alias) a los valores de sub-valores detectados en los archivos (ej: "CMJ" -> "Salto Contra Movimiento"). Estos alias se usan para mejorar la legibilidad en gráficos y reportes. Los alias son **específicos para este estudio**.
+* **Análisis Discreto:** Abre la vista para generar y gestionar análisis estadísticos más detallados basados en comparaciones entre grupos definidos por los sub-valores.
 
 **Detalles del Estudio:**
 
 * Muestra información básica: Nombre, Sujetos, Intentos.
 * **Variables Independientes:** Lista los nombres de las categorías definidas para este estudio (ej: "Tipo Salto, Condición").
-* **Botón `ℹ️` (Junto a VIs):** Muestra los descriptores específicos definidos para cada Variable Independiente, usando los alias que hayas asignado.
+* **Botón `ℹ️` (Junto a VIs):** Muestra los sub-valores específicos definidos para cada Variable Independiente, usando los alias que hayas asignado.
 
 **Navegador de Archivos:**
 
@@ -37,7 +37,7 @@ Esta vista te permite gestionar los archivos y análisis de un estudio específi
 * `PteXX [Desc_VI1] [Desc_VI2] ... NN_TipoDeDato.ext`
 * Usa `Nulo` si un descriptor no aplica.
 * Debe haber al menos un descriptor no-`Nulo`.
-* El orden de los descriptores debe coincidir con el orden de las VIs definidas.Guía Rápida: Vista del Estudio
+* El orden de los sub-valores debe coincidir con el orden de las VIs definidas.Guía Rápida: Vista del Estudio
 
 Esta vista te permite gestionar los archivos y análisis de un estudio específico.
 
@@ -46,18 +46,18 @@ Esta vista te permite gestionar los archivos y análisis de un estudio específi
 * **<< Volver a Estudios:** Regresa a la lista de todos tus estudios.
 * **Agregar Archivos:** Abre un diálogo para seleccionar archivos `.txt` o `.csv` y añadirlos a este estudio.
     * Los nombres de archivo deben seguir el formato definido por las Variable(s) Independientes (VIs) del estudio.
-    * **Validación:** Al agregar, el sistema verificará que no se exceda la **Cantidad de Participantes** ni la **Cantidad de Intento(s) de Prueba por participante** definidos para este estudio, considerando tanto los archivos existentes como los nuevos. También se aplicarán las reglas de combinación y obligatoriedad de descriptores definidas para cada VI.
+    * **Validación:** Al agregar, el sistema verificará que no se exceda la **Cantidad de Participantes** ni la **Cantidad de Intento(s) de Prueba por participante** definidos para este estudio, considerando tanto los archivos existentes como los nuevos. También se aplicarán las reglas de combinación y obligatoriedad de sub-valores definidas para cada VI.
 * **Abrir Carpeta Estudio:** Abre la carpeta en tu sistema donde se almacenan los archivos procesados y originales de este estudio.
-* **Gestionar Alias Sub-valores:** Asigna nombres más legibles (alias) a los descriptores definidos para este estudio (ej: "CMJ" -> "Salto Contra Movimiento"). Estos alias se usan en gráficos y reportes y son **específicos para este estudio**.
-* **Análisis Discreto:** Abre la vista para generar y gestionar análisis estadísticos comparativos entre grupos definidos por los descriptores.
+* **Gestionar Alias Sub-valores:** Asigna nombres más legibles (alias) a los sub-valores definidos para este estudio (ej: "CMJ" -> "Salto Contra Movimiento"). Estos alias se usan en gráficos y reportes y son **específicos para este estudio**.
+* **Análisis Discreto:** Abre la vista para generar y gestionar análisis estadísticos comparativos entre grupos definidos por los sub-valores.
 * **Botón `?` (Verde, arriba a la derecha):** Muestra esta guía de ayuda.
 
 **Detalles del Estudio:**
 
 * Muestra información básica: Nombre del Estudio, Cantidad de Participantes, Cantidad de Intento(s) de Prueba.
 * **Variable(s) Independientes (VIs):** Lista los nombres de las categorías definidas (ej: "Tipo Salto, Condición").
-* **Botón `ℹ️` (Junto a VIs):** Muestra un popup con los descriptores específicos definidos para cada VI (usando los alias asignados) y cómo se manejan sus descriptores (ej: "Múltiple y Obligatorio", "No Múltiple").
-* **Alias Asignados:** Muestra todos los descriptores definidos para el estudio y sus alias correspondientes.
+* **Botón `ℹ️` (Junto a VIs):** Muestra un popup con los sub-valores específicos definidos para cada VI (usando los alias asignados) y cómo se manejan sus sub-valores (ej: "Múltiple y Obligatorio", "No Múltiple").
+* **Alias Asignados:** Muestra todos los sub-valores definidos para el estudio y sus alias correspondientes.
 
 **Navegador de Archivos:**
 
@@ -79,5 +79,5 @@ Esta vista te permite gestionar los archivos y análisis de un estudio específi
 * `PteXX [Desc_VI1] [Desc_VI2] ... NN_TipoDeDato.ext`
 * Usa `Nulo` si un descriptor no aplica para una VI en ese archivo.
 * Debe haber **al menos un** descriptor que **no** sea `Nulo`.
-* El **orden** de los descriptores debe coincidir con el orden de las VIs definidas en el estudio.
-* Consulta la ayuda `(?)` en la ventana de Crear/Editar Estudio para más detalles sobre VIs y descriptores.
+* El **orden** de los sub-valores debe coincidir con el orden de las VIs definidas en el estudio.
+* Consulta la ayuda `(?)` en la ventana de Crear/Editar Estudio para más detalles sobre VIs y sub-valores.

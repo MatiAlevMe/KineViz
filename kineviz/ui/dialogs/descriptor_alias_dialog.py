@@ -11,7 +11,7 @@ from kineviz.core.services.study_service import StudyService
 logger = logging.getLogger(__name__)
 
 class DescriptorAliasDialog(Toplevel):
-    """Diálogo para gestionar alias de descriptores definidos en un estudio."""
+    """Diálogo para gestionar alias de sub-valores definidos en un estudio."""
 
     # Cambiar app_settings y file_service por study_service
     def __init__(self, parent, study_service: StudyService, study_id: int):
@@ -27,7 +27,7 @@ class DescriptorAliasDialog(Toplevel):
 
         # Diccionario para almacenar las variables de entrada de alias
         self.alias_vars = {}
-        # Almacenar descriptores definidos en el estudio
+        # Almacenar sub-valores definidos en el estudio
         self.defined_descriptors = set()
         # Almacenar alias actuales del estudio
         self.current_aliases = {}
@@ -70,10 +70,10 @@ class DescriptorAliasDialog(Toplevel):
         self.alias_grid_frame.columnconfigure(1, weight=1) # Columna de alias expandible
 
         # Cabeceras
-        ttk.Label(self.alias_grid_frame, text="Descriptor Definido", font=('Helvetica', 10, 'bold')).grid(row=0, column=0, padx=5, pady=5, sticky='w')
+        ttk.Label(self.alias_grid_frame, text="Sub-valor Definido", font=('Helvetica', 10, 'bold')).grid(row=0, column=0, padx=5, pady=5, sticky='w')
         ttk.Label(self.alias_grid_frame, text="Alias Asignado", font=('Helvetica', 10, 'bold')).grid(row=0, column=1, padx=5, pady=5, sticky='w')
 
-        # Los descriptores se añadirán dinámicamente en load_descriptors_and_aliases
+        # Los sub-valores se añadirán dinámicamente en load_descriptors_and_aliases
 
         # Botones de acción
         button_frame = ttk.Frame(main_frame)
@@ -82,14 +82,14 @@ class DescriptorAliasDialog(Toplevel):
         ttk.Button(button_frame, text="Cancelar", command=self.destroy).pack(side=tk.RIGHT)
 
     def load_descriptors_and_aliases(self):
-        """Carga los descriptores definidos en el estudio y sus alias actuales."""
+        """Carga los sub-valores definidos en el estudio y sus alias actuales."""
         try:
             # Obtener detalles del estudio para VIs y alias
             study_details = self.study_service.get_study_details(self.study_id)
             independent_variables = study_details.get('independent_variables', [])
             self.current_aliases = study_details.get('aliases', {}) # Guardar alias actuales
 
-            # Extraer todos los descriptores definidos de la estructura de VIs
+            # Extraer todos los sub-valores definidos de la estructura de VIs
             self.defined_descriptors = set()
             for iv in independent_variables:
                 # Asumiendo que cada VI es un dict con 'name' y 'descriptors' (lista)
@@ -111,9 +111,9 @@ class DescriptorAliasDialog(Toplevel):
             # Crear fila para cada descriptor definido
             row_idx = 1 # Empezar después de las cabeceras
             if not self.defined_descriptors:
-                 ttk.Label(self.alias_grid_frame, text="No hay descriptores definidos para este estudio.").grid(row=row_idx, column=0, columnspan=2, pady=10)
+                 ttk.Label(self.alias_grid_frame, text="No hay sub-valores definidos para este estudio.").grid(row=row_idx, column=0, columnspan=2, pady=10)
             else:
-                # Ordenar descriptores para consistencia
+                # Ordenar sub-valores para consistencia
                 for descriptor in sorted(list(self.defined_descriptors)):
                     # Etiqueta del descriptor
                     ttk.Label(self.alias_grid_frame, text=descriptor).grid(row=row_idx, column=0, padx=5, pady=2, sticky='w')
@@ -129,8 +129,8 @@ class DescriptorAliasDialog(Toplevel):
                     row_idx += 1
 
         except Exception as e:
-            logger.error(f"Error cargando descriptores o alias para estudio {self.study_id}: {e}", exc_info=True)
-            messagebox.showerror("Error", f"No se pudieron cargar los descriptores o alias:\n{e}", parent=self)
+            logger.error(f"Error cargando sub-valores o alias para estudio {self.study_id}: {e}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudieron cargar los sub-valores o alias:\n{e}", parent=self)
 
     def save_aliases(self):
         """Guarda los alias modificados para el estudio actual usando StudyService."""

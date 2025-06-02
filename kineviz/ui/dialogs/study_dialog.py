@@ -22,12 +22,12 @@ class StudyDialog(Toplevel):
         self.on_save_callback = on_save_callback
         self.is_editing = bool(study_to_edit) # Flag para modo edición
 
-        # Estructura para almacenar VIs y sus descriptores en la UI
+        # Estructura para almacenar VIs y sus sub-valores en la UI
         # Lista de diccionarios: [{'name_var': StringVar, 'descriptor_vars': [StringVar], 'frame': Frame, 'desc_frames': [Frame], 'allows_combination_var': BooleanVar, 'is_mandatory_var': BooleanVar}]
         self.independent_variables_ui = []
 
         self.title("Editar Estudio" if self.is_editing else "Nuevo Estudio")
-        # Aumentar altura para VIs/descriptores
+        # Aumentar altura para VIs/sub-valores
         self.geometry("600x550")
         self.resizable(True, True) # Permitir redimensionar
 
@@ -66,7 +66,7 @@ class StudyDialog(Toplevel):
             self.var_num_sujetos.set(str(study_details.get('num_subjects', '')))
             self.var_cantidad_intentos.set(str(study_details.get('attempts_count', '')))
 
-            # Cargar estructura de VIs y descriptores
+            # Cargar estructura de VIs y sub-valores
             # get_study_details ya devuelve la estructura Python parseada
             self.initial_independent_variables = study_details.get('independent_variables', [])
 
@@ -201,7 +201,7 @@ class StudyDialog(Toplevel):
         if self.is_editing:
             remove_vi_button.config(state=tk.DISABLED)
 
-        # --- Contenedor para descriptores de esta VI ---
+        # --- Contenedor para sub-valores de esta VI ---
         descriptors_container = ttk.Frame(vi_frame, padding="5 0 0 5") # Indentación izquierda
         descriptors_container.pack(fill=tk.X)
 
@@ -256,9 +256,9 @@ class StudyDialog(Toplevel):
             is_mandatory_cb_widget  # Pasar el widget
         )
 
-        # Añadir descriptores iniciales para esta VI
+        # Añadir sub-valores iniciales para esta VI
         if not descriptors_values and not self.is_editing:
-            # Añadir 2 descriptores vacíos por defecto al crear nueva VI
+            # Añadir 2 sub-valores vacíos por defecto al crear nueva VI
             self.add_descriptor_ui(vi_name_var)
             self.add_descriptor_ui(vi_name_var)
         else:
@@ -410,9 +410,9 @@ class StudyDialog(Toplevel):
         # Recolectar y validar estructura de VIs según modo (crear/editar)
         if self.is_editing:
             # --- Modo Edición ---
-            # Reconstruir VIs usando nombres actualizados y descriptores originales
+            # Reconstruir VIs usando nombres actualizados y sub-valores originales
             reconstructed_ivs = []
-            # Mapear nombres originales a descriptores originales para fácil acceso
+            # Mapear nombres originales a sub-valores originales para fácil acceso
             original_iv_map = {iv.get('name'): iv.get('descriptors', [])
                                for iv in self.initial_independent_variables}
 
@@ -424,7 +424,7 @@ class StudyDialog(Toplevel):
 
             for i, vi_ui_data in enumerate(self.independent_variables_ui):
                 updated_vi_name = vi_ui_data['name_var'].get().strip()
-                # Obtener descriptores originales basados en la posición inicial
+                # Obtener sub-valores originales basados en la posición inicial
                 original_vi_data = self.initial_independent_variables[i]
                 original_descriptors = original_vi_data.get('descriptors', [])
                 # En modo edición, los flags no cambian, se toman de los datos iniciales
@@ -440,7 +440,7 @@ class StudyDialog(Toplevel):
                         'is_mandatory': original_is_mandatory
                     })
                 else:
-                    # Loggear error si falta nombre actualizado o descriptores originales
+                    # Loggear error si falta nombre actualizado o sub-valores originales
                     logger.error(f"Error reconstruyendo VI #{i+1} en modo edición: Nombre='{updated_vi_name}', Sub-valores Originales={original_descriptors}, Flags: AC={original_allows_combination}, IM={original_is_mandatory}")
                     messagebox.showerror("Error Interno", f"Error procesando Variable Independiente #{i+1}.", parent=self)
                     return
@@ -449,13 +449,13 @@ class StudyDialog(Toplevel):
 
         else:
             # --- Modo Creación ---
-            # Recolectar VIs y descriptores directamente de la UI
+            # Recolectar VIs y sub-valores directamente de la UI
             collected_ivs = []
             for vi_ui_data in self.independent_variables_ui:
                 vi_name = vi_ui_data['name_var'].get().strip()
-                # Recolectar descriptores de las entradas de esta VI
+                # Recolectar sub-valores de las entradas de esta VI
                 descriptors = [desc_var.get().strip() for desc_var in vi_ui_data['descriptor_vars']]
-                # Filtrar descriptores vacíos
+                # Filtrar sub-valores vacíos
                 valid_descriptors = [d for d in descriptors if d]
                 # Obtener valores de los checkboxes
                 allows_combination = vi_ui_data['allows_combination_var'].get()
@@ -465,7 +465,7 @@ class StudyDialog(Toplevel):
                 if not allows_combination:
                     is_mandatory = False
 
-                # Solo añadir VI si tiene nombre y descriptores válidos
+                # Solo añadir VI si tiene nombre y sub-valores válidos
                 if vi_name and valid_descriptors:
                     collected_ivs.append({
                         'name': vi_name,

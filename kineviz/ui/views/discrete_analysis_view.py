@@ -283,9 +283,9 @@ class DiscreteAnalysisView(ttk.Frame):
         calc_type = parts[0]
         # Asumimos que siempre está presente después del cálculo
         freq_type = parts[1]
-        descriptors = parts[2:]  # El resto son descriptores
+        descriptors = parts[2:]  # El resto son sub-valores
 
-        # Unir descriptores con coma
+        # Unir sub-valores con coma
         descriptor_str = ", ".join(descriptors) if descriptors \
                                                 else "SinSubValores"
 
@@ -364,7 +364,7 @@ class DiscreteAnalysisView(ttk.Frame):
             filtered_files = [f for f in filtered_files
                               if f['calc'] == selected_calc]
 
-        # Filtrar por término de búsqueda (nombre, cálculo, descriptores)
+        # Filtrar por término de búsqueda (nombre, cálculo, sub-valores)
         if search_term:
             filtered_files = [
                 f for f in filtered_files if (

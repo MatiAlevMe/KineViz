@@ -3,23 +3,23 @@ Guía Rápida: Variable(s) Independientes (VIs) y Sub-valores
 **¿Qué son?**
 
 * **Variable Independiente (VI):** Una categoría o factor que quieres estudiar (ej: "Tipo de Salto", "Condición del Sujeto").
-* **Descriptor:** Un valor específico dentro de una Variable Independiente (ej: para "Tipo de Salto", los descriptores podrían ser "CMJ", "SJ", "DropJump").
+* **Sub-valor:** Un valor específico dentro de una Variable Independiente (ej: para "Tipo de Salto", los sub-valores podrían ser "CMJ", "SJ", "DropJump").
 
 **¿Cómo usarlos?**
 
 1. **Añadir VI:** Haz clic en "+ Añadir Variable Independiente" para crear una nueva categoría. Dale un nombre claro.
-2. **Añadir Sub-valores:** Haz clic en el icono `+` junto al nombre de la VI para añadir los posibles valores (descriptores) para esa variable.
-    * Cada VI debe tener **al menos dos** descriptores.
-    * Los nombres de VI y Sub-valores no pueden estar vacíos ni repetidos dentro del mismo estudio (el nombre de la VI debe ser único, y los descriptores deben ser únicos *dentro* de su VI).
+2. **Añadir Sub-valores:** Haz clic en el icono `+` junto al nombre de la VI para añadir los posibles valores (sub-valores) para esa variable.
+    * Cada VI debe tener **al menos dos** sub-valores.
+    * Los nombres de VI y Sub-valores no pueden estar vacíos ni repetidos dentro del mismo estudio (el nombre de la VI debe ser único, y los sub-valores deben ser únicos *dentro* de su VI).
     * **Importante:** Un descriptor **no puede** llamarse "Nulo" (ni "nulo", "NULO", etc.).
 3. **Configurar Comportamiento de VI:**
     * **¿Multiple?**:
-        * **Si está marcado**: Un mismo participante puede tener archivos con diferentes descriptores de esta VI. Por ejemplo, si la VI es "TipoSalto" con descriptores "CMJ" y "SJ", el participante Pte01 podría tener archivos `Pte01 CMJ ...` y también `Pte01 SJ ...`.
+        * **Si está marcado**: Un mismo participante puede tener archivos con diferentes sub-valores de esta VI. Por ejemplo, si la VI es "TipoSalto" con sub-valores "CMJ" y "SJ", el participante Pte01 podría tener archivos `Pte01 CMJ ...` y también `Pte01 SJ ...`.
         * **Si NO está marcado**: Un participante solo puede tener un único descriptor de esta VI asignado a través de todos sus archivos. Si Pte01 tiene un archivo con el descriptor "PesoObeso" para la VI "PesoCorporal", todos los demás archivos de Pte01 deben usar "PesoObeso" para esa VI (o "Nulo", si aplica para esa VI en ese archivo específico). El sistema validará esto al agregar archivos.
     * **¿Obligatorio?**:
         * Esta casilla **solo aparece si marca "¿Multiple?"**.
-        * **Si está marcado**: Cada participante del estudio DEBE tener al menos un archivo para CADA UNO de los descriptores definidos en esta VI. Por ejemplo, si la VI "TipoSalto" tiene descriptores "CMJ" y "SJ", y "¿Obligatorio?" está marcado, entonces Pte01 debe tener al menos un archivo `...CMJ...` y al menos un archivo `...SJ...`.
-        * **Si NO está marcado** (pero "¿Multiple?" sí lo está): Los participantes pueden tener algunos o todos los descriptores de esta VI. Es flexible.
+        * **Si está marcado**: Cada participante del estudio DEBE tener al menos un archivo para CADA UNO de los sub-valores definidos en esta VI. Por ejemplo, si la VI "TipoSalto" tiene sub-valores "CMJ" y "SJ", y "¿Obligatorio?" está marcado, entonces Pte01 debe tener al menos un archivo `...CMJ...` y al menos un archivo `...SJ...`.
+        * **Si NO está marcado** (pero "¿Multiple?" sí lo está): Los participantes pueden tener algunos o todos los sub-valores de esta VI. Es flexible.
 4. **Eliminar:** Usa el icono `🗑️` para eliminar una VI completa o un descriptor específico.
 5. **Orden:** El orden en que defines las VIs es **importante**. Determina cómo debes nombrar tus archivos de datos.
 
