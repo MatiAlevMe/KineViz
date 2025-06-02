@@ -33,7 +33,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.analysis_list = []  # Lista de dicts con info de análisis guardados
         self.analysis_tree = None
         # Añadir "Valores Clave"
-        self.columns = ("Nombre", "Fecha", "Frecuencia", "Cálculo",
+        self.columns = ("Nombre", "Fecha", "Tipo de Dato", "Cálculo",
                         "Columna Analizada", "Supuestos", "Valores Clave",
                         "Grupos Comparados")
 
@@ -85,7 +85,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         # Cabeceras iniciales
         self.analysis_tree.heading("Nombre", text="Nombre Análisis")
         self.analysis_tree.heading("Fecha", text="Fecha Creación")
-        self.analysis_tree.heading("Frecuencia", text="Frecuencia")
+        self.analysis_tree.heading("Tipo de Dato", text="Tipo de Dato")
         self.analysis_tree.heading("Cálculo", text="Cálculo")
         self.analysis_tree.heading("Columna Analizada", text="Columna")
         self.analysis_tree.heading("Supuestos", text="Supuestos")
@@ -96,7 +96,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         # Ancho columnas (ajustar según necesidad)
         self.analysis_tree.column("Nombre", width=150, anchor=tk.W)
         self.analysis_tree.column("Fecha", width=140, anchor=tk.CENTER)
-        self.analysis_tree.column("Frecuencia", width=80, anchor=tk.W)
+        self.analysis_tree.column("Tipo de Dato", width=80, anchor=tk.W)
         self.analysis_tree.column("Cálculo", width=80, anchor=tk.W)
         self.analysis_tree.column("Columna Analizada", width=150, anchor=tk.W)
         self.analysis_tree.column("Supuestos", width=140, anchor=tk.W)
@@ -159,7 +159,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                         analysis_info['mtime']
                     ).strftime('%Y-%m-%d %H:%M:%S')
 
-                # Frecuencia, Cálculo, Columna
+                # Tipo de Dato, Cálculo, Columna
                 freq = config.get('frequency', '?')
                 calc = config.get('calculation', '?')
                 col_full = config.get('column', '?')

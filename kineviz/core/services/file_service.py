@@ -264,7 +264,7 @@ class FileService:
                      # Considerar añadir un manejo más robusto para saltar secciones corruptas.
                      raise # Relanzar por ahora para no ocultar el error
 
-            logger.info(f"Frecuencias procesadas para {source_file_path.name}: {processed_frequencies or 'Ninguna'}")
+            logger.info(f"Tipos de Datos procesadas para {source_file_path.name}: {processed_frequencies or 'Ninguna'}")
 
     # La definición correcta de add_files_to_study empieza aquí
     def add_files_to_study(self, study_id: int, file_paths: list[str]) -> dict:

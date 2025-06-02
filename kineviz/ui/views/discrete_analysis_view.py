@@ -267,7 +267,7 @@ class DiscreteAnalysisView(ttk.Frame):
             return f"{size_bytes / (1024**3):.1f} GB"
 
     def _parse_table_filename(self, filename: str) -> tuple[str, str, str]:
-        """Extrae Cálculo, Frecuencia y Descriptores del nombre de archivo."""
+        """Extrae Cálculo, Tipos de Datos y Descriptores del nombre de archivo."""
         # Formato: CALCULO_FRECUENCIA_DESC1_DESC2...DESCn.[csv|tsv|xlsx|scsv]
         # Remover cualquier extensión conocida
         base_name = filename

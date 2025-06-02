@@ -25,14 +25,14 @@ Guía Rápida: Variable(s) Independientes (VIs) y Descriptores
 
 **Nombrar Archivos:**
 
-El formato debe ser: `PteXX [Desc_VI1] [Desc_VI2] ... [Desc_VIn] NN_Frecuencia.ext`
+El formato debe ser: `PteXX [Desc_VI1] [Desc_VI2] ... [Desc_VIn] NN_TipoDeDato.ext`
 
 * `PteXX`: Identificador del paciente.
 * `[Desc_VI1]`: Un descriptor válido de la **primera** VI definida.
 * `[Desc_VI2]`: Un descriptor válido de la **segunda** VI definida.
 * ... y así sucesivamente para todas las VIs definidas.
 * `NN`: Número del intento.
-* `_Frecuencia.ext`: Sufijo añadido durante el procesamiento (ej: `_Cinematica.txt`).
+* `_TipoDeDato.ext`: Sufijo añadido durante el procesamiento (ej: `_Cinematica.txt`).
 
 **Valor "Nulo":**
 
