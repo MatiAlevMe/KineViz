@@ -1280,7 +1280,7 @@ class AnalysisService:
         :param mode: '1VI' o '2VIs'.
         :param primary_vi_name: Nombre de la VI seleccionada si mode='1VI'.
         :param fixed_vi_name: Nombre de la VI a fijar si mode='2VIs'.
-        :param fixed_descriptor_value: Valor del descriptor a fijar si mode='2VIs' (valor original, sin alias).
+        :param fixed_descriptor_value: Valor del sub-valor a fijar si mode='2VIs' (valor original, sin alias).
         :return: Diccionario {original_key: display_name} de los grupos filtrados.
                  El display_name se ajusta según el modo.
         """
@@ -1567,9 +1567,9 @@ class AnalysisService:
                         try:
                             descriptor_for_legend = intended_partial_key.split(prefix_to_check, 1)[1] # Esto es "DescA"
                         except IndexError:
-                            logger.error(f"Error de índice al extraer descriptor de '{intended_partial_key}' usando prefijo VI '{prefix_to_check}'.")
+                            logger.error(f"Error de índice al extraer sub-valor de '{intended_partial_key}' usando prefijo VI '{prefix_to_check}'.")
                             descriptor_for_legend = intended_partial_key # Fallback
-                        logger.debug(f"Clave parcial derivada: '{intended_partial_key}', descriptor para leyenda: '{descriptor_for_legend}'")
+                        logger.debug(f"Clave parcial derivada: '{intended_partial_key}', sub-valor para leyenda: '{descriptor_for_legend}'")
                         break # Encontrada la parte relevante para la VI primaria
                     else:
                         logger.debug(f"Parte '{part_candidate}' no comienza con prefijo '{prefix_to_check}'.")
@@ -1577,7 +1577,7 @@ class AnalysisService:
                 if intended_partial_key and descriptor_for_legend is not None:
                     actual_group_keys_for_legend.append(descriptor_for_legend)
                 else:
-                    logger.error(f"CRÍTICO: No se pudo determinar la clave parcial o el descriptor para el grupo seleccionado '{selected_full_key_from_config}' usando VI primaria '{primary_vi_name_for_main_effect}'. "
+                    logger.error(f"CRÍTICO: No se pudo determinar la clave parcial o el sub-valor para el grupo seleccionado '{selected_full_key_from_config}' usando VI primaria '{primary_vi_name_for_main_effect}'. "
                                  f"Este grupo podría omitirse o causar errores de 'datos no encontrados'.")
                     actual_group_keys_for_legend.append(selected_full_key_from_config) # Fallback para leyenda
                     data_by_group.append([]) # Añadir lista vacía para este grupo problemático
@@ -1673,7 +1673,7 @@ class AnalysisService:
             title += f" ({fixed_vi}: {fixed_desc_display})"
             # actual_group_keys_for_legend son las claves completas, ej: "VI2=DescX;VI_Fija=ValorFijo"
             # Necesitamos extraer la parte variable para la leyenda
-            fixed_desc_original = fixed_desc_display.split(" (")[0] # Obtener valor original del descriptor fijo
+            fixed_desc_original = fixed_desc_display.split(" (")[0] # Obtener valor original del sub-valor fijo
             fixed_pair_str_to_remove = f"{fixed_vi}={fixed_desc_original}"
 
             for i, full_key in enumerate(actual_group_keys_for_legend):

@@ -83,7 +83,7 @@ class AnalysisDialog(Toplevel):
         # Crear selectores para cada parámetro
         self.patient_selector = self._create_parameter_selector(params_frame, "Pacientes", self.available_params.get('patients', set()))
         self.frequency_selector = self._create_parameter_selector(params_frame, "Tipos de Datos", self.available_params.get('frequencies', set()), use_alias=False)
-        # Reemplazar selectores de tipo/periodo por descriptor, indicando usar alias
+        # Reemplazar selectores de tipo/periodo por sub-valor, indicando usar alias
         self.descriptor_selector = self._create_parameter_selector(params_frame, "Sub-valores", self.available_params.get('descriptors', set()), use_alias=True)
         self.calculation_selector = self._create_parameter_selector(params_frame, "Cálculos", self.available_params.get('calculations', set()), use_alias=False)
 
@@ -259,7 +259,7 @@ class AnalysisDialog(Toplevel):
         selected_display_descriptors = self.descriptor_selector['selected'].get(0, tk.END)
         original_descriptors = []
         for display_name in selected_display_descriptors:
-            # Extraer el descriptor original (ej: "CMJ" de "Salto Contra Movimiento (CMJ)")
+            # Extraer el sub-valor original (ej: "CMJ" de "Salto Contra Movimiento (CMJ)")
             # o usar el display_name si no hay paréntesis
             if '(' in display_name and display_name.endswith(')'):
                 original = display_name.split('(')[-1][:-1]

@@ -187,7 +187,7 @@ class StudyDialog(Toplevel):
         # Permitir editar nombre VI en modo edición
         # vi_name_entry.config(state='readonly' if self.is_editing else 'normal')
 
-        # Botón para añadir descriptor a ESTA VI
+        # Botón para añadir sub-valor a ESTA VI
         add_desc_button = ttk.Button(vi_header_frame, text="+", width=3,
                                      command=lambda v=vi_name_var: self.add_descriptor_ui(v))
         add_desc_button.pack(side=tk.LEFT, padx=(0, 5))
@@ -282,7 +282,7 @@ class StudyDialog(Toplevel):
             logger.warning("Intento de eliminar una VI que no está en la lista UI.")
 
     def add_descriptor_ui(self, vi_name_var, value=""):
-        """Añade una fila para un descriptor dentro de una VI específica."""
+        """Añade una fila para un sub-valor dentro de una VI específica."""
         if self.is_editing: return # No permitir añadir en modo edición
 
         # Encontrar la VI correspondiente en la UI
@@ -293,7 +293,7 @@ class StudyDialog(Toplevel):
                 break
 
         if not target_vi_data:
-            logger.error(f"No se encontró la VI UI para añadir descriptor (Nombre Var: {vi_name_var.get()})")
+            logger.error(f"No se encontró la VI UI para añadir sub-valor (Nombre Var: {vi_name_var.get()})")
             return
 
         container = target_vi_data['descriptors_container']
@@ -306,7 +306,7 @@ class StudyDialog(Toplevel):
         if self.is_editing:
             desc_entry.config(state='readonly')
 
-        # Botón para eliminar este descriptor
+        # Botón para eliminar este sub-valor
         remove_desc_button = ttk.Button(desc_frame, text="🗑️", width=3,
                                         command=lambda f=desc_frame, v=desc_var, vi_v=vi_name_var: self.remove_descriptor_ui(f, v, vi_v))
         remove_desc_button.pack(side=tk.LEFT, padx=(0, 5))
@@ -317,7 +317,7 @@ class StudyDialog(Toplevel):
         target_vi_data['desc_frames'].append(desc_frame)
 
     def remove_descriptor_ui(self, frame_to_remove, desc_var_to_remove, vi_name_var):
-        """Elimina una fila de descriptor de una VI específica."""
+        """Elimina una fila de sub-valor de una VI específica."""
         if self.is_editing: return # No permitir eliminar en modo edición
 
         # Encontrar la VI
@@ -328,17 +328,17 @@ class StudyDialog(Toplevel):
                 break
 
         if not target_vi_data:
-            logger.error(f"No se encontró la VI UI para eliminar descriptor (Nombre Var VI: {vi_name_var.get()})")
+            logger.error(f"No se encontró la VI UI para eliminar sub-valor (Nombre Var VI: {vi_name_var.get()})")
             return
 
-        # Encontrar el descriptor dentro de la VI
+        # Encontrar el sub-valor dentro de la VI
         try:
             index = target_vi_data['descriptor_vars'].index(desc_var_to_remove)
             target_vi_data['descriptor_vars'].pop(index)
             target_vi_data['desc_frames'].pop(index)
             frame_to_remove.destroy()
         except ValueError:
-            logger.warning("Intento de eliminar un descriptor que no está en la lista de la VI.")
+            logger.warning("Intento de eliminar un sub-valor que no está en la lista de la VI.")
 
     def _on_allows_combination_changed(self, allows_combination_var, is_mandatory_cb_widget):
         """
