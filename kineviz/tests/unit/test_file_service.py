@@ -90,7 +90,7 @@ class TestFileService(unittest.TestCase):
         p2_path = self.study_path_1 / "P02"
         p1_cin_path = p1_path / "Cinematica"
         p1_og_path = p1_path / "OG"
-        p2_cin_path = p2_path / "Cinetica" # Frecuencia diferente para P02
+        p2_cin_path = p2_path / "Cinetica" # Tipo de Datos diferente para P02
 
         for p in [p1_cin_path, p1_og_path, p2_cin_path]:
             p.mkdir(parents=True, exist_ok=True)

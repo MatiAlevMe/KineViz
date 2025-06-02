@@ -24,9 +24,9 @@ Esta vista te permite gestionar los archivos y análisis de un estudio específi
     * `Paciente`: Identificador del paciente extraído del nombre del archivo.
     * `Nombre Archivo`: Nombre completo del archivo.
     * `Tipo`: "Procesado" (generado por Kineviz) u "Original" (copia del archivo fuente).
-    * `Frecuencia`: Tipo de datos procesados (Cinematica, Cinetica, etc.) o "N/A" para originales.
+    * `Tipo de Dato`: Tipo de datos procesados (Cinematica, Cinetica, etc.) o "N/A" para originales.
 * **Búsqueda:** Escribe parte del nombre del archivo o paciente y presiona Enter para filtrar la lista.
-* **Filtros (Tipo, Frecuencia):** Selecciona valores en los menús desplegables para filtrar la lista. Haz clic en "Limpiar Filtros" para volver a ver todos.
+* **Filtros (Tipo, Tipo de Dato):** Selecciona valores en los menús desplegables para filtrar la lista. Haz clic en "Limpiar Filtros" para volver a ver todos.
 * **Paginación:** Usa los botones `<<`, `<`, `>` `>>` o introduce un número de página para navegar si hay muchos archivos.
 * **Acciones (al seleccionar un archivo):**
     * **Ver Archivo:** Abre el archivo seleccionado con el programa predeterminado de tu sistema.
@@ -34,7 +34,7 @@ Esta vista te permite gestionar los archivos y análisis de un estudio específi
 
 **Formato de Nombres de Archivo (Recordatorio):**
 
-* `PteXX [Desc_VI1] [Desc_VI2] ... NN_Frecuencia.ext`
+* `PteXX [Desc_VI1] [Desc_VI2] ... NN_TipoDeDato.ext`
 * Usa `Nulo` si un descriptor no aplica.
 * Debe haber al menos un descriptor no-`Nulo`.
 * El orden de los descriptores debe coincidir con el orden de las VIs definidas.Guía Rápida: Vista del Estudio
@@ -66,9 +66,9 @@ Esta vista te permite gestionar los archivos y análisis de un estudio específi
     * `Paciente`: Identificador del paciente extraído del nombre del archivo.
     * `Nombre Archivo`: Nombre completo del archivo.
     * `Tipo`: "Procesado" (generado por Kineviz) u "Original" (copia del archivo fuente).
-    * `Frecuencia`: Tipo de datos procesados (Cinematica, Cinetica, etc.) o "N/A" para originales.
+    * `TipoDeDato`: Tipo de datos procesados (Cinematica, Cinetica, etc.) o "N/A" para originales.
 * **Búsqueda:** Escribe parte del nombre del archivo o paciente y presiona Enter para filtrar.
-* **Filtros (Tipo, Frecuencia):** Selecciona valores en los menús desplegables para filtrar. Haz clic en "Limpiar Filtros" para volver a ver todos.
+* **Filtros (Tipo, Tipo de Dato):** Selecciona valores en los menús desplegables para filtrar. Haz clic en "Limpiar Filtros" para volver a ver todos.
 * **Paginación:** Usa los botones `<<`, `<`, `>` `>>` o introduce un número de página para navegar.
 * **Acciones (al seleccionar un archivo):**
     * **Ver Archivo:** Abre el archivo con el programa predeterminado de tu sistema.
@@ -76,7 +76,7 @@ Esta vista te permite gestionar los archivos y análisis de un estudio específi
 
 **Formato de Nombres de Archivo (Recordatorio Importante):**
 
-* `PteXX [Desc_VI1] [Desc_VI2] ... NN_Frecuencia.ext`
+* `PteXX [Desc_VI1] [Desc_VI2] ... NN_TipoDeDato.ext`
 * Usa `Nulo` si un descriptor no aplica para una VI en ese archivo.
 * Debe haber **al menos un** descriptor que **no** sea `Nulo`.
 * El **orden** de los descriptores debe coincidir con el orden de las VIs definidas en el estudio.

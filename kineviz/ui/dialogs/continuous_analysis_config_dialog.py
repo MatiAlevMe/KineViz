@@ -65,11 +65,11 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         main_frame = ttk.Frame(self, padding="10")
         main_frame.pack(expand=True, fill=tk.BOTH)
 
-        # --- Sección de Selección de Frecuencia ---
-        freq_frame = ttk.LabelFrame(main_frame, text="1. Seleccionar Frecuencia de Datos")
+        # --- Sección de Selección de Tipo de Datos ---
+        freq_frame = ttk.LabelFrame(main_frame, text="1. Seleccionar Tipo de Datos")
         freq_frame.pack(fill=tk.X, padx=5, pady=(0, 10))
 
-        ttk.Label(freq_frame, text="Frecuencia:").grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
+        ttk.Label(freq_frame, text="Tipo de Dato:").grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
         self.frequency_combobox = ttk.Combobox(
             freq_frame,
             textvariable=self.selected_frequency,
@@ -162,7 +162,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.variable_combobox['values'] = [] # Limpiar lista de variables
 
         if selected_freq:
-            logger.debug(f"Frecuencia seleccionada: {selected_freq}. Cargando variables...")
+            logger.debug(f"Tipo de Dato seleccionada: {selected_freq}. Cargando variables...")
             self.load_variables_for_frequency(selected_freq)
         else:
             self.variable_combobox.config(state="disabled") # Deshabilitar si no hay frecuencia

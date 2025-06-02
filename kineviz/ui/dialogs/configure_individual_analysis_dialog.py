@@ -63,8 +63,8 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
 
         row_idx = 0
 
-        # --- Selección de Frecuencia y Cálculo (Sin cambios iniciales) ---
-        ttk.Label(main_frame, text="Frecuencia:").grid(row=row_idx, column=0, sticky="w", padx=5, pady=5)
+        # --- Selección de Tipo de Dato y Cálculo (Sin cambios iniciales) ---
+        ttk.Label(main_frame, text="Tipo de Dato:").grid(row=row_idx, column=0, sticky="w", padx=5, pady=5)
         self.freq_combo = ttk.Combobox(main_frame, textvariable=self.frequency_var, state="readonly", postcommand=self.load_frequencies)
         self.freq_combo.grid(row=row_idx, column=1, sticky="ew", padx=5, pady=5)
         # Bind se hará después o se llamará manualmente
@@ -348,13 +348,13 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
                         self.available_frequencies.append(item.name)
                 self.available_frequencies.sort()
                 self.freq_combo['values'] = self.available_frequencies
-                logger.debug(f"Frecuencias encontradas en tablas resumen: {self.available_frequencies}")
+                logger.debug(f"Tipos de Datos encontradas en tablas resumen: {self.available_frequencies}")
             else:
                  logger.warning(f"Directorio de tablas resumen no encontrado o no existe: {tables_path}")
                  messagebox.showwarning("Sin Tablas", "No se encontraron tablas resumen generadas. Genérelas desde la vista 'Análisis Discreto'.", parent=self)
 
             if not self.available_frequencies:
-                messagebox.showwarning("Sin Frecuencias", "No hay frecuencias disponibles en las tablas resumen para análisis.", parent=self)
+                messagebox.showwarning("Sin Tipos de Datos", "No hay frecuencias disponibles en las tablas resumen para análisis.", parent=self)
 
         except Exception as e:
             logger.error(f"Error cargando frecuencias desde tablas resumen para estudio {self.study_id}: {e}", exc_info=True)
@@ -616,7 +616,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
 
         if not selected_freq or not selected_calc:
             messagebox.showerror("Error de Validación",
-                                   "Seleccione Frecuencia y Cálculo.",
+                                   "Seleccione Tipo de Dato y Cálculo.",
                                    parent=self)
             return
         if len(selected_group_keys) < 2:
@@ -664,7 +664,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
 
         if not selected_freq or not selected_calc:
             messagebox.showerror("Error de Validación",
-                                   "Seleccione Frecuencia y Cálculo.",
+                                   "Seleccione Tipo de Dato y Cálculo.",
                                    parent=self)
             return
         if len(selected_group_keys) < 2:

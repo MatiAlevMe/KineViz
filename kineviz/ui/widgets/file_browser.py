@@ -45,8 +45,8 @@ class FileBrowser(ttk.Frame):
         type_menu = ttk.OptionMenu(filter_frame, self.filter_type_var, type_options[0], *type_options)
         type_menu.pack(side=tk.LEFT, padx=5)
 
-        # Filtro Frecuencia
-        ttk.Label(filter_frame, text="Frecuencia:").pack(side=tk.LEFT, padx=(10, 5))
+        # Filtro Tipo de Dato
+        ttk.Label(filter_frame, text="Tipo de Dato:").pack(side=tk.LEFT, padx=(10, 5))
         freq_options = ["Todos", "Cinematica", "Cinetica", "Electromiografica", "N/A"]
         freq_menu = ttk.OptionMenu(filter_frame, self.filter_freq_var, freq_options[0], *freq_options)
         freq_menu.pack(side=tk.LEFT, padx=5)
@@ -61,7 +61,7 @@ class FileBrowser(ttk.Frame):
         table_container.pack(fill=tk.BOTH, expand=True)
 
         # Crear tabla de archivos
-        columns = ('Paciente', 'Nombre', 'Tipo', 'Frecuencia', 'Ver', 'Eliminar')
+        columns = ('Paciente', 'Nombre', 'Tipo', 'Tipo de Dato', 'Ver', 'Eliminar')
         self.tree = ttk.Treeview(table_container, columns=columns, show='headings')
 
         for col in columns:
