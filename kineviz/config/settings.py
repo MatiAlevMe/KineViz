@@ -131,7 +131,7 @@ class AppSettings:
             self.config['SETTINGS'] = {}
         self.config['SETTINGS'][key] = str(value) # Guardar como string
 
-    # --- Métodos para gestión de alias de descriptores (ELIMINADOS) ---
+    # --- Métodos para gestión de alias de sub-valores (ELIMINADOS) ---
     # Los alias ahora se gestionan por estudio a través de StudyService.
 
     # --- Métodos específicos para configuraciones conocidas ---

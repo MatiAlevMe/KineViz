@@ -142,7 +142,7 @@ class AnalysisDialog(Toplevel):
             logger.error(f"No se pudieron cargar los parámetros de análisis para estudio {self.study_id}: {e}", exc_info=True)
             messagebox.showerror("Error", f"No se pudieron cargar los parámetros de análisis: {e}", parent=self)
             self.available_params = {} # Asegurar que sea un diccionario vacío
-        # Cargar mapa de alias para descriptores
+        # Cargar mapa de alias para sub-valores
         self.descriptor_alias_map = {
             desc: self.app_settings.get_descriptor_alias(desc)
             for desc in self.available_params.get('descriptors', set())
@@ -151,7 +151,7 @@ class AnalysisDialog(Toplevel):
     def _create_parameter_selector(self, parent, title: str, available_items: set, use_alias: bool = False):
         """
         Crea un conjunto de widgets para seleccionar un parámetro.
-        Si use_alias es True, muestra 'Alias (Descriptor)' o 'Descriptor'.
+        Si use_alias es True, muestra 'Alias (Sub-valor)' o 'Sub-valor'.
         """
         container = ttk.LabelFrame(parent, text=title)
         container.pack(side=tk.TOP, fill=tk.X, padx=5, pady=5) # Usar TOP para apilar verticalmente
@@ -174,7 +174,7 @@ class AnalysisDialog(Toplevel):
         display_map = {} # Mapa local para display_name -> original_item
         for item in sorted(list(available_items)):
             display_name = item
-            if use_alias and title == "Sub-valores": # Solo aplicar alias a descriptores
+            if use_alias and title == "Sub-valores": # Solo aplicar alias a sub-valores
                 alias = self.descriptor_alias_map.get(item)
                 if alias:
                     display_name = f"{alias} ({item})"
@@ -199,7 +199,7 @@ class AnalysisDialog(Toplevel):
         selected_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         selected_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-        # Devolver las listas y el mapa de display para descriptores
+        # Devolver las listas y el mapa de display para sub-valores
         return {'available': available_listbox, 'selected': selected_listbox, 'display_map': display_map if use_alias else None}
 
     def _move_items(self, source_listbox: Listbox, dest_listbox: Listbox):
@@ -254,7 +254,7 @@ class AnalysisDialog(Toplevel):
     def _get_selected_parameters(self) -> dict:
         """
         Recolecta los parámetros seleccionados de las listas.
-        Para descriptores, extrae el valor original del display name.
+        Para sub-valores, extrae el valor original del display name.
         """
         selected_display_descriptors = self.descriptor_selector['selected'].get(0, tk.END)
         original_descriptors = []
@@ -270,7 +270,7 @@ class AnalysisDialog(Toplevel):
         return {
             'patients': list(self.patient_selector['selected'].get(0, tk.END)),
             'frequencies': list(self.frequency_selector['selected'].get(0, tk.END)),
-            'descriptors': original_descriptors, # Usar lista de descriptores originales
+            'descriptors': original_descriptors, # Usar lista de sub-valores originales
             'calculations': list(self.calculation_selector['selected'].get(0, tk.END)),
         }
 

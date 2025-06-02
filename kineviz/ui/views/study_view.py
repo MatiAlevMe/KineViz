@@ -91,7 +91,7 @@ class StudyView:
             info_button.pack(side=tk.LEFT, padx=(5, 0))
         # --- Fin VIs ---
 
-        # Mostrar Alias asignados a descriptores definidos
+        # Mostrar Alias asignados a sub-valores definidos
         self.alias_label = ttk.Label(details_frame, text="Alias Asignados: Cargando...", wraplength=500) # Usar wraplength
         self.alias_label.pack(anchor='w', padx=5, pady=2)
         # No llamar aquí, se llama después de obtener detalles
@@ -107,7 +107,7 @@ class StudyView:
         self.update_alias_display()
 
     def update_alias_display(self):
-        """Obtiene y muestra los alias asignados a los descriptores definidos."""
+        """Obtiene y muestra los alias asignados a los sub-valores definidos."""
         logger.debug(f"Actualizando display de alias para estudio {self.study_id}")
         try:
             # Obtener detalles del estudio (incluye VIs y alias)
@@ -116,7 +116,7 @@ class StudyView:
             study_aliases = study_details.get('aliases', {}) # Alias específicos del estudio
             logger.debug(f"Aliases cargados para estudio {self.study_id}: {study_aliases}")
 
-            # Extraer todos los descriptores definidos
+            # Extraer todos los sub-valores definidos
             defined_descriptors = set()
             for iv in independent_variables:
                 if isinstance(iv, dict) and 'descriptors' in iv and isinstance(iv['descriptors'], list):
@@ -125,11 +125,11 @@ class StudyView:
                             defined_descriptors.add(desc.strip())
 
             if not defined_descriptors:
-                self.alias_label.config(text="Alias Asignados: No hay descriptores definidos en este estudio.")
-                logger.debug("Display de alias actualizado: Sin descriptores definidos.")
+                self.alias_label.config(text="Alias Asignados: No hay sub-valores definidos en este estudio.")
+                logger.debug("Display de alias actualizado: Sin sub-valores definidos.")
                 return
 
-            # Construir string de alias para descriptores definidos
+            # Construir string de alias para sub-valores definidos
             alias_parts = []
             # Ordenar para consistencia
             for desc in sorted(list(defined_descriptors)):
@@ -149,7 +149,7 @@ class StudyView:
 
 
     def manage_descriptor_aliases(self):
-        """Abre el diálogo para gestionar los alias de los descriptores."""
+        """Abre el diálogo para gestionar los alias de los sub-valores."""
         # Pasar StudyService y study_id
         dialog = DescriptorAliasDialog(
             self.frame, # Padre
@@ -161,7 +161,7 @@ class StudyView:
         self.update_alias_display() # Actualizar la información mostrada
 
     def show_vi_descriptor_info(self):
-        """Muestra un popup con los descriptores y alias de cada VI."""
+        """Muestra un popup con los sub-valores y alias de cada VI."""
         try:
             study_details = self.main_window.study_service.get_study_details(self.study_id)
             independent_variables = study_details.get('independent_variables', [])
@@ -185,9 +185,9 @@ class StudyView:
                         display = f"{desc} ({alias})" if alias else desc
                         info_text += f"    - {display}\n"
                 else:
-                    info_text += "    (Sin descriptores definidos)\n"
+                    info_text += "    (Sin sub-valores definidos)\n"
                 
-                # Añadir manejo de descriptores
+                # Añadir manejo de sub-valores
                 if allows_combination:
                     if is_mandatory:
                         info_text += "    Manejo Sub-valores: Múltiple y Obligatorio\n"
