@@ -35,7 +35,8 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
 
         # --- Variables de Tkinter ---
         self.selected_frequency = tk.StringVar()
-        # Añadir más StringVars para otras selecciones (variable, grupos, etc.)
+        self.selected_variable = tk.StringVar()
+        # Añadir más StringVars para otras selecciones (grupos, etc.)
 
         self.create_widgets()
         self.load_frequencies() # Cargar frecuencias después de crear widgets
@@ -76,10 +77,24 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
             width=25 # Ajustar ancho según sea necesario
         )
         self.frequency_combobox.grid(row=0, column=1, padx=5, pady=5, sticky=tk.EW)
-        # self.frequency_combobox.bind("<<ComboboxSelected>>", self.on_frequency_selected) # Para cargar variables después
+        self.frequency_combobox.bind("<<ComboboxSelected>>", self.on_frequency_selected)
 
-        # Placeholder para futuras secciones (Variable, Grupos)
-        ttk.Label(main_frame, text="Más opciones de configuración (Variable, Grupos) - En desarrollo").pack(pady=10)
+        # --- Sección de Selección de Variable ---
+        var_frame = ttk.LabelFrame(main_frame, text="2. Seleccionar Variable a Analizar")
+        var_frame.pack(fill=tk.X, padx=5, pady=(0, 10))
+
+        ttk.Label(var_frame, text="Variable:").grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
+        self.variable_combobox = ttk.Combobox(
+            var_frame,
+            textvariable=self.selected_variable,
+            state="disabled", # Inicialmente deshabilitado
+            width=35 # Ajustar ancho
+        )
+        self.variable_combobox.grid(row=0, column=1, padx=5, pady=5, sticky=tk.EW)
+        # Opcional: self.variable_combobox.bind("<<ComboboxSelected>>", self.on_variable_selected)
+
+        # Placeholder para futuras secciones (Grupos)
+        ttk.Label(main_frame, text="Más opciones de configuración (Grupos de Descriptores) - En desarrollo").pack(pady=10)
 
 
         # --- Botones de Acción ---
@@ -92,15 +107,21 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
     def _on_accept(self):
         """Acción al presionar Aceptar."""
         selected_freq = self.selected_frequency.get()
+        selected_var = self.selected_variable.get()
+        from tkinter import messagebox # Mover import aquí
+
         if not selected_freq:
-            # Usar messagebox de tkinter
-            from tkinter import messagebox
             messagebox.showwarning("Advertencia", "Debe seleccionar una frecuencia.", parent=self)
+            return
+        
+        if not selected_var: # Validar que se haya seleccionado una variable
+            messagebox.showwarning("Advertencia", "Debe seleccionar una variable a analizar.", parent=self)
             return
 
         # Aquí se recolectaría la configuración completa
         self.result = {
-            "frequency": selected_freq
+            "frequency": selected_freq,
+            "variable": selected_var
             # Añadir más parámetros a medida que se implementen
         }
         logger.info(f"Configuración de análisis continuo guardada: {self.result} para estudio {self.study_id}.")
@@ -112,33 +133,69 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
             frequencies = self.analysis_service.get_available_frequencies_for_study(self.study_id)
             if frequencies:
                 self.frequency_combobox['values'] = frequencies
-                # Opcional: seleccionar la primera por defecto
-                # self.selected_frequency.set(frequencies[0])
-                # self.on_frequency_selected() # Cargar variables si se selecciona una por defecto
-            else:
+                if len(frequencies) == 1: # Si solo hay una, seleccionarla
+                    self.selected_frequency.set(frequencies[0])
+                    self.on_frequency_selected() # Cargar variables automáticamente
+                # Opcional: seleccionar la primera por defecto si hay varias y no se autoseleccionó una única
+                # elif frequencies:
+                #    self.selected_frequency.set(frequencies[0]) # Podrías comentar esto si no quieres preselección
+                #    self.on_frequency_selected()
+            else: # No hay frecuencias disponibles
                 self.frequency_combobox['values'] = []
                 self.selected_frequency.set("")
-                # Considerar deshabilitar el combobox o mostrar mensaje
-                # self.frequency_combobox.config(state="disabled")
-                # (Manejar caso donde no hay frecuencias)
+                self.variable_combobox['values'] = [] # Limpiar variables
+                self.selected_variable.set("")
+                self.variable_combobox.config(state="disabled") # Deshabilitar variables
         except Exception as e:
             logger.error(f"Error cargando frecuencias para estudio {self.study_id}: {e}", exc_info=True)
             self.frequency_combobox['values'] = []
             self.selected_frequency.set("")
+            self.variable_combobox['values'] = []
+            self.selected_variable.set("")
+            self.variable_combobox.config(state="disabled")
             # Mostrar error al usuario si es necesario
 
-    # def on_frequency_selected(self, event=None):
-    #     """Llamado cuando se selecciona una frecuencia. Carga las variables/columnas."""
-    #     selected_freq = self.selected_frequency.get()
-    #     if selected_freq:
-    #         logger.debug(f"Frecuencia seleccionada: {selected_freq}. Cargando variables...")
-    #         # Aquí se llamaría a cargar las variables/columnas para esta frecuencia
-    #         # self.load_variables_for_frequency(selected_freq)
-    #     else:
-    #         # Limpiar combobox de variables si no hay frecuencia
-    #         # self.variable_combobox['values'] = []
-    #         # self.selected_variable.set("")
-    #         pass
+    def on_frequency_selected(self, event=None):
+        """Llamado cuando se selecciona una frecuencia. Carga las variables/columnas."""
+        selected_freq = self.selected_frequency.get()
+        self.selected_variable.set("") # Limpiar selección de variable anterior
+        self.variable_combobox['values'] = [] # Limpiar lista de variables
+
+        if selected_freq:
+            logger.debug(f"Frecuencia seleccionada: {selected_freq}. Cargando variables...")
+            self.load_variables_for_frequency(selected_freq)
+        else:
+            self.variable_combobox.config(state="disabled") # Deshabilitar si no hay frecuencia
+
+    def load_variables_for_frequency(self, frequency: str):
+        """Carga las variables/columnas disponibles para la frecuencia seleccionada."""
+        try:
+            variables = self.analysis_service.get_data_columns_for_frequency(self.study_id, frequency)
+            if variables:
+                self.variable_combobox['values'] = variables
+                self.variable_combobox.config(state="readonly")
+                # Opcional: seleccionar la primera variable por defecto
+                # if variables: # Podrías comentar esto si no quieres preselección
+                #    self.selected_variable.set(variables[0])
+            else: # No hay variables para la frecuencia seleccionada
+                self.variable_combobox.config(state="disabled")
+                logger.warning(f"No se encontraron variables para la frecuencia '{frequency}' en estudio {self.study_id}.")
+        except Exception as e:
+            logger.error(f"Error cargando variables para frecuencia {frequency}, estudio {self.study_id}: {e}", exc_info=True)
+            self.variable_combobox['values'] = []
+            self.selected_variable.set("")
+            self.variable_combobox.config(state="disabled")
+            # Mostrar error al usuario si es necesario
+
+    # def on_variable_selected(self, event=None):
+    # """Llamado cuando se selecciona una variable. Podría usarse para cargar algo más."""
+    # selected_var = self.selected_variable.get()
+    # if selected_var:
+    # logger.debug(f"Variable seleccionada: {selected_var}")
+    # # Aquí se podría cargar la siguiente sección, por ejemplo, grupos de descriptores
+    # else:
+    # # Limpiar la siguiente sección si la variable se deselecciona
+    # pass
 
 
     def _on_cancel(self, event=None):

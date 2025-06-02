@@ -20,7 +20,7 @@ La aplicación sigue una estructura modular para separar responsabilidades:
 *   **`core.services`**: Orquesta las operaciones y la lógica de negocio.
     *   `StudyService`: Gestiona las operaciones CRUD (Crear, Leer, Actualizar, Eliminar) para los estudios. Maneja los metadatos del estudio, la definición de Variables Independientes (VIs), y los alias de los descriptores.
     *   `FileService`: Administra las operaciones de archivos dentro de los estudios, incluyendo la adición, eliminación, listado y procesamiento de archivos crudos. También extrae parámetros únicos (como frecuencias y descriptores) de los archivos procesados.
-    *   `AnalysisService`: Contiene la lógica para todos los tipos de análisis (discreto, individual, continuo). Esto incluye la agregación de datos, cálculos estadísticos (utilizando `scipy.stats` y `spm1d`), generación de reportes en PDF (con `reportlab`) y gráficos (con `matplotlib`, `seaborn`, `plotly`).
+    *   `AnalysisService`: Contiene la lógica para todos los tipos de análisis (discreto, individual, continuo). Esto incluye la agregación de datos, cálculos estadísticos (utilizando `scipy.stats` y `spm1d`), generación de reportes en PDF (con `reportlab`) y gráficos (con `matplotlib`, `seaborn`, `plotly`). Implementa métodos como `get_available_frequencies_for_study` y `get_data_columns_for_frequency` para poblar selectores en diálogos de configuración de análisis.
 *   **`core.data_processing`**: Módulos encargados del procesamiento y manejo de datos.
     *   `file_handlers`: Responsable de leer e interpretar archivos de datos crudos (ej. `.txt`), extraer metadatos, identificar el tipo de frecuencia (Cinemática, Cinética, EMG) y realizar el procesamiento inicial para generar archivos estandarizados.
     *   `processors`: Contiene funciones de utilidad para la transformación de datos, cálculos estadísticos básicos (máximo, mínimo, rango) sobre DataFrames de pandas, y formateo de valores.
@@ -41,7 +41,7 @@ La aplicación sigue una estructura modular para separar responsabilidades:
     *   `DescriptorAliasDialog`: Facilita la gestión (creación, edición, eliminación) de alias para los descriptores de las VIs de un estudio.
     *   `ConfigureIndividualAnalysisDialog`: Diálogo para configurar los parámetros de un análisis discreto individual (selección de frecuencia, cálculo, columna, grupos a comparar, y supuestos estadísticos).
     *   `IndividualAnalysisManagerDialog`: Permite listar, visualizar (gráficos estáticos e interactivos), eliminar y abrir la carpeta de resultados de los análisis individuales guardados.
-    *   `ContinuousAnalysisConfigDialog`: Diálogo para configurar los parámetros de un análisis continuo (SPM), como la frecuencia de datos, la variable a analizar y los grupos de descriptores a comparar.
+    *   `ContinuousAnalysisConfigDialog`: Diálogo para configurar los parámetros de un análisis continuo (SPM). Incluye selección de frecuencia de datos y la variable/columna específica a analizar. Futuramente incluirá selección de grupos de descriptores.
     *   `ConfigDialog`: Permite al usuario modificar configuraciones globales de la aplicación (ej. elementos por página) que se guardan en `config.ini`.
     *   `AnalysisDialog`: (Obsoleto/Comentado) Diálogo anterior para análisis, reemplazado por funcionalidades más específicas.
 *   **`ui.widgets`**: Componentes de UI reutilizables.
@@ -101,8 +101,9 @@ La aplicación sigue una estructura modular para separar responsabilidades:
     2.  `MainWindow` llama a `show_continuous_analysis_config_dialog()`.
     3.  Se abre `ContinuousAnalysisConfigDialog`.
     4.  El diálogo llama a `AnalysisService.get_available_frequencies_for_study()` para poblar el combobox de frecuencias.
-    5.  El usuario selecciona una frecuencia (y futuramente, otras opciones como variable y grupos).
-    6.  Al "Aceptar", el diálogo almacena la selección y se cierra. (La lógica de ejecución del análisis SPM es futura).
+    5.  Al seleccionar una frecuencia, el diálogo llama a `AnalysisService.get_data_columns_for_frequency()` para poblar el combobox de variables.
+    6.  El usuario selecciona una frecuencia y una variable (y futuramente, otras opciones como grupos).
+    7.  Al "Aceptar", el diálogo almacena las selecciones y se cierra. (La lógica de ejecución del análisis SPM es futura).
 
 ## 5. Patrones de Diseño y Convenciones Importantes
 *   **Capa de Servicios (Service Layer)**: Centraliza la lógica de negocio y la orquestación de operaciones, desacoplando la UI de la lógica de datos directa.
