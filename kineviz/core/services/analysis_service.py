@@ -69,61 +69,69 @@ class AnalysisService:
 
         :param study_id: ID del estudio.
         :return: Diccionario con sets de parámetros disponibles
-                 {'patients': set(), 'frequencies': set(), 'descriptors_by_vi': dict, 'calculations': set()}
+                 {'patients': set(), 'data_types': set(), 'sub_values_by_vi': dict, 'calculations': set()}
                  Retorna sets vacíos si no se encuentran parámetros o hay error.
         """
         try:
-            # Obtener parámetros únicos del FileService (ahora devuelve 'descriptors_by_vi')
+            # Obtener parámetros únicos del FileService (ahora devuelve 'sub_values_by_vi')
             params = self.file_service.get_unique_study_parameters(study_id)
             # Añadir cálculos fijos
             params['calculations'] = {'Maximo', 'Minimo', 'Rango'}
-            # Asegurar que 'descriptors_by_vi' exista aunque esté vacío
-            if 'descriptors_by_vi' not in params:
-                params['descriptors_by_vi'] = {}
+            # Asegurar que 'sub_values_by_vi' exista aunque esté vacío
+            if 'sub_values_by_vi' not in params:
+                params['sub_values_by_vi'] = {}
+            # Renombrar 'frequencies' a 'data_types' si existe para consistencia interna de este método
+            if 'frequencies' in params:
+                params['data_types'] = params.pop('frequencies')
+            elif 'data_types' not in params: # Asegurar que exista
+                 params['data_types'] = set()
             return params
         except Exception as e:
             logger.error(f"Error obteniendo parámetros de análisis para estudio {study_id}: {e}", exc_info=True)
             # Devolver vacío en caso de error para que la UI no falle
-            return {'patients': set(), 'frequencies': set(),
-                    'descriptors': set(), 'calculations': set()}
+            return {'patients': set(), 'data_types': set(), # Asegurar data_types aquí también
+                    'sub_values_by_vi': dict(), 'calculations': set()}
 
     def get_available_frequencies_for_study(self, study_id: int) -> list[str]:
         """
-        Obtiene las frecuencias de datos disponibles (ej: Cinemática, Cinética)
-        para un estudio específico, basado en los archivos procesados.
+        Obtiene los tipos de dato disponibles. Para el análisis continuo,
+        actualmente solo se soporta y devuelve "Cinematica" si está presente.
 
         :param study_id: ID del estudio.
-        :return: Lista de nombres de frecuencias disponibles, ordenada.
-                 Retorna lista vacía si no hay frecuencias o hay error.
+        :return: Lista con ["Cinematica"] si datos cinemáticos existen, sino lista vacía.
         """
         try:
             params = self.file_service.get_unique_study_parameters(study_id)
-            available_frequencies = params.get('frequencies', set())
-            return sorted(list(available_frequencies))
+            # 'frequencies' es la clave que get_unique_study_parameters usa actualmente
+            available_data_types = params.get('frequencies', set())
+            if "Cinematica" in available_data_types:
+                return ["Cinematica"]
+            return []
         except Exception as e:
-            logger.error(f"Error obteniendo frecuencias disponibles para estudio {study_id}: {e}", exc_info=True)
+            logger.error(f"Error obteniendo tipos de dato disponibles para estudio {study_id}: {e}", exc_info=True)
             return []
 
     def get_data_columns_for_frequency(self, study_id: int, frequency: str) -> list[str]:
         """
-        Obtiene las columnas de datos (variables) disponibles para una frecuencia específica
-        de un estudio, utilizando _parse_processed_file_headers.
+        Obtiene las columnas de datos (variables) disponibles para un Tipo de Dato específico
+        de un estudio, en formato "Atributo/Columna/Unidad".
         Excluye columnas comunes no analizables como 'Frame', 'Sub Frame', 'Tiempo'.
+        El parámetro 'frequency' aquí se interpreta como 'Tipo de Dato'.
 
         :param study_id: ID del estudio.
         :param frequency: Tipo de Dato seleccionada (ej: "Cinematica").
-        :return: Lista ordenada de nombres de columnas de datos.
+        :return: Lista ordenada de nombres de columnas de datos formateadas.
                  Retorna lista vacía si no hay archivos, columnas o hay error.
         """
-        logger.debug(f"Obteniendo columnas de datos para estudio {study_id}, frecuencia '{frequency}'")
+        logger.debug(f"Obteniendo columnas de datos para estudio {study_id}, Tipo de Dato '{frequency}'")
         try:
             processed_files, _ = self.file_service.get_study_files(
                 study_id=study_id, page=1, per_page=1,
-                file_type='Processed', frequency=frequency
+                file_type='Processed', frequency=frequency # FileService espera 'frequency'
             )
 
             if not processed_files:
-                logger.warning(f"No se encontraron archivos procesados para frecuencia '{frequency}' en estudio {study_id}.")
+                logger.warning(f"No se encontraron archivos procesados para Tipo de Dato '{frequency}' en estudio {study_id}.")
                 return []
 
             sample_file_path = processed_files[0]['path']
@@ -135,24 +143,42 @@ class AnalysisService:
 
             headers = self._parse_processed_file_headers(sample_file_path)
             if not headers:
-                logger.warning(f"No se pudieron parsear las cabeceras de {sample_file_path.name}.")
+                logger.warning(f"No se pudieron parsear las cabeceras de {sample_file_path.name} para el Tipo de Dato '{frequency}'.")
                 return []
 
-            _, column_names, _ = headers # We need the 'columnas' part
+            atributos, columnas, unidades = headers
 
+            formatted_columns = []
             # Excluir columnas no deseadas (insensible a mayúsculas/minúsculas)
-            # Estas columnas ya vienen limpias de prefijos por _parse_processed_file_headers
             excluded_cols_lower = {"frame", "sub frame", "tiempo"}
-            data_columns = [
-                name for name in column_names
-                if name.lower() not in excluded_cols_lower and name.strip() # Asegurar que no esté vacío
-            ]
             
-            logger.info(f"Columnas de datos encontradas para {frequency} (después de filtro): {data_columns}")
-            return sorted(list(set(data_columns))) # Usar set para asegurar unicidad y luego ordenar
+            # Mantener un registro del último atributo válido para propagar en caso de celdas combinadas
+            last_valid_attribute = "N/A"
+
+            for i in range(len(columnas)): # Iterar sobre el número de columnas de datos reales
+                col_name_cleaned = columnas[i].strip()
+                col_name_lower = col_name_cleaned.lower()
+
+                if col_name_lower not in excluded_cols_lower and col_name_cleaned:
+                    # Determinar el atributo a usar
+                    current_attribute = atributos[i].strip()
+                    if current_attribute:
+                        last_valid_attribute = current_attribute
+                    # Si el atributo actual está vacío pero la columna no, usar el último válido
+                    elif col_name_cleaned: # Solo usar last_valid_attribute si hay un nombre de columna
+                        current_attribute = last_valid_attribute
+                    else: # Si tanto atributo como columna están vacíos, es raro, usar N/A
+                        current_attribute = "N/A"
+                        
+                    unit = unidades[i].strip() if unidades[i].strip() else "s.u." # sin unidad
+                    
+                    formatted_columns.append(f"{current_attribute}/{col_name_cleaned}/{unit}")
+            
+            logger.info(f"Columnas de datos formateadas encontradas para Tipo de Dato '{frequency}' (después de filtro): {formatted_columns}")
+            return sorted(list(set(formatted_columns))) # Usar set para asegurar unicidad y luego ordenar
 
         except Exception as e:
-            logger.error(f"Error obteniendo columnas de datos para estudio {study_id}, frecuencia '{frequency}': {e}", exc_info=True)
+            logger.error(f"Error obteniendo columnas de datos para estudio {study_id}, Tipo de Dato '{frequency}': {e}", exc_info=True)
             return []
 
     def _read_processed_file_data(self, file_path: Path) -> pd.DataFrame | None:
