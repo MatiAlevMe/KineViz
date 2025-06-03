@@ -23,7 +23,7 @@ La aplicación sigue una estructura modular para separar responsabilidades:
     *   `AnalysisService`: Contiene la lógica para todos los tipos de análisis (discreto, individual, continuo). Esto incluye la agregación de datos, cálculos estadísticos (utilizando `scipy.stats` y `spm1d`), generación de reportes en PDF (con `reportlab`) y gráficos (con `matplotlib`, `seaborn`, `plotly`). Implementa métodos como `get_available_frequencies_for_study` y `get_data_columns_for_frequency` para poblar selectores en diálogos de configuración de análisis.
 *   **`core.data_processing`**: Módulos encargados del procesamiento y manejo de datos.
     *   `file_handlers`: Responsable de leer e interpretar archivos de datos crudos (ej. `.txt`), extraer metadatos, identificar el tipo de frecuencia (Cinemática, Cinética, EMG) y realizar el procesamiento inicial para generar archivos estandarizados.
-    *   `processors`: Contiene funciones de utilidad para la transformación de datos, cálculos estadísticos básicos (máximo, mínimo, rango) sobre DataFrames de pandas, y formateo de valores.
+    *   `processors`: Contiene funciones de utilidad para la transformación de datos, cálculos estadísticos básicos (máximo, mínimo, rango) sobre DataFrames de pandas, formateo de valores, y normalización temporal de datos (ej. `normalize_temporal_data`).
     *   `directory_manager`: Gestiona la creación y la estructura de los directorios para los estudios y los pacientes dentro del sistema de archivos.
 *   **`core.exceptions`**: Define clases de excepciones personalizadas para un manejo de errores más específico dentro de la aplicación (ej. `FileNotFoundError`, `InvalidFileFormatError`).
 

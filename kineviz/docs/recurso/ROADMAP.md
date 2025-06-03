@@ -208,7 +208,7 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
         *   Mostrar filtros y opciones de ordenación para la lista de análisis.
         *   Proveer opciones para cada análisis: ver gráfico SPM, ver tabla de datos normalizados/resultados, abrir carpeta de resultados, eliminar análisis.
 *   **2. Implementación de Normalización de Datos Temporales:**
-    *   **2.1 Lógica de Normalización Temporal**: (Pendiente) Implementar una función (posiblemente en `processors.py` o un nuevo módulo) para normalizar la duración de las secuencias de datos a 101 puntos (0-100%).
+    *   **2.1 Lógica de Normalización Temporal**: (En Progreso) Implementar una función (posiblemente en `processors.py` o un nuevo módulo) para normalizar la duración de las secuencias de datos a 101 puntos (0-100%).
         *   Esto se aplicará a la variable seleccionada para cada archivo/sujeto/intento.
         *   Investigar y aplicar métodos de interpolación adecuados (ej: splines, interpolación lineal).
     *   **2.2 Procesamiento de Archivos para Normalización**: (Pendiente) En `AnalysisService`, crear lógica para:
