@@ -12,7 +12,7 @@ from typing import Optional # Importar Optional
 from .file_service import FileService
 from .study_service import StudyService
 from kineviz.ui.widgets import charting  # Importar nuestro módulo de gráficos
-# from kineviz.core.data_processing import file_handlers # No usado directamente aquí
+from kineviz.core.data_processing import processors # Importar processors
 # Importar el validador de nombres de archivo
 from kineviz.ui.utils.validators import validate_filename_for_study_criteria
 
@@ -758,6 +758,243 @@ class AnalysisService:
             logger.error(f"Error al eliminar el reporte {report_path}: {e}",
                          exc_info=True)
             raise
+
+    # --- Métodos para Análisis Continuo (Fase 5) ---
+
+    def _get_normalized_data_for_groups(self, study_id: int, config: dict) -> dict[str, list[np.ndarray]]:
+        """
+        Prepara los datos normalizados para el análisis continuo.
+
+        :param study_id: ID del estudio.
+        :param config: Diccionario de configuración del ContinuousAnalysisConfigDialog.
+                       Espera claves como 'column', 'groups', 'grouping_mode',
+                       'primary_vi_name', 'fixed_vi_name', 'fixed_descriptor_display'.
+        :return: Diccionario {group_key_from_config: [normalized_data_array1, ...], ...}
+                 Retorna diccionario vacío si hay errores o no hay datos.
+        :raises ValueError: Si la configuración es inválida o faltan datos cruciales.
+        """
+        logger.info(f"Iniciando preparación de datos normalizados para estudio {study_id}, config: {config}")
+        normalized_data_by_selected_group = {} # {config_group_key: [array1, array2]}
+
+        target_column_str = config.get('column')
+        if not target_column_str:
+            raise ValueError("No se especificó la columna para el análisis continuo.")
+
+        # Parsear la columna objetivo (formato Atributo/Columna/Unidad)
+        # Necesitamos el nombre exacto de la columna como está en el DataFrame leído por _read_processed_file_data
+        # _read_processed_file_data usa la línea 3 del archivo procesado (col_names_line.split(';'))
+        # y luego sanea estos nombres.
+        # La columna 'Tiempo' es añadida por file_handlers.leer_seccion y debería estar presente.
+        
+        # Para obtener el nombre de columna que _read_processed_file_data usará:
+        # 1. Leer un archivo de muestra para obtener los nombres de columna saneados.
+        # 2. Mapear el target_column_str (Attr/Col/Unit) al nombre de columna saneado.
+        # Esto es un poco complejo aquí. Por ahora, asumiremos que el nombre de la columna
+        # en el DataFrame es la parte 'Columna' del target_column_str.
+        # Y que 'Tiempo' es el nombre de la columna de tiempo.
+        try:
+            parsed_target_col_parts = target_column_str.split('/', 2)
+            data_col_name_in_df = parsed_target_col_parts[1] # Asumir que esta es la parte 'Columna'
+            time_col_name_in_df = "Tiempo" # Nombre estándar de la columna de tiempo
+        except IndexError:
+            raise ValueError(f"Formato de columna inválido: '{target_column_str}'. Debe ser Atributo/Columna/Unidad.")
+
+        logger.debug(f"Columna de datos objetivo en DataFrame: '{data_col_name_in_df}', Columna de tiempo: '{time_col_name_in_df}'")
+
+        # Obtener todos los archivos procesados de Cinemática y su mapeo a claves de grupo completas
+        # _identify_study_groups devuelve {file_base_key: full_group_key}
+        all_files_to_full_group_keys, all_unique_full_group_keys = self._identify_study_groups(study_id, "Cinematica")
+        
+        # Invertir el mapeo para buscar archivos por full_group_key
+        files_by_full_group_key = {}
+        for file_base, full_key in all_files_to_full_group_keys.items():
+            if full_key not in files_by_full_group_key:
+                files_by_full_group_key[full_key] = []
+            # Necesitamos la ruta completa del archivo procesado
+            # Esto requiere buscar el archivo procesado basado en file_base y frecuencia "Cinematica"
+            # FileService.get_study_files podría ayudar, o construir la ruta.
+            # Por ahora, asumimos que podemos reconstruir o encontrar la ruta.
+            # Esta parte es crucial y puede necesitar refinamiento.
+            # Vamos a buscar en los archivos procesados devueltos por file_service
+            processed_files_info, _ = self.file_service.get_study_files(
+                study_id=study_id, page=1, per_page=10000, 
+                file_type='Processed', frequency="Cinematica"
+            )
+            found_path = None
+            for pf_info in processed_files_info:
+                if pf_info['path'].stem.startswith(file_base): # Chequear si el stem comienza con file_base
+                    found_path = pf_info['path']
+                    break
+            if found_path:
+                files_by_full_group_key[full_key].append(found_path)
+            else:
+                logger.warning(f"No se encontró la ruta del archivo procesado para el archivo base '{file_base}' (grupo '{full_key}')")
+
+
+        selected_group_keys_from_config = config.get('groups', []) # Estas son las claves que el usuario seleccionó
+        grouping_mode = config.get('grouping_mode')
+        
+        for selected_key_from_ui in selected_group_keys_from_config:
+            # selected_key_from_ui es la clave original del grupo tal como se seleccionó en la UI.
+            # En modo 1VI, esta es una clave parcial (ej: "Condicion=PRE").
+            # En modo 2VIs, esta es una clave completa (ej: "Condicion=PRE;Salto=CMJ").
+            # El display name usado en la UI se deriva de esta clave.
+            
+            normalized_data_for_this_selected_group = []
+            
+            # Identificar las claves de tabla completas que corresponden a este selected_key_from_ui
+            full_keys_to_load_for_this_group = set()
+            if grouping_mode == "1VI":
+                # selected_key_from_ui es una clave parcial como "VI=Descriptor"
+                # Necesitamos encontrar todas las claves completas que contienen esta parte.
+                primary_vi_name = config.get('primary_vi_name')
+                # La selected_key_from_ui ya debería ser la parte "VI=Descriptor" relevante.
+                # Ejemplo: si primary_vi_name es "Condicion", y el usuario seleccionó "Condicion: Antes",
+                # entonces selected_key_from_ui es "Condicion=PRE".
+                partial_key_to_match = selected_key_from_ui
+                
+                for full_key_in_study in all_unique_full_group_keys:
+                    if partial_key_to_match in full_key_in_study.split(';'):
+                        full_keys_to_load_for_this_group.add(full_key_in_study)
+            
+            elif grouping_mode == "2VIs":
+                # selected_key_from_ui es una clave completa.
+                # Ejemplo: si se fijó "Condicion=PRE" y se seleccionó "Salto: CMJ",
+                # entonces selected_key_from_ui es "Condicion=PRE;Salto=CMJ".
+                full_keys_to_load_for_this_group.add(selected_key_from_ui)
+            else: # Modo combinado o desconocido, asumir que selected_key_from_ui es una clave completa
+                full_keys_to_load_for_this_group.add(selected_key_from_ui)
+
+            if not full_keys_to_load_for_this_group:
+                logger.warning(f"No se encontraron claves de archivo completas para el grupo seleccionado '{selected_key_from_ui}' en modo '{grouping_mode}'.")
+                normalized_data_by_selected_group[selected_key_from_ui] = [] # Guardar lista vacía
+                continue
+
+            logger.debug(f"Para el grupo UI '{selected_key_from_ui}', se cargarán datos de las siguientes claves completas: {full_keys_to_load_for_this_group}")
+
+            for full_key_to_process in full_keys_to_load_for_this_group:
+                file_paths_for_full_key = files_by_full_group_key.get(full_key_to_process, [])
+                if not file_paths_for_full_key:
+                    logger.warning(f"No se encontraron rutas de archivo para la clave completa '{full_key_to_process}' (derivada del grupo UI '{selected_key_from_ui}').")
+                    continue
+
+                for file_path in file_paths_for_full_key:
+                    logger.debug(f"Procesando archivo {file_path} para normalización (grupo UI '{selected_key_from_ui}', clave completa '{full_key_to_process}')")
+                    df = self._read_processed_file_data(file_path)
+                    if df is None or df.empty:
+                        logger.warning(f"No se pudieron leer datos del archivo {file_path.name}.")
+                        continue
+
+                    if data_col_name_in_df not in df.columns:
+                        logger.warning(f"Columna de datos '{data_col_name_in_df}' no encontrada en {file_path.name}. Columnas disponibles: {df.columns.tolist()}")
+                        continue
+                    if time_col_name_in_df not in df.columns:
+                        logger.warning(f"Columna de tiempo '{time_col_name_in_df}' no encontrada en {file_path.name}. Columnas disponibles: {df.columns.tolist()}")
+                        continue
+                    
+                    data_series = df[data_col_name_in_df]
+                    time_series_str = df[time_col_name_in_df]
+
+                    # Convertir tiempo a numérico, manejando errores
+                    try:
+                        time_series_numeric = pd.to_numeric(time_series_str, errors='raise')
+                    except ValueError as e:
+                        logger.error(f"Error convirtiendo columna de tiempo a numérico en {file_path.name}: {e}. Se omite este archivo.")
+                        continue
+                    
+                    # Asegurar que no haya NaNs en tiempo o datos que puedan causar problemas
+                    valid_indices = ~time_series_numeric.isnull() & ~data_series.isnull()
+                    if not valid_indices.any():
+                        logger.warning(f"No hay datos válidos (no-NaN) para tiempo/datos en {file_path.name} después de filtrar NaNs. Se omite.")
+                        continue
+                    
+                    time_series_clean = time_series_numeric[valid_indices]
+                    data_series_clean = data_series[valid_indices]
+
+                    if len(time_series_clean) < 2:
+                        logger.warning(f"No hay suficientes puntos de datos (<2) después de limpiar NaNs en {file_path.name} para interpolación. Se omite.")
+                        continue
+
+                    try:
+                        normalized_array = processors.normalize_temporal_data(
+                            data_series=data_series_clean,
+                            time_series=time_series_clean
+                            # target_points es 101 por defecto en la función
+                        )
+                        normalized_data_for_this_selected_group.append(normalized_array)
+                        logger.debug(f"Datos de {file_path.name} normalizados a {len(normalized_array)} puntos.")
+                    except ValueError as e_norm:
+                        logger.error(f"Error normalizando datos de {file_path.name}: {e_norm}")
+                    except Exception as e_gen_norm:
+                        logger.error(f"Error general durante normalización de {file_path.name}: {e_gen_norm}", exc_info=True)
+            
+            normalized_data_by_selected_group[selected_key_from_ui] = normalized_data_for_this_selected_group
+            logger.info(f"Para el grupo UI '{selected_key_from_ui}', se normalizaron {len(normalized_data_for_this_selected_group)} series de datos.")
+
+        return normalized_data_by_selected_group
+
+
+    def perform_continuous_analysis(self, study_id: int, config: dict):
+        """
+        Realiza un análisis continuo (SPM) basado en la configuración proporcionada.
+        Por ahora, solo prepara los datos normalizados y los loguea.
+
+        :param study_id: ID del estudio.
+        :param config: Diccionario con la configuración del análisis continuo.
+        :return: (Temporal) Diccionario con los datos normalizados.
+                 Futuro: Resultados del análisis SPM, rutas a gráficos, etc.
+        :raises ValueError: Si la configuración es inválida o faltan datos.
+        """
+        analysis_name_log = config.get('analysis_name', 'N/A')
+        logger.info(f"Inicio perform_continuous_analysis para estudio {study_id}: {analysis_name_log}")
+        logger.debug(f"Configuración recibida para análisis continuo: {config}")
+
+        try:
+            normalized_data = self._get_normalized_data_for_groups(study_id, config)
+
+            if not normalized_data or not any(normalized_data.values()):
+                logger.warning("No se generaron datos normalizados para el análisis continuo.")
+                # Podríamos devolver un error o una estructura vacía indicando fallo.
+                # Por ahora, para no romper el flujo si la UI espera algo:
+                return {"status": "error", "message": "No se pudieron normalizar datos."}
+
+
+            logger.info("Datos normalizados preparados:")
+            for group_key, data_arrays in normalized_data.items():
+                logger.info(f"  Grupo '{group_key}': {len(data_arrays)} series normalizadas.")
+                if data_arrays:
+                    logger.info(f"    Forma de la primera serie normalizada: {data_arrays[0].shape}")
+            
+            # Aquí iría la lógica para llamar a spm1d, generar gráficos, etc.
+            # Por ahora, solo devolvemos los datos normalizados para inspección.
+            # TODO: Implementar análisis SPM con spm1d.
+            # TODO: Implementar generación de gráficos de curvas promedio y SPM.
+            # TODO: Implementar guardado de resultados y configuración.
+
+            # Simular un resultado exitoso por ahora
+            # Esto debería ser reemplazado por la ruta al directorio de resultados del análisis
+            # o un objeto de resultado más complejo.
+            results_placeholder = {
+                "status": "success",
+                "message": "Datos normalizados generados. Análisis SPM pendiente.",
+                "normalized_data_summary": {
+                    grp: {
+                        "count": len(arrays),
+                        "shape_first": arrays[0].shape if arrays else None
+                    } for grp, arrays in normalized_data.items()
+                }
+                # "plot_path": "ruta/al/grafico_continuo.png",
+                # "config_path": "ruta/a/config_continuo.json"
+            }
+            return results_placeholder
+
+        except ValueError as ve:
+            logger.error(f"Error de validación o datos al preparar análisis continuo '{analysis_name_log}': {ve}", exc_info=True)
+            raise # Relanzar para que la UI pueda manejarlo
+        except Exception as e:
+            logger.critical(f"Error inesperado durante análisis continuo '{analysis_name_log}': {e}", exc_info=True)
+            raise # Relanzar
+
 
     # --- Métodos para Análisis Discreto (Fase 6) ---
 
