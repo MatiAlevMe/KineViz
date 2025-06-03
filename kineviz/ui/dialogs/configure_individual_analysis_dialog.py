@@ -53,7 +53,10 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.analysis_name_var = tk.StringVar()
 
         self.create_widgets()
-        self.load_initial_data() # Cargará VIs, alias, frecuencias
+        should_continue_init = self.load_initial_data() # Cargará VIs, alias, frecuencias
+        
+        if not should_continue_init:
+            return # load_initial_data decided to destroy or stop
 
     def create_widgets(self):
         """Crea los widgets del diálogo."""
