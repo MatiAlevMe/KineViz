@@ -202,7 +202,7 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
     *   **1.2 Crear `ContinuousAnalysisConfigDialog` (o similar)**: (En Progreso) Creado diálogo base para configurar el análisis continuo.
         *   Selección de Tipo de datos (ej: Cinemática, Cinética). Solo permite Cinemática inicialmente. (Hecho - UI Element y carga de datos)
         *   Selección de Variable/Columna de Agrupación: Permitir al usuario seleccionar la variable específica a analizar (ej: "LAnkleAngles_X", "KneeMoment_Y"). Esto implica identificar y listar las columnas de datos relevantes de los archivos procesados, excluyendo "Frame", "Sub Frame" y "Tiempo". (Hecho - UI Element y carga de datos)
-        *   Selector de Descriptores: Permitir al usuario seleccionar dos o más grupos de descriptores (basados en las VIs del estudio) para comparar. (Pendiente)
+        *   Selector de Descriptores: Permitir al usuario seleccionar dos o más grupos de descriptores (basados en las VIs del estudio) para comparar. (Pendiente) (Reutilizar el formato de UI del análisis discreto)
     *   **1.3 Crear `ContinuousAnalysisResultsView` (o similar)**: (Pendiente) Vista o sección en la UI para:
         *   Listar los análisis continuos generados (nombre, columna, vi, sub-valores).
         *   Mostrar filtros y opciones de ordenación para la lista de análisis.
