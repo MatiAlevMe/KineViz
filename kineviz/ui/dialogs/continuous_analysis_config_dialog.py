@@ -42,7 +42,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.study_aliases = {}
 
         # --- Variables existentes (algunas se reutilizan o adaptan) ---
-        # self.selected_data_type ya no es necesaria, siempre es "Cinematica"
+        self.frequency_var = tk.StringVar() # NUEVO: Para Tipo de Dato (Frecuencia)
         self.selected_variable = tk.StringVar() # Renombrada a column_var más adelante para consistencia
         self.column_var = self.selected_variable # Alias para consistencia con discrete
         
@@ -62,10 +62,13 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.analysis_name_var = tk.StringVar()
         
         self.create_widgets()
-        self.load_initial_data() # Cambiado de load_data_types a load_initial_data
+        should_continue_init = self.load_initial_data() # Cambiado de load_data_types a load_initial_data
+
+        if not should_continue_init:
+            return # load_initial_data already called self.destroy() or indicated not to proceed
 
         # Centrar el diálogo con respecto al padre
-        self.parent.winfo_toplevel().update_idletasks() # Asegurar que las dimensiones del padre estén actualizadas
+        self.update_idletasks() # Ensure dialog itself is updated for geometry
         parent_x = self.parent.winfo_rootx()
         parent_y = self.parent.winfo_rooty()
         parent_width = self.parent.winfo_width()
@@ -91,7 +94,12 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
 
         row_idx = 0
 
-        # Tipo de Dato es fijo "Cinematica", no se muestra selector.
+        # --- Tipo de Dato (Frecuencia) ---
+        # Aunque fijo a "Cinematica", lo mostramos para consistencia y claridad.
+        ttk.Label(main_frame, text="Tipo de Dato:").grid(row=row_idx, column=0, sticky="w", padx=5, pady=5)
+        self.freq_combo = ttk.Combobox(main_frame, textvariable=self.frequency_var, state="disabled") # Deshabilitado
+        self.freq_combo.grid(row=row_idx, column=1, sticky="ew", padx=5, pady=5)
+        row_idx += 1
 
         # --- NUEVO: Selección de Modo de Agrupación (1 VI vs 2 VIs) ---
         vi_mode_frame = ttk.Frame(main_frame)
@@ -139,8 +147,14 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.group_selection_outer_frame.grid_remove()
         
         # Canvas y Scrollbar para la sección de grupos (adaptado de la versión anterior)
-        self.groups_canvas = tk.Canvas(self.group_selection_outer_frame, borderwidth=0, highlightthickness=0, height=100) # Altura inicial
-        self.groups_inner_frame = ttk.Frame(self.groups_canvas) 
+        # Intentar establecer el color de fondo del canvas para que coincida con el frame
+        try:
+            bg_color = ttk.Style().lookup('TFrame', 'background')
+        except tk.TclError: # Fallback si el estilo no está disponible o TFrame no es conocido
+            bg_color = self.cget('bg') # Usar el color de fondo del propio diálogo
+
+        self.groups_canvas = tk.Canvas(self.group_selection_outer_frame, borderwidth=0, highlightthickness=0, height=100, bg=bg_color) # Altura inicial
+        self.groups_inner_frame = ttk.Frame(self.groups_canvas) # Este frame debería tomar el bg de su padre (el canvas) o ser transparente
         self.groups_scrollbar = ttk.Scrollbar(self.group_selection_outer_frame, orient="vertical", command=self.groups_canvas.yview)
         self.groups_canvas.configure(yscrollcommand=self.groups_scrollbar.set)
 
@@ -258,7 +272,12 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
                                        "No se encontraron archivos cinemáticos procesados en este estudio.",
                                        parent=self)
                 self.destroy()
-                return
+                return False # Indicar que la inicialización no debe continuar
+
+            # Si Cinemática está disponible, fijar el combobox
+            self.frequency_var.set("Cinematica")
+            self.freq_combo['values'] = ["Cinematica"]
+            # El combobox ya está 'disabled' desde create_widgets
 
             # Cargar detalles del estudio (VIs y Alias)
             details = self.analysis_service.study_service.get_study_details(self.study_id)
@@ -275,6 +294,8 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
             logger.error(f"Error cargando datos iniciales para estudio {self.study_id}: {e}", exc_info=True)
             messagebox.showerror("Error", f"No se pudieron cargar los datos iniciales del estudio: {e}", parent=self)
             self.destroy()
+            return False # Indicar que la inicialización no debe continuar
+        return True # Indicar que la inicialización fue exitosa
 
     def set_vi_grouping_mode(self, mode):
         """Configura la UI según se elija agrupar por 1 o 2 VIs."""
