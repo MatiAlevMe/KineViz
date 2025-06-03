@@ -200,11 +200,11 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 *   **1. Diseño y Prototipado de UI para Análisis Continuo:**
     *   **1.1 Botón en `StudyView`**: (Hecho) Añadir botón "Análisis Continuo" en la vista de estudio, junto al de "Análisis Discreto".
     *   **1.2 Crear `ContinuousAnalysisConfigDialog` (o similar)**: (En Progreso) Creado diálogo base para configurar el análisis continuo.
-        *   Selección de Frecuencia de datos (ej: Cinemática, Cinética). Inicialmente enfocado en Cinemática. (Hecho - UI Element y carga de datos)
+        *   Selección de Tipo de datos (ej: Cinemática, Cinética). Solo permite Cinemática inicialmente. (Hecho - UI Element y carga de datos)
         *   Selección de Variable/Columna de Agrupación: Permitir al usuario seleccionar la variable específica a analizar (ej: "LAnkleAngles_X", "KneeMoment_Y"). Esto implica identificar y listar las columnas de datos relevantes de los archivos procesados, excluyendo "Frame", "Sub Frame" y "Tiempo". (Hecho - UI Element y carga de datos)
         *   Selector de Descriptores: Permitir al usuario seleccionar dos o más grupos de descriptores (basados en las VIs del estudio) para comparar. (Pendiente)
     *   **1.3 Crear `ContinuousAnalysisResultsView` (o similar)**: (Pendiente) Vista o sección en la UI para:
-        *   Listar los análisis continuos generados (nombre, variable, descriptores, fecha).
+        *   Listar los análisis continuos generados (nombre, columna, vi, sub-valores).
         *   Mostrar filtros y opciones de ordenación para la lista de análisis.
         *   Proveer opciones para cada análisis: ver gráfico SPM, ver tabla de datos normalizados/resultados, abrir carpeta de resultados, eliminar análisis.
 *   **2. Implementación de Normalización de Datos Temporales:**
@@ -212,7 +212,7 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
         *   Esto se aplicará a la variable seleccionada para cada archivo/sujeto/intento.
         *   Investigar y aplicar métodos de interpolación adecuados (ej: splines, interpolación lineal).
     *   **2.2 Procesamiento de Archivos para Normalización**: (Pendiente) En `AnalysisService`, crear lógica para:
-        *   Identificar los archivos relevantes del estudio según la frecuencia y descriptores seleccionados.
+        *   Identificar los archivos relevantes del estudio según los tipos de datos y sub-valores seleccionados.
         *   Leer la columna de datos de la variable de interés de cada archivo.
         *   Aplicar la normalización temporal.
     *   **2.3 Estructura de Datos Normalizados**: (Pendiente) Definir cómo se organizarán los datos normalizados para el análisis SPM. Típicamente, matrices donde las filas son sujetos/observaciones y las columnas son los 101 puntos de tiempo.
