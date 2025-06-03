@@ -63,17 +63,18 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
 
         row_idx = 0
 
-        # --- Selección de Tipo de Dato y Cálculo (Sin cambios iniciales) ---
+        # --- Selección de Tipo de Dato y Cálculo ---
         ttk.Label(main_frame, text="Tipo de Dato:").grid(row=row_idx, column=0, sticky="w", padx=5, pady=5)
-        self.freq_combo = ttk.Combobox(main_frame, textvariable=self.frequency_var, state="readonly", postcommand=self.load_frequencies)
+        self.freq_combo = ttk.Combobox(main_frame, textvariable=self.frequency_var, state="disabled") # Cambiado a disabled
         self.freq_combo.grid(row=row_idx, column=1, sticky="ew", padx=5, pady=5)
-        # Bind se hará después o se llamará manualmente
+        # El postcommand ya no es necesario si se carga una vez y se fija.
+        # El bind para actualizar grupos se manejará de otra forma o no será necesario si la frecuencia es fija.
         row_idx += 1
 
         ttk.Label(main_frame, text="Cálculo:").grid(row=row_idx, column=0, sticky="w", padx=5, pady=5)
         self.calc_combo = ttk.Combobox(main_frame, textvariable=self.calculation_var, values=self.available_calculations, state="readonly")
         self.calc_combo.grid(row=row_idx, column=1, sticky="ew", padx=5, pady=5)
-        # Bind se hará después o se llamará manualmente
+        self.calc_combo.bind("<<ComboboxSelected>>", self.update_available_groups) # Actualizar grupos al seleccionar cálculo
         row_idx += 1
 
         # --- NUEVO: Selección de Modo de Agrupación (1 VI vs 2 VIs) ---
@@ -253,12 +254,17 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             logger.debug(f"Datos iniciales cargados: VIs={self.all_vi_names}, Sub-valores={self.all_descriptors_by_vi}, Alias={self.study_aliases}")
 
             # Cargar frecuencias (sin cambios)
-            self.load_frequencies()
+            # Cargar y fijar frecuencia a "Cinematica"
+            if not self._load_and_fix_frequency(): # Modify to return bool
+                self.destroy() # Ensure dialog is closed if frequency setup fails critically
+                return False # Indicate __init__ should not proceed
 
         except Exception as e:
             logger.error(f"Error cargando datos iniciales para estudio {self.study_id}: {e}", exc_info=True)
             messagebox.showerror("Error", f"No se pudieron cargar los datos iniciales del estudio: {e}", parent=self)
             self.destroy()
+            return False # Indicate __init__ should not proceed
+        return True # Indicate __init__ can proceed
 
 
     def update_available_groups(self, event=None):
@@ -331,36 +337,47 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             self.available_groups_filtered = {}
             self._clear_group_selectors(update_columns=False) # No actualizar columnas
             self.group_selection_outer_frame.grid_remove()
-    def load_frequencies(self):
-        """Carga las frecuencias disponibles basadas en las tablas resumen generadas."""
-        logger.debug(f"Cargando frecuencias desde tablas resumen para estudio {self.study_id}")
-        self.available_frequencies = []
-        self.frequency_var.set("") # Limpiar selección
-        self.freq_combo['values'] = [] # Limpiar combo
+
+    def _load_and_fix_frequency(self) -> bool:
+        """Verifica la disponibilidad de 'Cinematica' y la fija como Tipo de Dato. Retorna True si exitoso."""
+        logger.debug(f"Verificando disponibilidad de 'Cinematica' para estudio {self.study_id}")
+        self.frequency_var.set("")
+        self.freq_combo['values'] = []
+        # self.freq_combo.config(state="disabled") # Already set in create_widgets
 
         try:
-            # Obtener la ruta base de las tablas resumen
             tables_path = self.analysis_service.get_discrete_analysis_tables_path(self.study_id)
-            if tables_path and tables_path.exists():
-                # Listar subdirectorios (que representan frecuencias)
-                for item in tables_path.iterdir():
-                    if item.is_dir():
-                        self.available_frequencies.append(item.name)
-                self.available_frequencies.sort()
-                self.freq_combo['values'] = self.available_frequencies
-                logger.debug(f"Tipos de Datos encontradas en tablas resumen: {self.available_frequencies}")
-            else:
-                 logger.warning(f"Directorio de tablas resumen no encontrado o no existe: {tables_path}")
-                 messagebox.showwarning("Sin Tablas", "No se encontraron tablas resumen generadas. Genérelas desde la vista 'Análisis Discreto'.", parent=self)
+            cinematica_path = tables_path / "Cinematica" if tables_path else None
 
-            if not self.available_frequencies:
-                messagebox.showwarning("Sin Tipos de Datos", "No hay frecuencias disponibles en las tablas resumen para análisis.", parent=self)
+            if cinematica_path and cinematica_path.exists() and cinematica_path.is_dir():
+                self.available_frequencies = ["Cinematica"]
+                self.frequency_var.set("Cinematica")
+                self.freq_combo['values'] = ["Cinematica"]
+                # El combobox ya está 'disabled' desde create_widgets
+                logger.info("Tipo de Dato fijado a 'Cinematica' para análisis discreto.")
+                # El flujo normal es: Freq (fijo) -> Calc -> Modo VI -> ...
+                # El usuario seleccionará el cálculo y luego el modo VI.
+            else:
+                logger.warning(f"Directorio de tablas resumen para 'Cinematica' no encontrado en {tables_path}.")
+                messagebox.showwarning("No Disponible",
+                                       "El análisis discreto actualmente solo está disponible si existen datos procesados de 'Cinematica'.\n"
+                                       "No se encontraron tablas resumen para 'Cinematica' en este estudio.",
+                                       parent=self)
+                # Si Cinemática no está disponible, es un error que impide continuar.
+                self.one_vi_button.config(state=tk.DISABLED)
+                self.two_vi_button.config(state=tk.DISABLED)
+                self.calc_combo.config(state=tk.DISABLED)
+                return False # Indicar fallo
 
         except Exception as e:
-            logger.error(f"Error cargando frecuencias desde tablas resumen para estudio {self.study_id}: {e}", exc_info=True)
-            messagebox.showerror("Error", f"No se pudieron cargar las frecuencias disponibles desde las tablas resumen:\n{e}", parent=self)
-            self.available_frequencies = []
+            logger.error(f"Error verificando frecuencia 'Cinematica' para estudio {self.study_id}: {e}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudo verificar la disponibilidad de 'Cinematica':\n{e}", parent=self)
             self.freq_combo['values'] = []
+            self.one_vi_button.config(state=tk.DISABLED)
+            self.two_vi_button.config(state=tk.DISABLED)
+            self.calc_combo.config(state=tk.DISABLED)
+            return False # Indicar fallo
+        return True # Indicar éxito
 
     def add_group_selector(self, initial_value=""):
         """Añade una nueva fila para seleccionar un grupo."""
