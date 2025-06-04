@@ -38,8 +38,16 @@ logger = logging.getLogger(__name__)
 try:
     from scipy import stats
 except ImportError:
-    logger.warning("Scipy no está instalado. Las pruebas estadísticas no estarán disponibles.")
+    logger.warning("Scipy no está instalado. Las pruebas estadísticas discretas no estarán disponibles.")
     stats = None
+
+# Importar spm1d para análisis continuo
+try:
+    import spm1d
+except ImportError:
+    logger.warning("spm1d no está instalado. El análisis continuo no estará disponible.")
+    spm1d = None
+
 
 # Importar openpyxl para Excel (opcional)
 try:
@@ -803,11 +811,11 @@ class AnalysisService:
 
         # Obtener todos los archivos procesados de Cinemática y su mapeo a claves de grupo completas
         # _identify_study_groups devuelve {file_base_key: full_group_key}
-        all_files_to_full_group_keys, all_unique_full_group_keys = self._identify_study_groups(study_id, "Cinematica")
+        all_files_to_full_group_keys_map, all_unique_full_group_keys_set = self._identify_study_groups(study_id, "Cinematica")
         
         # Invertir el mapeo para buscar archivos por full_group_key
         files_by_full_group_key = {}
-        for file_base, full_key in all_files_to_full_group_keys.items():
+        for file_base, full_key in all_files_to_full_group_keys_map.items():
             if full_key not in files_by_full_group_key:
                 files_by_full_group_key[full_key] = []
             # Necesitamos la ruta completa del archivo procesado
@@ -843,39 +851,62 @@ class AnalysisService:
             normalized_data_for_this_selected_group = []
             
             # Identificar las claves de tabla completas que corresponden a este selected_key_from_ui
-            full_keys_to_load_for_this_group = set()
+            # Y determinar la 'effective_group_key' que se usará como clave en normalized_data_by_selected_group
+            full_keys_to_load_for_this_group_set = set()
+            effective_group_key_for_dict = selected_key_from_ui
+
             if grouping_mode == "1VI":
-                # selected_key_from_ui es una clave parcial como "VI=Descriptor"
-                # Necesitamos encontrar todas las claves completas que contienen esta parte.
                 primary_vi_name = config.get('primary_vi_name')
-                # La selected_key_from_ui ya debería ser la parte "VI=Descriptor" relevante.
-                # Ejemplo: si primary_vi_name es "Condicion", y el usuario seleccionó "Condicion: Antes",
-                # entonces selected_key_from_ui es "Condicion=PRE".
-                partial_key_to_match = selected_key_from_ui
+                if not primary_vi_name:
+                    logger.error("Modo 1VI seleccionado pero primary_vi_name no está en la configuración.")
+                    normalized_data_by_selected_group[selected_key_from_ui] = []
+                    continue
                 
-                for full_key_in_study in all_unique_full_group_keys:
-                    if partial_key_to_match in full_key_in_study.split(';'):
-                        full_keys_to_load_for_this_group.add(full_key_in_study)
+                # selected_key_from_ui es una CLAVE COMPLETA (e.g., "Edad=Joven;Peso=OS")
+                # Necesitamos derivar la parte relevante (e.g., "Edad=Joven")
+                derived_partial_key = None
+                for part in selected_key_from_ui.split(';'):
+                    if part.startswith(f"{primary_vi_name}="):
+                        derived_partial_key = part
+                        break
+                
+                if not derived_partial_key:
+                    logger.warning(f"En modo 1VI, no se pudo derivar la clave parcial para VI '{primary_vi_name}' a partir de la clave completa seleccionada '{selected_key_from_ui}'.")
+                    normalized_data_by_selected_group[selected_key_from_ui] = [] # Usar la clave completa como fallback
+                    continue
+                
+                effective_group_key_for_dict = derived_partial_key # Usar la clave parcial como clave del diccionario de resultados
+                logger.debug(f"Modo 1VI: Clave parcial derivada '{derived_partial_key}' para VI primaria '{primary_vi_name}'.")
+
+                # Encontrar todas las claves completas en el estudio que contienen esta clave parcial derivada
+                for full_key_in_study in all_unique_full_group_keys_set:
+                    if derived_partial_key in full_key_in_study.split(';'):
+                        full_keys_to_load_for_this_group_set.add(full_key_in_study)
             
             elif grouping_mode == "2VIs":
-                # selected_key_from_ui es una clave completa.
-                # Ejemplo: si se fijó "Condicion=PRE" y se seleccionó "Salto: CMJ",
-                # entonces selected_key_from_ui es "Condicion=PRE;Salto=CMJ".
-                full_keys_to_load_for_this_group.add(selected_key_from_ui)
-            else: # Modo combinado o desconocido, asumir que selected_key_from_ui es una clave completa
-                full_keys_to_load_for_this_group.add(selected_key_from_ui)
+                # selected_key_from_ui es una clave completa y es la que se usa.
+                full_keys_to_load_for_this_group_set.add(selected_key_from_ui)
+                # effective_group_key_for_dict ya es selected_key_from_ui
+            else: # Modo desconocido o no especificado
+                logger.warning(f"Modo de agrupación desconocido o no especificado: '{grouping_mode}'. Tratando clave '{selected_key_from_ui}' como completa.")
+                full_keys_to_load_for_this_group_set.add(selected_key_from_ui)
+                # effective_group_key_for_dict ya es selected_key_from_ui
 
-            if not full_keys_to_load_for_this_group:
-                logger.warning(f"No se encontraron claves de archivo completas para el grupo seleccionado '{selected_key_from_ui}' en modo '{grouping_mode}'.")
-                normalized_data_by_selected_group[selected_key_from_ui] = [] # Guardar lista vacía
+            if not full_keys_to_load_for_this_group_set:
+                logger.warning(f"No se encontraron claves de archivo completas para el grupo UI '{selected_key_from_ui}' (clave efectiva '{effective_group_key_for_dict}') en modo '{grouping_mode}'.")
+                normalized_data_by_selected_group[effective_group_key_for_dict] = []
                 continue
 
-            logger.debug(f"Para el grupo UI '{selected_key_from_ui}', se cargarán datos de las siguientes claves completas: {full_keys_to_load_for_this_group}")
+            logger.debug(f"Para el grupo UI '{selected_key_from_ui}' (clave efectiva '{effective_group_key_for_dict}'), se cargarán datos de las siguientes claves completas: {full_keys_to_load_for_this_group_set}")
 
-            for full_key_to_process in full_keys_to_load_for_this_group:
+            # Si la clave efectiva no está aún en el dict de resultados, inicializarla
+            if effective_group_key_for_dict not in normalized_data_by_selected_group:
+                normalized_data_by_selected_group[effective_group_key_for_dict] = []
+
+            for full_key_to_process in full_keys_to_load_for_this_group_set:
                 file_paths_for_full_key = files_by_full_group_key.get(full_key_to_process, [])
                 if not file_paths_for_full_key:
-                    logger.warning(f"No se encontraron rutas de archivo para la clave completa '{full_key_to_process}' (derivada del grupo UI '{selected_key_from_ui}').")
+                    logger.warning(f"No se encontraron rutas de archivo para la clave completa '{full_key_to_process}' (derivada del grupo UI '{selected_key_from_ui}', clave efectiva '{effective_group_key_for_dict}').")
                     continue
 
                 for file_path in file_paths_for_full_key:
@@ -921,15 +952,17 @@ class AnalysisService:
                             time_series=time_series_clean
                             # target_points es 101 por defecto en la función
                         )
-                        normalized_data_for_this_selected_group.append(normalized_array)
-                        logger.debug(f"Datos de {file_path.name} normalizados a {len(normalized_array)} puntos.")
+                        # Añadir a la lista de la clave efectiva (que podría ser parcial en 1VI)
+                        normalized_data_by_selected_group[effective_group_key_for_dict].append(normalized_array)
+                        logger.debug(f"Datos de {file_path.name} normalizados a {len(normalized_array)} puntos y añadidos al grupo efectivo '{effective_group_key_for_dict}'.")
                     except ValueError as e_norm:
-                        logger.error(f"Error normalizando datos de {file_path.name}: {e_norm}")
+                        logger.error(f"Error normalizando datos de {file_path.name} para grupo efectivo '{effective_group_key_for_dict}': {e_norm}")
                     except Exception as e_gen_norm:
-                        logger.error(f"Error general durante normalización de {file_path.name}: {e_gen_norm}", exc_info=True)
+                        logger.error(f"Error general durante normalización de {file_path.name} para grupo efectivo '{effective_group_key_for_dict}': {e_gen_norm}", exc_info=True)
             
-            normalized_data_by_selected_group[selected_key_from_ui] = normalized_data_for_this_selected_group
-            logger.info(f"Para el grupo UI '{selected_key_from_ui}', se normalizaron {len(normalized_data_for_this_selected_group)} series de datos.")
+            # Log después de procesar todas las claves completas para un grupo UI/efectivo
+            count_for_effective_key = len(normalized_data_by_selected_group.get(effective_group_key_for_dict, []))
+            logger.info(f"Para el grupo efectivo '{effective_group_key_for_dict}' (originado de UI '{selected_key_from_ui}'), se normalizaron {count_for_effective_key} series de datos.")
 
         return normalized_data_by_selected_group
 
@@ -960,33 +993,79 @@ class AnalysisService:
 
 
             logger.info("Datos normalizados preparados:")
-            for group_key, data_arrays in normalized_data.items():
-                logger.info(f"  Grupo '{group_key}': {len(data_arrays)} series normalizadas.")
-                if data_arrays:
-                    logger.info(f"    Forma de la primera serie normalizada: {data_arrays[0].shape}")
-            
-            # Aquí iría la lógica para llamar a spm1d, generar gráficos, etc.
-            # Por ahora, solo devolvemos los datos normalizados para inspección.
-            # TODO: Implementar análisis SPM con spm1d.
+            group_keys_for_spm = list(normalized_data.keys())
+            spm_test_results = None
+            spm_error_message = None
+
+            if not spm1d:
+                spm_error_message = "La librería spm1d no está instalada. No se puede realizar el análisis SPM."
+                logger.error(spm_error_message)
+            elif len(group_keys_for_spm) < 1:
+                spm_error_message = "No hay grupos con datos normalizados para el análisis SPM."
+                logger.error(spm_error_message)
+            elif len(group_keys_for_spm) == 1:
+                # Podríamos hacer un t-test one-sample si tuviera sentido (comparar contra 0)
+                # Por ahora, asumimos que se necesitan al menos 2 grupos para comparar.
+                spm_error_message = "Se necesita al menos dos grupos para realizar una comparación SPM."
+                logger.warning(spm_error_message)
+            else:
+                # Preparar datos para spm1d: lista de listas/arrays de NumPy
+                # La estructura de normalized_data es {group_key: [array1, array2, ...]}
+                # spm1d.stats.ttest([Y0a, Y0b,...], [Y1a, Y1b,...])
+                # spm1d.stats.anova1([Y0a, Y0b,...], [Y1a, Y1b,...], [Y2a, Y2b,...])
+                
+                data_for_spm = [normalized_data[key] for key in group_keys_for_spm if normalized_data[key]] # Asegurar que no haya listas vacías
+                
+                # Filtrar grupos que no tengan datos suficientes (al menos una observación)
+                valid_data_for_spm = [group_data for group_data in data_for_spm if len(group_data) > 0]
+                if len(valid_data_for_spm) < 2:
+                    spm_error_message = "Se necesitan al menos dos grupos con observaciones válidas para el análisis SPM."
+                    logger.error(spm_error_message)
+                else:
+                    try:
+                        if len(valid_data_for_spm) == 2:
+                            logger.info(f"Realizando spm1d.stats.ttest_ind para grupos: {group_keys_for_spm}")
+                            # Asumir t-test independiente por ahora. Paired t-test (ttest_paired) necesitaría
+                            # que los datos estén alineados por sujeto, lo cual no está garantizado por _get_normalized_data_for_groups.
+                            spm_results = spm1d.stats.ttest_ind(*valid_data_for_spm, equal_var=False) # Welch's t-test
+                            # spm_results = spm1d.stats.ttest(*valid_data_for_spm) # Si se asume varianzas iguales
+                            logger.info("Resultado t-test SPM (primeros 10 puntos del estadístico t):")
+                            logger.info(spm_results.z[:10])
+                            spm_test_results = {"test_type": "ttest_ind", "stat_curve": spm_results.z.tolist(), "p_value": spm_results.p_value}
+                        
+                        elif len(valid_data_for_spm) > 2:
+                            logger.info(f"Realizando spm1d.stats.anova1 para {len(valid_data_for_spm)} grupos: {group_keys_for_spm}")
+                            # ANOVA de un factor para muestras independientes
+                            spm_results = spm1d.stats.anova1(*valid_data_for_spm, equal_var=False) # Welch's ANOVA si disponible, o anova1
+                            logger.info("Resultado ANOVA SPM (primeros 10 puntos del estadístico F):")
+                            logger.info(spm_results.z[:10]) # .z es la curva F
+                            spm_test_results = {"test_type": "anova1", "stat_curve": spm_results.z.tolist(), "p_value": spm_results.p_value}
+                        
+                        if spm_test_results:
+                             logger.info(f"Análisis SPM completado. P-valor global: {spm_test_results['p_value']}")
+                             # Aquí se podrían inferir clusters, etc.
+                             # spm_results.plot() # Para visualización directa si se ejecuta interactivamente
+                             # spm_results.print_results()
+
+                    except Exception as e_spm:
+                        spm_error_message = f"Error durante la ejecución del análisis SPM: {e_spm}"
+                        logger.error(spm_error_message, exc_info=True)
+
             # TODO: Implementar generación de gráficos de curvas promedio y SPM.
             # TODO: Implementar guardado de resultados y configuración.
 
-            # Simular un resultado exitoso por ahora
-            # Esto debería ser reemplazado por la ruta al directorio de resultados del análisis
-            # o un objeto de resultado más complejo.
-            results_placeholder = {
-                "status": "success",
-                "message": "Datos normalizados generados. Análisis SPM pendiente.",
+            results_payload = {
+                "status": "success" if spm_test_results and not spm_error_message else "partial_success" if not spm_error_message else "error",
+                "message": spm_error_message if spm_error_message else "Datos normalizados y análisis SPM (básico) completado." if spm_test_results else "Datos normalizados generados, análisis SPM no ejecutado.",
                 "normalized_data_summary": {
                     grp: {
                         "count": len(arrays),
                         "shape_first": arrays[0].shape if arrays else None
                     } for grp, arrays in normalized_data.items()
-                }
-                # "plot_path": "ruta/al/grafico_continuo.png",
-                # "config_path": "ruta/a/config_continuo.json"
+                },
+                "spm_results": spm_test_results
             }
-            return results_placeholder
+            return results_payload
 
         except ValueError as ve:
             logger.error(f"Error de validación o datos al preparar análisis continuo '{analysis_name_log}': {ve}", exc_info=True)
@@ -994,6 +1073,11 @@ class AnalysisService:
         except Exception as e:
             logger.critical(f"Error inesperado durante análisis continuo '{analysis_name_log}': {e}", exc_info=True)
             raise # Relanzar
+        
+        # Si todo va bien, aquí se guardaría el análisis y se devolvería la ruta o un ID.
+        # Por ahora, el placeholder es suficiente.
+        # TODO: Guardar configuración del análisis continuo, resultados SPM, gráficos.
+        # Crear una subcarpeta en "Analisis Continuo" con el nombre del análisis.
 
 
     # --- Métodos para Análisis Discreto (Fase 6) ---
