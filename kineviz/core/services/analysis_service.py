@@ -1032,7 +1032,8 @@ class AnalysisService:
                 data_for_spm = [normalized_data[key] for key in group_keys_for_spm if normalized_data[key]] # Asegurar que no haya listas vacías
                 
                 # Filtrar grupos que no tengan datos suficientes (al menos una observación)
-                valid_data_for_spm = [group_data for group_data in data_for_spm if len(group_data) > 0]
+                # Convert each group's list of 1D arrays into a 2D NumPy array for spm1d
+                valid_data_for_spm = [np.array(group_data) for group_data in data_for_spm if group_data and len(group_data) > 0]
                 if len(valid_data_for_spm) < 2:
                     spm_error_message = "Se necesitan al menos dos grupos con observaciones válidas para el análisis SPM."
                     logger.error(spm_error_message)
