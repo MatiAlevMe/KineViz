@@ -982,19 +982,34 @@ class AnalysisService:
         logger.info(f"Inicio perform_continuous_analysis para estudio {study_id}: {analysis_name_log}")
         logger.debug(f"Configuración recibida para análisis continuo: {config}")
 
+        # Initialize results_payload with default/error status
+        results_payload = {
+            "status": "error",
+            "message": "Análisis continuo no completado.",
+            "normalized_data_summary": None,
+            "spm_results": None, # This will store the dict form of spm_inference
+            "config_path": None,
+            "spm_results_path": None,
+            "output_dir": None
+        }
+        spm_inference = None # To store the spm1d inference object
+
         try:
             normalized_data = self._get_normalized_data_for_groups(study_id, config)
 
             if not normalized_data or not any(normalized_data.values()):
                 logger.warning("No se generaron datos normalizados para el análisis continuo.")
-                # Podríamos devolver un error o una estructura vacía indicando fallo.
-                # Por ahora, para no romper el flujo si la UI espera algo:
-                return {"status": "error", "message": "No se pudieron normalizar datos."}
+                results_payload["message"] = "No se pudieron normalizar datos."
+                return results_payload # Early exit
 
+            results_payload["normalized_data_summary"] = {
+                grp: {"count": len(arrays), "shape_first": arrays[0].shape if arrays else None}
+                for grp, arrays in normalized_data.items()
+            }
 
             logger.info("Datos normalizados preparados:")
             group_keys_for_spm = list(normalized_data.keys())
-            spm_test_results = None
+            # spm_test_results = None # Replaced by spm_inference
             spm_error_message = None
 
             if not spm1d:
@@ -1024,59 +1039,36 @@ class AnalysisService:
                 else:
                     try:
                         if len(valid_data_for_spm) == 2:
-                            logger.info(f"Realizando spm1d.stats.ttest_ind para grupos: {group_keys_for_spm}")
+                            logger.info(f"Realizando spm1d.stats.ttest para grupos: {group_keys_for_spm}")
                             # Asumir t-test independiente por ahora. Paired t-test (ttest_paired) necesitaría
                             # que los datos estén alineados por sujeto, lo cual no está garantizado por _get_normalized_data_for_groups.
-                            spm_results = spm1d.stats.ttest_ind(*valid_data_for_spm, equal_var=False) # Welch's t-test
-                            # spm_results = spm1d.stats.ttest(*valid_data_for_spm) # Si se asume varianzas iguales
+                            spm_inference = spm1d.stats.ttest(*valid_data_for_spm, equal_var=False) # Welch's t-test
                             logger.info("Resultado t-test SPM (primeros 10 puntos del estadístico t):")
-                            logger.info(spm_results.z[:10])
-                            spm_test_results = {"test_type": "ttest_ind", "stat_curve": spm_results.z.tolist(), "p_value": spm_results.p_value}
+                            logger.info(spm_inference.z[:10])
+                            # The spm_test_results dictionary will be built from spm_inference later, before saving.
                         
                         elif len(valid_data_for_spm) > 2:
                             logger.info(f"Realizando spm1d.stats.anova1 para {len(valid_data_for_spm)} grupos: {group_keys_for_spm}")
                             # ANOVA de un factor para muestras independientes
-                            spm_results = spm1d.stats.anova1(*valid_data_for_spm, equal_var=False) # Welch's ANOVA si disponible, o anova1
+                            spm_inference = spm1d.stats.anova1(*valid_data_for_spm, equal_var=False) # Welch's ANOVA si disponible, o anova1
                             logger.info("Resultado ANOVA SPM (primeros 10 puntos del estadístico F):")
-                            logger.info(spm_results.z[:10]) # .z es la curva F
-                            spm_test_results = {"test_type": "anova1", "stat_curve": spm_results.z.tolist(), "p_value": spm_results.p_value}
+                            logger.info(spm_inference.z[:10]) # .z es la curva F
+                            # The spm_test_results dictionary will be built from spm_inference later.
                         
-                        if spm_test_results:
-                             logger.info(f"Análisis SPM completado. P-valor global: {spm_test_results['p_value']}")
+                        if spm_inference: # Check if spm_inference object exists and has p_value
+                             logger.info(f"Análisis SPM completado. P-valor global: {spm_inference.p_value if hasattr(spm_inference, 'p_value') else 'N/A'}")
                              # Aquí se podrían inferir clusters, etc.
-                             # spm_results.plot() # Para visualización directa si se ejecuta interactivamente
-                             # spm_results.print_results()
+                             # spm_inference.plot() # Para visualización directa si se ejecuta interactivamente
+                             # spm_inference.print_results()
 
                     except Exception as e_spm:
                         spm_error_message = f"Error durante la ejecución del análisis SPM: {e_spm}"
                         logger.error(spm_error_message, exc_info=True)
+                        spm_inference = None # Ensure spm_inference is None on error
 
-            # TODO: Implementar generación de gráficos de curvas promedio y SPM.
-            # TODO: Implementar guardado de resultados y configuración.
-
-            results_payload = {
-                "status": "success" if spm_test_results and not spm_error_message else "partial_success" if not spm_error_message else "error",
-                "message": spm_error_message if spm_error_message else "Datos normalizados y análisis SPM (básico) completado." if spm_test_results else "Datos normalizados generados, análisis SPM no ejecutado.",
-                "normalized_data_summary": {
-                    grp: {
-                        "count": len(arrays),
-                        "shape_first": arrays[0].shape if arrays else None
-                    } for grp, arrays in normalized_data.items()
-                },
-                "spm_results": spm_test_results
-            }
-            return results_payload
-
-        except ValueError as ve:
-            logger.error(f"Error de validación o datos al preparar análisis continuo '{analysis_name_log}': {ve}", exc_info=True)
-            raise # Relanzar para que la UI pueda manejarlo
-        except Exception as e:
-            logger.critical(f"Error inesperado durante análisis continuo '{analysis_name_log}': {e}", exc_info=True)
-            raise # Relanzar
-        
-        # --- Guardar Configuración y Resultados SPM ---
-        # Crear directorio para este análisis continuo
-        analysis_output_dir = None
+            # --- Guardar Configuración y Resultados SPM (MOVED INSIDE MAIN TRY) ---
+            # Crear directorio para este análisis continuo
+            analysis_output_dir_path_obj = None # Path object
         saved_config_path_str = None
         saved_spm_results_path_str = None
 
