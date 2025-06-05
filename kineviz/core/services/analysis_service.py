@@ -1052,7 +1052,7 @@ class AnalysisService:
                         elif len(valid_data_for_spm) > 2:
                             logger.info(f"Realizando spm1d.stats.anova1 para {len(valid_data_for_spm)} grupos: {group_keys_for_spm}")
                             # ANOVA de un factor para muestras independientes
-                            spm_inference = spm1d.stats.anova1(*valid_data_for_spm, equal_var=False) # Welch's ANOVA si disponible, o anova1
+                            spm_inference = spm1d.stats.anova1(*valid_data_for_spm) # equal_var is not a param for spm1d.anova1
                             logger.info("Resultado ANOVA SPM (primeros 10 puntos del estadístico F):")
                             logger.info(spm_inference.z[:10]) # .z es la curva F
                             # The spm_test_results dictionary will be built from spm_inference later.
@@ -1090,8 +1090,17 @@ class AnalysisService:
                 results_payload["output_dir"] = str(current_analysis_output_dir)
 
                 config_file_path = current_analysis_output_dir / "config_continuous.json"
+                
+                # Prepare config_to_save for JSON output, potentially modifying 'groups' for 1VI mode
+                config_to_save_for_json = config.copy() 
+                if config_to_save_for_json.get('grouping_mode') == "1VI" and normalized_data:
+                    # normalized_data keys are the effective group keys (e.g., "VI_Primaria=Descriptor")
+                    effective_groups_for_json = list(normalized_data.keys())
+                    config_to_save_for_json['groups'] = effective_groups_for_json
+                    logger.debug(f"Ajustados 'groups' en config JSON para modo 1VI a: {effective_groups_for_json}")
+
                 with open(config_file_path, 'w', encoding='utf-8') as f_cfg:
-                    json.dump(config, f_cfg, indent=4, allow_nan=True)
+                    json.dump(config_to_save_for_json, f_cfg, indent=4, allow_nan=True) # Save the modified copy
                 results_payload["config_path"] = str(config_file_path)
                 logger.info(f"Configuración del análisis continuo guardada en: {config_file_path}")
 
