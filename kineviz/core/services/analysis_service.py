@@ -1039,11 +1039,12 @@ class AnalysisService:
                 else:
                     try:
                         if len(valid_data_for_spm) == 2:
-                            logger.info(f"Realizando spm1d.stats.ttest para grupos: {group_keys_for_spm}")
+                            logger.info(f"Realizando spm1d.stats.ttest2 para grupos: {group_keys_for_spm}")
                             # Asumir t-test independiente por ahora. Paired t-test (ttest_paired) necesitaría
                             # que los datos estén alineados por sujeto, lo cual no está garantizado por _get_normalized_data_for_groups.
-                            spm_inference = spm1d.stats.ttest(*valid_data_for_spm, equal_var=False) # Welch's t-test
-                            logger.info("Resultado t-test SPM (primeros 10 puntos del estadístico t):")
+                            # ttest2 is for two independent samples. It does not take equal_var.
+                            spm_inference = spm1d.stats.ttest2(*valid_data_for_spm)
+                            logger.info("Resultado t-test2 SPM (primeros 10 puntos del estadístico t):")
                             logger.info(spm_inference.z[:10])
                             # The spm_test_results dictionary will be built from spm_inference later, before saving.
                         
@@ -1055,8 +1056,8 @@ class AnalysisService:
                             logger.info(spm_inference.z[:10]) # .z es la curva F
                             # The spm_test_results dictionary will be built from spm_inference later.
                         
-                        if spm_inference: # Check if spm_inference object exists and has p_value
-                             logger.info(f"Análisis SPM completado. P-valor global: {spm_inference.p_value if hasattr(spm_inference, 'p_value') else 'N/A'}")
+                        if spm_inference: # Check if spm_inference object exists and has p-value
+                             logger.info(f"Análisis SPM completado. P-valor global: {spm_inference.p if hasattr(spm_inference, 'p') else 'N/A'}")
                              # Aquí se podrían inferir clusters, etc.
                              # spm_inference.plot() # Para visualización directa si se ejecuta interactivamente
                              # spm_inference.print_results()
@@ -1097,7 +1098,7 @@ class AnalysisService:
                     current_spm_results_dict = {
                         "test_type": "unknown", 
                         "stat_curve": spm_inference.z.tolist() if hasattr(spm_inference, 'z') else None,
-                        "p_value": spm_inference.p_value if hasattr(spm_inference, 'p_value') else None,
+                        "p_value": spm_inference.p if hasattr(spm_inference, 'p') else None, # Use .p for p-value
                         # TODO: Add other relevant fields from spm_inference, e.g., clusters, df
                     }
                     # Determine test_type based on what was run (using valid_data_for_spm from SPM block)
