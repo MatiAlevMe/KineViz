@@ -1074,11 +1074,59 @@ class AnalysisService:
             logger.critical(f"Error inesperado durante análisis continuo '{analysis_name_log}': {e}", exc_info=True)
             raise # Relanzar
         
-        # Si todo va bien, aquí se guardaría el análisis y se devolvería la ruta o un ID.
-        # Por ahora, el placeholder es suficiente.
-        # TODO: Guardar configuración del análisis continuo, resultados SPM, gráficos.
-        # Crear una subcarpeta en "Analisis Continuo" con el nombre del análisis.
+        # --- Guardar Configuración y Resultados SPM ---
+        # Crear directorio para este análisis continuo
+        analysis_output_dir = None
+        saved_config_path_str = None
+        saved_spm_results_path_str = None
 
+        try:
+            study_path = self.file_service._get_study_path(study_id)
+            if not study_path:
+                raise ValueError(f"No se pudo obtener la ruta del estudio {study_id} para guardar el análisis continuo.")
+
+            # Nombre del análisis ya validado por ContinuousAnalysisConfigDialog
+            analysis_name = config.get('analysis_name')
+            if not analysis_name: # Doble chequeo
+                raise ValueError("El nombre del análisis es requerido para guardar los resultados.")
+
+            analysis_output_dir = study_path / "Analisis Continuo" / analysis_name
+            analysis_output_dir.mkdir(parents=True, exist_ok=True)
+            logger.info(f"Directorio de salida para análisis continuo '{analysis_name}': {analysis_output_dir}")
+
+            # Guardar la configuración del análisis
+            config_file_path = analysis_output_dir / "config_continuous.json"
+            with open(config_file_path, 'w', encoding='utf-8') as f_cfg:
+                json.dump(config, f_cfg, indent=4, allow_nan=True)
+            saved_config_path_str = str(config_file_path)
+            logger.info(f"Configuración del análisis continuo guardada en: {config_file_path}")
+
+            # Guardar resultados SPM si existen
+            if spm_test_results:
+                spm_results_file_path = analysis_output_dir / "spm_results.json"
+                with open(spm_results_file_path, 'w', encoding='utf-8') as f_spm:
+                    # Convertir arrays de NumPy a listas para serialización JSON
+                    serializable_spm_results = spm_test_results.copy()
+                    if 'stat_curve' in serializable_spm_results and isinstance(serializable_spm_results['stat_curve'], np.ndarray):
+                        serializable_spm_results['stat_curve'] = serializable_spm_results['stat_curve'].tolist()
+                    
+                    json.dump(serializable_spm_results, f_spm, indent=4, allow_nan=True)
+                saved_spm_results_path_str = str(spm_results_file_path)
+                logger.info(f"Resultados SPM guardados en: {spm_results_file_path}")
+            
+            results_payload["config_path"] = saved_config_path_str
+            if saved_spm_results_path_str:
+                results_payload["spm_results_path"] = saved_spm_results_path_str
+            results_payload["output_dir"] = str(analysis_output_dir)
+
+        except Exception as e_save:
+            logger.error(f"Error guardando resultados del análisis continuo '{analysis_name_log}': {e_save}", exc_info=True)
+            # Actualizar payload para reflejar error de guardado, pero no sobrescribir error de análisis si ya existe
+            if results_payload.get("status") != "error":
+                results_payload["status"] = "error_saving"
+            results_payload["message"] = results_payload.get("message", "") + f" Error al guardar resultados: {e_save}."
+        
+        return results_payload
 
     # --- Métodos para Análisis Discreto (Fase 6) ---
 
