@@ -1069,56 +1069,87 @@ class AnalysisService:
             # --- Guardar Configuración y Resultados SPM (MOVED INSIDE MAIN TRY) ---
             # Crear directorio para este análisis continuo
             analysis_output_dir_path_obj = None # Path object
-        saved_config_path_str = None
-        saved_spm_results_path_str = None
+            # The line `analysis_output_dir_path_obj = None # Path object` is already present from the previous patch.
+            # New saving logic starts here, inside the main try block.
 
-        try:
-            study_path = self.file_service._get_study_path(study_id)
-            if not study_path:
-                raise ValueError(f"No se pudo obtener la ruta del estudio {study_id} para guardar el análisis continuo.")
+            try: # Nested try for saving operations
+                study_path = self.file_service._get_study_path(study_id)
+                if not study_path:
+                    raise ValueError(f"No se pudo obtener la ruta del estudio {study_id} para guardar el análisis continuo.")
 
-            # Nombre del análisis ya validado por ContinuousAnalysisConfigDialog
-            analysis_name = config.get('analysis_name')
-            if not analysis_name: # Doble chequeo
-                raise ValueError("El nombre del análisis es requerido para guardar los resultados.")
+                analysis_name = config.get('analysis_name')
+                if not analysis_name: 
+                    raise ValueError("El nombre del análisis es requerido para guardar los resultados.")
 
-            analysis_output_dir = study_path / "Analisis Continuo" / analysis_name
-            analysis_output_dir.mkdir(parents=True, exist_ok=True)
-            logger.info(f"Directorio de salida para análisis continuo '{analysis_name}': {analysis_output_dir}")
+                # Define the actual output directory path for this saving operation
+                current_analysis_output_dir = study_path / "Analisis Continuo" / analysis_name
+                current_analysis_output_dir.mkdir(parents=True, exist_ok=True)
+                logger.info(f"Directorio de salida para análisis continuo '{analysis_name}': {current_analysis_output_dir}")
+                results_payload["output_dir"] = str(current_analysis_output_dir)
 
-            # Guardar la configuración del análisis
-            config_file_path = analysis_output_dir / "config_continuous.json"
-            with open(config_file_path, 'w', encoding='utf-8') as f_cfg:
-                json.dump(config, f_cfg, indent=4, allow_nan=True)
-            saved_config_path_str = str(config_file_path)
-            logger.info(f"Configuración del análisis continuo guardada en: {config_file_path}")
+                config_file_path = current_analysis_output_dir / "config_continuous.json"
+                with open(config_file_path, 'w', encoding='utf-8') as f_cfg:
+                    json.dump(config, f_cfg, indent=4, allow_nan=True)
+                results_payload["config_path"] = str(config_file_path)
+                logger.info(f"Configuración del análisis continuo guardada en: {config_file_path}")
 
-            # Guardar resultados SPM si existen
-            if spm_test_results:
-                spm_results_file_path = analysis_output_dir / "spm_results.json"
-                with open(spm_results_file_path, 'w', encoding='utf-8') as f_spm:
-                    # Convertir arrays de NumPy a listas para serialización JSON
-                    serializable_spm_results = spm_test_results.copy()
-                    if 'stat_curve' in serializable_spm_results and isinstance(serializable_spm_results['stat_curve'], np.ndarray):
-                        serializable_spm_results['stat_curve'] = serializable_spm_results['stat_curve'].tolist()
+                if spm_inference: # Check the spm1d inference object
+                    current_spm_results_dict = {
+                        "test_type": "unknown", 
+                        "stat_curve": spm_inference.z.tolist() if hasattr(spm_inference, 'z') else None,
+                        "p_value": spm_inference.p_value if hasattr(spm_inference, 'p_value') else None,
+                        # TODO: Add other relevant fields from spm_inference, e.g., clusters, df
+                    }
+                    # Determine test_type based on what was run (using valid_data_for_spm from SPM block)
+                    # Re-evaluate valid_data_for_spm here to ensure it's correctly scoped for this logic
+                    data_for_spm_for_test_type = [normalized_data[key] for key in group_keys_for_spm if normalized_data[key]]
+                    valid_data_for_spm_for_test_type = [group_data for group_data in data_for_spm_for_test_type if len(group_data) > 0]
+
+                    if len(valid_data_for_spm_for_test_type) == 2: current_spm_results_dict["test_type"] = "ttest"
+                    elif len(valid_data_for_spm_for_test_type) > 2: current_spm_results_dict["test_type"] = "anova1"
                     
-                    json.dump(serializable_spm_results, f_spm, indent=4, allow_nan=True)
-                saved_spm_results_path_str = str(spm_results_file_path)
-                logger.info(f"Resultados SPM guardados en: {spm_results_file_path}")
-            
-            results_payload["config_path"] = saved_config_path_str
-            if saved_spm_results_path_str:
-                results_payload["spm_results_path"] = saved_spm_results_path_str
-            results_payload["output_dir"] = str(analysis_output_dir)
+                    results_payload["spm_results"] = current_spm_results_dict 
 
-        except Exception as e_save:
-            logger.error(f"Error guardando resultados del análisis continuo '{analysis_name_log}': {e_save}", exc_info=True)
-            # Actualizar payload para reflejar error de guardado, pero no sobrescribir error de análisis si ya existe
-            if results_payload.get("status") != "error":
+                    spm_results_file_path = current_analysis_output_dir / "spm_results.json"
+                    with open(spm_results_file_path, 'w', encoding='utf-8') as f_spm:
+                        json.dump(current_spm_results_dict, f_spm, indent=4, allow_nan=True)
+                    results_payload["spm_results_path"] = str(spm_results_file_path)
+                    logger.info(f"Resultados SPM guardados en: {spm_results_file_path}")
+                
+                # Update final status and message based on successful saving and analysis
+                if spm_inference and not spm_error_message:
+                    results_payload["status"] = "success"
+                    results_payload["message"] = "Análisis SPM y guardado completados."
+                elif not spm_error_message: # Normalization OK, SPM not run or failed, but saving config OK
+                    results_payload["status"] = "partial_success"
+                    results_payload["message"] = "Datos normalizados generados y configuración guardada. Análisis SPM no ejecutado o falló."
+                else: # spm_error_message exists
+                    results_payload["status"] = "error_in_spm_analysis" 
+                    results_payload["message"] = f"Configuración guardada. Error en análisis SPM: {spm_error_message}"
+
+            except Exception as e_save: # Catch errors during saving
+                logger.error(f"Error guardando resultados del análisis continuo '{analysis_name_log}': {e_save}", exc_info=True)
                 results_payload["status"] = "error_saving"
-            results_payload["message"] = results_payload.get("message", "") + f" Error al guardar resultados: {e_save}."
-        
-        return results_payload
+                # Append to existing message if analysis had a message, otherwise set new one
+                base_message = spm_error_message if spm_error_message else "Error en la fase de análisis."
+                # Use the message from the results_payload if it's more specific than the default
+                if results_payload.get("message") and results_payload["message"] != "Análisis continuo no completado.":
+                     base_message = results_payload["message"]
+                results_payload["message"] = f"{base_message} Adicionalmente, error al guardar resultados: {e_save}."
+            
+            # This return is now the main successful return path from the primary try block
+            return results_payload
+
+        except ValueError as ve: # Outer handler for normalization/validation errors
+            logger.error(f"Error de validación o datos al preparar análisis continuo '{analysis_name_log}': {ve}", exc_info=True)
+            results_payload["message"] = str(ve) 
+            # results_payload["status"] is already "error" by default
+            return results_payload 
+        except Exception as e: # Outer catch-all for unexpected errors
+            logger.critical(f"Error inesperado durante análisis continuo '{analysis_name_log}': {e}", exc_info=True)
+            results_payload["message"] = f"Error inesperado: {e}" 
+            # results_payload["status"] is already "error" by default
+            return results_payload
 
     # --- Métodos para Análisis Discreto (Fase 6) ---
 
