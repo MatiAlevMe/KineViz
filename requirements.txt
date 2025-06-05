@@ -5,6 +5,7 @@ reportlab>=4.0.0
 scipy
 scikit-posthocs>=0.7.0 
 seaborn
+spm1d
 plotly
 PyPDF2>=2.0.0
 python-dateutil>=2.8.2
