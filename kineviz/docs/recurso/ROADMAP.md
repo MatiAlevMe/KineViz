@@ -199,7 +199,7 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 
 *   **1. Diseño y Prototipado de UI para Análisis Continuo:**
     *   **1.1 Botón en `StudyView`**: (Hecho) Añadir botón "Análisis Continuo" en la vista de estudio, junto al de "Análisis Discreto".
-    *   **1.2 Crear `ContinuousAnalysisConfigDialog` (o similar)**: (En Progreso) Creado diálogo base para configurar el análisis continuo.
+    *   **1.2 Crear `ContinuousAnalysisConfigDialog` (o similar)**: (Hecho) Creado diálogo base para configurar el análisis continuo.
         *   Selección de Tipo de datos (ej: Cinemática, Cinética). Solo permite Cinemática inicialmente. (Hecho - UI Element y carga de datos)
         *   Selección de Variable/Columna de Agrupación: Permitir al usuario seleccionar la variable específica a analizar (ej: "LAnkleAngles_X", "KneeMoment_Y"). Esto implica identificar y listar las columnas de datos relevantes de los archivos procesados, excluyendo "Frame", "Sub Frame" y "Tiempo". (Hecho - UI Element y carga de datos)
         *   Selector de Descriptores: Permitir al usuario seleccionar dos o más grupos de descriptores (basados en las VIs del estudio) para comparar. (Pendiente) (Reutilizar el formato de UI del análisis discreto)
@@ -208,21 +208,21 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
         *   Mostrar filtros y opciones de ordenación para la lista de análisis.
         *   Proveer opciones para cada análisis: ver gráfico SPM, ver tabla de datos normalizados/resultados, abrir carpeta de resultados, eliminar análisis.
 *   **2. Implementación de Normalización de Datos Temporales:**
-    *   **2.1 Lógica de Normalización Temporal**: (En Progreso) Implementar una función (posiblemente en `processors.py` o un nuevo módulo) para normalizar la duración de las secuencias de datos a 101 puntos (0-100%).
+    *   **2.1 Lógica de Normalización Temporal**: (Hecho) Implementar una función (posiblemente en `processors.py` o un nuevo módulo) para normalizar la duración de las secuencias de datos a 101 puntos (0-100%).
         *   Esto se aplicará a la variable seleccionada para cada archivo/sujeto/intento.
         *   Investigar y aplicar métodos de interpolación adecuados (ej: splines, interpolación lineal).
-    *   **2.2 Procesamiento de Archivos para Normalización**: (Pendiente) En `AnalysisService`, crear lógica para:
+    *   **2.2 Procesamiento de Archivos para Normalización**: (Hecho) En `AnalysisService`, crear lógica para:
         *   Identificar los archivos relevantes del estudio según los tipos de datos y sub-valores seleccionados.
         *   Leer la columna de datos de la variable de interés de cada archivo.
         *   Aplicar la normalización temporal.
-    *   **2.3 Estructura de Datos Normalizados**: (Pendiente) Definir cómo se organizarán los datos normalizados para el análisis SPM. Típicamente, matrices donde las filas son sujetos/observaciones y las columnas son los 101 puntos de tiempo.
+    *   **2.3 Estructura de Datos Normalizados**: (Hecho) `AnalysisService._get_normalized_data_for_groups` devuelve un diccionario de listas de arrays NumPy (101 puntos), adecuado para SPM.
 *   **3. Lógica de Análisis Estadístico Continuo (usando `spm1d`):**
-    *   **3.1 Integración de la Librería `spm1d`**: (Pendiente) Añadir `spm1d` como dependencia del proyecto.
-    *   **3.2 `AnalysisService.perform_continuous_analysis`**: (Pendiente) Nuevo método que:
-        *   Recopile los datos normalizados para la variable y los grupos de descriptores seleccionados.
-        *   Prepare los datos en el formato requerido por `spm1d`.
-        *   Ejecute los tests estadísticos apropiados de `spm1d` (ej: `spm1d.stats.ttest`, `spm1d.stats.anova1` según el número de grupos de descriptores).
-        *   Obtenga los resultados del análisis SPM, incluyendo la curva del estadístico (ej: t-valor) y los p-valores a lo largo del continuo temporal.
+    *   **3.1 Integración de la Librería `spm1d`**: (En Progreso) Añadida importación de `spm1d` a `AnalysisService`.
+    *   **3.2 `AnalysisService.perform_continuous_analysis`**: (En Progreso) Método expandido para:
+        *   Orquestar la preparación de datos (llamando a `_get_normalized_data_for_groups`).
+        *   Recibir los datos normalizados y agrupados.
+        *   Preparar los datos en el formato requerido por `spm1d`.
+        *   Ejecutar tests básicos de `spm1d` (`ttest_ind`, `anova1`) y loguear resultados.
     *   **3.3 Almacenamiento de Resultados SPM**: (Pendiente) Guardar los resultados del análisis (ej: la curva SPM, clusters significativos, p-valores) en un formato accesible (ej: JSON, CSV).
 *   **4. Generación de Gráficos y Tablas para Análisis Continuo:**
     *   **4.1 `charting.py` - Nuevas Funciones para Gráficos SPM**: (Pendiente)
