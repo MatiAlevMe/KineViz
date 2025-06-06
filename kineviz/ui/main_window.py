@@ -70,7 +70,7 @@ class MainWindow:
         elif 'default' in available_themes:
             self.style.theme_use('default')
 
-        self.style.configure('TButton', padding=6, font=('Helvetica', 10), relief="flat")
+        self.style.configure('TButton', padding=6, font=('Helvetica', 10), relief="raised", borderwidth=1) # Added borderwidth for clarity
         self.style.map('TButton',
                        foreground=[('pressed', 'red'), ('active', 'blue')],
                        background=[('pressed', '!disabled', 'lightgrey'), ('active', 'white')]) # Ajustar colores
