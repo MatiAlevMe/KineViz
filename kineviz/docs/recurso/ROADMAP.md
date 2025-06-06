@@ -134,7 +134,7 @@ Detalle: Modificar la lógica en `kineviz.core.data_processing.file_handlers.lee
 2.3 Botón Ayuda VI: Añadido botón `(?)` coloreado que abre `kineviz/docs/help/study_dialog_iv_help.txt`.
 3. Refactorizar Validación (`validators.py`).
 3.1 Validador Datos Estudio: Creado `validate_study_iv_data` (incluye regla anti-"Nulo").
-3.2 Validador Nombres Archivo: Reescrito `validate_filename_for_study_criteria` para formato `PteXX [VAL_VI1]...[VAL_VIn] NN`, orden, valores permitidos (incl. "Nulo"), regla de al menos un descriptor no-Nulo. Devuelve `(bool, list[str|None])`.
+3.2 Validador Nombres Archivo: Reescrito `validate_filename_for_study_criteria` para formato `[ID_Participante] [VAL_VI1]...[VAL_VIn] NN`, donde `ID_Participante` es una combinación de letras seguidas de números (ej: `P01`, `Sujeto007`). Valida orden de VIs, valores permitidos (incl. "Nulo"), y regla de al menos un descriptor no-Nulo. Devuelve `(bool, subject_id, list[str|None], attempt_num)`.
 3.3 Eliminar Validador Antiguo: Eliminado `validate_study_data`.
 4. Integrar Validación.
 4.1 `StudyDialog`: Usa `validate_study_iv_data` en `save` (corregido bug edición).

@@ -1,4 +1,5 @@
 import logging
+import re # Importar re para expresiones regulares
 from pathlib import Path
 from typing import List, Tuple, Dict, Any, Optional, Set # Para type hints
 
@@ -117,14 +118,15 @@ def validate_filename_for_study_criteria(
     Valida si un nombre de archivo cumple con la estructura de VIs del estudio
     y extrae el ID del sujeto, los sub-valores y el número de intento.
 
-    Formato esperado: PteXX [VAL_VI1] [VAL_VI2] ... [VAL_VIn] NN[_TipoDeDato].ext
-    Permite 'Nulo' como valor. Verifica orden y pertenencia a sub-valores de cada VI.
+    Formato esperado: [ID_Participante] [VAL_VI1] [VAL_VI2] ... [VAL_VIn] NN[_TipoDeDato].ext
+    Donde [ID_Participante] es una combinación de letras seguidas de números (ej: P01, Sujeto007).
+    Permite 'Nulo' como valor para VAL_VI. Verifica orden y pertenencia a sub-valores de cada VI.
 
     :param filename: Nombre del archivo (sin ruta, solo nombre base con extensión).
     :param independent_variables: Lista de VIs definidas para el estudio
                                   (ej: [{'name': 'Tipo', 'descriptors': ['A', 'B']}]).
     :return: Tupla (bool, subject_id|None, list[str|None], attempt_num|None).
-             - Si es válido: (True, "PteXX", lista_sub-valores, NN).
+             - Si es válido: (True, "ID_Participante", lista_sub-valores, NN).
              - Si es inválido: (False, None, [], None).
     """
     logger.debug(f"--- Validando nombre archivo: '{filename}' ---")
@@ -147,13 +149,16 @@ def validate_filename_for_study_criteria(
 
     # 3. Validaciones básicas de estructura y extracción de PteXX y NN
     if len(parts) < 2:
-        logger.debug("Fallo: Menos de 2 partes (se espera PteXX y NN).")
+        logger.debug("Fallo: Menos de 2 partes (se espera ID_Participante y NN).")
         return invalid_return
+
     subject_id_part = parts[0]
-    if not subject_id_part.lower().startswith('pte') or not subject_id_part[3:].isdigit():
-        logger.debug(f"Fallo: Primera parte '{subject_id_part}' no sigue el formato 'PteXX'.")
+    # Validar formato "Texto+Numero" para ID de participante (e.g., P01, Sujeto007)
+    # Debe consistir en una o más letras seguidas de uno o más números.
+    if not re.match(r"^[a-zA-Z]+[0-9]+$", subject_id_part):
+        logger.debug(f"Fallo: Primera parte '{subject_id_part}' no sigue el formato 'Texto+Numero' (ej: P01, Sujeto007).")
         return invalid_return
-    subject_id = subject_id_part # Guardar el PteXX extraído
+    subject_id = subject_id_part # Guardar el ID_Participante extraído
 
     attempt_num_part = parts[-1]
     if not attempt_num_part.isdigit():

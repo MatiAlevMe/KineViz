@@ -27,7 +27,11 @@ Muestra una lista de todos los estudios cargados al sistema.
 ## Ventana: Vista del Estudio (Lista de Archivos)
 Muestra una lista de todos los archivos del Estudio específico.
 1.  **Agregar Archivos**: Haga clic en el botón "Agregar Archivos" para agregar archivos al estudio.
-2.  **Formato de Archivo**: Los nombres de archivo deben seguir un formato consistente que incluya el identificador del sujeto y, opcionalmente, los sub-valores definidos para el estudio (ej: "P01 CMJ PRE 01.txt"). La validación exacta basada en sub-valores se implementará en futuras versiones.
+2.  **Formato de Archivo**: Los nombres de archivo deben seguir un formato consistente: `ID_Participante [SubValorVI1] [SubValorVI2] ... Intento.txt` (o .csv).
+    *   `ID_Participante`: Debe comenzar con una o más letras seguidas de uno o más números (ej: `P01`, `Sujeto007`, `Participante1`). No debe contener espacios.
+    *   `[SubValorVI...]`: Son los sub-valores de las Variables Independientes definidas para el estudio, separados por espacios. Si un sub-valor no aplica, se puede usar la palabra `Nulo`.
+    *   `Intento`: Un número que indica el intento de la prueba.
+    *   Ejemplo: `P01 CMJ PRE 1.txt`, `Sujeto02 SJ Nulo 3.csv`.
 3.  **Eliminar Archivos**: Haga clic en el botón "Eliminar" junto a un archivo para eliminarlo del estudio.
 4.  **Ver Archivos**: Haga clic en el botón "Ver" para abrir el archivo con la aplicación predeterminada del sistema.
 5. Abrir Carpeta de Estudio: Abre la carpeta que contiene el Estudio seleccionado.

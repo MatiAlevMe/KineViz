@@ -48,7 +48,7 @@ La aplicación sigue una estructura modular para separar responsabilidades:
 `FileBrowser`: Widget para listar, filtrar y gestionar archivos dentro de un estudio, con paginación.
 `charting`: Módulo para generar gráficos estáticos (con `matplotlib`/`seaborn`) e interactivos (con `plotly`), como boxplots y gráficos de barras.
 `ui.utils`: Utilidades específicas de la interfaz de usuario.
-`validators`: Contiene funciones para validar entradas del usuario, nombres de archivo según criterios de VIs, y la consistencia de los datos del estudio.
+`validators`: Contiene funciones para validar entradas del usuario, nombres de archivo según criterios de VIs (formato `ID_Participante [VI_Subvalor1] ... Intento`, donde `ID_Participante` es texto+número), y la consistencia de los datos del estudio.
 
 3.3 `kineviz.database` - Persistencia de Datos
 `database.repositories.StudyRepository`: Implementa el patrón Repositorio para abstraer las interacciones con la base de datos SQLite (`kineviz.db`). Es responsable de la creación de tablas y las operaciones CRUD para los datos de los estudios (metadatos, VIs, alias).
@@ -78,7 +78,7 @@ La aplicación sigue una estructura modular para separar responsabilidades:
 2.4. `FileService`:
 
 2.4.1 Obtiene las VIs del estudio desde `StudyService`.
-2.4.2. Valida los nombres de los archivos contra las VIs y sus descriptores (usando `validators.validate_filename_for_study_criteria`).
+2.4.2. Valida los nombres de los archivos contra las VIs y sus descriptores (usando `validators.validate_filename_for_study_criteria`, que espera un formato como `IDParticipante [SubValorVI1] ... Intento.ext`, donde `IDParticipante` es texto seguido de números, ej: `P01`).
 2.4.3. Valida contra el número de sujetos e intentos definidos en el estudio.
 2.4.4. Valida contra las reglas de combinación y obligatoriedad de las VIs (usando `validators.validate_files_for_vi_rules`).
 2.4.5. Si las validaciones son exitosas, copia los archivos originales a la estructura de carpetas del estudio (`estudios/<nombre_estudio>/<nombre_paciente>/origen/`).
@@ -132,9 +132,9 @@ Claves de Grupo para Análisis: String combinado que representa una condición e
 
 ## 7. Notas sobre el Descriptor "Nulo"
 Concepto: "Nulo" es un valor de descriptor especial que indica la ausencia de un descriptor específico para una Variable Independiente (VI) en un archivo particular. Esto es útil cuando una VI no aplica a todas las mediciones o cuando se quiere analizar un efecto principal ignorando otras VIs.
-En Nombres de Archivo: Si una VI no es obligatoria y no se especifica un descriptor para ella en un archivo, se asume "Nulo" para esa VI al parsear el nombre del archivo. El validador `validate_filename_for_study_criteria` maneja esto.
+En Nombres de Archivo: Si una VI no es obligatoria y no se especifica un descriptor para ella en un archivo, se puede usar explícitamente la palabra `Nulo` en el nombre del archivo para esa posición de VI (ej: `P01 CMJ Nulo 1.txt`). El validador `validate_filename_for_study_criteria` maneja esto.
 En Lógica de Agrupación: Al identificar grupos para análisis (`_identify_study_groups`), "Nulo" se trata como cualquier otro descriptor, permitiendo agrupar archivos que comparten la "ausencia" de ciertos descriptores. La clave de grupo reflejará esto, ej: `"VI1=CMJ;VI2=Nulo"`.
-Validación: Existe una regla que impide nombrar explícitamente un descriptor como "Nulo" durante la definición de VIs en `StudyDialog` para evitar ambigüedades. "Nulo" es un estado implícito.
+Validación: Existe una regla que impide nombrar explícitamente un descriptor como "Nulo" (ignorando mayúsculas/minúsculas) durante la definición de VIs en `StudyDialog` para evitar ambigüedades. "Nulo" es un estado que se representa con `None` internamente o la palabra "Nulo" en el nombre de archivo.
 Regla "Al Menos Un Descriptor No-Nulo": Para que un nombre de archivo sea válido, debe contener al menos un descriptor que no sea "Nulo" (implícito o explícito) si hay VIs definidas. Esto asegura que el archivo se asocie con alguna condición experimental.
 
 ## 8. Consideraciones Adicionales
