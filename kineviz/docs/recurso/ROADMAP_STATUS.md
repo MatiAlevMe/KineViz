@@ -42,7 +42,7 @@
 12. Adaptar `get_common_columns_for_groups` para efectos principales. (Hecho)
 13. Integración y Pruebas. (En Progreso)
 
-## Fase 3: Refactorización a Variables Independientes (VI) y Mejoras UI/Validación (En Progreso)
+## Fase 3: Refactorización a Variables Independientes (VI) y Mejoras UI/Validación (Hecho)
 1. Modificar Modelo de Estudio. (Hecho)
 1.1 DB Conceptual. (Hecho)
 1.2 Repositorio (`StudyRepository`). (Hecho)
@@ -51,9 +51,9 @@
 2.1 Flujo UI. (Hecho)
 2.2 Restricciones Edición. (Hecho)
 2.3 Botón Ayuda VI. (Hecho)
-3. Refactorizar Validación (`validators.py`). (En Progreso)
+3. Refactorizar Validación (`validators.py`). (Hecho)
 3.1 Validador Datos Estudio. (Hecho)
-3.2 Validador Nombres Archivo. (En Progreso - Actualizado para permitir formato de ID de participante "Texto+Numero" en lugar de solo "PteXX").
+3.2 Validador Nombres Archivo. (Hecho - Actualizado para permitir formato de ID de participante "Texto+Numero" en lugar de solo "PteXX". Documentación de ayuda actualizada.)
 3.3 Eliminar Validador Antiguo. (Hecho)
 4. Integrar Validación. (Hecho)
 4.1 `StudyDialog`. (Hecho)
