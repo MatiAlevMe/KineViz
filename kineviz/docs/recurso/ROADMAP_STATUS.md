@@ -51,9 +51,9 @@
 2.1 Flujo UI. (Hecho)
 2.2 Restricciones Edición. (Hecho)
 2.3 Botón Ayuda VI. (Hecho)
-3. Refactorizar Validación (`validators.py`). (Hecho)
+3. Refactorizar Validación (`validators.py`). (En Progreso)
 3.1 Validador Datos Estudio. (Hecho)
-3.2 Validador Nombres Archivo. (Hecho)
+3.2 Validador Nombres Archivo. (En Progreso - Actualizado para permitir formato de ID de participante "Texto+Numero" en lugar de solo "PteXX").
 3.3 Eliminar Validador Antiguo. (Hecho)
 4. Integrar Validación. (Hecho)
 4.1 `StudyDialog`. (Hecho)
