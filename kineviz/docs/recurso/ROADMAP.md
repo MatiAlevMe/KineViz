@@ -202,7 +202,7 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
     *   **1.2 Crear `ContinuousAnalysisConfigDialog` (o similar)**: (Hecho) Creado diálogo base para configurar el análisis continuo.
         *   Selección de Tipo de datos (ej: Cinemática, Cinética). Solo permite Cinemática inicialmente. (Hecho - UI Element y carga de datos)
         *   Selección de Variable/Columna de Agrupación: Permitir al usuario seleccionar la variable específica a analizar (ej: "LAnkleAngles_X", "KneeMoment_Y"). Esto implica identificar y listar las columnas de datos relevantes de los archivos procesados, excluyendo "Frame", "Sub Frame" y "Tiempo". (Hecho - UI Element y carga de datos)
-        *   Selector de Descriptores: Permitir al usuario seleccionar dos o más grupos de descriptores (basados en las VIs del estudio) para comparar. (Pendiente) (Reutilizar el formato de UI del análisis discreto)
+        *   Selector de Descriptores: Permitir al usuario seleccionar dos o más grupos de descriptores (basados en las VIs del estudio) para comparar. (Hecho - Implementado para modo 1VI y 2VIs [efectos simples])
     *   **1.3 Crear `ContinuousAnalysisResultsView` (o similar)**: (Pendiente) Vista o sección en la UI para:
         *   Listar los análisis continuos generados (nombre, columna, vi, sub-valores).
         *   Mostrar filtros y opciones de ordenación para la lista de análisis.
@@ -217,13 +217,13 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
         *   Aplicar la normalización temporal.
     *   **2.3 Estructura de Datos Normalizados**: (Hecho) `AnalysisService._get_normalized_data_for_groups` devuelve un diccionario de listas de arrays NumPy (101 puntos), adecuado para SPM.
 *   **3. Lógica de Análisis Estadístico Continuo (usando `spm1d`):**
-    *   **3.1 Integración de la Librería `spm1d`**: (En Progreso) Añadida importación de `spm1d` a `AnalysisService`.
-    *   **3.2 `AnalysisService.perform_continuous_analysis`**: (En Progreso) Método expandido para:
+    *   **3.1 Integración de la Librería `spm1d`**: (Hecho)
+    *   **3.2 `AnalysisService.perform_continuous_analysis`**: (En Progreso - ttest2 funcional, anova1 con errores) Método expandido para:
         *   Orquestar la preparación de datos (llamando a `_get_normalized_data_for_groups`).
         *   Recibir los datos normalizados y agrupados.
         *   Preparar los datos en el formato requerido por `spm1d`.
-        *   Ejecutar tests básicos de `spm1d` (`ttest_ind`, `anova1`) y loguear resultados.
-    *   **3.3 Almacenamiento de Resultados SPM**: (Pendiente) Guardar los resultados del análisis (ej: la curva SPM, clusters significativos, p-valores) en un formato accesible (ej: JSON, CSV).
+        *   Ejecutar tests básicos de `spm1d` (`ttest2`, `anova1`) y loguear resultados.
+    *   **3.3 Almacenamiento de Resultados SPM**: (En Progreso - Guardado básico de curva de estadístico y p-valor implementado. Detalles de clusters pendientes.) Guardar los resultados del análisis (ej: la curva SPM, clusters significativos, p-valores) en un formato accesible (ej: JSON, CSV).
 *   **4. Generación de Gráficos y Tablas para Análisis Continuo:**
     *   **4.1 `charting.py` - Nuevas Funciones para Gráficos SPM**: (Pendiente)
         *   Función para generar gráficos de curvas comparativas: una curva promedio por cada grupo de descriptores, mostrando la variable a lo largo del tiempo normalizado.
@@ -243,7 +243,7 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
         *   `get_continuous_analysis_details(study_id, analysis_name_or_id)`: Obtiene detalles/archivos de un análisis.
     *   **5.2 Integración con UI**: (Pendiente) Conectar estos métodos a `ContinuousAnalysisResultsView` para la gestión de los análisis.
 *   **6. Validación y Consideraciones Adicionales:**
-    *   **6.1 Exclusión de Columnas Irrelevantes**: (Pendiente) Asegurar que las columnas "Frame" y "Sub Frame" se excluyan del selector de variables y del análisis.
+    *   **6.1 Exclusión de Columnas Irrelevantes**: (Hecho - `get_data_columns_for_frequency` excluye 'Frame', 'Sub Frame', 'Tiempo'). Asegurar que las columnas "Frame" y "Sub Frame" se excluyan del selector de variables y del análisis.
     *   **6.2 Validación de Entradas del Usuario**: (Pendiente) Validar las selecciones en `ContinuousAnalysisConfigDialog` (ej: al menos dos grupos de descriptores, variable válida).
 *   **7. Pruebas:**
     *   **7.1 Pruebas Unitarias**: (Pendiente) Para la lógica de normalización, interacción con `spm1d`, y generación de gráficos/tablas.
