@@ -37,7 +37,11 @@ Esta vista te permite gestionar los archivos y análisis de un estudio específi
 
 **Formato de Nombres de Archivo:**
 
-* `PteXX [Desc_VI1] [Desc_VI2] ... NN_TipoDeDato.ext`
+* `ID_Participante [Desc_VI1] [Desc_VI2] ... NN_TipoDeDato.ext`
+    * `ID_Participante`: Debe comenzar con una o más letras seguidas de uno o más números (ej: `P01`, `Sujeto007`, `Participante1`). No debe contener espacios.
+    * `[Desc_VI1]`, `[Desc_VI2]`, ...: Sub-valores de las VIs definidas, en orden.
+    * `NN`: Número de intento.
+    * `_TipoDeDato.ext`: Sufijo y extensión.
 * Usa `Nulo` si un sub-valor no aplica para una VI en ese archivo.
 * Debe haber **al menos un** sub-valor que **no** sea `Nulo`.
 * El **orden** de los sub-valores debe coincidir con el orden de las VIs definidas en el estudio.
