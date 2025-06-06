@@ -227,41 +227,36 @@ class MainWindow:
                           "Bienvenido a KineViz. Esta es una aplicación para la gestión y análisis de estudios kinesiológicos.")
 
     def open_user_manual(self):
-        """Abre y muestra el manual de usuario."""
-        manual_window = Toplevel(self.root)
-        manual_window.title('Manual de Usuario')
-        manual_window.geometry('800x600')
+        """Abre el manual de usuario con la aplicación predeterminada del sistema."""
         # Asume que manual_usuario.txt está en .../KineViz/kineviz/docs/help
         project_root_dir = Path(__file__).resolve().parent.parent.parent
         manual_path = project_root_dir / 'kineviz' / 'docs' / 'help' / 'manual_usuario.txt'
 
+        if not manual_path.exists():
+            messagebox.showerror("Error", f"Manual de usuario no encontrado en:\n'{manual_path}'", parent=self.root)
+            logger.error(f"Manual de usuario no encontrado: {manual_path}")
+            return
+
         try:
-            if manual_path.exists():
-                with open(manual_path, 'r', encoding='utf-8') as file:
-                    manual_content = file.read()
-            else:
-                manual_content = f"Manual de usuario ('{manual_path.name}') no encontrado en '{project_root_dir}'."
+            logger.info(f"Intentando abrir manual de usuario: {manual_path}")
+            if sys.platform == 'win32':
+                os.startfile(manual_path)
+            elif sys.platform == 'darwin': # macOS
+                subprocess.run(['open', str(manual_path)], check=True) # Ensure manual_path is string for subprocess
+            else: # Linux, etc.
+                subprocess.run(['xdg-open', str(manual_path)], check=True) # Ensure manual_path is string for subprocess
+        except FileNotFoundError: # Should be caught by the initial check, but good for safety
+             messagebox.showerror("Error", f"No se pudo encontrar el archivo del manual:\n'{manual_path}'", parent=self.root)
+             logger.error(f"Archivo del manual no encontrado al intentar abrir: {manual_path}", exc_info=True)
+        except PermissionError:
+             messagebox.showerror("Error", f"No tiene permisos para acceder al archivo del manual:\n'{manual_path}'", parent=self.root)
+             logger.error(f"Permiso denegado al abrir el manual: {manual_path}", exc_info=True)
+        except subprocess.CalledProcessError as e:
+             logger.error(f"Comando para abrir el manual {manual_path} falló: {e}", exc_info=True)
+             messagebox.showerror("Error", f"El comando para abrir el manual falló:\n{e}", parent=self.root)
         except Exception as e:
-            manual_content = f"Error al leer el manual de usuario: {str(e)}"
-
-        text_widget = Text(manual_window, wrap='word', relief='flat', bd=0, padx=10, pady=10)
-        text_widget.insert('1.0', manual_content)
-        text_widget.config(state='disabled') # Hacerlo no editable
-
-        scrollbar = Scrollbar(manual_window, command=text_widget.yview, relief='flat', bd=0)
-        text_widget.config(yscrollcommand=scrollbar.set)
-
-        # Usar grid para mejor control del layout
-        manual_window.grid_rowconfigure(0, weight=1)
-        manual_window.grid_columnconfigure(0, weight=1)
-        text_widget.grid(row=0, column=0, sticky='nsew')
-        scrollbar.grid(row=0, column=1, sticky='ns')
-
-        # Centrar la ventana hija en la principal
-        manual_window.transient(self.root)
-        manual_window.grab_set()
-        # No esperar aquí para no bloquear la ventana principal
-        # self.root.wait_window(manual_window)
+            logger.error(f"Error inesperado al abrir el manual {manual_path}: {e}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudo abrir el manual '{manual_path}':\n{str(e)}", parent=self.root)
 
 
     def open_folder(self, folder_path_str):
