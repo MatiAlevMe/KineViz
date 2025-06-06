@@ -41,7 +41,7 @@ La aplicación sigue una estructura modular para separar responsabilidades:
     *   `DescriptorAliasDialog`: Facilita la gestión (creación, edición, eliminación) de alias para los descriptores de las VIs de un estudio.
     *   `ConfigureIndividualAnalysisDialog`: Diálogo para configurar los parámetros de un análisis discreto individual (selección de frecuencia, cálculo, columna, grupos a comparar, y supuestos estadísticos).
     *   `IndividualAnalysisManagerDialog`: Permite listar, visualizar (gráficos estáticos e interactivos), eliminar y abrir la carpeta de resultados de los análisis individuales guardados.
-    *   `ContinuousAnalysisConfigDialog`: Diálogo para configurar los parámetros de un análisis continuo (SPM). Incluye selección de frecuencia de datos y la variable/columna específica a analizar. Futuramente incluirá selección de grupos de descriptores.
+    *   `ContinuousAnalysisConfigDialog`: Diálogo para configurar los parámetros de un análisis continuo (SPM). Incluye selección de frecuencia de datos, la variable/columna específica a analizar, y la selección de grupos de descriptores (para modos 1VI y 2VIs [efectos simples]).
     *   `ConfigDialog`: Permite al usuario modificar configuraciones globales de la aplicación (ej. elementos por página) que se guardan en `config.ini`.
     *   `AnalysisDialog`: (Obsoleto/Comentado) Diálogo anterior para análisis, reemplazado por funcionalidades más específicas.
 *   **`ui.widgets`**: Componentes de UI reutilizables.
