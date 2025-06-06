@@ -25,9 +25,9 @@ Guía Rápida: Variable(s) Independientes (VIs) y Sub-valores
 
 **Nombrar Archivos:**
 
-El formato debe ser: `PteXX [Desc_VI1] [Desc_VI2] ... [Desc_VIn] NN_TipoDeDato.ext`
+El formato debe ser: `ID_Participante [Desc_VI1] [Desc_VI2] ... [Desc_VIn] NN_TipoDeDato.ext`
 
-* `PteXX`: Identificador del paciente.
+* `ID_Participante`: Identificador del participante. Debe comenzar con una o más letras seguidas de uno o más números (ej: `P01`, `Sujeto007`, `Participante1`). No debe contener espacios.
 * `[Desc_VI1]`: Un sub-valor válido de la **primera** VI definida.
 * `[Desc_VI2]`: Un sub-valor válido de la **segunda** VI definida.
 * ... y así sucesivamente para todas las VIs definidas.
@@ -41,11 +41,11 @@ El formato debe ser: `PteXX [Desc_VI1] [Desc_VI2] ... [Desc_VIn] NN_TipoDeDato.e
 
 **Ejemplo (VIs: "Tipo Salto", "Condición"):**
 
-* `Pte01 CMJ Obeso 01_Cinematica.txt` (Válido)
-* `Pte02 SJ Nulo 03_Cinematica.txt` (Válido - Sin condición específica para la segunda VI)
-* `Pte03 Nulo Normal 01_Cinematica.txt` (Válido - Sin tipo de salto específico para la primera VI)
-* `Pte04 CMJ 02_Cinematica.txt` (INVÁLIDO - Falta posición para la segunda VI, "Condición")
-* `Pte05 Nulo Nulo 01_Cinematica.txt` (INVÁLIDO - Debe tener al menos un sub-valor que no sea "Nulo")
+* `P01 CMJ Obeso 01_Cinematica.txt` (Válido)
+* `Sujeto02 SJ Nulo 03_Cinematica.txt` (Válido - Sin condición específica para la segunda VI)
+* `Participante03 Nulo Normal 01_Cinematica.txt` (Válido - Sin tipo de salto específico para la primera VI)
+* `P04 CMJ 02_Cinematica.txt` (INVÁLIDO - Falta posición para la segunda VI, "Condición")
+* `Sujeto05 Nulo Nulo 01_Cinematica.txt` (INVÁLIDO - Debe tener al menos un sub-valor que no sea "Nulo")
 
 **Edición:**
 
