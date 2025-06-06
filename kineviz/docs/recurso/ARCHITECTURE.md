@@ -62,48 +62,52 @@ La aplicación sigue una estructura modular para separar responsabilidades:
 
 ## 4. Flujos de Datos Clave (Ejemplos)
 
-Creación de un Nuevo Estudio:
-    1.  `MainWindow` invoca `show_create_study_dialog()`.
-    2.  Se abre `StudyDialog`. El usuario ingresa los metadatos del estudio y define las Variables Independientes (VIs) y sus descriptores.
-    3.  Al guardar, `StudyDialog` llama a `StudyService.create_study()` con los datos ingresados.
-    4.  `StudyService` valida los datos (usando `validators.validate_study_iv_data`), y luego interactúa con `StudyRepository.create_study()`.
-    5.  `StudyRepository` escribe la información del nuevo estudio en la base de datos SQLite.
-    6.  `DirectoryManager.crear_estructura_estudio()` (llamado desde `StudyService` o `StudyRepository`) crea la carpeta física para el estudio en el sistema de archivos.
-    7.  `MainWindow` refresca la `MainView` para mostrar el nuevo estudio.
+1. Creación de un Nuevo Estudio:
+1.1. `MainWindow` invoca `show_create_study_dialog()`.
+1.2. Se abre `StudyDialog`. El usuario ingresa los metadatos del estudio y define las Variables Independientes (VIs) y sus descriptores.
+1.3. Al guardar, `StudyDialog` llama a `StudyService.create_study()` con los datos ingresados.
+1.4. `StudyService` valida los datos (usando `validators.validate_study_iv_data`), y luego interactúa con `StudyRepository.create_study()`.
+1.5. `StudyRepository` escribe la información del nuevo estudio en la base de datos SQLite.
+1.6. `DirectoryManager.crear_estructura_estudio()` (llamado desde `StudyService` o `StudyRepository`) crea la carpeta física para el estudio en el sistema de archivos.
+1.7. `MainWindow` refresca la `MainView` para mostrar el nuevo estudio.
 
-Adición de Archivos a un Estudio:
-    1.  Desde `StudyView`, el usuario hace clic en "Agregar Archivos", lo que abre `FileDialog`.
-    2.  El usuario selecciona uno o más archivos de datos.
-    3.  `FileDialog` llama a `FileService.add_files_to_study()` con los archivos seleccionados y el ID del estudio.
-    4.  `FileService`:
-        a.  Obtiene las VIs del estudio desde `StudyService`.
-        b.  Valida los nombres de los archivos contra las VIs y sus descriptores (usando `validators.validate_filename_for_study_criteria`).
-        c.  Valida contra el número de sujetos e intentos definidos en el estudio.
-        d.  Valida contra las reglas de combinación y obligatoriedad de las VIs (usando `validators.validate_files_for_vi_rules`).
-        e.  Si las validaciones son exitosas, copia los archivos originales a la estructura de carpetas del estudio (`estudios/<nombre_estudio>/<nombre_paciente>/origen/`).
-        f.  Procesa cada archivo (usando `file_handlers.leer_seccion`) para extraer datos, identificar la frecuencia, y generar un archivo procesado estandarizado en la carpeta correspondiente (ej. `estudios/<nombre_estudio>/<nombre_paciente>/<frecuencia>/`).
-    5.  `StudyView` refresca el `FileBrowser` para mostrar los nuevos archivos.
+2. Adición de Archivos a un Estudio:
+2.1. Desde `StudyView`, el usuario hace clic en "Agregar Archivos", lo que abre `FileDialog`.
+2.2. El usuario selecciona uno o más archivos de datos.
+2.3. `FileDialog` llama a `FileService.add_files_to_study()` con los archivos seleccionados y el ID del estudio.
+2.4. `FileService`:
 
-Realización de un Análisis Discreto Individual:
-    1.  Desde `DiscreteAnalysisView`, el usuario accede a `IndividualAnalysisManagerDialog` y luego a `ConfigureIndividualAnalysisDialog`.
-    2.  El usuario configura los parámetros del análisis: nombre, frecuencia, cálculo (Maximo, Minimo, Rango), columna de datos (variable), grupos a comparar (basados en VIs), y supuestos estadísticos (paramétrico, pareado).
-    3.  El diálogo llama a `AnalysisService.perform_individual_analysis()` con la configuración.
-    4.  `AnalysisService`:
-        a.  Lee los datos relevantes de las tablas de resumen CSV previamente generadas (ubicadas en `estudios/<nombre_estudio>/Analisis Discreto/Tablas/<frecuencia>/`).
-        b.  Agrupa los datos según los grupos seleccionados. Si es un análisis de efecto principal (modo "1VI"), agrega datos de múltiples tablas combinadas.
-        c.  Realiza la prueba estadística seleccionada (ej. t-test, ANOVA, Wilcoxon, Kruskal-Wallis) usando `scipy.stats`.
-        d.  Genera un gráfico boxplot comparativo (estático PNG con `matplotlib`/`seaborn` y opcionalmente interactivo HTML con `plotly`) usando `charting.create_comparison_boxplot` y `charting.create_interactive_comparison_boxplot`.
-        e.  Guarda la configuración del análisis y los resultados estadísticos (p-valor) en un archivo `config.json` y el gráfico en la carpeta del análisis (`estudios/<nombre_estudio>/Analisis Discreto/Individual/<nombre_analisis>/`).
-    5.  Los resultados pueden ser visualizados y gestionados a través de `IndividualAnalysisManagerDialog`.
+2.4.1 Obtiene las VIs del estudio desde `StudyService`.
+2.4.2. Valida los nombres de los archivos contra las VIs y sus descriptores (usando `validators.validate_filename_for_study_criteria`).
+2.4.3. Valida contra el número de sujetos e intentos definidos en el estudio.
+2.4.4. Valida contra las reglas de combinación y obligatoriedad de las VIs (usando `validators.validate_files_for_vi_rules`).
+2.4.5. Si las validaciones son exitosas, copia los archivos originales a la estructura de carpetas del estudio (`estudios/<nombre_estudio>/<nombre_paciente>/origen/`).
+2.4.6. Procesa cada archivo (usando `file_handlers.leer_seccion`) para extraer datos, identificar la frecuencia, y generar un archivo procesado estandarizado en la carpeta correspondiente (ej. `estudios/<nombre_estudio>/<nombre_paciente>/<frecuencia>/`).
 
-Configuración de un Análisis Continuo:
-    1.  Desde `StudyView`, el usuario hace clic en "Análisis Continuo".
-    2.  `MainWindow` llama a `show_continuous_analysis_config_dialog()`.
-    3.  Se abre `ContinuousAnalysisConfigDialog`.
-    4.  El diálogo llama a `AnalysisService.get_available_frequencies_for_study()` para poblar el combobox de frecuencias.
-    5.  Al seleccionar una frecuencia, el diálogo llama a `AnalysisService.get_data_columns_for_frequency()` para poblar el combobox de variables.
-    6.  El usuario selecciona una frecuencia, una variable, el modo de agrupación (1VI o 2VIs) y los grupos específicos a comparar.
-    7.  Al "Aceptar", el diálogo pasa la configuración a `AnalysisService`, que intenta realizar el análisis SPM (t-test o ANOVA de un factor) y guarda los resultados y la configuración.
+2.5. `StudyView` refresca el `FileBrowser` para mostrar los nuevos archivos.
+
+3. Realización de un Análisis Discreto Individual:
+3.1. Desde `DiscreteAnalysisView`, el usuario accede a `IndividualAnalysisManagerDialog` y luego a `ConfigureIndividualAnalysisDialog`.
+3.2. El usuario configura los parámetros del análisis: nombre, frecuencia, cálculo (Maximo, Minimo, Rango), columna de datos (variable), grupos a comparar (basados en VIs), y supuestos estadísticos (paramétrico, pareado).
+3.3. El diálogo llama a `AnalysisService.perform_individual_analysis()` con la configuración.
+3.4. `AnalysisService`:
+
+3.4.1. Lee los datos relevantes de las tablas de resumen CSV previamente generadas (ubicadas en `estudios/<nombre_estudio>/Analisis Discreto/Tablas/<frecuencia>/`).
+3.4.2. Agrupa los datos según los grupos seleccionados. Si es un análisis de efecto principal (modo "1VI"), agrega datos de múltiples tablas combinadas.
+3.4.3. Realiza la prueba estadística seleccionada (ej. t-test, ANOVA, Wilcoxon, Kruskal-Wallis) usando `scipy.stats`.
+3.4.4. Genera un gráfico boxplot comparativo (estático PNG con `matplotlib`/`seaborn` y opcionalmente interactivo HTML con `plotly`) usando `charting.create_comparison_boxplot` y `charting.create_interactive_comparison_boxplot`.
+3.4.5. Guarda la configuración del análisis y los resultados estadísticos (p-valor) en un archivo `config.json` y el gráfico en la carpeta del análisis (`estudios/<nombre_estudio>/Analisis Discreto/Individual/<nombre_analisis>/`).
+
+3.5. Los resultados pueden ser visualizados y gestionados a través de `IndividualAnalysisManagerDialog`.
+
+4. Configuración de un Análisis Continuo:
+4.1. Desde `StudyView`, el usuario hace clic en "Análisis Continuo".
+4.2. `MainWindow` llama a `show_continuous_analysis_config_dialog()`.
+4.3. Se abre `ContinuousAnalysisConfigDialog`.
+4.4. El diálogo llama a `AnalysisService.get_available_frequencies_for_study()` para poblar el combobox de frecuencias.
+4.5. Al seleccionar una frecuencia, el diálogo llama a `AnalysisService.get_data_columns_for_frequency()` para poblar el combobox de variables.
+4.6. El usuario selecciona una frecuencia, una variable, el modo de agrupación (1VI o 2VIs) y los grupos específicos a comparar.
+4.7. Al "Aceptar", el diálogo pasa la configuración a `AnalysisService`, que intenta realizar el análisis SPM (t-test o ANOVA de un factor) y guarda los resultados y la configuración.
 
 ## 5. Patrones de Diseño y Convenciones Importantes
 Capa de Servicios (Service Layer): Centraliza la lógica de negocio y la orquestación de operaciones, desacoplando la UI de la lógica de datos directa.
