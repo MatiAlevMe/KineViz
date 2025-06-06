@@ -102,8 +102,8 @@ La aplicación sigue una estructura modular para separar responsabilidades:
     3.  Se abre `ContinuousAnalysisConfigDialog`.
     4.  El diálogo llama a `AnalysisService.get_available_frequencies_for_study()` para poblar el combobox de frecuencias.
     5.  Al seleccionar una frecuencia, el diálogo llama a `AnalysisService.get_data_columns_for_frequency()` para poblar el combobox de variables.
-    6.  El usuario selecciona una frecuencia y una variable (y futuramente, otras opciones como grupos).
-    7.  Al "Aceptar", el diálogo almacena las selecciones y se cierra. (La lógica de ejecución del análisis SPM es futura).
+    6.  El usuario selecciona una frecuencia, una variable, el modo de agrupación (1VI o 2VIs) y los grupos específicos a comparar.
+    7.  Al "Aceptar", el diálogo pasa la configuración a `AnalysisService`, que intenta realizar el análisis SPM (t-test o ANOVA de un factor) y guarda los resultados y la configuración.
 
 ## 5. Patrones de Diseño y Convenciones Importantes
 *   **Capa de Servicios (Service Layer)**: Centraliza la lógica de negocio y la orquestación de operaciones, desacoplando la UI de la lógica de datos directa.
