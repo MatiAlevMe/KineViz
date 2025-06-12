@@ -208,12 +208,12 @@ Recibir los datos normalizados y agrupados.
 Preparar los datos en el formato requerido por `spm1d`.
 Ejecutar tests básicos de `spm1d` (`ttest2`, `anova1`), realizar inferencia estadística y loguear resultados.
 3.3 [Hecho] Almacenamiento de Resultados SPM: Guardar los resultados del análisis (curva SPM, umbral crítico, grados de libertad, clusters significativos con p-valores) en formato JSON.
-4. [Pendiente] Generación de Gráficos y Tablas para Análisis Continuo.
-4.1 [Pendiente] `charting.py` - Nuevas Funciones para Gráficos SPM:
-Función para generar gráficos de curvas comparativas: una curva promedio por cada grupo de descriptores, mostrando la variable a lo largo del tiempo normalizado.
-Visualizar opcionalmente la desviación estándar o intervalos de confianza alrededor de las curvas promedio.
-Superponer la curva del estadístico SPM (ej: t-valor) y resaltar las regiones donde las diferencias son estadísticamente significativas (basado en los p-valores y la teoría de campos aleatorios de `spm1d`).
-Generar gráficos estáticos (PNG) e interactivos (HTML con Plotly, si es factible).
+4. [EnProgreso] Generación de Gráficos y Tablas para Análisis Continuo.
+4.1 [EnProgreso] `charting.py` - Nuevas Funciones para Gráficos SPM:
+    - [Hecho] Función `create_spm_results_plot` para generar gráfico estático (PNG) con:
+        - Panel superior: Curvas promedio por grupo (+/- SEM) vs. tiempo normalizado.
+        - Panel inferior: Curva del estadístico SPM, umbral crítico y resaltado de clusters significativos.
+    - [Pendiente] Generar gráficos interactivos (HTML con Plotly, si es factible).
 4.2 [Pendiente] Generación de Tablas de Resultados:
 Tablas con los datos normalizados para la variable y los descriptores seleccionados.
 Tablas resumiendo los resultados del análisis SPM (ej: p-valores, información de clusters significativos).
