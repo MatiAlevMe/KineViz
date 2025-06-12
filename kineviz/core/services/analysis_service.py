@@ -1053,7 +1053,8 @@ class AnalysisService:
                             logger.info(f"Realizando spm1d.stats.anova1 para {len(valid_data_for_spm)} grupos: {group_keys_for_spm}")
                             # ANOVA de un factor para muestras independientes
                             # Pass valid_data_for_spm as a list directly
-                            spm_inference = spm1d.stats.anova1(valid_data_for_spm) # equal_var defaults to True
+                            # Set circularity=True to avoid problematic REML df estimation path
+                            spm_inference = spm1d.stats.anova1(valid_data_for_spm, circularity=True) # equal_var defaults to True
                             logger.info("Resultado ANOVA SPM (primeros 10 puntos del estadístico F):")
                             logger.info(spm_inference.z[:10]) # .z es la curva F
                             # The spm_test_results dictionary will be built from spm_inference later.
