@@ -200,14 +200,14 @@ Identificar los archivos relevantes del estudio según los tipos de datos y sub-
 Leer la columna de datos de la variable de interés de cada archivo.
 Aplicar la normalización temporal.
 2.3 [Hecho] Estructura de Datos Normalizados: `AnalysisService._get_normalized_data_for_groups` devuelve un diccionario de listas de arrays NumPy (101 puntos), adecuado para SPM.
-3. [EnProgreso] Lógica de Análisis Estadístico Continuo (usando `spm1d`).
+3. [Hecho] Lógica de Análisis Estadístico Continuo (usando `spm1d`).
 3.1 [Hecho] Integración de la Librería `spm1d`.
-3.2 [EnProgreso] [ttest2 funcional, anova1 con errores] `AnalysisService.perform_continuous_analysis`: Método expandido para:
+3.2 [Hecho] `AnalysisService.perform_continuous_analysis`: Método expandido para:
 Orquestar la preparación de datos (llamando a `_get_normalized_data_for_groups`).
 Recibir los datos normalizados y agrupados.
 Preparar los datos en el formato requerido por `spm1d`.
-Ejecutar tests básicos de `spm1d` (`ttest2`, `anova1`) y loguear resultados.
-3.3 [EnProgreso] [Guardado básico de curva de estadístico y p-valor implementado. Detalles de clusters pendientes.] Almacenamiento de Resultados SPM: Guardar los resultados del análisis (ej: la curva SPM, clusters significativos, p-valores) en un formato accesible (ej: JSON, CSV).
+Ejecutar tests básicos de `spm1d` (`ttest2`, `anova1`), realizar inferencia estadística y loguear resultados.
+3.3 [Hecho] Almacenamiento de Resultados SPM: Guardar los resultados del análisis (curva SPM, umbral crítico, grados de libertad, clusters significativos con p-valores) en formato JSON.
 4. [Pendiente] Generación de Gráficos y Tablas para Análisis Continuo.
 4.1 [Pendiente] `charting.py` - Nuevas Funciones para Gráficos SPM:
 Función para generar gráficos de curvas comparativas: una curva promedio por cada grupo de descriptores, mostrando la variable a lo largo del tiempo normalizado.
