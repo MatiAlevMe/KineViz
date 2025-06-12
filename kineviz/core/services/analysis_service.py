@@ -1135,7 +1135,8 @@ class AnalysisService:
                         "test_type": "unknown",
                         "alpha_level": alpha,
                         "stat_curve": spm_inference.z.tolist() if hasattr(spm_inference, 'z') else None,
-                        "df": list(spm_inference.df) if hasattr(spm_inference, 'df') and spm_inference.df is not None else None,
+                        # Convert df elements to Python int
+                        "df": [int(d) for d in spm_inference.df] if hasattr(spm_inference, 'df') and spm_inference.df is not None else None,
                         "critical_threshold": spm_inference.zstar if hasattr(spm_inference, 'zstar') else None,
                         "significant_clusters_found": False,
                         "clusters": []
@@ -1148,12 +1149,13 @@ class AnalysisService:
                         current_spm_results_dict["significant_clusters_found"] = True
                         for clus in spm_inference.clusters:
                             current_spm_results_dict["clusters"].append({
-                                "start_node": clus.x0,
-                                "end_node": clus.x1,
-                                "peak_node": clus.peak_coord,
-                                "peak_value": clus.peak_value,
-                                "mass": clus.mass,
-                                "p_value": clus.P 
+                                # Convert cluster node coordinates to Python int
+                                "start_node": int(clus.x0),
+                                "end_node": int(clus.x1),
+                                "peak_node": int(clus.peak_coord),
+                                "peak_value": float(clus.peak_value), # Ensure float for consistency
+                                "mass": float(clus.mass),             # Ensure float
+                                "p_value": float(clus.P)              # Ensure float
                             })
                         logger.info(f"Resultados de inferencia SPM: {len(spm_inference.clusters)} clúster(es) significativos encontrados.")
                     elif inference_performed_successfully:
