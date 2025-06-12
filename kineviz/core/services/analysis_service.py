@@ -1060,11 +1060,12 @@ class AnalysisService:
                             logger.info(spm_inference.z[:10]) # .z es la curva F
                             # The spm_test_results dictionary will be built from spm_inference later.
                         
-                        if spm_inference: # Check if spm_inference object exists and has p-value
-                             logger.info(f"Análisis SPM completado. P-valor global: {spm_inference.p if hasattr(spm_inference, 'p') else 'N/A'}")
-                             # Aquí se podrían inferir clusters, etc.
-                             # spm_inference.plot() # Para visualización directa si se ejecuta interactivamente
-                             # spm_inference.print_results()
+                        # Logging about SPM completion will be handled after inference, inside the saving block.
+                        # if spm_inference: # Check if spm_inference object exists and has p-value
+                        #      logger.info(f"Análisis SPM completado. P-valor global: {spm_inference.p if hasattr(spm_inference, 'p') else 'N/A'}")
+                        #      # Aquí se podrían inferir clusters, etc.
+                        #      # spm_inference.plot() # Para visualización directa si se ejecuta interactivamente
+                        #      # spm_inference.print_results()
 
                     except Exception as e_spm:
                         spm_error_message = f"Error durante la ejecución del análisis SPM: {e_spm}"
@@ -1108,21 +1109,63 @@ class AnalysisService:
                 logger.info(f"Configuración del análisis continuo guardada en: {config_file_path}")
 
                 if spm_inference: # Check the spm1d inference object
-                    current_spm_results_dict = {
-                        "test_type": "unknown", 
-                        "stat_curve": spm_inference.z.tolist() if hasattr(spm_inference, 'z') else None,
-                        "p_value": spm_inference.p if hasattr(spm_inference, 'p') else None, # Use .p for p-value
-                        # TODO: Add other relevant fields from spm_inference, e.g., clusters, df
-                    }
-                    # Determine test_type based on what was run (using valid_data_for_spm from SPM block)
-                    # Re-evaluate valid_data_for_spm here to ensure it's correctly scoped for this logic
-                    data_for_spm_for_test_type = [normalized_data[key] for key in group_keys_for_spm if normalized_data[key]]
-                    valid_data_for_spm_for_test_type = [group_data for group_data in data_for_spm_for_test_type if len(group_data) > 0]
+                    alpha = 0.05 # Standard alpha level for inference
+                    inference_performed_successfully = False
+                    try:
+                        # Determine test type to call inference appropriately
+                        # This re-evaluation is to ensure scope, similar to original logic for test_type
+                        data_for_spm_check = [normalized_data[key] for key in group_keys_for_spm if normalized_data[key]]
+                        valid_data_for_spm_check = [gd for gd in data_for_spm_check if gd and len(gd) > 0]
 
-                    if len(valid_data_for_spm_for_test_type) == 2: current_spm_results_dict["test_type"] = "ttest"
-                    elif len(valid_data_for_spm_for_test_type) > 2: current_spm_results_dict["test_type"] = "anova1"
+                        if len(valid_data_for_spm_check) > 2: # ANOVA
+                            spm_inference.inference(alpha) # Modifies in-place
+                            logger.info(f"SPM .inference() llamada para ANOVA con alpha={alpha}.")
+                        elif len(valid_data_for_spm_check) == 2: # t-test
+                            spm_inference.inference(alpha, two_tailed=True) # Modifies in-place
+                            logger.info(f"SPM .inference() llamada para t-test (two_tailed=True) con alpha={alpha}.")
+                        else:
+                            logger.warning("Número de grupos válidos para SPM no es 2 o más de 2, inferencia no llamada.")
+                        inference_performed_successfully = True
+                    except AttributeError as ae:
+                        logger.warning(f"El objeto SPM ({type(spm_inference).__name__}) puede no tener el método '.inference()' o falló. Error: {ae}")
+                    except Exception as e_inf:
+                        logger.error(f"Error durante la ejecución de .inference() en SPM: {e_inf}", exc_info=True)
+
+                    current_spm_results_dict = {
+                        "test_type": "unknown",
+                        "alpha_level": alpha,
+                        "stat_curve": spm_inference.z.tolist() if hasattr(spm_inference, 'z') else None,
+                        "df": list(spm_inference.df) if hasattr(spm_inference, 'df') and spm_inference.df is not None else None,
+                        "critical_threshold": spm_inference.zstar if hasattr(spm_inference, 'zstar') else None,
+                        "significant_clusters_found": False,
+                        "clusters": []
+                    }
                     
-                    results_payload["spm_results"] = current_spm_results_dict 
+                    if hasattr(spm_inference, 'p'): # p-value from permutations, if available
+                        current_spm_results_dict["global_p_value_permutations"] = spm_inference.p
+
+                    if inference_performed_successfully and hasattr(spm_inference, 'clusters') and spm_inference.clusters:
+                        current_spm_results_dict["significant_clusters_found"] = True
+                        for clus in spm_inference.clusters:
+                            current_spm_results_dict["clusters"].append({
+                                "start_node": clus.x0,
+                                "end_node": clus.x1,
+                                "peak_node": clus.peak_coord,
+                                "peak_value": clus.peak_value,
+                                "mass": clus.mass,
+                                "p_value": clus.P 
+                            })
+                        logger.info(f"Resultados de inferencia SPM: {len(spm_inference.clusters)} clúster(es) significativos encontrados.")
+                    elif inference_performed_successfully:
+                        logger.info("Resultados de inferencia SPM: No se encontraron clústeres significativos.")
+                    else:
+                        logger.info("Inferencia SPM no realizada o falló. Resultados básicos guardados.")
+
+                    # Determine test_type (consistent with inference call)
+                    if len(valid_data_for_spm_check) == 2: current_spm_results_dict["test_type"] = "ttest2"
+                    elif len(valid_data_for_spm_check) > 2: current_spm_results_dict["test_type"] = "anova1"
+                    
+                    results_payload["spm_results"] = current_spm_results_dict
 
                     spm_results_file_path = current_analysis_output_dir / "spm_results.json"
                     with open(spm_results_file_path, 'w', encoding='utf-8') as f_spm:
