@@ -1174,6 +1174,42 @@ class AnalysisService:
                         json.dump(current_spm_results_dict, f_spm, indent=4, allow_nan=True)
                     results_payload["spm_results_path"] = str(spm_results_file_path)
                     logger.info(f"Resultados SPM guardados en: {spm_results_file_path}")
+
+                    # --- Generar Gráfico SPM ---
+                    try:
+                        study_aliases = self.study_service.get_study_aliases(study_id)
+                        group_display_names_for_plot = []
+                        # group_keys_for_spm are the keys of normalized_data
+                        for group_key in group_keys_for_spm: 
+                            parts = []
+                            for item in group_key.split(';'):
+                                vi_name, desc_value = item.split('=', 1)
+                                alias = study_aliases.get(desc_value, desc_value)
+                                parts.append(f"{vi_name}: {alias}")
+                            group_display_names_for_plot.append(", ".join(parts))
+                        
+                        # Variable name for plot (e.g., "Columna (Unidad)")
+                        column_config_str = config.get('column', 'N/A')
+                        plot_variable_name = column_config_str
+                        try:
+                            attr, col, unit = column_config_str.split('/', 2)
+                            plot_variable_name = f"{col} ({unit})" if unit and unit != "s.u." else col
+                        except ValueError:
+                            logger.warning(f"No se pudo parsear nombre de variable '{column_config_str}' para gráfico.")
+
+                        spm_plot_path = current_analysis_output_dir / "spm_plot.png"
+                        charting.create_spm_results_plot(
+                            normalized_data_by_group=normalized_data, # The actual data
+                            spm_results=current_spm_results_dict,     # The dict saved to JSON
+                            group_legend_names=group_display_names_for_plot,
+                            variable_name=plot_variable_name,
+                            output_path=spm_plot_path
+                        )
+                        results_payload["continuous_plot_path"] = str(spm_plot_path)
+                        logger.info(f"Gráfico de análisis continuo guardado en: {spm_plot_path}")
+                    except Exception as e_plot:
+                        logger.error(f"Error generando gráfico de análisis continuo: {e_plot}", exc_info=True)
+                        results_payload["continuous_plot_path"] = None
                 
                 # Update final status and message based on successful saving and analysis
                 if spm_inference and not spm_error_message:
