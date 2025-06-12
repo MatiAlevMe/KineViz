@@ -93,6 +93,144 @@ def create_barchart(data_dict: dict, title: str, xlabel: str, ylabel: str, outpu
     plt.close(fig)
 
 
+def create_spm_results_plot(normalized_data_by_group: dict,
+                              spm_results: dict,
+                              group_legend_names: list[str],
+                              variable_name: str,
+                              output_path: Path):
+    """
+    Generates a two-panel plot for SPM analysis results.
+    Top panel: Mean curves +/- SEM for each group.
+    Bottom panel: SPM statistic curve, critical threshold, and significant clusters.
+
+    :param normalized_data_by_group: Dict {group_key: list_of_np_arrays (101,)}.
+                                     Order of keys should match group_legend_names.
+    :param spm_results: Dict from AnalysisService, containing 'stat_curve',
+                        'critical_threshold', 'clusters', 'test_type', 'df'.
+    :param group_legend_names: List of display names for the groups.
+    :param variable_name: Name of the analyzed variable for y-axis label.
+    :param output_path: Path object to save the PNG plot.
+    """
+    logger.debug(f"Generando gráfico SPM para variable '{variable_name}' en {output_path}")
+
+    if not normalized_data_by_group or not group_legend_names:
+        logger.warning("No hay datos normalizados o nombres de grupo para generar gráfico SPM.")
+        return
+
+    group_keys = list(normalized_data_by_group.keys())
+    if len(group_keys) != len(group_legend_names):
+        logger.error("Discrepancia en número de grupos entre datos normalizados y nombres de leyenda.")
+        # Fallback: try to use original keys if legend names mismatch
+        if len(group_keys) == len(next(iter(normalized_data_by_group.values()), [])): # Check if data matches group_keys
+             group_legend_names = group_keys
+        else: # Cannot reconcile, abort plotting
+            fig, ax = plt.subplots(figsize=(10, 8))
+            ax.text(0.5, 0.5, 'Error: Datos de grupo inconsistentes', ha='center', va='center', transform=ax.transAxes)
+            plt.savefig(output_path, bbox_inches='tight', dpi=150)
+            plt.close(fig)
+            return
+
+
+    num_points = 101 # Assuming data is normalized to 101 points
+    time_axis = np.linspace(0, 100, num_points)
+
+    fig, axs = plt.subplots(2, 1, figsize=(12, 10), sharex=True)
+    plt.style.use('seaborn-v0_8-whitegrid') # Using a seaborn style
+
+    # Panel Superior: Curvas Promedio +/- SEM
+    ax_mean_curves = axs[0]
+    colors = plt.cm.get_cmap('viridis', len(group_keys)) # Color map
+
+    for i, group_key in enumerate(group_keys):
+        group_data_arrays = normalized_data_by_group[group_key]
+        if not group_data_arrays:
+            logger.warning(f"No hay arrays de datos para el grupo '{group_legend_names[i]}'.")
+            continue
+        
+        # Stack arrays to compute mean and sem along axis 0 (across trials/subjects)
+        try:
+            stacked_data = np.stack(group_data_arrays, axis=0) # Shape: (num_trials, num_points)
+            mean_curve = np.mean(stacked_data, axis=0)
+            std_dev_curve = np.std(stacked_data, axis=0, ddof=1) # ddof=1 for sample std dev
+            sem_curve = std_dev_curve / np.sqrt(stacked_data.shape[0])
+            
+            ax_mean_curves.plot(time_axis, mean_curve, label=group_legend_names[i], color=colors(i/len(group_keys)), linewidth=2)
+            ax_mean_curves.fill_between(time_axis, mean_curve - sem_curve, mean_curve + sem_curve,
+                                        color=colors(i/len(group_keys)), alpha=0.2)
+        except Exception as e:
+            logger.error(f"Error procesando datos para graficar grupo '{group_legend_names[i]}': {e}", exc_info=True)
+
+
+    ax_mean_curves.set_ylabel(variable_name)
+    ax_mean_curves.legend(loc='best', fontsize='small')
+    ax_mean_curves.set_title('Mean Temporal Curves ± SEM')
+
+    # Panel Inferior: Curva Estadística SPM
+    ax_spm_stat = axs[1]
+    stat_curve = spm_results.get('stat_curve')
+    critical_threshold = spm_results.get('critical_threshold')
+    clusters = spm_results.get('clusters', [])
+    test_type = spm_results.get('test_type', 'SPM').upper()
+    df_stat = spm_results.get('df', '')
+
+    if stat_curve:
+        ax_spm_stat.plot(time_axis, stat_curve, color='black', linewidth=1.5, label=f'{test_type} Statistic')
+        
+        if critical_threshold is not None:
+            ax_spm_stat.axhline(critical_threshold, color='red', linestyle='--', linewidth=1, label=f'Critical Threshold (α={spm_results.get("alpha_level", 0.05)})')
+            # For two-tailed t-tests, also plot -critical_threshold if applicable
+            if "ttest" in test_type.lower() and critical_threshold > 0 : # Check if it's a t-test and threshold is positive
+                 ax_spm_stat.axhline(-critical_threshold, color='red', linestyle='--', linewidth=1)
+
+
+        # Resaltar clusters significativos
+        if clusters:
+            for cluster in clusters:
+                start_node = cluster.get('start_node')
+                end_node = cluster.get('end_node')
+                # Ensure nodes are within bounds of time_axis
+                if start_node is not None and end_node is not None and \
+                   start_node < len(time_axis) and end_node < len(time_axis) and start_node <= end_node:
+                    
+                    # Map node indices to time values for fill_betweenx
+                    time_start = time_axis[start_node]
+                    time_end = time_axis[end_node]
+
+                    # Get y-limits for shading
+                    ymin, ymax = ax_spm_stat.get_ylim()
+                    
+                    ax_spm_stat.fill_betweenx(y=[ymin, ymax], x1=time_start, x2=time_end,
+                                              color='lightcoral', alpha=0.3,
+                                              label='Significant Cluster(s)' if cluster == clusters[0] else None) # Label only first
+                else:
+                    logger.warning(f"Nodos de cluster inválidos o fuera de rango: {cluster}. No se resaltará.")
+
+
+        ax_spm_stat.legend(loc='best', fontsize='small')
+    else:
+        ax_spm_stat.text(0.5, 0.5, 'SPM statistic curve not available.', ha='center', va='center', transform=ax_spm_stat.transAxes)
+
+    stat_label = f'{test_type} Statistic'
+    if df_stat:
+        df_str = ', '.join(map(str, df_stat))
+        stat_label += f' (df={df_str})'
+    ax_spm_stat.set_ylabel(stat_label)
+    ax_spm_stat.set_xlabel('Normalized Time (%)')
+    ax_spm_stat.set_title('SPM Statistical Analysis')
+
+    fig.tight_layout(pad=2.0) # Add some padding between subplots and title
+    fig.suptitle(f'SPM Analysis: {variable_name}', fontsize=16, y=0.99) # Overall title, adjust y if needed
+    plt.subplots_adjust(top=0.92) # Adjust top to make space for suptitle
+
+    try:
+        plt.savefig(output_path, bbox_inches='tight', dpi=150)
+        logger.info(f"Gráfico SPM guardado en: {output_path}")
+    except Exception as e:
+        logger.error(f"Error guardando gráfico SPM en {output_path}: {e}", exc_info=True)
+    finally:
+        plt.close(fig)
+
+
 def create_interactive_comparison_boxplot(data_by_group: list,
                                           group_xaxis_labels: list[str],
                                           group_legend_names: list[str],
