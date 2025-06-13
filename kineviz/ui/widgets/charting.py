@@ -9,6 +9,7 @@ import seaborn as sns
 from statannotations.Annotator import Annotator # Importar Annotator
 import matplotlib
 matplotlib.use('Agg')  # Usar backend no interactivo
+import scipy.stats # Para calcular IC
 
 # Importar Plotly
 try:
@@ -137,9 +138,18 @@ def create_spm_results_plot(normalized_data_by_group: dict,
     fig, axs = plt.subplots(2, 1, figsize=(12, 10), sharex=True)
     plt.style.use('seaborn-v0_8-whitegrid') # Using a seaborn style
 
-    # Panel Superior: Curvas Promedio +/- SEM
+    # Panel Superior: Curvas Promedio +/- EEM, DE o IC
     ax_mean_curves = axs[0]
     colors = plt.cm.get_cmap('viridis', len(group_keys)) # Color map
+
+    # Determinar globalmente qué tipo de sombreado se usará para el título
+    show_std_global = spm_results.get('show_std_dev', False)
+    show_ci_global = spm_results.get('show_conf_int', False)
+    global_fill_type_label = "EEM" # Error Estándar de la Media
+    if show_ci_global:
+        global_fill_type_label = "95% IC" # Intervalo de Confianza
+    elif show_std_global:
+        global_fill_type_label = "DE" # Desviación Estándar
 
     for i, group_key in enumerate(group_keys):
         group_data_arrays = normalized_data_by_group[group_key]
@@ -152,21 +162,44 @@ def create_spm_results_plot(normalized_data_by_group: dict,
             stacked_data = np.stack(group_data_arrays, axis=0) # Shape: (num_trials, num_points)
             mean_curve = np.mean(stacked_data, axis=0)
             std_dev_curve = np.std(stacked_data, axis=0, ddof=1) # ddof=1 for sample std dev
-            sem_curve = std_dev_curve / np.sqrt(stacked_data.shape[0])
+            
+            lower_bound = None
+            upper_bound = None
+            
+            num_subjects_in_group = stacked_data.shape[0]
+            if num_subjects_in_group > 0:
+                sem_curve = std_dev_curve / np.sqrt(num_subjects_in_group)
+
+                # Prioridad: IC > DE > EEM
+                if show_ci_global and num_subjects_in_group > 1:
+                    confidence_level = 0.95
+                    degrees_freedom = num_subjects_in_group - 1
+                    t_critical = scipy.stats.t.ppf((1 + confidence_level) / 2, df=degrees_freedom)
+                    ci_margin = t_critical * sem_curve
+                    lower_bound = mean_curve - ci_margin
+                    upper_bound = mean_curve + ci_margin
+                elif show_std_global:
+                    lower_bound = mean_curve - std_dev_curve
+                    upper_bound = mean_curve + std_dev_curve
+                else: # Default to SEM
+                    lower_bound = mean_curve - sem_curve
+                    upper_bound = mean_curve + sem_curve
             
             ax_mean_curves.plot(time_axis, mean_curve, label=group_legend_names[i], color=colors(i/len(group_keys)), linewidth=2)
-            ax_mean_curves.fill_between(time_axis, mean_curve - sem_curve, mean_curve + sem_curve,
-                                        color=colors(i/len(group_keys)), alpha=0.2)
+            if lower_bound is not None and upper_bound is not None:
+                ax_mean_curves.fill_between(time_axis, lower_bound, upper_bound,
+                                            color=colors(i/len(group_keys)), alpha=0.2)
         except Exception as e:
             logger.error(f"Error procesando datos para graficar grupo '{group_legend_names[i]}': {e}", exc_info=True)
 
-
     ax_mean_curves.set_ylabel(variable_name)
     ax_mean_curves.legend(loc='best', fontsize='small')
-    ax_mean_curves.set_title('Mean Temporal Curves ± SEM')
+    ax_mean_curves.set_title(f'Curvas Temporales Promedio ± {global_fill_type_label}')
+    ax_mean_curves.grid(True, linestyle='--', alpha=0.7) # Añadir grid explícito
 
     # Panel Inferior: Curva Estadística SPM
     ax_spm_stat = axs[1]
+    ax_spm_stat.grid(True, linestyle='--', alpha=0.7) # Añadir grid explícito
     stat_curve = spm_results.get('stat_curve')
     critical_threshold = spm_results.get('critical_threshold')
     clusters = spm_results.get('clusters', [])
@@ -174,10 +207,10 @@ def create_spm_results_plot(normalized_data_by_group: dict,
     df_stat = spm_results.get('df', '')
 
     if stat_curve:
-        ax_spm_stat.plot(time_axis, stat_curve, color='black', linewidth=1.5, label=f'{test_type} Statistic')
+        ax_spm_stat.plot(time_axis, stat_curve, color='black', linewidth=1.5, label=f'Estadístico {test_type}')
         
         if critical_threshold is not None:
-            ax_spm_stat.axhline(critical_threshold, color='red', linestyle='--', linewidth=1, label=f'Critical Threshold (α={spm_results.get("alpha_level", 0.05)})')
+            ax_spm_stat.axhline(critical_threshold, color='red', linestyle='--', linewidth=1, label=f'Umbral Crítico (α={spm_results.get("alpha_level", 0.05)})')
             # For two-tailed t-tests, also plot -critical_threshold if applicable
             if "ttest" in test_type.lower() and critical_threshold > 0 : # Check if it's a t-test and threshold is positive
                  ax_spm_stat.axhline(-critical_threshold, color='red', linestyle='--', linewidth=1)
@@ -185,6 +218,8 @@ def create_spm_results_plot(normalized_data_by_group: dict,
 
         # Resaltar clusters significativos
         if clusters:
+            # Asegurarse de que la etiqueta de cluster solo se añada una vez
+            first_cluster_labeled = False
             for cluster in clusters:
                 start_node = cluster.get('start_node')
                 end_node = cluster.get('end_node')
@@ -199,27 +234,32 @@ def create_spm_results_plot(normalized_data_by_group: dict,
                     # Get y-limits for shading
                     ymin, ymax = ax_spm_stat.get_ylim()
                     
+                    cluster_label = None
+                    if not first_cluster_labeled:
+                        cluster_label = 'Cluster(s) Significativo(s)'
+                        first_cluster_labeled = True
+                        
                     ax_spm_stat.fill_betweenx(y=[ymin, ymax], x1=time_start, x2=time_end,
                                               color='lightcoral', alpha=0.3,
-                                              label='Significant Cluster(s)' if cluster == clusters[0] else None) # Label only first
+                                              label=cluster_label)
                 else:
                     logger.warning(f"Nodos de cluster inválidos o fuera de rango: {cluster}. No se resaltará.")
 
 
         ax_spm_stat.legend(loc='best', fontsize='small')
     else:
-        ax_spm_stat.text(0.5, 0.5, 'SPM statistic curve not available.', ha='center', va='center', transform=ax_spm_stat.transAxes)
+        ax_spm_stat.text(0.5, 0.5, 'Curva de estadístico SPM no disponible.', ha='center', va='center', transform=ax_spm_stat.transAxes)
 
-    stat_label = f'{test_type} Statistic'
+    stat_label = f'Estadístico {test_type}'
     if df_stat:
         df_str = ', '.join(map(str, df_stat))
-        stat_label += f' (df={df_str})'
+        stat_label += f' (gl={df_str})' # gl para grados de libertad
     ax_spm_stat.set_ylabel(stat_label)
-    ax_spm_stat.set_xlabel('Normalized Time (%)')
-    ax_spm_stat.set_title('SPM Statistical Analysis')
+    ax_spm_stat.set_xlabel('Tiempo Normalizado (%)')
+    ax_spm_stat.set_title('Análisis Estadístico SPM')
 
     fig.tight_layout(pad=2.0) # Add some padding between subplots and title
-    fig.suptitle(f'SPM Analysis: {variable_name}', fontsize=16, y=0.99) # Overall title, adjust y if needed
+    fig.suptitle(f'Análisis SPM: {variable_name}', fontsize=16, y=0.99) # Overall title, adjust y if needed
     plt.subplots_adjust(top=0.92) # Adjust top to make space for suptitle
 
     try:
