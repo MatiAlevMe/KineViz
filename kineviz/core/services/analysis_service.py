@@ -1188,21 +1188,21 @@ class AnalysisService:
                                 parts.append(f"{vi_name}: {alias}")
                             group_display_names_for_plot.append(", ".join(parts))
                         
-                        # Variable name for plot (e.g., "Columna (Unidad)")
-                        column_config_str = config.get('column', 'N/A')
-                        plot_variable_name = column_config_str
-                        try:
-                            attr, col, unit = column_config_str.split('/', 2)
-                            plot_variable_name = f"{col} ({unit})" if unit and unit != "s.u." else col
-                        except ValueError:
-                            logger.warning(f"No se pudo parsear nombre de variable '{column_config_str}' para gráfico.")
+                        # Variable name for plot (use the full string as requested)
+                        plot_variable_name = config.get('column', 'N/A')
+
+                        # Prepare parameters for plotting, including display options from config
+                        plot_params_for_charting = current_spm_results_dict.copy()
+                        plot_params_for_charting['show_std_dev'] = config.get('show_std_dev', False)
+                        plot_params_for_charting['show_conf_int'] = config.get('show_conf_int', False)
+                        plot_params_for_charting['show_sem'] = config.get('show_sem', False) # New option for SEM visualization
 
                         spm_plot_path = current_analysis_output_dir / "spm_plot.png"
                         charting.create_spm_results_plot(
                             normalized_data_by_group=normalized_data, # The actual data
-                            spm_results=current_spm_results_dict,     # The dict saved to JSON
+                            spm_results=plot_params_for_charting,     # Augmented dict with display flags
                             group_legend_names=group_display_names_for_plot,
-                            variable_name=plot_variable_name,
+                            variable_name=plot_variable_name, # Full column name
                             output_path=spm_plot_path
                         )
                         results_payload["continuous_plot_path"] = str(spm_plot_path)
