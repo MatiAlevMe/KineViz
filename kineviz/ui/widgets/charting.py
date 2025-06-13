@@ -142,14 +142,23 @@ def create_spm_results_plot(normalized_data_by_group: dict,
     ax_mean_curves = axs[0]
     colors = plt.cm.get_cmap('viridis', len(group_keys)) # Color map
 
-    # Determinar globalmente qué tipo de sombreado se usará para el título
-    show_std_global = spm_results.get('show_std_dev', False)
+    # Determinar globalmente qué tipo de sombreado se usará para el título y qué rellenar
     show_ci_global = spm_results.get('show_conf_int', False)
-    global_fill_type_label = "EEM" # Error Estándar de la Media
+    show_std_global = spm_results.get('show_std_dev', False)
+    show_sem_global = spm_results.get('show_sem', False) # New flag for SEM
+
+    global_fill_type_label = "" # Default to no label if no fill
+    fill_active = False
+
     if show_ci_global:
-        global_fill_type_label = "95% IC" # Intervalo de Confianza
+        global_fill_type_label = "± 95% IC"
+        fill_active = True
     elif show_std_global:
-        global_fill_type_label = "DE" # Desviación Estándar
+        global_fill_type_label = "± DE"
+        fill_active = True
+    elif show_sem_global:
+        global_fill_type_label = "± EEM"
+        fill_active = True
 
     for i, group_key in enumerate(group_keys):
         group_data_arrays = normalized_data_by_group[group_key]
@@ -168,9 +177,8 @@ def create_spm_results_plot(normalized_data_by_group: dict,
             
             num_subjects_in_group = stacked_data.shape[0]
             if num_subjects_in_group > 0:
-                sem_curve = std_dev_curve / np.sqrt(num_subjects_in_group)
+                sem_curve = std_dev_curve / np.sqrt(num_subjects_in_group) # Always calculate SEM
 
-                # Prioridad: IC > DE > EEM
                 if show_ci_global and num_subjects_in_group > 1:
                     confidence_level = 0.95
                     degrees_freedom = num_subjects_in_group - 1
@@ -181,12 +189,13 @@ def create_spm_results_plot(normalized_data_by_group: dict,
                 elif show_std_global:
                     lower_bound = mean_curve - std_dev_curve
                     upper_bound = mean_curve + std_dev_curve
-                else: # Default to SEM
+                elif show_sem_global: # New condition for SEM
                     lower_bound = mean_curve - sem_curve
                     upper_bound = mean_curve + sem_curve
+                # If no flag is true, lower_bound and upper_bound remain None
             
             ax_mean_curves.plot(time_axis, mean_curve, label=group_legend_names[i], color=colors(i/len(group_keys)), linewidth=2)
-            if lower_bound is not None and upper_bound is not None:
+            if fill_active and lower_bound is not None and upper_bound is not None: # Only fill if a type is active
                 ax_mean_curves.fill_between(time_axis, lower_bound, upper_bound,
                                             color=colors(i/len(group_keys)), alpha=0.2)
         except Exception as e:
@@ -194,12 +203,12 @@ def create_spm_results_plot(normalized_data_by_group: dict,
 
     ax_mean_curves.set_ylabel(variable_name)
     ax_mean_curves.legend(loc='best', fontsize='small')
-    ax_mean_curves.set_title(f'Curvas Temporales Promedio ± {global_fill_type_label}')
-    ax_mean_curves.grid(True, linestyle='--', alpha=0.7) # Añadir grid explícito
+    ax_mean_curves.set_title(f'Curvas Temporales Promedio {global_fill_type_label}'.strip()) # Use strip to remove trailing space if label is empty
+    ax_mean_curves.grid(True, linestyle='-', alpha=0.7) # Grid con líneas continuas
 
     # Panel Inferior: Curva Estadística SPM
     ax_spm_stat = axs[1]
-    ax_spm_stat.grid(True, linestyle='--', alpha=0.7) # Añadir grid explícito
+    ax_spm_stat.grid(True, linestyle='-', alpha=0.7) # Grid con líneas continuas
     stat_curve = spm_results.get('stat_curve')
     critical_threshold = spm_results.get('critical_threshold')
     clusters = spm_results.get('clusters', [])
@@ -234,14 +243,37 @@ def create_spm_results_plot(normalized_data_by_group: dict,
                     # Get y-limits for shading
                     ymin, ymax = ax_spm_stat.get_ylim()
                     
-                    cluster_label = None
+                    current_cluster_label = None
                     if not first_cluster_labeled:
-                        cluster_label = 'Cluster(s) Significativo(s)'
+                        current_cluster_label = 'Cluster(s) Significativo(s)'
                         first_cluster_labeled = True
                         
                     ax_spm_stat.fill_betweenx(y=[ymin, ymax], x1=time_start, x2=time_end,
                                               color='lightcoral', alpha=0.3,
-                                              label=cluster_label)
+                                              label=current_cluster_label)
+                    
+                    # Add vertical lines for cluster boundaries
+                    ax_spm_stat.axvline(time_start, color='grey', linestyle='--', linewidth=0.8)
+                    ax_spm_stat.axvline(time_end, color='grey', linestyle='--', linewidth=0.8)
+
+                    # Add p-value annotation for the cluster
+                    cluster_p_value = cluster.get('p_value')
+                    if cluster_p_value is not None:
+                        text_x_position = time_start + (time_end - time_start) / 2
+                        # Position text above or below based on where the stat_curve is relative to zero
+                        # This is a simple heuristic; might need adjustment
+                        text_y_position = ymax * 0.9 if np.mean(stat_curve[start_node:end_node+1]) > 0 else ymin * 0.9
+                        
+                        # Adjust y position slightly if it's too close to the axis limits
+                        if abs(text_y_position - ymax) < (ymax - ymin) * 0.1: text_y_position = ymax * 0.8
+                        if abs(text_y_position - ymin) < (ymax - ymin) * 0.1: text_y_position = ymin + (ymax-ymin)*0.2
+
+
+                        p_text = f"p={cluster_p_value:.3f}" if cluster_p_value >= 0.001 else "p<0.001"
+                        ax_spm_stat.text(text_x_position, text_y_position, p_text,
+                                         horizontalalignment='center', verticalalignment='center',
+                                         fontsize='small', color='black',
+                                         bbox=dict(boxstyle='round,pad=0.2', fc='white', alpha=0.6, ec='grey'))
                 else:
                     logger.warning(f"Nodos de cluster inválidos o fuera de rango: {cluster}. No se resaltará.")
 
