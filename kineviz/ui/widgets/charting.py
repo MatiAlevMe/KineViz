@@ -209,7 +209,11 @@ def create_spm_results_plot(normalized_data_by_group: dict,
     # Panel Inferior: Curva Estadística SPM
     ax_spm_stat = axs[1]
     ax_spm_stat.grid(True, linestyle='-', alpha=0.7) # Grid con líneas continuas
-    stat_curve = spm_results.get('stat_curve')
+    stat_curve = spm_results.get('stat_curve') # Ensure stat_curve is a list or np.array
+    if stat_curve is not None and not isinstance(stat_curve, (list, np.ndarray)):
+        logger.warning(f"stat_curve is not a list or ndarray: {type(stat_curve)}. Plotting may fail.")
+        stat_curve = None # Prevent error if it's not array-like
+
     critical_threshold = spm_results.get('critical_threshold')
     clusters = spm_results.get('clusters', [])
     test_type = spm_results.get('test_type', 'SPM').upper()
@@ -241,18 +245,75 @@ def create_spm_results_plot(normalized_data_by_group: dict,
                     time_end = time_axis[end_node]
 
                     # Get y-limits for shading
-                    ymin, ymax = ax_spm_stat.get_ylim()
+                    ymin_plot, ymax_plot = ax_spm_stat.get_ylim()
                     
-                    current_cluster_label = None
+                    current_cluster_label_for_legend = None
                     if not first_cluster_labeled:
-                        current_cluster_label = 'Cluster(s) Significativo(s)'
+                        current_cluster_label_for_legend = 'Cluster(s) Significativo(s)'
                         first_cluster_labeled = True
                         
-                    ax_spm_stat.fill_betweenx(y=[ymin, ymax], x1=time_start, x2=time_end,
+                    ax_spm_stat.fill_betweenx(y=[ymin_plot, ymax_plot], x1=time_start, x2=time_end,
                                               color='lightcoral', alpha=0.3,
-                                              label=current_cluster_label)
+                                              label=current_cluster_label_for_legend)
+
+                    # --- Annotate cluster details (Peak Stat, Cluster P, Time of Peak) ---
+                    peak_node = cluster.get('peak_node')
+                    peak_value = cluster.get('peak_value')
+                    cluster_p_val = cluster.get('p_value')
+
+                    if peak_node is not None and peak_value is not None and cluster_p_val is not None and \
+                       peak_node < len(time_axis) and stat_curve is not None and peak_node < len(stat_curve):
+                        
+                        time_of_peak = time_axis[peak_node]
+                        actual_peak_stat_on_curve = stat_curve[peak_node] # Use actual value from curve for positioning
+
+                        annotation_text = (f"Peak Stat: {peak_value:.2f}\n"
+                                           f"Cluster p: {cluster_p_val:.3f}\n"
+                                           f"Time: {time_of_peak:.1f}%")
+                        
+                        # Position annotation near the peak
+                        # Heuristic for y_offset: place above if peak is positive, below if negative
+                        y_offset_factor = 0.1 * (ymax_plot - ymin_plot)
+                        text_y = actual_peak_stat_on_curve + y_offset_factor if actual_peak_stat_on_curve >= 0 else actual_peak_stat_on_curve - y_offset_factor * 2
+                        
+                        # Ensure text is within plot bounds
+                        if text_y > ymax_plot * 0.95: text_y = ymax_plot * 0.95
+                        if text_y < ymin_plot + (ymax_plot - ymin_plot) * 0.05 : text_y = ymin_plot + (ymax_plot - ymin_plot) * 0.05
+
+
+                        ax_spm_stat.plot(time_of_peak, actual_peak_stat_on_curve, 'o', color='blue', markersize=5)
+                        ax_spm_stat.annotate(annotation_text,
+                                             xy=(time_of_peak, actual_peak_stat_on_curve),
+                                             xytext=(time_of_peak, text_y),
+                                             ha='center', va='center', fontsize='x-small',
+                                             arrowprops=dict(facecolor='black', shrink=0.05, width=0.5, headwidth=4),
+                                             bbox=dict(boxstyle='round,pad=0.3', fc='white', alpha=0.7, ec='grey'))
+                    
+                    # --- Annotate top plot (mean curves) with significant cluster range ---
+                    # Get y-range of the top plot to position the bar
+                    top_ymin, top_ymax = ax_mean_curves.get_ylim()
+                    bar_height = (top_ymax - top_ymin) * 0.03 # Small height for the bar
+                    bar_y_position = top_ymin - bar_height * 1.5 # Position below the y-axis data range
+
+                    ax_mean_curves.fill_between([time_start, time_end], 
+                                                [bar_y_position - bar_height/2, bar_y_position - bar_height/2],
+                                                [bar_y_position + bar_height/2, bar_y_position + bar_height/2],
+                                                color='lightcoral', alpha=0.5, 
+                                                label='Rango Significativo (SPM)' if current_cluster_label_for_legend else None, # Label only once
+                                                transform=ax_mean_curves.get_xaxis_transform()) # Relative to x-axis, data coords for y
+
                 else:
                     logger.warning(f"Nodos de cluster inválidos o fuera de rango: {cluster}. No se resaltará.")
+        
+        # Update legend for top plot if new items were added
+        handles_top, labels_top = ax_mean_curves.get_legend_handles_labels()
+        if any("Rango Significativo" in lab for lab in labels_top): # Check if new label was added
+            # Filter out duplicate "Rango Significativo" labels if fill_between added it multiple times
+            unique_handles_labels = {}
+            for h, l in zip(handles_top, labels_top):
+                if l not in unique_handles_labels:
+                    unique_handles_labels[l] = h
+            ax_mean_curves.legend(unique_handles_labels.values(), unique_handles_labels.keys(), loc='best', fontsize='small')
 
 
         ax_spm_stat.legend(loc='best', fontsize='small')
