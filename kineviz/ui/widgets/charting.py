@@ -251,29 +251,6 @@ def create_spm_results_plot(normalized_data_by_group: dict,
                     ax_spm_stat.fill_betweenx(y=[ymin, ymax], x1=time_start, x2=time_end,
                                               color='lightcoral', alpha=0.3,
                                               label=current_cluster_label)
-                    
-                    # Add vertical lines for cluster boundaries
-                    ax_spm_stat.axvline(time_start, color='grey', linestyle='--', linewidth=0.8)
-                    ax_spm_stat.axvline(time_end, color='grey', linestyle='--', linewidth=0.8)
-
-                    # Add p-value annotation for the cluster
-                    cluster_p_value = cluster.get('p_value')
-                    if cluster_p_value is not None:
-                        text_x_position = time_start + (time_end - time_start) / 2
-                        # Position text above or below based on where the stat_curve is relative to zero
-                        # This is a simple heuristic; might need adjustment
-                        text_y_position = ymax * 0.9 if np.mean(stat_curve[start_node:end_node+1]) > 0 else ymin * 0.9
-                        
-                        # Adjust y position slightly if it's too close to the axis limits
-                        if abs(text_y_position - ymax) < (ymax - ymin) * 0.1: text_y_position = ymax * 0.8
-                        if abs(text_y_position - ymin) < (ymax - ymin) * 0.1: text_y_position = ymin + (ymax-ymin)*0.2
-
-
-                        p_text = f"p={cluster_p_value:.3f}" if cluster_p_value >= 0.001 else "p<0.001"
-                        ax_spm_stat.text(text_x_position, text_y_position, p_text,
-                                         horizontalalignment='center', verticalalignment='center',
-                                         fontsize='small', color='black',
-                                         bbox=dict(boxstyle='round,pad=0.2', fc='white', alpha=0.6, ec='grey'))
                 else:
                     logger.warning(f"Nodos de cluster inválidos o fuera de rango: {cluster}. No se resaltará.")
 

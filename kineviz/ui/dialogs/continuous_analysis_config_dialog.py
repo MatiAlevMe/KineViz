@@ -57,6 +57,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         # Variables para opciones de visualización
         self.show_std_dev_var = tk.BooleanVar(value=False)
         self.show_conf_int_var = tk.BooleanVar(value=False)
+        self.show_sem_var = tk.BooleanVar(value=False) # Nueva variable para EEM
 
         # Variable para el nombre del análisis
         self.analysis_name_var = tk.StringVar()
@@ -184,8 +185,13 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.plot_options_frame = ttk.LabelFrame(main_frame, text="Opciones de Visualización del Gráfico")
         self.plot_options_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", padx=5, pady=10)
         self.plot_options_frame.grid_remove()
-        ttk.Checkbutton(self.plot_options_frame, text="Visualizar Desviación Estándar (DE)", variable=self.show_std_dev_var).pack(anchor="w", padx=5)
-        ttk.Checkbutton(self.plot_options_frame, text="Visualizar Intervalos de Confianza (IC)", variable=self.show_conf_int_var).pack(anchor="w", padx=5)
+
+        self.cb_std_dev = ttk.Checkbutton(self.plot_options_frame, text="Visualizar Desviación Estándar (DE)", variable=self.show_std_dev_var, command=lambda: self._on_viz_option_selected('std'))
+        self.cb_std_dev.pack(anchor="w", padx=5)
+        self.cb_conf_int = ttk.Checkbutton(self.plot_options_frame, text="Visualizar Intervalos de Confianza (IC)", variable=self.show_conf_int_var, command=lambda: self._on_viz_option_selected('ci'))
+        self.cb_conf_int.pack(anchor="w", padx=5)
+        self.cb_sem = ttk.Checkbutton(self.plot_options_frame, text="Visualizar Error Estándar de la Media (EEM)", variable=self.show_sem_var, command=lambda: self._on_viz_option_selected('sem'))
+        self.cb_sem.pack(anchor="w", padx=5)
         row_idx += 1
         
         # --- Nombre del Análisis ---
@@ -218,6 +224,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         selected_group_keys = self.get_selected_group_keys()
         show_std_dev = self.show_std_dev_var.get()
         show_conf_int = self.show_conf_int_var.get()
+        show_sem = self.show_sem_var.get() # Leer nueva variable
         mode = self.vi_grouping_mode.get()
         primary_vi = self.primary_vi_var.get() if mode == '1VI' else None
         fixed_vi = self.fixed_vi_var.get() if mode == '2VIs' else None
@@ -253,6 +260,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
             "groups": selected_group_keys,
             "show_std_dev": show_std_dev,
             "show_conf_int": show_conf_int,
+            "show_sem": show_sem, # Añadir nueva opción
             "grouping_mode": mode,
             "primary_vi_name": primary_vi,
             "fixed_vi_name": fixed_vi,
@@ -260,6 +268,18 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         }
         logger.info(f"Configuración de análisis continuo guardada: {self.result} para estudio {self.study_id}.")
         self.destroy()
+
+    def _on_viz_option_selected(self, selected_option: str):
+        """Asegura que solo una opción de visualización (DE, IC, EEM) esté activa."""
+        if selected_option == 'std' and self.show_std_dev_var.get():
+            self.show_conf_int_var.set(False)
+            self.show_sem_var.set(False)
+        elif selected_option == 'ci' and self.show_conf_int_var.get():
+            self.show_std_dev_var.set(False)
+            self.show_sem_var.set(False)
+        elif selected_option == 'sem' and self.show_sem_var.get():
+            self.show_std_dev_var.set(False)
+            self.show_conf_int_var.set(False)
 
     def load_initial_data(self):
         """Carga datos iniciales: VIs, alias y verifica disponibilidad de Cinemática."""
