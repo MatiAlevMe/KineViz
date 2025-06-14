@@ -188,10 +188,12 @@ Selección de Tipo de datos (ej: Cinemática, Cinética). Solo permite Cinemáti
 Selección de Variable/Columna de Agrupación: Permitir al usuario seleccionar la variable específica a analizar (ej: "LAnkleAngles_X", "KneeMoment_Y"). Esto implica identificar y listar las columnas de datos relevantes de los archivos procesados, excluyendo "Frame", "Sub Frame" y "Tiempo".
 Selector de Descriptores: Permitir al usuario seleccionar dos o más grupos de descriptores (basados en las VIs del estudio) para comparar.
 Opciones de Visualización y Anotación: Permitir al usuario configurar cómo se visualizan las curvas promedio (EEM, DE, IC) y si se muestran anotaciones de clusters SPM y delimitaciones de tiempo.
-1.3 [Pendiente] Crear `ContinuousAnalysisResultsView` (o similar): Vista o sección en la UI para:
-Listar los análisis continuos generados (nombre, columna, vi, sub-valores).
-Mostrar filtros y opciones de ordenación para la lista de análisis.
-Proveer opciones para cada análisis: ver gráfico SPM, ver tabla de datos normalizados/resultados, abrir carpeta de resultados, eliminar análisis.
+1.3 [En Progreso] Crear `ContinuousAnalysisView` (anteriormente `ContinuousAnalysisResultsView`): Vista en la UI para:
+    - [Hecho] Listar los análisis continuos generados (nombre, columna, grupos, fecha).
+    - [Hecho] Proveer opciones para cada análisis: ver gráfico SPM (PNG), ver configuración (JSON), abrir carpeta de resultados, eliminar análisis.
+    - [Hecho] Botón para lanzar `ContinuousAnalysisConfigDialog` para crear nuevos análisis.
+    - [Pendiente] Mostrar filtros y opciones de ordenación para la lista de análisis.
+    - [Pendiente] Opción para ver tabla de datos normalizados/resultados SPM (si aplica).
 2. [Hecho] Implementación de Normalización de Datos Temporales.
 2.1 [Hecho] Lógica de Normalización Temporal: Implementar una función (posiblemente en `processors.py` o un nuevo módulo) para normalizar la duración de las secuencias de datos a 101 puntos (0-100%).
 Esto se aplicará a la variable seleccionada para cada archivo/sujeto/intento.
