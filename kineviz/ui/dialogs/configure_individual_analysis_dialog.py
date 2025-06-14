@@ -652,16 +652,6 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
                 messagebox.showerror("Error Interno", f"No se pudo encontrar la clave para el grupo '{display_name}'.", parent=self)
                 return []
 
-        if has_duplicates:
-                messagebox.showwarning("Grupos Duplicados", "Ha seleccionado el mismo grupo más de una vez. Los duplicados serán ignorados.", parent=self)
-                unique_keys = []
-                seen_keys = set()
-                for key in selected_keys:
-                    if key not in seen_keys:
-                        unique_keys.append(key)
-                        seen_keys.add(key)
-                return unique_keys
-
         return selected_keys
 
 
