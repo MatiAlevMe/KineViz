@@ -378,22 +378,30 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
             elif mode == "2VIs" and fixed_vi_name and fixed_descriptor_display:
                 # key_from_config is a full key, e.g., "VI_Fija=ValorFijo;VI_Variable=ValorVariable"
                 fixed_desc_original = self._get_descriptor_original_value(fixed_descriptor_display)
-                fixed_pair_to_remove = f"{fixed_vi_name}={fixed_desc_original}"
-                
-                variable_part_display_inner = []
+                fixed_pair_str_to_match = f"{fixed_vi_name}={fixed_desc_original}" # The part that IS fixed
+
+                # Format the fixed part once (with alias)
+                fixed_vi_alias = self.study_aliases.get(fixed_desc_original, fixed_desc_original)
+                formatted_fixed_part = f"{fixed_vi_name}: {fixed_vi_alias}"
+
+                variable_part_display_segments = []
+                # Iterate through parts of the full key to find the variable one(s)
                 for part_of_full_key in key_from_config.split(';'):
-                    if part_of_full_key != fixed_pair_to_remove:
+                    if part_of_full_key != fixed_pair_str_to_match: # This is the variable part
                         try:
-                            vi_name_inner, desc_val_inner = part_of_full_key.split('=',1)
-                            alias_inner = self.study_aliases.get(desc_val_inner, desc_val_inner)
-                            variable_part_display_inner.append(f"{vi_name_inner}: {alias_inner}")
+                            vi_name_var, desc_val_var = part_of_full_key.split('=',1)
+                            alias_var = self.study_aliases.get(desc_val_var, desc_val_var)
+                            variable_part_display_segments.append(f"{vi_name_var}: {alias_var}")
                         except ValueError: 
-                            variable_part_display_inner.append(part_of_full_key)
+                            variable_part_display_segments.append(part_of_full_key) # Fallback
                 
-                if variable_part_display_inner:
-                    formatted_parts.append(", ".join(variable_part_display_inner))
-                else: # Should not happen if config is correct, but as a fallback
-                    formatted_parts.append(key_from_config) 
+                if variable_part_display_segments:
+                    # Combine fixed part with variable part(s)
+                    full_display_for_group = f"{formatted_fixed_part}, {', '.join(variable_part_display_segments)}"
+                    formatted_parts.append(full_display_for_group)
+                else: # Should only be the fixed part, which isn't a comparison group itself
+                      # This case is unlikely if config['groups'] stores the full keys of the compared groups.
+                    formatted_parts.append(formatted_fixed_part) # Fallback
             
             else: # Fallback for "combined" mode or if mode info is missing
                 display_sub_parts = []
