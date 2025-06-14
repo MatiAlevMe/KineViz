@@ -648,6 +648,9 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
                 selected_keys.append(original_key)
             else:
                 logger.error(f"Clave original no encontrada para el grupo filtrado seleccionado: '{display_name}'")
+                # Si una clave no se encuentra, la selección es inválida
+                messagebox.showerror("Error Interno", f"No se pudo encontrar la clave para el grupo '{display_name}'.", parent=self)
+                return []
 
         if has_duplicates:
                 messagebox.showwarning("Grupos Duplicados", "Ha seleccionado el mismo grupo más de una vez. Los duplicados serán ignorados.", parent=self)
