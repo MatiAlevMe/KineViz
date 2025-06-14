@@ -369,7 +369,7 @@ class ContinuousAnalysisManagerDialog(Toplevel):
             "show_full_time_with_delimiters", "add_time_range_label", "time_range_label_text"
         ]
 
-        output_lines = [f"{'Parámetro':<45} {'Valor':<50}}\n", f"{'-'*45:<45} {'-'*50}\n"]
+        output_lines = [f"{'Parámetro':<45} {'Valor':<50}\n", f"{'-'*45:<45} {'-'*50}\n"]
 
         for key in display_order:
             if key not in config_data:
