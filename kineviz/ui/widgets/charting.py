@@ -256,9 +256,10 @@ def create_spm_results_plot(normalized_data_by_group: dict,
                                               color='lightcoral', alpha=0.3,
                                               label=current_cluster_label_for_legend)
 
-                    # --- Annotate cluster details (Peak Stat, Cluster P, Time of Peak) ---
-                    peak_node = cluster.get('peak_node')
-                    peak_value = cluster.get('peak_value')
+                    # --- Annotate cluster details (Peak Stat, Cluster P, Time of Peak) --- (Conditional)
+                    if spm_results.get('annotate_spm_clusters_bottom', True):
+                        peak_node = cluster.get('peak_node')
+                        peak_value = cluster.get('peak_value')
                     cluster_p_val = cluster.get('p_value')
 
                     if peak_node is not None and peak_value is not None and cluster_p_val is not None and \
@@ -329,7 +330,26 @@ def create_spm_results_plot(normalized_data_by_group: dict,
     ax_spm_stat.set_title('Análisis Estadístico SPM')
 
     fig.tight_layout(pad=2.0) # Add some padding between subplots and title
-    fig.suptitle(f'Análisis SPM: {variable_name}', fontsize=16, y=0.99) # Overall title, adjust y if needed
+    
+    # --- Time Range Delimitation and Labeling ---
+    main_title_text = f'Análisis SPM: {variable_name}'
+    if spm_results.get('delimit_time_range', False):
+        time_min = spm_results.get('time_min', 0.0)
+        time_max = spm_results.get('time_max', 100.0)
+        
+        if spm_results.get('show_full_time_with_delimiters', True):
+            for ax_panel in axs: # Apply to both top and bottom panels
+                ax_panel.axvline(time_min, color='blue', linestyle=':', linewidth=1.2, alpha=0.8)
+                ax_panel.axvline(time_max, color='blue', linestyle=':', linewidth=1.2, alpha=0.8)
+        else: # Zoom into the range
+            for ax_panel in axs:
+                ax_panel.set_xlim(time_min, time_max)
+        
+        if spm_results.get('add_time_range_label', False) and spm_results.get('time_range_label_text', ''):
+            time_label = spm_results.get('time_range_label_text')
+            main_title_text += f" ({time_label}: {time_min:.0f}-{time_max:.0f}%)"
+
+    fig.suptitle(main_title_text, fontsize=16, y=0.99) # Overall title, adjust y if needed
     plt.subplots_adjust(top=0.92) # Adjust top to make space for suptitle
 
     try:
