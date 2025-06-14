@@ -291,23 +291,63 @@ class DiscreteAnalysisView(ttk.Frame):
     def _parse_table_filename(self, filename: str) -> tuple[str, str, list[str]]:
         """
         Parsea el nombre de archivo para extraer cálculo, tipo de dato (frecuencia),
-        y lista de sub-valores (VI=Desc).
-        Ejemplo: Maximo_Cinematica_VI1=DescA__VI2=DescB.xlsx
-        Retorna: (calculo, tipo_dato, [VI1=DescA, VI2=DescB])
+        y lista de sub-valores en formato "VI_Nombre=Descriptor_Valor".
+        El nombre de archivo usa '_' en lugar de '=' y '__' en lugar de ';'.
+        Ejemplo: Maximo_Cinematica_Edad_Joven__Peso_OS.xlsx
+        Retorna: (calculo, tipo_dato, ["Edad=Joven", "Peso=OS"])
         """
         name_part = filename.rsplit('.', 1)[0] # Quitar extensión
         
-        parts = name_part.split('_')
-        if len(parts) < 3: # Necesita Calc_Freq_Subvalores
+        file_parts = name_part.split('_')
+        if len(file_parts) < 2: # Mínimo CALC_FREQ
+            logger.warning(f"Nombre de archivo muy corto para parsear: {filename}")
             return "Desconocido", "Desconocido", []
         
-        calc_type = parts[0]
-        data_type = parts[1]
+        calc_type = file_parts[0]
+        data_type = file_parts[1]
         
-        sub_values_combined_str = '_'.join(parts[2:]) # Ej: VI1=DescA__VI2=DescB
-        sub_value_list = sub_values_combined_str.split('__') if sub_values_combined_str else []
+        # El resto son los sub-valores codificados
+        # Ej: Edad_Joven__Peso_OS
+        # Esto se une de file_parts[2:]
+        encoded_sub_values_str = '_'.join(file_parts[2:])
         
-        return calc_type, data_type, sub_value_list
+        # Dividir por '__' para obtener partes individuales como "Edad_Joven", "Peso_OS"
+        encoded_individual_sv_parts = encoded_sub_values_str.split('__') if encoded_sub_values_str else []
+        
+        reconstructed_sub_value_list = []
+        # self.study_vis debería estar poblado con {'name': 'VI_NAME', ...}
+        # Asumimos que los nombres de VI no contienen '_' y son prefijos únicos.
+        
+        for encoded_sv_part in encoded_individual_sv_parts:
+            parsed_correctly = False
+            # Eliminar posible '_' al inicio si la separación por '__' lo dejó (de '___')
+            current_encoded_part = encoded_sv_part.lstrip('_')
+
+            for vi_definition in self.study_vis:
+                vi_name = vi_definition.get('name')
+                if not vi_name:
+                    continue
+                
+                # Comprobar si la parte codificada comienza con "NOMBRE_VI_"
+                if current_encoded_part.startswith(vi_name + "_"):
+                    # El descriptor es todo lo que sigue después de "NOMBRE_VI_"
+                    descriptor_value = current_encoded_part[len(vi_name) + 1:]
+                    reconstructed_sub_value_list.append(f"{vi_name}={descriptor_value}")
+                    parsed_correctly = True
+                    break # VI encontrada para esta parte
+            
+            if not parsed_correctly:
+                # Si no se pudo parsear (ej. "SinSubValores" o formato inesperado)
+                # Se podría añadir el original o un placeholder, o loguear.
+                # Por ahora, si no se parsea, no se añade, lo que podría ser problemático.
+                # Mejor añadir el original como fallback para depuración.
+                if current_encoded_part: # Solo si no está vacío
+                    logger.warning(f"No se pudo parsear la parte del sub-valor '{current_encoded_part}' "
+                                   f"del archivo '{filename}' a formato VI=Descriptor. "
+                                   f"VIs conocidas: {[v['name'] for v in self.study_vis]}")
+                    reconstructed_sub_value_list.append(current_encoded_part) # Fallback
+                    
+        return calc_type, data_type, reconstructed_sub_value_list
 
     def _fetch_all_table_files_data(self):
         """Obtiene y parsea todos los archivos de tablas .xlsx del servicio."""
