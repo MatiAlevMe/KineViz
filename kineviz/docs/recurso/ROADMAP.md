@@ -282,7 +282,7 @@ Full Two-Way ANOVA: The current "2VIs" mode performs comparisons within a level 
 3.2 [Pendiente] Botón para eliminar todas las pruebas para el analisis discreto y el analisis continuo.
 3.3 [Pendiente] Botón "Eliminación Masiva" para seleccionar los archivos que se deseen eliminar. Tanto en la ventana de estudio como en la ventana de pruebas de analisis discreto y pruebas analisis continuo.
 4. [Pendiente] Agregar las Siguiente Reglas a la Eliminación de Archivos Individuales o Eliminación Masiva:
-"Si no hay archivos en el estudio elimina todos los archivos y carpetas dentro del estudio"
+"Si no hay archivos o carpetas dentro del estudio elimina los archivos  carpetas locales dentro de ese estudio (sin incluir el propio estudio padre)"
 "Si no hay archivos para un participante en particular, elimina la carpeta con el nombre del participante"
 5. [Pendiente] Agregar Botón para Refrescar Archivos en Todas las Tablas:
 Este botón mostrara los nuevos archivos en caso de por ejemplo el usuario modifique los archivos locales.
@@ -293,9 +293,10 @@ Cosa de que esos estudios se mantengan sobre todos los demas estudios.
 Con un botón de chincheta y se mantengan fijos sobre los demas estudios.
 8. [Pendiente] Opción para Comentar Estudios en la Ventana del Estudio Especifico (Maximo 150 caracteres)
 Para que el usuario tenga la opción de escribir algún detalle que estime conveniente sobre el estudio especifico.
+Este comentario de estudio podrá ser modificado también
 9. [Pendiente] Opciones de Accesibilidad en la Configuración del Software:
-Como aumentar el tamaño de las letras, y cambiar el tema de blanco a oscuro.
-10. [Omitido] Mejoras en la UI
+Como aumentar el tamaño de las letras, y cambiar el tema de KineViz de blanco a oscuro.
+10.  [Omitido] Mejoras en la UI
 
 ## [Pendiente] Fase 7: Pruebas, Documentación y Despliegue
 1. [Omitido] Análisis Discreto
