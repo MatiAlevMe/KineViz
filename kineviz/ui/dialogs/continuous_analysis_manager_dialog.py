@@ -784,15 +784,31 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                                "Esta acción no se puede deshacer.",
                                parent=self, icon='warning'):
             try:
-                self.analysis_service.delete_continuous_analysis(self.study_id, analysis_name)
+                # selected_info is defined a few lines above, before the messagebox.askyesno
+                # analysis_name is also defined from selected_info.get('name')
+                analysis_path_to_delete = selected_info.get('path') # Get the full Path object
+
+                if not analysis_path_to_delete or not isinstance(analysis_path_to_delete, Path):
+                    messagebox.showerror("Error Interno", "No se pudo determinar la ruta del análisis para eliminar.", parent=self)
+                    logger.error(f"Intento de eliminar análisis continuo '{analysis_name}' sin una ruta válida: {analysis_path_to_delete}")
+                    return # Exit if path is not valid
+
+                self.analysis_service.delete_continuous_analysis(analysis_path_to_delete) # Pass the Path object
                 messagebox.showinfo("Éxito", f"Análisis '{analysis_name}' eliminado correctamente.", parent=self)
                 self.load_analyses()
             except FileNotFoundError:
-                messagebox.showerror("Error", f"No se encontró el análisis '{analysis_name}' para eliminar.", parent=self)
-                self.load_analyses()
-            except Exception as e:
+                # If analysis_path_to_delete was attempted, use its value in the message
+                path_info_for_error = selected_info.get('path', 'desconocida') if selected_info else 'desconocida'
+                messagebox.showerror("Error", f"No se encontró el análisis '{analysis_name}' para eliminar (ruta: {path_info_for_error}).", parent=self)
+                self.load_analyses() # Refresh list even on error
+            except ValueError as ve: # Catch specific ValueError if path is not a dir, etc.
+                messagebox.showerror("Error de Ruta", f"Error con la ruta del análisis '{analysis_name}':\n{ve}", parent=self)
+                logger.error(f"Error de valor/ruta eliminando análisis continuo '{analysis_name}': {ve}", exc_info=True)
+                self.load_analyses() # Refresh list
+            except Exception as e: # General exception
                 logger.error(f"Error eliminando análisis continuo '{analysis_name}': {e}", exc_info=True)
                 messagebox.showerror("Error", f"No se pudo eliminar el análisis '{analysis_name}':\n{e}", parent=self)
+                self.load_analyses() # Refresh list
 
     def _on_close(self, event=None):
         self.destroy()
