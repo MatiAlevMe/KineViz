@@ -26,7 +26,6 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.study_id = study_id
 
         self.title("Configurar Análisis Continuo") # Título más genérico
-        # self.geometry("700x650") # Ajustar según necesidad
         self.grab_set()
         self.transient(parent)
 
@@ -76,25 +75,8 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         # Definir estilo para el botón de ayuda
         style = ttk.Style()
         style.configure("Help.TButton", foreground="white", background="blue")
-
-        # --- Setup for scrollable area ---
-        container_frame = ttk.Frame(self)
-        self.canvas = tk.Canvas(container_frame)
-        scrollbar = ttk.Scrollbar(container_frame, orient="vertical", command=self.canvas.yview)
-        self.scrollable_frame = ttk.Frame(self.canvas, padding="15") # Apply padding here
-
-        self.scrollable_frame.bind(
-            "<Configure>",
-            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
-        )
-        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
-        self.canvas.configure(yscrollcommand=scrollbar.set)
-
-        container_frame.pack(fill=tk.BOTH, expand=True)
-        self.canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
         
-        self.create_widgets(self.scrollable_frame) # Pass scrollable_frame as parent
+        self.create_widgets() 
         should_continue_init = self.load_initial_data() # Cambiado de load_data_types a load_initial_data
 
         if not should_continue_init:
@@ -123,11 +105,10 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         """Muestra un popup de ayuda simple."""
         messagebox.showinfo(title, message, parent=self)
 
-    def create_widgets(self, parent_frame): # Accept parent_frame
+    def create_widgets(self):
         """Crea los widgets del diálogo, similar a ConfigureIndividualAnalysisDialog."""
-        # main_frame is now parent_frame, padding is applied when scrollable_frame is created
-        main_frame = parent_frame 
-        # main_frame.pack(fill=tk.BOTH, expand=True) # Not needed, canvas manages scrollable_frame
+        main_frame = ttk.Frame(self, padding="15")
+        main_frame.pack(fill=tk.BOTH, expand=True)
         main_frame.columnconfigure(1, weight=1)
 
         row_idx = 0
@@ -742,16 +723,13 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
     def _toggle_time_delimitation_widgets(self):
         """Muestra u oculta los widgets de delimitación de tiempo."""
         if self.delimit_time_range_var.get():
-            # Mostrar todos los widgets dentro del subframe
-            for widget in self.time_delimitation_subframe.winfo_children():
-                # El frame de la etiqueta de texto se maneja por separado
-                if widget != self.time_label_entry_frame:
-                    widget.grid() # O pack() si se usó pack para ellos
-            self._toggle_time_label_entry() # Asegurar estado correcto del entry de etiqueta
+            # Make the subframe visible. Its gridded children will appear with it.
+            self.time_delimitation_subframe.pack(fill=tk.X, expand=True)
+            # Update visibility of the time label entry within the subframe
+            self._toggle_time_label_entry()
         else:
-            # Ocultar todos los widgets dentro del subframe
-            for widget in self.time_delimitation_subframe.winfo_children():
-                widget.grid_remove() # O pack_forget()
+            # Hide the entire subframe. Its children will disappear with it.
+            self.time_delimitation_subframe.pack_forget()
 
     def _toggle_time_label_entry(self):
         """Muestra u oculta el campo de entrada para la etiqueta de rango de tiempo."""
