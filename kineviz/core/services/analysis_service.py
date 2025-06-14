@@ -1315,7 +1315,8 @@ class AnalysisService:
                             'config': config_data,
                             'mtime': mtime,
                             'plot_path': plot_path if plot_path.exists() else None,
-                            'spm_results_path': spm_results_path if spm_results_path.exists() else None
+                            'spm_results_path': spm_results_path if spm_results_path.exists() else None,
+                            'config_path': config_path # Add the config_path here
                         })
                     except json.JSONDecodeError:
                         logger.error(f"Error leyendo config_continuous.json para análisis '{analysis_name}' en estudio {study_id}.")
