@@ -686,9 +686,9 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                                 text_lines.append("    (No se encontraron archivos contribuyentes con estas VIs exactas)")
                     
                     # Add other parameters from JSON
-                    text_lines.append("\n" + "=" * (len(text_lines[0]) -1)) # Underline for the other title
-                    text_lines.append("\nOtros Parámetros (desde JSON)")
-                    text_lines.append("\n" + "-" * len(text_lines[-1]) + "\n") 
+                    text_lines.append("\n" + "-" * 40)
+                    text_lines.append("Otros Parámetros (desde JSON)")
+                    text_lines.append("-" * 40 + "\n")
                     other_params_added = False
                     for key, value in config_data.items():
                         if key not in display_order:
