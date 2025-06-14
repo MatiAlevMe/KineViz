@@ -56,6 +56,10 @@ class DescriptorAliasDialog(Toplevel):
         self.transient(parent)
         self.grab_set()
 
+        # Definir estilo para el botón de ayuda
+        style = ttk.Style()
+        style.configure("Help.TButton", foreground="white", background="blue")
+
     def _show_input_help(self, title: str, message: str):
         """Muestra un popup de ayuda simple."""
         messagebox.showinfo(title, message, parent=self)
@@ -134,7 +138,7 @@ class DescriptorAliasDialog(Toplevel):
                     alias_entry = ttk.Entry(alias_entry_frame, textvariable=alias_var)
                     alias_entry.pack(side=tk.LEFT, expand=True, fill=tk.X)
 
-                    alias_help_button = ttk.Button(alias_entry_frame, text="?", width=3, # Usar estilo si existe
+                    alias_help_button = ttk.Button(alias_entry_frame, text="?", width=3, style="Help.TButton",
                                                    command=lambda d=descriptor: self._show_input_help(f"Ayuda: Alias para '{d}'",
                                                                                                      f"Asigne un alias descriptivo opcional para el sub-valor '{d}'.\n"
                                                                                                      "Este alias se usará en gráficos y reportes para mayor claridad.\n"

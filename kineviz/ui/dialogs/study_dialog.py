@@ -242,27 +242,44 @@ class StudyDialog(Toplevel):
         is_mandatory_var = tk.BooleanVar(value=is_mandatory_value)
 
         # Checkbox "¿Multiple?"
+        multiple_frame = ttk.Frame(vi_flags_frame)
+        multiple_frame.pack(anchor="w")
         allows_combination_cb = ttk.Checkbutton(
-            vi_flags_frame,
+            multiple_frame,
             text="¿Multiple?",
             variable=allows_combination_var,
-            # El command ahora pasará el widget del checkbox "Obligatorio" para gestionarlo
         )
-        allows_combination_cb.pack(anchor="w") # Pack simple, se alinea a la izquierda por defecto
+        allows_combination_cb.pack(side=tk.LEFT)
+        multiple_help_button = ttk.Button(multiple_frame, text="?", width=3, style="Help.TButton",
+                                          command=lambda: self._show_input_help("Ayuda: VI Múltiple",
+                                                                                "Permitir que esta VI tenga múltiples sub-valores seleccionados para un mismo archivo/intento.\n"
+                                                                                "Ej: Un archivo podría pertenecer a 'CondA' Y 'CondB' si 'Condicion' es múltiple.\n"
+                                                                                "Si no es múltiple, un archivo solo puede tener un sub-valor de esta VI."))
+        multiple_help_button.pack(side=tk.LEFT, padx=(2,0))
+
 
         # Checkbox "¿Obligatorio?" (se empaquetará/desempaquetará dinámicamente)
         # Crear el widget pero no empaquetarlo inicialmente si no es necesario
+        # Este se empaqueta/desempaqueta en _update_mandatory_checkbox_visibility_and_state
+        # por lo que el frame para el botón de ayuda debe ser creado aquí y pasado.
+        self.mandatory_frame_for_vi = ttk.Frame(vi_flags_frame) # Guardar referencia al frame para empaquetar/desempaquetar
+        # No empaquetar self.mandatory_frame_for_vi aquí, se hace en _update_mandatory_checkbox_visibility_and_state
+
         is_mandatory_cb_widget = ttk.Checkbutton(
-            vi_flags_frame, # Mismo frame padre
+            self.mandatory_frame_for_vi, 
             text="¿Obligatorio?",
             variable=is_mandatory_var
         )
+        # is_mandatory_cb_widget se empaqueta dentro de self.mandatory_frame_for_vi en _update_mandatory_checkbox_visibility_and_state
+        
         # El command de allows_combination_cb se define después de crear is_mandatory_cb_widget
-        allows_combination_cb.config(command=lambda acv=allows_combination_var, im_cb=is_mandatory_cb_widget: self._on_allows_combination_changed(acv, im_cb))
+        # y ahora también necesita el frame del botón de ayuda para el obligatorio.
+        allows_combination_cb.config(command=lambda acv=allows_combination_var, im_cb=is_mandatory_cb_widget, im_frame=self.mandatory_frame_for_vi: self._on_allows_combination_changed(acv, im_cb, im_frame))
 
 
         if self.is_editing:
             allows_combination_cb.config(state=tk.DISABLED)
+            multiple_help_button.config(state=tk.DISABLED) # También deshabilitar botón de ayuda
             # El estado de is_mandatory_cb_widget se manejará en _update_mandatory_checkbox_visibility_and_state
 
         # Guardar referencias
@@ -377,16 +394,17 @@ class StudyDialog(Toplevel):
         except ValueError:
             logger.warning("Intento de eliminar un sub-valor que no está en la lista de la VI.")
 
-    def _on_allows_combination_changed(self, allows_combination_var, is_mandatory_cb_widget):
+    def _on_allows_combination_changed(self, allows_combination_var, is_mandatory_cb_widget, mandatory_frame):
         """
         Callback cuando el estado de 'allows_combination' cambia.
         Actualiza la visibilidad y estado del checkbox 'is_mandatory' y su variable.
         """
-        self._update_mandatory_checkbox_visibility_and_state(allows_combination_var, is_mandatory_cb_widget)
+        self._update_mandatory_checkbox_visibility_and_state(allows_combination_var, is_mandatory_cb_widget, mandatory_frame)
 
-    def _update_mandatory_checkbox_visibility_and_state(self, allows_combination_var, is_mandatory_cb_widget):
+    def _update_mandatory_checkbox_visibility_and_state(self, allows_combination_var, is_mandatory_cb_widget, mandatory_frame):
         """
-        Actualiza la visibilidad y el estado (habilitado/deshabilitado) del checkbox 'is_mandatory'.
+        Actualiza la visibilidad y el estado (habilitado/deshabilitado) del checkbox 'is_mandatory'
+        y su botón de ayuda.
         También actualiza la variable 'is_mandatory_var' si es necesario.
         """
         # Encontrar la VI correcta para acceder a 'is_mandatory_var'
@@ -398,27 +416,40 @@ class StudyDialog(Toplevel):
         
         if not target_vi_data:
             logger.warning("No se pudo encontrar la VI data para el checkbox 'Obligatorio'.")
-            # Si no se encuentra, por seguridad, ocultar el checkbox
-            if is_mandatory_cb_widget.winfo_ismapped():
-                is_mandatory_cb_widget.pack_forget()
+            if mandatory_frame.winfo_ismapped():
+                mandatory_frame.pack_forget()
             return
 
         is_mandatory_var = target_vi_data['is_mandatory_var']
         allows_combination = allows_combination_var.get()
 
+        # Limpiar el frame antes de re-empaquetar
+        for widget in mandatory_frame.winfo_children():
+            widget.pack_forget()
+
         if allows_combination:
-            # Mostrar y habilitar/deshabilitar según modo edición
-            if not is_mandatory_cb_widget.winfo_ismapped():
-                # Reduced pady for is_mandatory_cb_widget to bring it closer to ¿Multiple?
-                is_mandatory_cb_widget.pack(anchor="w", pady=(1,0)) # Empaquetar debajo, reduced top padding from 2 to 1
-            is_mandatory_cb_widget.config(state=tk.NORMAL if not self.is_editing else tk.DISABLED)
+            if not mandatory_frame.winfo_ismapped():
+                mandatory_frame.pack(anchor="w")
+
+            is_mandatory_cb_widget.pack(side=tk.LEFT) # Empaquetar checkbox
+            
+            # Crear y empaquetar botón de ayuda para "Obligatorio"
+            # Este botón se crea aquí porque solo es relevante si "Multiple" está activo.
+            mandatory_help_button = ttk.Button(mandatory_frame, text="?", width=3, style="Help.TButton",
+                                               command=lambda: self._show_input_help("Ayuda: VI Obligatoria",
+                                                                                     "Si una VI es 'Múltiple' y también 'Obligatoria',\n"
+                                                                                     "se debe especificar al menos un sub-valor de esta VI en el nombre del archivo.\n"
+                                                                                     "Si es 'Múltiple' pero NO 'Obligatoria', se puede usar 'Nulo' para esta VI si no aplica."))
+            mandatory_help_button.pack(side=tk.LEFT, padx=(2,0))
+
+            current_state = tk.NORMAL if not self.is_editing else tk.DISABLED
+            is_mandatory_cb_widget.config(state=current_state)
+            mandatory_help_button.config(state=current_state)
         else:
-            # Ocultar y asegurar que la variable sea False
-            if is_mandatory_cb_widget.winfo_ismapped():
-                is_mandatory_cb_widget.pack_forget()
+            if mandatory_frame.winfo_ismapped():
+                mandatory_frame.pack_forget()
             is_mandatory_var.set(False)
-            # El estado del widget (DISABLED) no importa mucho si está oculto, pero por consistencia:
-            is_mandatory_cb_widget.config(state=tk.DISABLED)
+            is_mandatory_cb_widget.config(state=tk.DISABLED) # Estado base si está oculto
 
 
     def show_iv_help(self):
