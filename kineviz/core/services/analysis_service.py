@@ -1243,24 +1243,28 @@ class AnalysisService:
                         results_payload["continuous_plot_path"] = str(spm_plot_path)
                         logger.info(f"Gráfico de análisis continuo guardado en: {spm_plot_path}")
 
-                        # --- Generar Gráfico SPM Interactivo ---
-                        spm_interactive_plot_path = current_analysis_output_dir / "spm_plot_interactive.html"
-                        try:
-                            charting.create_interactive_spm_results_plot(
-                                normalized_data_by_group=normalized_data,
-                                spm_results=plot_params_for_charting, # Same params as static plot
-                                group_legend_names=group_display_names_for_plot,
-                                variable_name=plot_variable_name,
-                                output_path=spm_interactive_plot_path
-                            )
-                            results_payload["continuous_interactive_plot_path"] = str(spm_interactive_plot_path)
-                            logger.info(f"Gráfico SPM interactivo guardado en: {spm_interactive_plot_path}")
-                        except Exception as e_iplot:
-                            logger.error(f"Error generando gráfico SPM interactivo: {e_iplot}", exc_info=True)
+                        # --- Generar Gráfico SPM Interactivo (Condicional) ---
+                        if config.get("generate_interactive_plot", True): # Default to True if key missing
+                            spm_interactive_plot_path = current_analysis_output_dir / "spm_plot_interactive.html"
+                            try:
+                                charting.create_interactive_spm_results_plot(
+                                    normalized_data_by_group=normalized_data,
+                                    spm_results=plot_params_for_charting, # Same params as static plot
+                                    group_legend_names=group_display_names_for_plot,
+                                    variable_name=plot_variable_name,
+                                    output_path=spm_interactive_plot_path
+                                )
+                                results_payload["continuous_interactive_plot_path"] = str(spm_interactive_plot_path)
+                                logger.info(f"Gráfico SPM interactivo guardado en: {spm_interactive_plot_path}")
+                            except Exception as e_iplot:
+                                logger.error(f"Error generando gráfico SPM interactivo: {e_iplot}", exc_info=True)
+                                results_payload["continuous_interactive_plot_path"] = None
+                        else:
+                            logger.info("Generación de gráfico SPM interactivo omitida según configuración.")
                             results_payload["continuous_interactive_plot_path"] = None
                     
-                    except Exception as e_plot: # Catch errors from static or interactive plot generation
-                        logger.error(f"Error generando gráficos de análisis continuo: {e_plot}", exc_info=True)
+                    except Exception as e_plot: # Catch errors from static plot generation or other issues
+                        logger.error(f"Error generando gráfico estático de análisis continuo o procesando: {e_plot}", exc_info=True)
                         results_payload["continuous_plot_path"] = None
                         results_payload["continuous_interactive_plot_path"] = None
                 
