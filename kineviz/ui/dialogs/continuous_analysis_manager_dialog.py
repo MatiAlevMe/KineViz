@@ -640,7 +640,51 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                         else:
                             text_lines.append(f"{translated_key}: {display_value_str}")
 
+                    # --- Add Claves de Archivo Completas Contribuyentes por Grupo Comparado ---
+                    text_lines.append("\n" + "-" * 40)
+                    text_lines.append("Claves de Archivo Completas Contribuyentes por Grupo Comparado:")
+                    text_lines.append("-" * 40)
 
+                    # config_data['groups'] for continuous analysis:
+                    #   - 1VI mode: stores *effective partial keys* (e.g., ["Edad=Adulto", "Edad=Mayor"])
+                    #   - 2VI mode: stores *full keys* (e.g., ["Peso=OS;Edad=Adulto", "Peso=OS;Edad=Mayor"])
+                    comparison_groups_keys_cont = config_data.get('groups', [])
+                    mode_cfg_cont = config_data.get('grouping_mode')
+                    primary_vi_cfg_cont = config_data.get('primary_vi_name')
+                    fixed_vi_cfg_cont = config_data.get('fixed_vi_name')
+                    fixed_desc_display_cfg_cont = config_data.get('fixed_descriptor_display')
+                    frequency_cfg_cont = config_data.get('data_type', 'Cinematica') # 'data_type' in continuous config
+
+                    # Get the display names for these comparison groups
+                    formatted_comparison_groups_display_cont = self._format_analysis_groups_for_display(
+                        comparison_groups_keys_cont, mode_cfg_cont, primary_vi_cfg_cont,
+                        fixed_vi_cfg_cont, fixed_desc_display_cfg_cont
+                    )
+
+                    if not comparison_groups_keys_cont:
+                        text_lines.append("  No se definieron grupos para la comparación.")
+                    else:
+                        for i, comp_group_key_from_config_cont in enumerate(comparison_groups_keys_cont):
+                            required_parts_for_lookup_cont = []
+                            if mode_cfg_cont == '1VI':
+                                # comp_group_key_from_config_cont is the partial key, e.g., "Edad=Adulto"
+                                required_parts_for_lookup_cont = [comp_group_key_from_config_cont]
+                            else: # 2VIs mode
+                                # comp_group_key_from_config_cont is a full key, e.g., "Peso=OS;Edad=Adulto"
+                                required_parts_for_lookup_cont = comp_group_key_from_config_cont.split(';')
+                            
+                            contributing_full_keys_cont = self.analysis_service._get_contributing_full_keys(
+                                self.study_id, frequency_cfg_cont, required_parts_for_lookup_cont
+                            )
+
+                            current_comparison_group_display_name_cont = formatted_comparison_groups_display_cont[i] if i < len(formatted_comparison_groups_display_cont) else comp_group_key_from_config_cont
+                            text_lines.append(f"\n  Para Grupo Comparado '{current_comparison_group_display_name_cont}':")
+                            if contributing_full_keys_cont:
+                                for cfk_idx_cont, full_key_cont in enumerate(contributing_full_keys_cont):
+                                    text_lines.append(f"    - {full_key_cont}")
+                            else:
+                                text_lines.append("    (No se encontraron archivos contribuyentes con estas VIs exactas)")
+                    
                     # Add other parameters from JSON
                     text_lines.append("\n" + "=" * (len(text_lines[0]) -1)) # Underline for the other title
                     text_lines.append("\nOtros Parámetros (desde JSON)")
