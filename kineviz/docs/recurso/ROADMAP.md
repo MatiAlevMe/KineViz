@@ -187,6 +187,7 @@ Si validación falla, se loguean errores específicos y se devuelve un error gen
 Selección de Tipo de datos (ej: Cinemática, Cinética). Solo permite Cinemática inicialmente.
 Selección de Variable/Columna de Agrupación: Permitir al usuario seleccionar la variable específica a analizar (ej: "LAnkleAngles_X", "KneeMoment_Y"). Esto implica identificar y listar las columnas de datos relevantes de los archivos procesados, excluyendo "Frame", "Sub Frame" y "Tiempo".
 Selector de Descriptores: Permitir al usuario seleccionar dos o más grupos de descriptores (basados en las VIs del estudio) para comparar.
+Opciones de Visualización y Anotación: Permitir al usuario configurar cómo se visualizan las curvas promedio (EEM, DE, IC) y si se muestran anotaciones de clusters SPM y delimitaciones de tiempo.
 1.3 [Pendiente] Crear `ContinuousAnalysisResultsView` (o similar): Vista o sección en la UI para:
 Listar los análisis continuos generados (nombre, columna, vi, sub-valores).
 Mostrar filtros y opciones de ordenación para la lista de análisis.
@@ -208,11 +209,12 @@ Recibir los datos normalizados y agrupados.
 Preparar los datos en el formato requerido por `spm1d`.
 Ejecutar tests básicos de `spm1d` (`ttest2`, `anova1`), realizar inferencia estadística y loguear resultados.
 3.3 [Hecho] Almacenamiento de Resultados SPM: Guardar los resultados del análisis (curva SPM, umbral crítico, grados de libertad, clusters significativos con p-valores) en formato JSON.
-4. [EnProgreso] Generación de Gráficos y Tablas para Análisis Continuo.
-4.1 [EnProgreso] `charting.py` - Nuevas Funciones para Gráficos SPM:
+4. [Hecho] Generación de Gráficos y Tablas para Análisis Continuo.
+4.1 [Hecho] `charting.py` - Nuevas Funciones para Gráficos SPM:
     - [Hecho] Función `create_spm_results_plot` para generar gráfico estático (PNG) con:
-        - Panel superior: Curvas promedio por grupo (+/- SEM) vs. tiempo normalizado.
-        - Panel inferior: Curva del estadístico SPM, umbral crítico y resaltado de clusters significativos.
+        - Panel superior: Curvas promedio por grupo (con opciones de visualización EEM, DE, IC) vs. tiempo normalizado.
+        - Panel inferior: Curva del estadístico SPM, umbral crítico y resaltado de clusters significativos (con opciones de anotación).
+        - Opciones para delimitar el rango de tiempo mostrado en el gráfico y añadir etiquetas personalizadas.
     - [Pendiente] Generar gráficos interactivos (HTML con Plotly, si es factible).
 4.2 [Pendiente] Generación de Tablas de Resultados:
 Tablas con los datos normalizados para la variable y los descriptores seleccionados.
