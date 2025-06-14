@@ -198,7 +198,7 @@ class ContinuousAnalysisManagerDialog(Toplevel):
     def _open_new_analysis_dialog(self):
         # This is where ContinuousAnalysisConfigDialog is launched
         dialog = ContinuousAnalysisConfigDialog(self, self.analysis_service, self.study_id) # self (this Toplevel) is the parent
-        # self.wait_window(dialog) # Dialog is modal by grab_set() and transient()
+        self.wait_window(dialog) # Ensure manager waits for config dialog to close
 
         if dialog.result: # This will be checked after dialog closes
             logger.info(f"Configuración recibida del diálogo de análisis continuo: {dialog.result}")
@@ -263,6 +263,8 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                     config_window = Toplevel(self)
                     config_window.title(f"Configuración: {selected_info.get('name')}")
                     config_window.geometry("600x400")
+                    config_window.transient(self) # Make it transient to the manager dialog
+                    config_window.grab_set() # Make it modal relative to the manager dialog
                     
                     text_area = Text(config_window, wrap=tk.WORD, font=("Courier New", 10))
                     text_area.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
