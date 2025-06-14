@@ -333,25 +333,77 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.filter_vi_count_var.set("No filtrar")
         self._on_filter_vi_count_change()
 
-    def _format_analysis_groups_for_display(self, group_keys: list) -> list[str]:
-        """Helper to format group keys for display, using aliases."""
-        # group_keys are original keys like "VI1=DescA;VI2=DescB"
-        group_display_names = []
-        sorted_group_keys = sorted(group_keys) # Sort for consistent display order
-        for i, group_key in enumerate(sorted_group_keys):
-            display_parts = []
-            if group_key != "SinGrupo":
-                for part in group_key.split(';'):
+    def _format_analysis_groups_for_display(self, group_keys_from_config: list, mode: str | None, 
+                                            primary_vi_name: str | None, 
+                                            fixed_vi_name: str | None, 
+                                            fixed_descriptor_display: str | None) -> list[str]:
+        """
+        Formats group keys for display based on the analysis mode.
+        Uses self.study_aliases and self._get_descriptor_original_value.
+        """
+        formatted_parts = []
+        for key_from_config in group_keys_from_config:
+            if mode == "1VI" and primary_vi_name:
+                # key_from_config is expected to be like "VI_Primaria=DescriptorValor"
+                try:
+                    # Ensure we are splitting the correct key part if it's somehow a full key
+                    # This part assumes key_from_config is ALREADY the partial key for 1VI mode.
+                    # If key_from_config could be a full key, logic to extract the primary_vi_name part is needed.
+                    # Based on ConfigureIndividualAnalysisDialog, config['groups'] for 1VI stores partial keys.
+                    
+                    # Check if key_from_config actually matches the primary_vi_name structure
+                    if key_from_config.startswith(f"{primary_vi_name}="):
+                        _, desc_val = key_from_config.split("=", 1)
+                        alias = self.study_aliases.get(desc_val, desc_val)
+                        formatted_parts.append(f"{primary_vi_name}: {alias}")
+                    else:
+                        # This case might happen if a full key was stored unexpectedly for a 1VI mode analysis
+                        # or if primary_vi_name doesn't match. Fallback to generic formatting.
+                        logger.warning(f"Modo 1VI: Clave '{key_from_config}' no coincide con VI primaria '{primary_vi_name}'. Formateo genérico.")
+                        current_display_sub_parts = []
+                        for item_part in key_from_config.split(';'):
+                            try:
+                                vi_n, d_v = item_part.split('=', 1)
+                                current_alias = self.study_aliases.get(d_v, d_v)
+                                current_display_sub_parts.append(f"{vi_n}: {current_alias}")
+                            except ValueError: current_display_sub_parts.append(item_part)
+                        formatted_parts.append(", ".join(current_display_sub_parts))
+
+                except ValueError: 
+                    formatted_parts.append(key_from_config) # Fallback if split fails
+            
+            elif mode == "2VIs" and fixed_vi_name and fixed_descriptor_display:
+                # key_from_config is a full key, e.g., "VI_Fija=ValorFijo;VI_Variable=ValorVariable"
+                fixed_desc_original = self._get_descriptor_original_value(fixed_descriptor_display)
+                fixed_pair_to_remove = f"{fixed_vi_name}={fixed_desc_original}"
+                
+                variable_part_display_inner = []
+                for part_of_full_key in key_from_config.split(';'):
+                    if part_of_full_key != fixed_pair_to_remove:
+                        try:
+                            vi_name_inner, desc_val_inner = part_of_full_key.split('=',1)
+                            alias_inner = self.study_aliases.get(desc_val_inner, desc_val_inner)
+                            variable_part_display_inner.append(f"{vi_name_inner}: {alias_inner}")
+                        except ValueError: 
+                            variable_part_display_inner.append(part_of_full_key)
+                
+                if variable_part_display_inner:
+                    formatted_parts.append(", ".join(variable_part_display_inner))
+                else: # Should not happen if config is correct, but as a fallback
+                    formatted_parts.append(key_from_config) 
+            
+            else: # Fallback for "combined" mode or if mode info is missing
+                display_sub_parts = []
+                for item_part in key_from_config.split(';'):
                     try:
-                        vi_name, desc_value = part.split('=', 1)
-                        alias = self.study_aliases.get(desc_value, desc_value)
-                        display_parts.append(f"{vi_name}: {alias}")
-                    except ValueError:
-                        display_parts.append(part) # Fallback
-            base_display_name = ", ".join(display_parts) if display_parts else "General"
-            full_display_name = f"Grupo {i+1} - {base_display_name}"
-            group_display_names.append(full_display_name)
-        return group_display_names
+                        vi_name, desc_val = item_part.split('=', 1)
+                        alias = self.study_aliases.get(desc_val, desc_val)
+                        display_sub_parts.append(f"{vi_name}: {alias}")
+                    except ValueError: 
+                        display_sub_parts.append(item_part)
+                formatted_parts.append(", ".join(display_sub_parts) if display_sub_parts else key_from_config)
+        
+        return formatted_parts
 
     def _populate_treeview(self, analyses_to_display: list):
         """Populates the treeview with the given list of analyses."""
@@ -395,7 +447,19 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                 elif 'test_name' in config: valores_clave_str = f"{config.get('test_name', 'Test')}: ?"
                 
                 group_keys_from_config = config.get('groups', [])
-                formatted_group_display_list = self._format_analysis_groups_for_display(group_keys_from_config)
+                # Extract mode parameters for formatting
+                grouping_mode = config.get('grouping_mode')
+                primary_vi_name = config.get('primary_vi_name')
+                fixed_vi_name = config.get('fixed_vi_name')
+                fixed_descriptor_display = config.get('fixed_descriptor_display')
+
+                formatted_group_display_list = self._format_analysis_groups_for_display(
+                    group_keys_from_config, 
+                    grouping_mode, 
+                    primary_vi_name, 
+                    fixed_vi_name, 
+                    fixed_descriptor_display
+                )
                 grupos_comparados_str = " vs ".join(formatted_group_display_list)
 
                 values = (analysis_name, date_str, freq, calc, col_full,
