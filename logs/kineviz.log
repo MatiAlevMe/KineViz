@@ -33017,3 +33017,34 @@ AttributeError: 'NoneType' object has no attribute 'study_service'
 2025-06-13 21:27:33,823 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 32
 2025-06-13 21:27:33,823 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 32: {}
 2025-06-13 21:27:33,823 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-13 21:33:29,463 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-13 21:33:29,463 - INFO - [__main__] - Iniciando KineViz...
+2025-06-13 21:33:29,685 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-13 21:33:29,685 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-13 21:33:30,921 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 32
+2025-06-13 21:33:30,943 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 32
+2025-06-13 21:33:30,943 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 32: {}
+2025-06-13 21:33:30,943 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-13 21:34:23,423 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 32
+2025-06-13 21:34:23,442 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 32
+2025-06-13 21:34:23,443 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 32: {}
+2025-06-13 21:34:23,443 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-13 21:34:24,683 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-13 21:34:24,683 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-13 21:34:28,607 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 32
+2025-06-13 21:34:28,607 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 32: {}
+2025-06-13 21:34:28,608 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-13 21:34:29,695 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-13 21:34:29,695 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-13 21:34:31,135 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 32
+2025-06-13 21:34:31,135 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 32: {}
+2025-06-13 21:34:31,135 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-13 21:35:45,554 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-13 21:35:45,554 - INFO - [__main__] - Iniciando KineViz...
+2025-06-13 21:35:46,121 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-13 21:35:46,121 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-13 21:36:03,262 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-13 21:36:03,262 - INFO - [__main__] - Iniciando KineViz...
+2025-06-13 21:36:03,440 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-13 21:36:03,440 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-13 21:36:06,828 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
