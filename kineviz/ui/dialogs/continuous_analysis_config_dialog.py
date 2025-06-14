@@ -102,6 +102,10 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.protocol("WM_DELETE_WINDOW", self._on_cancel)
         self.bind("<Escape>", self._on_cancel)
 
+    def _show_input_help(self, title: str, message: str):
+        """Muestra un popup de ayuda simple."""
+        messagebox.showinfo(title, message, parent=self)
+
     def create_widgets(self):
         """Crea los widgets del diálogo, similar a ConfigureIndividualAnalysisDialog."""
         main_frame = ttk.Frame(self, padding="15")
@@ -125,7 +129,21 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         # --- NUEVO: Selección de Modo de Agrupación (1 VI vs 2 VIs) ---
         vi_mode_frame = ttk.Frame(main_frame)
         vi_mode_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", padx=5, pady=10)
-        ttk.Label(vi_mode_frame, text="Agrupar por:").pack(side=tk.LEFT, padx=(0, 10))
+
+        label_agrupar_frame_cont = ttk.Frame(vi_mode_frame)
+        label_agrupar_frame_cont.pack(side=tk.LEFT, padx=(0,5))
+        ttk.Label(label_agrupar_frame_cont, text="Agrupar por:").pack(side=tk.LEFT)
+        ttk.Button(label_agrupar_frame_cont, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Modo de Agrupación (Continuo)",
+                                                         ("Define cómo se formarán los grupos de series temporales para la comparación SPM:\n\n"
+                                                          "1 Variable Independiente (1VI):\n"
+                                                          "  Compara los diferentes sub-valores de UNA ÚNICA VI.\n"
+                                                          "  Ej: Comparar 'PRE' vs 'POST' de la VI 'Condicion' para la variable 'LAnkleAngles/X/deg'.\n\n"
+                                                          "2 Variables Independientes (2VIs):\n"
+                                                          "  Compara los sub-valores de una VI, MANTENIENDO FIJO un sub-valor de OTRA VI.\n"
+                                                          "  Ej: Comparar 'CMJ' vs 'SJ' (VI 'TipoSalto'), solo para 'PRE' (VI 'Condicion')."))
+                  ).pack(side=tk.LEFT, padx=(2,0))
+
         self.one_vi_button = ttk.Button(vi_mode_frame, text="1 Variable Independiente", command=lambda: self.set_vi_grouping_mode('1VI'))
         self.one_vi_button.pack(side=tk.LEFT, padx=5)
         self.two_vi_button = ttk.Button(vi_mode_frame, text="2 Variables Independientes", command=lambda: self.set_vi_grouping_mode('2VIs'))
@@ -759,12 +777,15 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.groups_canvas.config(scrollregion=self.groups_canvas.bbox("all"))
         
         self._on_group_selection_change() # Actualizar columnas
+        self._refresh_group_combobox_options() # Actualizar opciones de todos los combos
 
     def _on_group_selection_change(self, event=None):
-        """Llamado cuando la selección de un grupo cambia. Recarga las columnas."""
+        """Llamado cuando la selección de un grupo cambia. Recarga las columnas y actualiza opciones de combo."""
         # Este método ahora llama a _load_columns_for_analysis
         # que es el equivalente a update_available_columns pero para continuo.
         self._load_columns_for_analysis()
+        # Después de cargar columnas (que depende de las selecciones), refrescar opciones de combos de grupo
+        self._refresh_group_combobox_options()
 
 
     def remove_group_selector(self, frame_to_remove, var_to_remove):
@@ -784,6 +805,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
             self.groups_canvas.config(scrollregion=self.groups_canvas.bbox("all"))
 
             self._on_group_selection_change() # Actualizar columnas
+            self._refresh_group_combobox_options() # Actualizar opciones de todos los combos
         except (ValueError, IndexError):
             logger.warning("Intento de eliminar un selector de grupo que ya no existe o índice inválido.")
 
@@ -811,6 +833,53 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
 
         if update_columns:
             self._load_columns_for_analysis()
+        # Siempre refrescar opciones de combo después de limpiar selectores
+        self._refresh_group_combobox_options()
+
+
+    def _refresh_group_combobox_options(self):
+        """Actualiza las opciones de todos los combobox de grupo para evitar duplicados."""
+        all_possible_options = sorted(list(self.available_groups_filtered.keys()))
+        
+        current_selections_in_all_combos = set()
+        for sv in self.group_selector_vars:
+            val = sv.get()
+            if val:
+                current_selections_in_all_combos.add(val)
+
+        for i, combo_var in enumerate(self.group_selector_vars):
+            if i >= len(self.group_selector_frames): continue
+
+            # El frame del selector es self.group_selector_frames[i]
+            # Dentro de este frame, el primer hijo es group_combo_frame_cont
+            # Dentro de group_combo_frame_cont, el primer hijo es el Combobox
+            try:
+                group_combo_frame_cont = self.group_selector_frames[i].winfo_children()[0]
+                combo_widget = group_combo_frame_cont.winfo_children()[0]
+            except (IndexError, tk.TclError): # TclError if widget destroyed
+                logger.warning(f"No se pudo acceder al combobox widget en el índice {i} al refrescar opciones.")
+                continue # Saltar si el widget no se encuentra
+            
+            if not isinstance(combo_widget, ttk.Combobox): continue
+
+            current_selection_this_combo = combo_var.get()
+            
+            options_for_this_combo = []
+            for option in all_possible_options:
+                is_selected_in_another_combo = False
+                for other_idx, other_var in enumerate(self.group_selector_vars):
+                    if i == other_idx: continue
+                    if other_var.get() == option:
+                        is_selected_in_another_combo = True
+                        break
+                
+                if option == current_selection_this_combo or not is_selected_in_another_combo:
+                    options_for_this_combo.append(option)
+            
+            combo_widget['values'] = options_for_this_combo
+            
+            if current_selection_this_combo and current_selection_this_combo not in options_for_this_combo:
+                combo_var.set("")
 
 
     def _update_group_combobox_values(self):
@@ -836,6 +905,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
                  logger.warning(f"Índice {i} fuera de rango para group_selector_frames al actualizar valores.")
         
         self._load_columns_for_analysis() # Actualizar columnas después de actualizar grupos
+        self._refresh_group_combobox_options() # Asegurar que las opciones de combo se actualicen
 
 
     def get_selected_group_keys(self) -> List[str]:
