@@ -174,8 +174,11 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         action_frame = ttk.Frame(main_frame)
         action_frame.pack(fill=tk.X, pady=(5,0))
 
-        self.view_plot_button = ttk.Button(action_frame, text="Ver Gráfico SPM", command=self._view_plot, state=tk.DISABLED)
+        self.view_plot_button = ttk.Button(action_frame, text="Ver Gráfico SPM (PNG)", command=self._view_plot, state=tk.DISABLED)
         self.view_plot_button.pack(side=tk.LEFT, padx=5)
+
+        self.view_interactive_plot_button = ttk.Button(action_frame, text="Ver Gráfico Interactivo SPM", command=self._view_interactive_plot, state=tk.DISABLED)
+        self.view_interactive_plot_button.pack(side=tk.LEFT, padx=5)
 
         self.view_config_button = ttk.Button(action_frame, text="Ver Configuración", command=self._view_config, state=tk.DISABLED)
         self.view_config_button.pack(side=tk.LEFT, padx=5)
@@ -491,6 +494,7 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         selected_info = self.get_selected_analysis_info()
         can_act = selected_info is not None
         self.view_plot_button.config(state=tk.NORMAL if can_act and selected_info.get("plot_path") else tk.DISABLED)
+        self.view_interactive_plot_button.config(state=tk.NORMAL if can_act and selected_info.get("interactive_plot_path") else tk.DISABLED)
         self.view_config_button.config(state=tk.NORMAL if can_act and selected_info.get("config_path") else tk.DISABLED)
         self.open_folder_button.config(state=tk.NORMAL if can_act and selected_info.get("path") else tk.DISABLED)
         self.delete_button.config(state=tk.NORMAL if can_act else tk.DISABLED)
@@ -544,21 +548,43 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                         except Exception: # Fallback to full path if relative fails
                              success_msg += f"\n\nResultados guardados en la carpeta del estudio:\n{analysis_results.get('output_dir')}"
                     
-                    plot_path_str = analysis_results.get("continuous_plot_path")
-                    if plot_path_str and Path(plot_path_str).exists():
+                    plot_path_str = analysis_results.get("continuous_plot_path") # Static PNG
+                    interactive_plot_path_str = analysis_results.get("continuous_interactive_plot_path") # Interactive HTML
+
+                    open_static = False
+                    open_interactive = False
+
+                    if interactive_plot_path_str and Path(interactive_plot_path_str).exists():
                         if messagebox.askyesno("Análisis Completado",
-                                               f"{success_msg}\n\n¿Desea abrir el gráfico generado?",
+                                               f"{success_msg}\n\n¿Desea abrir el gráfico interactivo (HTML)?",
                                                parent=self):
-                            plot_path_obj = Path(plot_path_str)
-                            try:
-                                if sys.platform == "win32": os.startfile(plot_path_obj)
-                                elif sys.platform == "darwin": subprocess.run(["open", plot_path_obj], check=True)
-                                else: subprocess.run(["xdg-open", plot_path_obj], check=True)
-                            except Exception as e_open:
-                                messagebox.showerror("Error", f"No se pudo abrir el gráfico:\n{e_open}", parent=self)
-                                logger.error(f"Error abriendo gráfico {plot_path_obj}: {e_open}", exc_info=True)
-                    else: # No plot path, or plot doesn't exist, or user chose not to open
+                            open_interactive = True
+                    elif plot_path_str and Path(plot_path_str).exists(): # Fallback to static if interactive not available/chosen
+                        if messagebox.askyesno("Análisis Completado",
+                                               f"{success_msg}\n\nEl gráfico interactivo no está disponible o no se generó.\n¿Desea abrir el gráfico estático (PNG)?",
+                                               parent=self):
+                            open_static = True
+                    else: # No plots available or user chose not to open
                         messagebox.showinfo("Análisis Completado", success_msg, parent=self)
+
+                    if open_interactive:
+                        plot_to_open = Path(interactive_plot_path_str)
+                        open_type = "gráfico interactivo"
+                    elif open_static:
+                        plot_to_open = Path(plot_path_str)
+                        open_type = "gráfico estático"
+                    else:
+                        plot_to_open = None
+                        open_type = ""
+                    
+                    if plot_to_open:
+                        try:
+                            if sys.platform == "win32": os.startfile(plot_to_open)
+                            elif sys.platform == "darwin": subprocess.run(["open", plot_to_open], check=True)
+                            else: subprocess.run(["xdg-open", plot_to_open], check=True)
+                        except Exception as e_open:
+                            messagebox.showerror("Error", f"No se pudo abrir el {open_type}:\n{e_open}", parent=self)
+                            logger.error(f"Error abriendo {open_type} {plot_to_open}: {e_open}", exc_info=True)
                 
                 self.load_analyses() # Recargar la lista
             except Exception as e:
@@ -585,7 +611,24 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         elif event: # If called by double-click but no plot
              pass # Do nothing if double-click on item without plot
         else: # Called by button
-            messagebox.showinfo("Información", "No hay gráfico SPM para el análisis seleccionado o el análisis no está seleccionado.", parent=self)
+            messagebox.showinfo("Información", "No hay gráfico SPM (PNG) para el análisis seleccionado o el análisis no está seleccionado.", parent=self)
+
+    def _view_interactive_plot(self):
+        selected_info = self.get_selected_analysis_info()
+        if selected_info and selected_info.get("interactive_plot_path"):
+            plot_path = Path(selected_info["interactive_plot_path"])
+            if plot_path.exists():
+                try:
+                    if sys.platform == "win32": os.startfile(plot_path)
+                    elif sys.platform == "darwin": subprocess.run(["open", plot_path], check=True)
+                    else: subprocess.run(["xdg-open", plot_path], check=True)
+                except Exception as e:
+                    messagebox.showerror("Error", f"No se pudo abrir el gráfico interactivo:\n{e}", parent=self)
+                    logger.error(f"Error abriendo gráfico interactivo {plot_path}: {e}", exc_info=True)
+            else:
+                messagebox.showwarning("Archivo no encontrado", "El archivo del gráfico interactivo SPM no existe.", parent=self)
+        else:
+            messagebox.showinfo("Información", "No hay gráfico interactivo SPM para el análisis seleccionado o el análisis no está seleccionado.", parent=self)
 
     def _view_config(self):
         selected_info = self.get_selected_analysis_info()
@@ -887,7 +930,14 @@ if __name__ == '__main__':
                     config_data = {"analysis_name": name, "column": f"Var{i}", "groups": [f"G{i}A", f"G{i}B"], "grouping_mode": "1VI", "primary_vi_name": "Cond", "mtime": datetime.now().timestamp() - (i * 3600)}
                     with open(analysis_path / "config_continuous.json", 'w') as f: json.dump(config_data, f)
                     (analysis_path / "spm_plot.png").touch()
-                    self.continuous_analyses_store[study_id][name] = {'name': name, 'path': analysis_path, 'config': config_data, 'mtime': config_data['mtime'], 'plot_path': analysis_path / "spm_plot.png", 'config_path': analysis_path / "config_continuous.json"}
+                    (analysis_path / "spm_plot_interactive.html").touch() # Dummy interactive plot
+                    self.continuous_analyses_store[study_id][name] = {
+                        'name': name, 'path': analysis_path, 'config': config_data, 
+                        'mtime': config_data['mtime'], 
+                        'plot_path': analysis_path / "spm_plot.png", 
+                        'interactive_plot_path': analysis_path / "spm_plot_interactive.html",
+                        'config_path': analysis_path / "config_continuous.json"
+                    }
             return list(self.continuous_analyses_store.get(study_id, {}).values())
 
         def delete_continuous_analysis(self, study_id, analysis_name):
@@ -908,8 +958,18 @@ if __name__ == '__main__':
             config['mtime'] = datetime.now().timestamp()
             with open(analysis_path / "config_continuous.json", 'w') as f: json.dump(config, f)
             (analysis_path / "spm_plot.png").touch()
-            self.continuous_analyses_store[study_id][name] = {'name': name, 'path': analysis_path, 'config': config, 'mtime': config['mtime'], 'plot_path': analysis_path / "spm_plot.png", 'config_path': analysis_path / "config_continuous.json"}
-            return {"status": "success", "message": "Dummy analysis completed.", "output_dir": str(analysis_path)}
+            (analysis_path / "spm_plot_interactive.html").touch() # Dummy interactive plot
+            self.continuous_analyses_store[study_id][name] = {
+                'name': name, 'path': analysis_path, 'config': config, 
+                'mtime': config['mtime'], 
+                'plot_path': analysis_path / "spm_plot.png",
+                'interactive_plot_path': analysis_path / "spm_plot_interactive.html",
+                'config_path': analysis_path / "config_continuous.json"
+            }
+            return {"status": "success", "message": "Dummy analysis completed.", 
+                    "output_dir": str(analysis_path),
+                    "continuous_plot_path": str(analysis_path / "spm_plot.png"),
+                    "continuous_interactive_plot_path": str(analysis_path / "spm_plot_interactive.html")}
 
         # Methods for ContinuousAnalysisConfigDialog
         def get_available_frequencies_for_study(self, study_id): return ["Cinematica"]
