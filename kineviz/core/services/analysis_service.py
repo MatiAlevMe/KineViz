@@ -812,32 +812,36 @@ class AnalysisService:
         # Obtener todos los archivos procesados de Cinemática y su mapeo a claves de grupo completas
         # _identify_study_groups devuelve {file_base_key: full_group_key}
         all_files_to_full_group_keys_map, all_unique_full_group_keys_set = self._identify_study_groups(study_id, "Cinematica")
-        
-        # Invertir el mapeo para buscar archivos por full_group_key
+
+        # 1. Get all processed cinematic files once
+        processed_files_info, _ = self.file_service.get_study_files(
+            study_id=study_id, page=1, per_page=10000,
+            file_type='Processed', frequency="Cinematica"
+        )
+
+        # 2. Create a map from file_base (e.g., "P01_CMJ_PRE_1") to its full Path object
+        processed_path_by_file_base = {}
+        for pf_info in processed_files_info:
+            # Derive file_base from the processed file's path stem (e.g., "P01_CMJ_PRE_1_Cinematica" -> "P01_CMJ_PRE_1")
+            file_stem = pf_info['path'].stem
+            if file_stem.endswith("_Cinematica"): # Assuming frequency is appended like this
+                base_name_for_map = file_stem[:-len("_Cinematica")]
+                processed_path_by_file_base[base_name_for_map] = pf_info['path']
+            else:
+                logger.warning(f"Processed file stem '{file_stem}' does not end with '_Cinematica'. Cannot map reliably.")
+
+        # 3. Populate files_by_full_group_key using the maps
         files_by_full_group_key = {}
-        for file_base, full_key in all_files_to_full_group_keys_map.items():
+        for file_base_from_study_groups, full_key in all_files_to_full_group_keys_map.items():
+            # file_base_from_study_groups is the key from _identify_study_groups (e.g., "P01_CMJ_PRE_1")
             if full_key not in files_by_full_group_key:
                 files_by_full_group_key[full_key] = []
-            # Necesitamos la ruta completa del archivo procesado
-            # Esto requiere buscar el archivo procesado basado en file_base y frecuencia "Cinematica"
-            # FileService.get_study_files podría ayudar, o construir la ruta.
-            # Por ahora, asumimos que podemos reconstruir o encontrar la ruta.
-            # Esta parte es crucial y puede necesitar refinamiento.
-            # Vamos a buscar en los archivos procesados devueltos por file_service
-            processed_files_info, _ = self.file_service.get_study_files(
-                study_id=study_id, page=1, per_page=10000, 
-                file_type='Processed', frequency="Cinematica"
-            )
-            found_path = None
-            for pf_info in processed_files_info:
-                if pf_info['path'].stem.startswith(file_base): # Chequear si el stem comienza con file_base
-                    found_path = pf_info['path']
-                    break
+            
+            found_path = processed_path_by_file_base.get(file_base_from_study_groups)
             if found_path:
                 files_by_full_group_key[full_key].append(found_path)
             else:
-                logger.warning(f"No se encontró la ruta del archivo procesado para el archivo base '{file_base}' (grupo '{full_key}')")
-
+                logger.warning(f"No se encontró la ruta del archivo procesado para el archivo base '{file_base_from_study_groups}' (grupo '{full_key}') usando el mapa preconstruido.")
 
         selected_group_keys_from_config = config.get('groups', []) # Estas son las claves que el usuario seleccionó
         grouping_mode = config.get('grouping_mode')

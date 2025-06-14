@@ -181,9 +181,8 @@ Si validación falla, se loguean errores específicos y se devuelve un error gen
 15.1 [Hecho] `StudyDialog` UI: Ajustado el espaciado vertical de los checkboxes "¿Multiple?" y "¿Obligatorio?" para que estén más cerca de los descriptores. (Refinado para igualar espaciado inter-descriptor).
 
 ## [EnProgreso] Fase 4: Análisis Continuo (SPM)
-1. [Hecho] Permitir Interacción Concurrente para Gestor de Análisis Continuo:
-   - Modificado `ContinuousAnalysisManagerDialog` para que no bloquee la ventana principal (eliminado `grab_set()`). Esto permite al usuario interactuar con otras partes de la aplicación mientras el gestor de análisis continuos está abierto.
-   - Consideración: Las acciones críticas lanzadas desde este gestor (ej. configuración de un nuevo análisis) pueden seguir siendo modales.
+1. [Hecho] Gestor de Análisis Continuo Modal:
+   - `ContinuousAnalysisManagerDialog` se mantiene modal (usa `grab_set()`) para asegurar un flujo de trabajo simplificado y prevenir conflictos de estado con la ventana principal.
 2. [Pendiente] Diseño y Prototipado de UI para Análisis Continuo.
 1.1 [Hecho] Botón en `StudyView`: Añadir botón "Análisis Continuo" en la vista de estudio, junto al de "Análisis Discreto".
 1.2 [Hecho] Crear `ContinuousAnalysisConfigDialog` (o similar): Creado diálogo base para configurar el análisis continuo.
