@@ -819,8 +819,18 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
             return
 
         try:
-            self.analysis_service.delete_individual_analysis(self.study_id,
-                                                             analysis_name)
+            # Pass the full path of the analysis to be deleted
+            analysis_path_to_delete = analysis_info.get('path')
+            if not analysis_path_to_delete:
+                messagebox.showerror("Error Interno", "No se pudo determinar la ruta del análisis para eliminar.", parent=self)
+                return
+
+            # The service method `delete_individual_analysis` will now expect the path
+            # For now, we keep the existing signature and the service will iterate.
+            # If `delete_individual_analysis` was changed to take a path, this would be:
+            # self.analysis_service.delete_analysis_by_path(analysis_path_to_delete)
+            self.analysis_service.delete_individual_analysis(self.study_id, analysis_name) # Keeping current call structure
+
             messagebox.showinfo("Eliminación Exitosa",
                                 f"El análisis '{analysis_name}' ha sido eliminado.",
                                 parent=self)
