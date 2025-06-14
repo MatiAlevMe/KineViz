@@ -282,8 +282,7 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                     config_window.geometry("750x600") # Adjusted size for Treeview
                     config_window.transient(self)
                     # config_window.grab_set() # Non-modal
-                    config_window.focus_set() # Explicitly set focus to the new window
-
+                    
                     # --- Treeview para mostrar la configuración ---
                     tree_frame = ttk.Frame(config_window, padding=(10,10,10,0))
                     tree_frame.pack(fill=tk.BOTH, expand=True)
@@ -404,6 +403,8 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                                 config_tree.insert("", tk.END, values=(translated_key, display_value))
                     
                     # El botón Cerrar personalizado se elimina. El botón (X) de la ventana funcionará.
+                    config_window.update_idletasks() # Ensure window and widgets are fully processed
+                    config_window.focus_set() # Then set focus
 
                 except Exception as e:
                     messagebox.showerror("Error", f"No se pudo leer o mostrar el archivo de configuración:\n{e}", parent=self)
