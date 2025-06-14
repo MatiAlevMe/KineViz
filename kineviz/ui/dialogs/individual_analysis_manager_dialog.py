@@ -567,18 +567,20 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                     variable_folder_name_for_check = variable_analyzed_full.replace("/", "_")
 
 
+            analysis_creation_proceed = True # Flag to control execution
             if self.analysis_service.does_individual_analysis_exist(self.study_id, variable_folder_name_for_check, analysis_name_to_check):
                 messagebox.showerror("Nombre Duplicado", 
                                      f"Ya existe un análisis discreto con el nombre '{analysis_name_to_check}' para la variable '{variable_folder_name_for_check}'.\n"
                                      "Por favor, elija un nombre diferente.", 
                                      parent=self)
-                self.load_analyses() # Refresh list in case something changed externally
-                return 
-            # --- Fin Validación ---
+                # self.load_analyses() # Moved to the end of the if dialog.result block
+                analysis_creation_proceed = False
+                # The return statement is removed; flow control relies on analysis_creation_proceed
             
-            try:
-                # perform_individual_analysis is expected to return a dict with 'plot_path' and 'config_path'
-                analysis_results = self.analysis_service.perform_individual_analysis(self.study_id, dialog.result)
+            if analysis_creation_proceed:
+                try:
+                    # perform_individual_analysis is expected to return a dict with 'plot_path' and 'config_path'
+                    analysis_results = self.analysis_service.perform_individual_analysis(self.study_id, dialog.result)
                 
                 plot_path_str = analysis_results.get('plot_path')
                 analysis_name = dialog.result.get('name', 'Análisis sin nombre')
