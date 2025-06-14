@@ -596,16 +596,25 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                                         group_display_parts.append(f"{primary_vi}: {alias}")
                                     except ValueError: group_display_parts.append(group_key_item)
                                 elif mode == "2VIs" and fixed_vi and fixed_desc_original:
-                                    fixed_pair_to_remove = f"{fixed_vi}={fixed_desc_original}"
-                                    variable_parts_inner = []
-                                    for part in group_key_item.split(';'):
-                                        if part != fixed_pair_to_remove:
+                                    # This logic is from the Treeview display, adapt for text file
+                                    fixed_pair_str_to_match = f"{fixed_vi}={fixed_desc_original}"
+                                    fixed_vi_alias = aliases.get(fixed_desc_original, fixed_desc_original)
+                                    formatted_fixed_part = f"{fixed_vi}: {fixed_vi_alias}"
+                                    
+                                    variable_part_display_segments = []
+                                    for part_of_full_key in group_key_item.split(';'):
+                                        if part_of_full_key != fixed_pair_str_to_match:
                                             try:
-                                                vi_n, d_v = part.split('=',1)
-                                                a_i = aliases.get(d_v, d_v)
-                                                variable_parts_inner.append(f"{vi_n}: {a_i}")
-                                            except ValueError: variable_parts_inner.append(part)
-                                    group_display_parts.append(", ".join(variable_parts_inner))
+                                                vi_name_var, desc_val_var = part_of_full_key.split('=',1)
+                                                alias_var = aliases.get(desc_val_var, desc_val_var)
+                                                variable_part_display_segments.append(f"{vi_name_var}: {alias_var}")
+                                            except ValueError: 
+                                                variable_part_display_segments.append(part_of_full_key)
+                                    if variable_part_display_segments:
+                                        full_display_for_group = f"{formatted_fixed_part}, {', '.join(variable_part_display_segments)}"
+                                        group_display_parts.append(full_display_for_group)
+                                    else:
+                                        group_display_parts.append(formatted_fixed_part)
                                 else: # Combined mode or fallback
                                     parts = []
                                     for item_part in group_key_item.split(';'):
@@ -614,8 +623,9 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                                             alias_iter = aliases.get(desc_val_iter, desc_val_iter)
                                             parts.append(f"{vi_name_iter}: {alias_iter}")
                                         except ValueError: parts.append(item_part)
-                                    group_display_parts.append(" & ".join(parts))
-                            display_value_str = ", ".join(group_display_parts) if group_display_parts else "N/A"
+                                    group_display_parts.append(" & ".join(parts)) # Keep " & " for combined parts of one group
+                            # Join the formatted group display parts with " vs "
+                            display_value_str = " vs ".join(group_display_parts) if group_display_parts else "N/A"
                         elif raw_value is None:
                             display_value_str = "No especificado"
                         else:
@@ -629,6 +639,17 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                                 text_lines.append(f"  {group_line}") # Indent subsequent group lines
                         else:
                             text_lines.append(f"{translated_key}: {display_value_str}")
+                        
+                        # Add "Claves Completas Comparadas" right after "Grupos Comparados"
+                        if key == "groups":
+                            # raw_value here is config_data.get('groups'), which are the effective keys
+                            # For 1VI, these are partial keys like "VI=Desc"
+                            # For 2VIs, these are full keys like "VI1=DescA;VI2=DescB"
+                            # The term "Claves Completas" might be slightly misleading for 1VI if we show partials.
+                            # However, these are the keys *used* for comparison by SPM.
+                            raw_keys_str_for_display = ", ".join(raw_value) if isinstance(raw_value, list) else str(raw_value)
+                            text_lines.append(f"  Claves Efectivas Comparadas: {raw_keys_str_for_display}")
+
 
                     # Add other parameters from JSON
                     text_lines.append("\n" + "=" * (len(text_lines[0]) -1)) # Underline for the other title

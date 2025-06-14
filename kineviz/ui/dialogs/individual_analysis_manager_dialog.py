@@ -586,7 +586,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
             "frequency": "Tipo de Dato",
             "calculation": "Cálculo Aplicado",
             "column": "Variable Analizada",
-            "groups": "Grupos Comparados (Claves Originales)",
+            "groups": "Grupos Comparados", # Removed (Claves Originales)
             "parametric": "Supuesto: Datos Paramétricos",
             "paired": "Supuesto: Muestras Pareadas",
             "grouping_mode": "Modo de Agrupación de VIs",
@@ -625,7 +625,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                     raw_value, mode_cfg, primary_vi_cfg, fixed_vi_cfg, fixed_desc_display_cfg
                 )
                 formatted_display_str = " vs ".join(formatted_display_list)
-                display_value_str = f"{formatted_display_str} (Claves: {raw_keys_str})"
+                display_value_str = formatted_display_str # Removed (Claves: {raw_keys_str})
             elif key == "stats_results" and isinstance(raw_value, dict):
                 test_name = raw_value.get('test_name', 'N/A')
                 p_val = raw_value.get('p_value')
@@ -642,6 +642,10 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                 display_value_str = str(raw_value)
             
             text_lines.append(f"{translated_key}: {display_value_str}")
+            # Add "Claves Completas Comparadas" right after "Grupos Comparados"
+            if key == "groups":
+                raw_keys_str_for_display = ", ".join(raw_value) if isinstance(raw_value, list) else str(raw_value)
+                text_lines.append(f"  Claves Completas Comparadas: {raw_keys_str_for_display}")
         
         # Add any other parameters from config_data not in display_order
         other_params_added = False
