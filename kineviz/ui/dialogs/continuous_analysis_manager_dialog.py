@@ -26,7 +26,7 @@ class ContinuousAnalysisManagerDialog(Toplevel):
 
         self.title(f"Gestor de Análisis Continuos - Estudio {study_id}")
         # self.geometry("850x550") # Adjust as needed
-        # self.grab_set() # Removed to make the dialog non-modal
+        self.grab_set() # Restored to make the dialog modal
         self.transient(parent) # Keeps it on top of parent
 
         self.create_widgets()
@@ -263,6 +263,8 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                     config_window = Toplevel(self)
                     config_window.title(f"Configuración: {selected_info.get('name')}")
                     config_window.geometry("600x400")
+                    config_window.transient(self) # Make it transient to the manager dialog
+                    config_window.grab_set() # Make it modal relative to the manager dialog
                     
                     text_area = Text(config_window, wrap=tk.WORD, font=("Courier New", 10))
                     text_area.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
