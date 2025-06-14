@@ -2,7 +2,7 @@
 
 Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicialmente se enfocó en la refactorización de la lógica original a una estructura modular. Luego, el enfoque cambia a mejoras incrementales y la adición de nuevas funcionalidades, mejoras a las funcionalidades actuales u bug-fixes.
 
-## Estrctura de carpetas del Proyecto
+## Estrctura de Carpetas del Proyecto
 
 ├── __init__.py
 ├── app.py           # Punto de entrada principal
@@ -86,7 +86,7 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 │       └── study_dialog_iv_help.txt       # Guía Rápida: Vista del Estudio  
 └── examples/             # Ejemplos de uso
 
-## Diccionario de Tareas
+# Diccionario de Tareas
 
 ## [Hecho] Fase 1: Mejoras Incrementales - Detección de Frecuencia
 1. [Hecho] Implementar detección automática de tipo de frecuencias basada en metadatos del archivo.
@@ -200,7 +200,7 @@ Si validación falla, se loguean errores específicos y se devuelve un error gen
 15.1 [Hecho] `StudyDialog` UI: Ajustado el espaciado vertical de los checkboxes "¿Multiple?" y "¿Obligatorio?" para que estén más cerca de los descriptores. (Refinado para igualar espaciado inter-descriptor).
 
 ## [EnProgreso] Fase 4: Análisis Continuo (SPM)
-1. [Pendiente] Diseño y Prototipado de UI para Análisis Continuo.
+1. [Hecho] Diseño y Prototipado de UI para Análisis Continuo.
 1.1 [Hecho] Botón en `StudyView`: Añadir botón "Análisis Continuo" en la vista de estudio, junto al de "Análisis Discreto".
 1.2 [Hecho] Crear `ContinuousAnalysisConfigDialog` (o similar): Creado diálogo base para configurar el análisis continuo.
 Selección de Tipo de datos (ej: Cinemática, Cinética). Solo permite Cinemática inicialmente.
@@ -215,7 +215,6 @@ Opciones de Visualización y Anotación: Permitir al usuario configurar cómo se
     - [Hecho] Implementados filtros y búsqueda para la lista de análisis continuos:
         - Búsqueda por palabra clave: Permite buscar en el nombre del análisis, la variable analizada y los grupos comparados.
         - Filtro por Variables Independientes (VIs): Permite filtrar análisis basados en la selección de 1 o 2 VIs y sus respectivos sub-valores.
-    - [Pendiente] Opciones de ordenación para la lista de análisis.
 2. [Hecho] Implementación de Normalización de Datos Temporales.
 2.1 [Hecho] Lógica de Normalización Temporal: Implementar una función (posiblemente en `processors.py` o un nuevo módulo) para normalizar la duración de las secuencias de datos a 101 puntos (0-100%).
 Esto se aplicará a la variable seleccionada para cada archivo/sujeto/intento.
