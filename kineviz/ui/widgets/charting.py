@@ -290,18 +290,19 @@ def create_spm_results_plot(normalized_data_by_group: dict,
                                              arrowprops=dict(facecolor='black', shrink=0.05, width=0.5, headwidth=4),
                                              bbox=dict(boxstyle='round,pad=0.3', fc='white', alpha=0.7, ec='grey'))
                     
-                    # --- Annotate top plot (mean curves) with significant cluster range ---
-                    # Get y-range of the top plot to position the bar
-                    top_ymin, top_ymax = ax_mean_curves.get_ylim()
-                    bar_height = (top_ymax - top_ymin) * 0.03 # Small height for the bar
-                    bar_y_position = top_ymin - bar_height * 1.5 # Position below the y-axis data range
+                    # --- Annotate top plot (mean curves) with significant cluster range --- (Conditional)
+                    if spm_results.get('annotate_spm_range_top', True):
+                        # Get y-range of the top plot to position the bar
+                        top_ymin, top_ymax = ax_mean_curves.get_ylim()
+                        bar_height = (top_ymax - top_ymin) * 0.03 # Small height for the bar
+                        bar_y_position = top_ymin - bar_height * 1.5 # Position below the y-axis data range
 
-                    ax_mean_curves.fill_between([time_start, time_end], 
-                                                [bar_y_position - bar_height/2, bar_y_position - bar_height/2],
-                                                [bar_y_position + bar_height/2, bar_y_position + bar_height/2],
-                                                color='lightcoral', alpha=0.5, 
-                                                label='Rango Significativo (SPM)' if current_cluster_label_for_legend else None, # Label only once
-                                                transform=ax_mean_curves.get_xaxis_transform()) # Relative to x-axis, data coords for y
+                        ax_mean_curves.fill_between([time_start, time_end], 
+                                                    [bar_y_position - bar_height/2, bar_y_position - bar_height/2],
+                                                    [bar_y_position + bar_height/2, bar_y_position + bar_height/2],
+                                                    color='lightcoral', alpha=0.5, 
+                                                    label='Rango Significativo (SPM)' if current_cluster_label_for_legend else None, # Label only once
+                                                    transform=ax_mean_curves.get_xaxis_transform()) # Relative to x-axis, data coords for y
 
                 else:
                     logger.warning(f"Nodos de cluster inválidos o fuera de rango: {cluster}. No se resaltará.")
