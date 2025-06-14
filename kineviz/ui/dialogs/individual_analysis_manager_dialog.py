@@ -73,16 +73,22 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         search_entry.bind("<Return>", lambda event: self._apply_filters_and_search())
         ttk.Button(search_filter_frame, text="Buscar", command=self._apply_filters_and_search).grid(row=0, column=2, padx=5, pady=5, sticky="e")
 
+        # Filter by Variable Analizada
+        ttk.Label(search_filter_frame, text="Variable Analizada:").grid(row=1, column=0, padx=(0,5), pady=5, sticky="w")
+        self.filter_variable_combo = ttk.Combobox(search_filter_frame, textvariable=self.filter_variable_var, state="readonly", width=40)
+        self.filter_variable_combo.grid(row=1, column=1, columnspan=2, padx=5, pady=5, sticky="ew")
+        self.filter_variable_combo.bind("<<ComboboxSelected>>", lambda e: self._apply_filters_and_search())
+
         # Filter by VI count
-        ttk.Label(search_filter_frame, text="Filtrar por VIs:").grid(row=1, column=0, padx=(0,5), pady=5, sticky="w")
+        ttk.Label(search_filter_frame, text="Filtrar por VIs:").grid(row=2, column=0, padx=(0,5), pady=5, sticky="w")
         self.filter_vi_count_combo = ttk.Combobox(search_filter_frame, textvariable=self.filter_vi_count_var,
                                                   values=["No filtrar", "1 VI", "2 VIs"], state="readonly", width=12)
-        self.filter_vi_count_combo.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+        self.filter_vi_count_combo.grid(row=2, column=1, padx=5, pady=5, sticky="w")
         self.filter_vi_count_combo.bind("<<ComboboxSelected>>", self._on_filter_vi_count_change)
 
         # VI 1 Filter
         self.filter_vi1_frame = ttk.Frame(search_filter_frame)
-        self.filter_vi1_frame.grid(row=2, column=0, columnspan=3, pady=5, sticky="ew")
+        self.filter_vi1_frame.grid(row=3, column=0, columnspan=3, pady=5, sticky="ew") # Adjusted row
         self.filter_vi1_frame.columnconfigure(1, weight=1)
         self.filter_vi1_frame.columnconfigure(3, weight=1)
 
@@ -97,7 +103,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
         # VI 2 Filter (initially hidden)
         self.filter_vi2_frame = ttk.Frame(search_filter_frame)
-        self.filter_vi2_frame.grid(row=3, column=0, columnspan=3, pady=5, sticky="ew")
+        self.filter_vi2_frame.grid(row=4, column=0, columnspan=3, pady=5, sticky="ew") # Adjusted row
         self.filter_vi2_frame.columnconfigure(1, weight=1)
         self.filter_vi2_frame.columnconfigure(3, weight=1)
 
@@ -115,7 +121,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
         # Filter Action Buttons
         filter_action_frame = ttk.Frame(search_filter_frame)
-        filter_action_frame.grid(row=1, column=2, columnspan=4, sticky="e", padx=5, pady=5) # Adjusted column
+        filter_action_frame.grid(row=2, column=2, columnspan=4, sticky="e", padx=5, pady=5) # Adjusted row
         ttk.Button(filter_action_frame, text="Aplicar Filtros", command=self._apply_filters_and_search).pack(side=tk.LEFT, padx=5)
         ttk.Button(filter_action_frame, text="Limpiar Filtros", command=self._clear_filters).pack(side=tk.LEFT, padx=5)
 
@@ -271,6 +277,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
     def _apply_filters_and_search(self):
         search_term = self.search_term_var.get().lower()
+        selected_variable_filter = self.filter_variable_var.get()
         filter_mode = self.filter_vi_count_var.get()
         
         vi1_name_filter = self.filter_vi1_name_var.get()
@@ -305,7 +312,16 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
             if not matches_search:
                 continue
 
-            # 2. Apply VI filters
+            # 2. Apply Variable Analizada filter
+            variable_match = True
+            if selected_variable_filter != "Todos":
+                if config.get('column', '') != selected_variable_filter:
+                    variable_match = False
+            
+            if not variable_match:
+                continue
+
+            # 3. Apply VI filters
             matches_filters = True
             if filter_mode != "No filtrar":
                 analysis_config_groups = config.get('groups', []) # List of group keys like "VI1=DescA;VI2=DescB"
@@ -325,6 +341,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
     def _clear_filters(self):
         self.search_term_var.set("")
+        self.filter_variable_var.set("Todos")
         self.filter_vi_count_var.set("No filtrar")
         self._on_filter_vi_count_change()
 
@@ -478,6 +495,14 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
              logger.error(f"Error cargando lista de análisis individuales: {e}", exc_info=True)
              messagebox.showerror("Error", f"No se pudo cargar la lista de análisis:\n{e}", parent=self)
              self.all_analyses_data = []
+
+        # Populate Variable Analizada filter
+        variables = sorted(list(set(
+            info.get('config', {}).get('column', '')
+            for info in self.all_analyses_data
+            if info.get('config', {}).get('column')
+        )))
+        self.filter_variable_combo['values'] = ["Todos"] + variables
         
         self._apply_filters_and_search()
 
