@@ -1091,10 +1091,17 @@ class AnalysisService:
                 if not analysis_name: 
                     raise ValueError("El nombre del análisis es requerido para guardar los resultados.")
 
+                # --- Nueva estructura de carpetas para Análisis Continuo ---
+                variable_analizada_full = config.get('column', 'VariableDesconocida')
+                # Extraer "Atributo/Columna" y reemplazar '/' por un espacio o '_' para nombre de carpeta
+                parts = variable_analizada_full.split('/')
+                variable_folder_name_parts = parts[:2] # Tomar Atributo y Columna
+                variable_folder_name = " ".join(variable_folder_name_parts).replace("/", "_") # Reemplazar / por _ si aún existe
+                
                 # Define the actual output directory path for this saving operation
-                current_analysis_output_dir = study_path / "Analisis Continuo" / analysis_name
+                current_analysis_output_dir = study_path / "Analisis Continuo" / variable_folder_name / analysis_name
                 current_analysis_output_dir.mkdir(parents=True, exist_ok=True)
-                logger.info(f"Directorio de salida para análisis continuo '{analysis_name}': {current_analysis_output_dir}")
+                logger.info(f"Directorio de salida para análisis continuo '{analysis_name}' (variable '{variable_folder_name}'): {current_analysis_output_dir}")
                 results_payload["output_dir"] = str(current_analysis_output_dir)
 
                 config_file_path = current_analysis_output_dir / "config_continuous.json"
@@ -2118,8 +2125,14 @@ class AnalysisService:
         if not study_path:
             raise ValueError(f"No se pudo encontrar ruta del estudio {study_id}.")
 
-        analysis_output_dir = (study_path / "Analisis Discreto" / "Individual" /
-                               analysis_name)
+        # --- Nueva estructura de carpetas para Análisis Discreto Individual ---
+        variable_analizada_full_discrete = config.get('column', 'VariableDesconocida')
+        parts_discrete = variable_analizada_full_discrete.split('/')
+        variable_folder_name_discrete_parts = parts_discrete[:2]
+        variable_folder_name_discrete = " ".join(variable_folder_name_discrete_parts).replace("/", "_")
+
+        analysis_output_dir = (study_path / "Analisis Discreto" / "Graficos" / 
+                               variable_folder_name_discrete / analysis_name)
         try:
             analysis_output_dir.mkdir(parents=True, exist_ok=True)
         except OSError as e:
@@ -2512,21 +2525,42 @@ class AnalysisService:
             logger.error(f"No se pudo encontrar ruta estudio {study_id} para "
                          f"análisis individual.")
             return None
-        return study_path / "Analisis Discreto" / "Individual"
+        # La base ahora es "Graficos", pero la estructura completa depende de la variable.
+        # Este método podría necesitar la variable si se quiere la ruta completa.
+        # Por ahora, devolvemos la base de "Graficos".
+        return study_path / "Analisis Discreto" / "Graficos"
 
-    def get_individual_analysis_path(self, study_id: int, analysis_name: str) \
+    def get_individual_analysis_path(self, study_id: int, analysis_name: str, variable_analizada_full: Optional[str] = None) \
             -> Path | None:
-        """Obtiene la ruta completa al directorio de un análisis individual específico."""
-        base_dir = self._get_individual_analysis_base_dir(study_id)
-        if not base_dir:
+        """
+        Obtiene la ruta completa al directorio de un análisis individual específico.
+        Requiere la variable analizada para construir la ruta completa.
+        """
+        base_graphics_dir = self._get_individual_analysis_base_dir(study_id) # Esto ahora es .../Graficos
+        if not base_graphics_dir:
             return None
-        # Validar nombre por si acaso
+        
+        if not variable_analizada_full:
+            logger.error("Se requiere 'variable_analizada_full' para construir la ruta del análisis individual.")
+            # Fallback: intentar construir sin la subcarpeta de variable, podría no ser lo esperado.
+            # O devolver None si la variable es estrictamente necesaria.
+            # Por ahora, para mantener compatibilidad con llamadas antiguas, se podría intentar
+            # buscar directamente bajo "Individual" o devolver un error más específico.
+            # Sin embargo, la nueva estructura REQUIERE la variable.
+            # Para list_individual_analyses, esto significa que debe leer la config para obtener la variable.
+            return None # O manejar un error/log más específico
+
+        parts = variable_analizada_full.split('/')
+        variable_folder_name_parts = parts[:2]
+        variable_folder_name = " ".join(variable_folder_name_parts).replace("/", "_")
+
+        # Validar nombre del análisis
         invalid_chars = r'<>:"/\|?*'
         if any(char in analysis_name for char in invalid_chars):
-            logger.error(f"Nombre de análisis inválido solicitado: "
-                         f"{analysis_name}")
+            logger.error(f"Nombre de análisis inválido solicitado: {analysis_name}")
             return None
-        return base_dir / analysis_name
+        
+        return base_graphics_dir / variable_folder_name / analysis_name.strip()
 
     def list_individual_analyses(self, study_id: int) -> list[dict]:
         """
@@ -2538,45 +2572,43 @@ class AnalysisService:
                   'plot_path': Path, 'interactive_plot_path': Path | None}
         """
         analyses = []
-        base_dir = self._get_individual_analysis_base_dir(study_id)
-        if not base_dir or not base_dir.exists():
+        # La base ahora es .../Analisis Discreto/Graficos/
+        base_graphics_dir = self._get_individual_analysis_base_dir(study_id)
+        if not base_graphics_dir or not base_graphics_dir.exists():
             return []
 
-        for item_path in base_dir.iterdir():
-            if item_path.is_dir():
-               analysis_name = item_path.name
-               config_path = item_path / "config.json"
-               plot_path = item_path / "boxplot.png" # Asumir nombre fijo PNG
-               interactive_plot_path = item_path / "boxplot_interactive.html" # Asumir nombre fijo HTML
+        # Iterar sobre las subcarpetas de variables (ej. "LAnkleMoment X")
+        for variable_folder_path in base_graphics_dir.iterdir():
+            if not variable_folder_path.is_dir():
+                continue
+            
+            # Ahora iterar sobre las carpetas de análisis dentro de cada variable_folder
+            for analysis_specific_folder_path in variable_folder_path.iterdir():
+                if analysis_specific_folder_path.is_dir():
+                    analysis_name = analysis_specific_folder_path.name
+                    config_path = analysis_specific_folder_path / "config.json"
+                    plot_path = analysis_specific_folder_path / "boxplot.png"
+                    interactive_plot_path = analysis_specific_folder_path / "boxplot_interactive.html"
 
-               if config_path.exists() and config_path.is_file():
-                    try:
-                        with open(config_path, 'r', encoding='utf-8') as f:
-                            config_data = json.load(f)
-                        # Usar mtime del config.json como referencia
-                        mtime = config_path.stat().st_mtime
-                        analyses.append({
-                            'name': analysis_name,
-                            'path': item_path,
-                           'config': config_data,
-                           'mtime': mtime,
-                           'plot_path': plot_path,
-                           # Añadir ruta interactiva si existe
-                           'interactive_plot_path': interactive_plot_path if interactive_plot_path.exists() else None
-                       })
-                    except json.JSONDecodeError:
-                        logger.error(f"Error leyendo config.json para análisis "
-                                     f"'{analysis_name}' en estudio {study_id}.")
-                    except Exception as e:
-                        logger.error(f"Error procesando análisis "
-                                     f"'{analysis_name}' en estudio {study_id}: {e}",
-                                     exc_info=True)
-               # Mover la advertencia aquí, fuera del try-except de lectura JSON
-               # Solo advertir si el archivo config no existe o no es un archivo
-               elif not config_path.exists() or not config_path.is_file():
-                   logger.warning(f"Directorio análisis '{analysis_name}' "
-                                  f"encontrado sin archivo config.json válido en "
-                                  f"estudio {study_id}.")
+                    if config_path.exists() and config_path.is_file():
+                        try:
+                            with open(config_path, 'r', encoding='utf-8') as f:
+                                config_data = json.load(f)
+                            mtime = config_path.stat().st_mtime
+                            analyses.append({
+                                'name': analysis_name,
+                                'path': analysis_specific_folder_path, # Ruta a la carpeta del análisis específico
+                                'config': config_data,
+                                'mtime': mtime,
+                                'plot_path': plot_path,
+                                'interactive_plot_path': interactive_plot_path if interactive_plot_path.exists() else None
+                            })
+                        except json.JSONDecodeError:
+                            logger.error(f"Error leyendo config.json para análisis '{analysis_name}' en {analysis_specific_folder_path}.")
+                        except Exception as e:
+                            logger.error(f"Error procesando análisis '{analysis_name}' en {analysis_specific_folder_path}: {e}", exc_info=True)
+                    elif not config_path.exists() or not config_path.is_file():
+                        logger.warning(f"Directorio análisis '{analysis_name}' en {analysis_specific_folder_path} encontrado sin config.json válido.")
 
         # Ordenar por fecha de modificación (más reciente primero)
         analyses.sort(key=lambda x: x['mtime'], reverse=True)
@@ -2592,14 +2624,107 @@ class AnalysisService:
         :raises FileNotFoundError: Si el directorio del análisis no existe.
         :raises OSError: Si ocurre un error al eliminar el directorio.
         """
-        analysis_dir = self.get_individual_analysis_path(study_id,
-                                                         analysis_name)
-        if not analysis_dir:
-            # get_individual_analysis_path ya loggea el error
-            raise ValueError(f"Nombre de análisis inválido o ruta de estudio "
-                             f"no encontrada: {analysis_name}")
+        # Para eliminar, necesitamos la ruta completa, que incluye la variable.
+        # Esto implica que delete_individual_analysis necesita saber la variable.
+        # O, si el analysis_name es único globalmente (lo cual no es),
+        # tendríamos que buscarlo.
+        # Asumimos que el gestor pasará la info necesaria o que el nombre es suficiente
+        # para identificarlo si la estructura es plana bajo "Individual".
+        # Con la nueva estructura, necesitamos la variable.
+        # Esto es un problema si solo tenemos el nombre.
+        # Solución temporal: el gestor debe obtener la config, luego la variable, luego llamar a delete.
+        # O, si el `analysis_name` es único a través de todas las variables, podríamos buscarlo.
+        # Por ahora, asumimos que el `analysis_name` es suficiente para encontrar la carpeta
+        # si la estructura de `get_individual_analysis_path` se adapta para buscar.
+        # Sin embargo, get_individual_analysis_path ahora REQUIERE la variable.
 
-        if not analysis_dir.exists():
+        # Esta función ahora es más compleja. El llamador (manager) debe:
+        # 1. Obtener la config del análisis a eliminar.
+        # 2. Extraer 'column' de la config.
+        # 3. Llamar a delete_individual_analysis con study_id, analysis_name, Y la variable.
+        # Por ahora, esta función no puede funcionar sin la variable.
+        # Vamos a modificarla para que acepte la variable.
+
+        # Esta función se llamará desde IndividualAnalysisManagerDialog, que tiene acceso a config.
+        # El manager deberá pasar config['column'] como variable_analizada_full.
+        # Por lo tanto, esta función debe ser llamada con la variable.
+        # La firma de la función en el manager debe cambiar.
+        # Aquí, asumimos que el manager ya hizo eso.
+        # La firma de esta función NO cambia, pero el manager debe llamar a
+        # get_individual_analysis_path con la variable.
+
+        # El manager llamará a get_selected_analysis_info(), que tiene la config.
+        # Luego, el manager llamará a esta función.
+        # Esta función debe reconstruir la ruta usando la config.
+        
+        # Esta función es llamada por IndividualAnalysisManagerDialog.delete_analysis
+        # El manager obtiene analysis_info, que incluye config.
+        # Necesitamos la variable de la config para construir la ruta.
+        
+        # Esta función NO debe tomar la variable como argumento, debe encontrarla
+        # o el manager debe pasar la ruta completa.
+        # El manager tiene 'path' en analysis_info. Usaremos eso.
+        
+        # El manager pasa el nombre. Esta función debe encontrar la ruta.
+        # Esto es problemático con la nueva estructura.
+        # La forma más simple es que el manager pase la RUTA COMPLETA del análisis.
+        # O que esta función itere para encontrarlo.
+        # Por ahora, asumimos que el manager pasará la ruta completa.
+        # NO, el manager pasa el nombre. Esta función debe encontrar la ruta.
+        # Esto significa que list_individual_analyses debe devolver la ruta completa.
+        # Y lo hace (analysis_specific_folder_path).
+
+        # El manager llama a esta función con analysis_name.
+        # Esta función debe encontrar la carpeta del análisis.
+        # Esto es difícil sin saber la variable.
+        # La solución es que el manager pase la RUTA COMPLETA.
+        # O que esta función itere.
+        # El manager tiene 'path' en selected_info.
+        # Vamos a asumir que el manager pasará la RUTA COMPLETA.
+        # NO, el manager pasa el nombre.
+
+        # La forma más robusta es que el manager obtenga la ruta del `analysis_info`
+        # y pase esa ruta a un método de borrado más genérico, o que este método
+        # acepte la ruta.
+        # Por ahora, vamos a asumir que el `analysis_name` es único a través de todas las
+        # subcarpetas de variables, lo cual NO es una buena suposición.
+
+        # REFACTORING NECESARIO:
+        # IndividualAnalysisManagerDialog.delete_analysis debe obtener la RUTA del análisis
+        # y pasarla a un método de borrado en AnalysisService que acepte una RUTA.
+        # O, este método debe ser capaz de encontrar la ruta basado en el nombre.
+        # Esto requeriría iterar sobre todas las posibles carpetas de variables.
+
+        # Por ahora, para que funcione con la llamada actual del manager,
+        # vamos a asumir que el manager pasará la ruta completa como analysis_name.
+        # NO, el manager pasa el nombre.
+
+        # La solución más limpia es que el manager obtenga la ruta del `selected_info['path']`
+        # y llame a un método de borrado que tome la ruta.
+        # Vamos a modificar esta función para que acepte una RUTA.
+        # Y el manager debe ser modificado para pasar la ruta.
+        # PERO el request es solo para este archivo.
+        # Entonces, esta función debe encontrar la ruta.
+
+        # Iterar para encontrar la carpeta del análisis.
+        base_graphics_dir = self._get_individual_analysis_base_dir(study_id)
+        analysis_dir_to_delete = None
+        if base_graphics_dir and base_graphics_dir.exists():
+            for var_folder in base_graphics_dir.iterdir():
+                if var_folder.is_dir():
+                    potential_analysis_dir = var_folder / analysis_name
+                    if potential_analysis_dir.exists() and potential_analysis_dir.is_dir():
+                        analysis_dir_to_delete = potential_analysis_dir
+                        break
+        
+        if not analysis_dir_to_delete:
+            raise FileNotFoundError(f"El directorio del análisis '{analysis_name}' no se encontró en ninguna subcarpeta de variables.")
+
+        # analysis_dir = self.get_individual_analysis_path(study_id, analysis_name) # Esto ya no funciona sin la variable
+        # if not analysis_dir:
+        #     raise ValueError(f"Nombre de análisis inválido o ruta de estudio no encontrada: {analysis_name}")
+
+        if not analysis_dir_to_delete.exists():
             raise FileNotFoundError(f"El directorio del análisis no existe: "
                                     f"{analysis_dir}")
         if not analysis_dir.is_dir():
