@@ -334,25 +334,44 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         """Helper to format group keys for display, using aliases."""
         group_display_parts = []
         if mode == "1VI" and primary_vi and group_keys:
-            for desc_key_part in group_keys: # e.g., "Edad=Joven"
+            for desc_key_part in group_keys: # e.g., "Edad=Joven" (this is an effective key from config)
                 try:
-                    _, desc_val = desc_key_part.split("=",1)
-                    alias = self.study_aliases.get(desc_val, desc_val)
-                    group_display_parts.append(f"{primary_vi}: {alias}")
-                except ValueError: group_display_parts.append(desc_key_part)
+                    # desc_key_part should already be in "VI=Descriptor" format for 1VI mode from config
+                    vi_name_part, desc_val_part = desc_key_part.split("=",1)
+                    if vi_name_part == primary_vi: # Ensure it's the primary VI
+                        alias = self.study_aliases.get(desc_val_part, desc_val_part)
+                        group_display_parts.append(f"{primary_vi}: {alias}")
+                    else: # Should not happen if config['groups'] is correctly set for 1VI
+                        group_display_parts.append(desc_key_part) 
+                except ValueError: 
+                    group_display_parts.append(desc_key_part) # Fallback
         elif mode == "2VIs" and fixed_vi and fixed_desc_display and group_keys:
+            # group_keys contains full keys like "VI_Fija=ValorFijo;VI_Variable=ValorVariable"
             fixed_desc_original = self._get_descriptor_original_value(fixed_desc_display)
-            fixed_pair_str_to_remove = f"{fixed_vi}={fixed_desc_original}"
-            for full_key_of_variable_part in group_keys: # e.g., "Salto=CMJ;Condicion=PRE"
-                variable_part_display_inner = []
-                for part in full_key_of_variable_part.split(';'):
-                    if part != fixed_pair_str_to_remove:
+            fixed_pair_to_format = f"{fixed_vi}={fixed_desc_original}"
+            
+            # Format the fixed part once (with alias)
+            fixed_vi_alias = self.study_aliases.get(fixed_desc_original, fixed_desc_original)
+            formatted_fixed_part = f"{fixed_vi}: {fixed_vi_alias}"
+
+            for full_key_item in group_keys: # e.g., "Salto=CMJ;Condicion=PRE"
+                variable_part_display_segments = []
+                # Iterate through parts of the full key to find the variable one(s)
+                for part_of_full_key in full_key_item.split(';'):
+                    if part_of_full_key != fixed_pair_to_format: # This is the variable part
                         try:
-                            vi_name_inner, desc_val_inner = part.split('=',1)
-                            alias_inner = self.study_aliases.get(desc_val_inner, desc_val_inner)
-                            variable_part_display_inner.append(f"{vi_name_inner}: {alias_inner}")
-                        except ValueError: variable_part_display_inner.append(part)
-                group_display_parts.append(", ".join(variable_part_display_inner))
+                            vi_name_var, desc_val_var = part_of_full_key.split('=',1)
+                            alias_var = self.study_aliases.get(desc_val_var, desc_val_var)
+                            variable_part_display_segments.append(f"{vi_name_var}: {alias_var}")
+                        except ValueError: 
+                            variable_part_display_segments.append(part_of_full_key) # Fallback
+                
+                if variable_part_display_segments:
+                    # Combine fixed part with variable part(s)
+                    full_display_for_group = f"{formatted_fixed_part}, {', '.join(variable_part_display_segments)}"
+                    group_display_parts.append(full_display_for_group)
+                else: # Should only be the fixed part, which isn't a comparison group itself
+                    group_display_parts.append(formatted_fixed_part) # Fallback, though unusual
         else: # Fallback for combined or unknown mode
             for key in group_keys:
                 parts = []
