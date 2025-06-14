@@ -216,12 +216,8 @@ Ejecutar tests básicos de `spm1d` (`ttest2`, `anova1`), realizar inferencia est
         - Panel inferior: Curva del estadístico SPM, umbral crítico y resaltado de clusters significativos (con opciones de anotación).
         - Opciones para delimitar el rango de tiempo mostrado en el gráfico y añadir etiquetas personalizadas.
     - [Pendiente] Generar gráficos interactivos (HTML con Plotly, si es factible).
-4.2 [Pendiente] Generación de Tablas de Resultados:
-Tablas con los datos normalizados para la variable y los descriptores seleccionados.
-Tablas resumiendo los resultados del análisis SPM (ej: p-valores, información de clusters significativos).
-4.3 [Pendiente] Nomenclatura y Gestión de Archivos:
-Definir una nomenclatura clara para los archivos generados (gráficos, tablas, datos SPM), ej: `[Variable]_[DescriptoresComparados]_cont_analysis.[png|html|csv]`.
-Guardar estos archivos en una subcarpeta específica dentro de la carpeta del estudio (ej: `AnalisisContinuo`).
+4.2 [Pendiente] Nomenclatura de Creación de Carpeta de Guardado de Archivos:
+Guardar los archivos del analisis en una subcarpeta específica dentro de la carpeta del estudio (ej: `[NOMBRE_ESTUDIO]/Analisis Continuo/[NOMBRE_COMPLETO_MUSCULO_MAS_SU_DIMENSION_PERO_SIN _LA_UNIDAD_DE_MEDIDA] (ie. "Estudio de Adultos Mayores/Analisis Continuo/LAnkleMoment X")`).
 5. [Pendiente] Gestión de Análisis Continuos Guardados en `AnalysisService`.
 5.1 [Pendiente] Nuevos Métodos en `AnalysisService`:
 `list_continuous_analyses(study_id)`: Lista los análisis continuos guardados.
