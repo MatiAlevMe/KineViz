@@ -249,21 +249,33 @@ class AnalysisService:
             final_col_names = []
             counts = {}
             # Sanitize names from the header line
-            for i, name in enumerate(raw_col_names_from_header):
-                clean_name = name.strip()
-                # Handle empty names
-                if not clean_name:
-                    clean_name = f"Unnamed_{i}"  # Usar nombre genérico simple
+            for i, name_from_header_line3 in enumerate(raw_col_names_from_header):
+                current_col_name_for_df = name_from_header_line3.strip() # Start with stripped name
 
-                # Add suffix if the name is duplicated
-                if clean_name in counts:
-                    counts[clean_name] += 1
-                    unique_name = f"{clean_name}_{counts[clean_name]}"
+                # Apply prefix cleaning only to actual data columns (index >= 3)
+                # This ensures consistency with _parse_processed_file_headers
+                if i >= 3: # Indices 0, 1, 2 are Frame, Sub Frame, Tiempo
+                    if ':' in current_col_name_for_df:
+                        name_parts = current_col_name_for_df.split(':', 1)
+                        if len(name_parts) > 1:
+                            current_col_name_for_df = name_parts[1].strip()
+                        # else: keep original stripped name if split fails unexpectedly (e.g. "Var:X" but no prefix part)
+                
+                # Handle empty names (after potential prefix stripping)
+                if not current_col_name_for_df:
+                    current_col_name_for_df = f"Unnamed_{i}"
+                
+                # Make unique if necessary
+                temp_unique_name = current_col_name_for_df
+                if temp_unique_name in counts:
+                    counts[temp_unique_name] += 1
+                    unique_name_for_df = f"{temp_unique_name}_{counts[temp_unique_name]}"
                 else:
-                    counts[clean_name] = 0
-                    unique_name = clean_name
-                final_col_names.append(unique_name)
-            logger.debug(f"Nombres saneados ({len(final_col_names)}): {final_col_names}")
+                    counts[temp_unique_name] = 0
+                    unique_name_for_df = temp_unique_name
+                final_col_names.append(unique_name_for_df)
+            
+            logger.debug(f"Nombres de columna saneados para DataFrame ({len(final_col_names)}): {final_col_names}")
 
             # Ajustar lista final si hubo discrepancia con num_data_cols
             if len(final_col_names) > num_data_cols:
