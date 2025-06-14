@@ -1328,6 +1328,33 @@ class AnalysisService:
         analyses.sort(key=lambda x: x['mtime'], reverse=True)
         return analyses
 
+    def _get_contributing_full_keys(self, study_id: int, frequency: str, required_parts: list[str]) -> list[str]:
+        """
+        Finds all unique full group keys in the study that contain ALL specified required_parts.
+        A full group key is like "VI1=DescA;VI2=DescB;VI3=DescC".
+        required_parts is a list like ["VI1=DescA", "VI3=DescC"].
+        """
+        if not required_parts:
+            return []
+        
+        try:
+            # _, all_unique_full_keys_set = self._identify_study_groups(study_id, frequency)
+            # _identify_study_groups returns map and set. We need the set of full keys.
+            files_to_groups_map, unique_full_keys_set = self._identify_study_groups(study_id, frequency)
+            if not unique_full_keys_set:
+                return []
+
+            matching_full_keys = []
+            for full_key_in_study in unique_full_keys_set:
+                parts_in_study_key = set(full_key_in_study.split(';'))
+                if all(req_part in parts_in_study_key for req_part in required_parts):
+                    matching_full_keys.append(full_key_in_study)
+            
+            return sorted(list(set(matching_full_keys))) # Return sorted unique list
+        except Exception as e:
+            logger.error(f"Error en _get_contributing_full_keys para estudio {study_id}, partes {required_parts}: {e}", exc_info=True)
+            return []
+
     def delete_continuous_analysis(self, study_id: int, analysis_name: str):
         """
         Elimina la carpeta y contenido de un análisis continuo específico.
