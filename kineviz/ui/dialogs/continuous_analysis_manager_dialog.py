@@ -262,21 +262,128 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                     
                     config_window = Toplevel(self)
                     config_window.title(f"Configuración Detallada: {selected_info.get('name')}")
-                    config_window.geometry("700x550") # Increased size for better readability
-                    config_window.transient(self) # Make it transient to the manager dialog
-                    # config_window.grab_set() # Removed to make it non-modal
-                    
-                    text_area = Text(config_window, wrap=tk.WORD, font=("Helvetica", 11)) # Changed font
-                    text_area.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
-                    
-                    # Helper to format and translate config
-                    formatted_config_str = self._format_config_for_display(config_data)
-                    text_area.insert(tk.END, formatted_config_str)
-                    text_area.config(state=tk.DISABLED)
+                    config_window.geometry("750x600") # Adjusted size for Treeview
+                    config_window.transient(self)
+                    # config_window.grab_set() # Non-modal
 
-                    scrollbar = ttk.Scrollbar(text_area, command=text_area.yview)
-                    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-                    text_area.config(yscrollcommand=scrollbar.set)
+                    # --- Treeview para mostrar la configuración ---
+                    tree_frame = ttk.Frame(config_window, padding=(10,10,10,0))
+                    tree_frame.pack(fill=tk.BOTH, expand=True)
+
+                    config_tree = ttk.Treeview(tree_frame, columns=("parametro", "valor"), show="headings")
+                    config_tree.heading("parametro", text="Parámetro")
+                    config_tree.heading("valor", text="Valor")
+                    config_tree.column("parametro", width=250, anchor=tk.W)
+                    config_tree.column("valor", width=450, anchor=tk.W) # Allow more space for value
+
+                    vsb = ttk.Scrollbar(tree_frame, orient="vertical", command=config_tree.yview)
+                    config_tree.configure(yscrollcommand=vsb.set)
+                    
+                    vsb.pack(side=tk.RIGHT, fill=tk.Y)
+                    config_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+                    # --- Lógica de formato y populación (integrada desde _format_config_for_display) ---
+                    if not config_data:
+                        config_tree.insert("", tk.END, values=("Error", "No hay datos de configuración disponibles."))
+                    else:
+                        aliases = self.main_window.study_service.get_study_aliases(self.study_id)
+                        key_translations = {
+                            "analysis_name": "Nombre del Análisis", "data_type": "Tipo de Dato",
+                            "column": "Variable Analizada", "grouping_mode": "Modo de Agrupación",
+                            "primary_vi_name": "VI Primaria (Modo 1VI)",
+                            "fixed_vi_name": "VI Fija (Modo 2VIs)",
+                            "fixed_descriptor_display": "Valor Fijo de VI (Modo 2VIs)",
+                            "groups": "Grupos Comparados",
+                            "show_std_dev": "Mostrar Desviación Estándar (DE)",
+                            "show_conf_int": "Mostrar Intervalos de Confianza (IC)",
+                            "show_sem": "Mostrar Error Estándar de la Media (EEM)",
+                            "annotate_spm_clusters_bottom": "Anotar Clusters SPM (Gráfico Inferior)",
+                            "annotate_spm_range_top": "Anotar Rango SPM (Gráfico Superior)",
+                            "delimit_time_range": "Delimitar Rango de Tiempo Mostrado",
+                            "time_min": "Tiempo Mínimo (%)", "time_max": "Tiempo Máximo (%)",
+                            "show_full_time_with_delimiters": "Mostrar Tiempo Completo con Delimitadores",
+                            "add_time_range_label": "Añadir Etiqueta de Rango de Tiempo",
+                            "time_range_label_text": "Texto de Etiqueta de Rango de Tiempo"
+                        }
+                        display_order = [
+                            "analysis_name", "data_type", "column", "grouping_mode", 
+                            "primary_vi_name", "fixed_vi_name", "fixed_descriptor_display", "groups",
+                            "show_std_dev", "show_conf_int", "show_sem",
+                            "annotate_spm_clusters_bottom", "annotate_spm_range_top",
+                            "delimit_time_range", "time_min", "time_max", 
+                            "show_full_time_with_delimiters", "add_time_range_label", "time_range_label_text"
+                        ]
+
+                        for key in display_order:
+                            if key not in config_data: continue
+                            translated_key = key_translations.get(key, key)
+                            raw_value = config_data.get(key)
+                            display_value = ""
+
+                            if isinstance(raw_value, bool):
+                                display_value = "Sí" if raw_value else "No"
+                            elif key == "groups":
+                                group_display_parts = []
+                                mode = config_data.get('grouping_mode')
+                                primary_vi = config_data.get('primary_vi_name')
+                                fixed_vi = config_data.get('fixed_vi_name')
+                                fixed_desc_original = None
+                                if config_data.get('fixed_descriptor_display'):
+                                    fixed_desc_original = config_data.get('fixed_descriptor_display').split(" (")[0]
+
+                                for group_key_item in raw_value:
+                                    if mode == "1VI" and primary_vi:
+                                        try:
+                                            _, desc_val = group_key_item.split("=", 1)
+                                            alias = aliases.get(desc_val, desc_val)
+                                            group_display_parts.append(f"{primary_vi}: {alias}")
+                                        except ValueError: group_display_parts.append(group_key_item)
+                                    elif mode == "2VIs" and fixed_vi and fixed_desc_original:
+                                        fixed_pair_to_remove = f"{fixed_vi}={fixed_desc_original}"
+                                        variable_parts_inner = []
+                                        for part in group_key_item.split(';'):
+                                            if part != fixed_pair_to_remove:
+                                                try:
+                                                    vi_n, d_v = part.split('=',1)
+                                                    a_i = aliases.get(d_v, d_v)
+                                                    variable_parts_inner.append(f"{vi_n}: {a_i}")
+                                                except ValueError: variable_parts_inner.append(part)
+                                        group_display_parts.append(", ".join(variable_parts_inner))
+                                    else:
+                                        parts = [f"{item.split('=',1)[0]}: {aliases.get(item.split('=',1)[1], item.split('=',1)[1])}" if '=' in item else item for item in group_key_item.split(';')]
+                                        group_display_parts.append(", ".join(parts))
+                                display_value = "\n".join(group_display_parts) if group_display_parts else "N/A"
+                            elif raw_value is None:
+                                display_value = "No especificado"
+                            else:
+                                display_value = str(raw_value)
+                            config_tree.insert("", tk.END, values=(translated_key, display_value))
+
+                        # Separador para "Otros Parámetros"
+                        config_tree.insert("", tk.END, values=("---", "---"))
+                        config_tree.insert("", tk.END, values=("Otros Parámetros (Internos)", ""))
+
+                        for key, value in config_data.items():
+                            if key not in display_order and key not in ["config", "path", "spm_results_path"]:
+                                translated_key = key_translations.get(key, key.replace("_", " ").capitalize())
+                                display_value = str(value)
+                                if key == "mtime" and isinstance(value, (float, int)):
+                                    try:
+                                        display_value = datetime.fromtimestamp(value).strftime('%Y-%m-%d %H:%M:%S')
+                                        translated_key = "Fecha de Modificación"
+                                    except: pass
+                                elif key == "plot_path" and value:
+                                    display_value = Path(value).name
+                                    translated_key = "Archivo de Gráfico"
+                                elif key == "config_path" and value:
+                                    display_value = Path(value).name
+                                    translated_key = "Archivo de Configuración"
+                                config_tree.insert("", tk.END, values=(translated_key, display_value))
+                    
+                    # Botón Cerrar
+                    close_button = ttk.Button(config_window, text="Cerrar", command=config_window.destroy)
+                    close_button.pack(pady=(5,10))
+
                 except Exception as e:
                     messagebox.showerror("Error", f"No se pudo leer o mostrar el archivo de configuración:\n{e}", parent=self)
                     logger.error(f"Error leyendo/mostrando config {config_path}: {e}", exc_info=True)
@@ -327,143 +434,6 @@ class ContinuousAnalysisManagerDialog(Toplevel):
             except Exception as e:
                 logger.error(f"Error eliminando análisis continuo '{analysis_name}': {e}", exc_info=True)
                 messagebox.showerror("Error", f"No se pudo eliminar el análisis '{analysis_name}':\n{e}", parent=self)
-
-    def _format_config_for_display(self, config_data: dict) -> str:
-        """Formats the configuration data into a readable, translated string."""
-        if not config_data:
-            return "No hay datos de configuración disponibles."
-
-        # Get aliases for display
-        aliases = self.main_window.study_service.get_study_aliases(self.study_id)
-
-        # Translations and order for display
-        key_translations = {
-            "analysis_name": "Nombre del Análisis",
-            "data_type": "Tipo de Dato",
-            "column": "Variable Analizada",
-            "grouping_mode": "Modo de Agrupación",
-            "primary_vi_name": "VI Primaria (Modo 1VI)",
-            "fixed_vi_name": "VI Fija (Modo 2VIs)",
-            "fixed_descriptor_display": "Valor Fijo de VI (Modo 2VIs)",
-            "groups": "Grupos Comparados",
-            "show_std_dev": "Mostrar Desviación Estándar (DE)",
-            "show_conf_int": "Mostrar Intervalos de Confianza (IC)",
-            "show_sem": "Mostrar Error Estándar de la Media (EEM)",
-            "annotate_spm_clusters_bottom": "Anotar Clusters SPM (Gráfico Inferior)",
-            "annotate_spm_range_top": "Anotar Rango SPM (Gráfico Superior)",
-            "delimit_time_range": "Delimitar Rango de Tiempo Mostrado",
-            "time_min": "Tiempo Mínimo (%)",
-            "time_max": "Tiempo Máximo (%)",
-            "show_full_time_with_delimiters": "Mostrar Tiempo Completo con Delimitadores",
-            "add_time_range_label": "Añadir Etiqueta de Rango de Tiempo",
-            "time_range_label_text": "Texto de Etiqueta de Rango de Tiempo"
-        }
-        
-        # Define the order of keys for display
-        display_order = [
-            "analysis_name", "data_type", "column", "grouping_mode", 
-            "primary_vi_name", "fixed_vi_name", "fixed_descriptor_display", "groups",
-            "show_std_dev", "show_conf_int", "show_sem",
-            "annotate_spm_clusters_bottom", "annotate_spm_range_top",
-            "delimit_time_range", "time_min", "time_max", 
-            "show_full_time_with_delimiters", "add_time_range_label", "time_range_label_text"
-        ]
-
-        output_lines = [f"{'Parámetro':<45} {'Valor':<50}\n", f"{'-'*45:<45} {'-'*50}\n"]
-
-        for key in display_order:
-            if key not in config_data:
-                continue # Skip if key is not in this specific config
-
-            translated_key = key_translations.get(key, key)
-            raw_value = config_data.get(key)
-            
-            display_value = ""
-            if isinstance(raw_value, bool):
-                display_value = "Sí" if raw_value else "No"
-            elif key == "groups":
-                group_display_parts_config = []
-                mode = config_data.get('grouping_mode')
-                primary_vi_config = config_data.get('primary_vi_name')
-                fixed_vi_config = config_data.get('fixed_vi_name')
-                # fixed_descriptor_display_config = config_data.get('fixed_descriptor_display') # Original display name
-                
-                # Get original descriptor for fixed VI if applicable
-                fixed_desc_original_config = None
-                if config_data.get('fixed_descriptor_display'):
-                    fixed_desc_original_config = config_data.get('fixed_descriptor_display').split(" (")[0]
-
-                for group_key_item in raw_value: # raw_value is the list of group keys
-                    if mode == "1VI" and primary_vi_config:
-                        try:
-                            _, desc_val = group_key_item.split("=", 1)
-                            alias = aliases.get(desc_val, desc_val)
-                            group_display_parts_config.append(f"{primary_vi_config}: {alias}")
-                        except ValueError:
-                            group_display_parts_config.append(group_key_item) # Fallback
-                    elif mode == "2VIs" and fixed_vi_config and fixed_desc_original_config:
-                        fixed_pair_str_to_remove_config = f"{fixed_vi_config}={fixed_desc_original_config}"
-                        variable_part_display_inner_config = []
-                        for part_config in group_key_item.split(';'):
-                            if part_config != fixed_pair_str_to_remove_config:
-                                try:
-                                    vi_name_inner_config, desc_val_inner_config = part_config.split('=',1)
-                                    alias_inner_config = aliases.get(desc_val_inner_config, desc_val_inner_config)
-                                    variable_part_display_inner_config.append(f"{vi_name_inner_config}: {alias_inner_config}")
-                                except ValueError:
-                                    variable_part_display_inner_config.append(part_config)
-                        group_display_parts_config.append(", ".join(variable_part_display_inner_config))
-                    else: # Fallback for combined or unexpected mode
-                        parts_config = []
-                        for item_part_config in group_key_item.split(';'):
-                            try:
-                                vi_name_cfg, desc_val_cfg = item_part_config.split('=', 1)
-                                alias_cfg = aliases.get(desc_val_cfg, desc_val_cfg)
-                                parts_config.append(f"{vi_name_cfg}: {alias_cfg}")
-                            except ValueError:
-                                parts_config.append(item_part_config)
-                        group_display_parts_config.append(", ".join(parts_config))
-                
-                if group_display_parts_config:
-                    display_value = "\n" + "\n".join([f"{'':<45}   - {g}" for g in group_display_parts_config])
-                else:
-                    display_value = "N/A"
-            elif raw_value is None:
-                display_value = "No especificado"
-            else:
-                display_value = str(raw_value)
-            
-            if key == "groups": # Special handling for multi-line group display
-                 output_lines.append(f"{translated_key+':':<45}{display_value}\n")
-            else:
-                 output_lines.append(f"{translated_key+':':<45} {display_value}\n")
-
-
-        # Add any keys from config_data not in display_order (e.g. mtime, plot_path)
-        output_lines.append(f"\n{'-'*45:<45} {'-'*50}\n")
-        output_lines.append(f"{'Otros Parámetros (Internos)':<45}\n")
-        output_lines.append(f"{'-'*45:<45} {'-'*50}\n")
-        
-        for key, value in config_data.items():
-            if key not in display_order and key not in ["config", "path", "spm_results_path"]: # Exclude already handled or complex objects
-                translated_key = key_translations.get(key, key.replace("_", " ").capitalize())
-                display_value = str(value)
-                if key == "mtime" and isinstance(value, (float, int)):
-                    try:
-                        display_value = datetime.fromtimestamp(value).strftime('%Y-%m-%d %H:%M:%S')
-                        translated_key = "Fecha de Modificación"
-                    except: # Keep original if conversion fails
-                        pass
-                elif key == "plot_path" and value:
-                    display_value = Path(value).name
-                    translated_key = "Archivo de Gráfico"
-                elif key == "config_path" and value: # Should not happen as we are viewing it
-                    display_value = Path(value).name
-                    translated_key = "Archivo de Configuración"
-
-                output_lines.append(f"{translated_key+':':<45} {display_value}\n")
-
-        return "".join(output_lines)
 
     def _on_close(self, event=None):
         self.destroy()
