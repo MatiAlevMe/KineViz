@@ -171,6 +171,27 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         hsb = ttk.Scrollbar(tree_frame, orient="horizontal", command=self.analysis_tree.xview)
         hsb.grid(row=1, column=0, sticky='ew', padx=5) # Añadir padx
         self.analysis_tree.configure(xscrollcommand=hsb.set)
+        
+        self.analysis_tree.bind("<<TreeviewSelect>>", self._on_selection_changed) # Bind selection event
+        self.analysis_tree.bind("<Double-1>", lambda e: self.view_analysis_plot()) # Double click to view plot
+
+
+        # --- Botones de Acción para Selección ---
+        selection_action_frame = ttk.Frame(main_frame)
+        selection_action_frame.grid(row=3, column=0, sticky="ew", pady=(10,0))
+
+        self.view_plot_button = ttk.Button(selection_action_frame, text="Ver/Abrir Gráfico", command=self.view_analysis_plot, state=tk.DISABLED)
+        self.view_plot_button.pack(side=tk.LEFT, padx=5)
+        
+        self.view_interactive_button = ttk.Button(selection_action_frame, text="Ver Gráfico Interactivo", command=self.view_interactive_plot, state=tk.DISABLED)
+        self.view_interactive_button.pack(side=tk.LEFT, padx=5)
+
+        self.open_folder_button = ttk.Button(selection_action_frame, text="Abrir Carpeta", command=self.open_analysis_folder, state=tk.DISABLED)
+        self.open_folder_button.pack(side=tk.LEFT, padx=5)
+        
+        self.delete_button = ttk.Button(selection_action_frame, text="Eliminar Análisis", command=self.delete_analysis, state=tk.DISABLED)
+        self.delete_button.pack(side=tk.RIGHT, padx=5) # Align to right
+
 
         # --- Botón Cerrar ---
         ttk.Button(main_frame, text="Cerrar", command=self.destroy) \
