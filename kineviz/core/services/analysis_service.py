@@ -2127,9 +2127,9 @@ class AnalysisService:
         column_str = config['column']
         mode = config.get("grouping_mode")
         primary_vi_name_for_main_effect = config.get("primary_vi_name") if mode == "1VI" else None
-        # groups_from_config son las claves originales seleccionadas en el diálogo
-        # Para modo 1VI, estas son parciales (ej: "Edad=joven")
-        # Para modo 2VIs o modo combinado, estas son completas (ej: "Edad=joven;EstadoNutricional=NP")
+        # groups_from_config son las claves seleccionadas en el diálogo.
+        # Para modo 1VI, estas son AHORA parciales (ej: ["Edad=Joven", "Edad=Mayor"])
+        # Para modo 2VIs o modo combinado, estas son completas (ej: ["Edad=Joven;Peso=NP", "Edad=Mayor;Peso=OS"])
         groups_from_config = config['groups']
 
 
@@ -2157,83 +2157,44 @@ class AnalysisService:
 
         if mode == "1VI" and primary_vi_name_for_main_effect:
             logger.info(f"Procesando en modo 1VI (efecto principal) para VI: '{primary_vi_name_for_main_effect}'")
-            # groups_from_config son las claves COMPLETAS seleccionadas por el usuario,
-            # ej: ["Edad=Joven;Peso=NP", "Edad=Mayor;Peso=OS"]
+            # groups_from_config son AHORA las claves PARCIALES seleccionadas por el usuario,
+            # ej: ["Edad=Joven", "Edad=Mayor"]
             
-            # Obtener todas las claves de grupo completas y únicas que existen en el estudio para esta frecuencia
-            all_full_keys_in_study_map, _ = self._identify_study_groups(study_id, frequency) # dict: file_base -> full_key
+            all_full_keys_in_study_map, _ = self._identify_study_groups(study_id, frequency)
             all_available_full_keys_in_study_set = set(all_full_keys_in_study_map.values())
 
-            for selected_full_key_from_config in groups_from_config: # e.g., "Edad=Joven;Peso=NP"
-                pooled_data_for_this_group = [] # Datos para este grupo de efecto principal (e.g., todos los "Edad=Joven")
-                
-                # 1. Derivar la clave parcial real (e.g., "Edad=Joven") y el descriptor para la leyenda (e.g., "Joven")
-                #    a partir de la clave completa seleccionada y la VI primaria.
-                intended_partial_key = None 
-                descriptor_for_legend = None 
-                
-                logger.debug(f"Derivando clave parcial. Clave completa seleccionada: '{selected_full_key_from_config}', VI Primaria: '{primary_vi_name_for_main_effect}'")
+            for selected_partial_key_from_config in groups_from_config: # e.g., "Edad=Joven"
+                pooled_data_for_this_group = []
+                descriptor_for_legend = selected_partial_key_from_config.split('=',1)[1] # Get "Joven" from "Edad=Joven"
+                actual_group_keys_for_legend.append(descriptor_for_legend)
 
-                parts_of_selected_key = selected_full_key_from_config.split(';')
-                for part_candidate in parts_of_selected_key: # part_candidate es "VI=Desc", e.g., "Edad=Joven"
-                    if not primary_vi_name_for_main_effect:
-                        logger.warning("VI Primaria para efecto principal no está definida. No se puede derivar clave parcial.")
-                        break 
-                    
-                    prefix_to_check = f"{primary_vi_name_for_main_effect}="
-                    logger.debug(f"Chequeando parte: '{part_candidate}' (len={len(part_candidate)}) contra prefijo VI primaria: '{prefix_to_check}' (len={len(prefix_to_check)})")
-                    
-                    if part_candidate.startswith(prefix_to_check):
-                        intended_partial_key = part_candidate # Esto es "VI1=DescA"
-                        try:
-                            descriptor_for_legend = intended_partial_key.split(prefix_to_check, 1)[1] # Esto es "DescA"
-                        except IndexError:
-                            logger.error(f"Error de índice al extraer sub-valor de '{intended_partial_key}' usando prefijo VI '{prefix_to_check}'.")
-                            descriptor_for_legend = intended_partial_key # Fallback
-                        logger.debug(f"Clave parcial derivada: '{intended_partial_key}', sub-valor para leyenda: '{descriptor_for_legend}'")
-                        break # Encontrada la parte relevante para la VI primaria
-                    else:
-                        logger.debug(f"Parte '{part_candidate}' no comienza con prefijo '{prefix_to_check}'.")
-                
-                if intended_partial_key and descriptor_for_legend is not None:
-                    actual_group_keys_for_legend.append(descriptor_for_legend)
-                else:
-                    logger.error(f"CRÍTICO: No se pudo determinar la clave parcial o el sub-valor para el grupo seleccionado '{selected_full_key_from_config}' usando VI primaria '{primary_vi_name_for_main_effect}'. "
-                                 f"Este grupo podría omitirse o causar errores de 'datos no encontrados'.")
-                    actual_group_keys_for_legend.append(selected_full_key_from_config) # Fallback para leyenda
-                    data_by_group.append([]) # Añadir lista vacía para este grupo problemático
-                    continue # Saltar al siguiente grupo seleccionado
-
-                # 2. Encontrar todas las claves completas en el estudio que coincidan con esta clave parcial derivada
                 unique_full_keys_to_pool_from = set()
-                if intended_partial_key: 
-                    for full_key_in_study in all_available_full_keys_in_study_set: 
-                        if intended_partial_key in full_key_in_study.split(';'): 
-                            unique_full_keys_to_pool_from.add(full_key_in_study)
+                for full_key_in_study in all_available_full_keys_in_study_set: 
+                    if selected_partial_key_from_config in full_key_in_study.split(';'): 
+                        unique_full_keys_to_pool_from.add(full_key_in_study)
                 
                 if not unique_full_keys_to_pool_from:
-                    logger.warning(f"No se encontraron tablas de resumen completas que contengan la clave parcial '{intended_partial_key}' en modo 1VI.")
+                    logger.warning(f"No se encontraron tablas de resumen completas que contengan la clave parcial '{selected_partial_key_from_config}' en modo 1VI.")
                 
-                # 3. Cargar datos de estas tablas
-                for full_key_to_load in unique_full_keys_to_pool_from: # e.g., "Edad=Joven;Peso=NP", luego "Edad=Joven;Peso=OS"
+                for full_key_to_load in unique_full_keys_to_pool_from: # e.g., "Edad=Joven;Peso=NP", then "Edad=Joven;Peso=OS"
                     safe_full_key_part = full_key_to_load.replace('=', '_').replace(';', '__')
                     table_filename = f"{calculation}_{frequency}_{safe_full_key_part}.csv"
                     table_path = freq_path / table_filename
-                    logger.debug(f"Modo 1VI: Intentando leer tabla '{table_path}' para agrupar bajo clave parcial '{intended_partial_key}' (tabla original: '{full_key_to_load}')")
+                    logger.debug(f"Modo 1VI: Leyendo tabla '{table_path}' para agrupar bajo clave parcial '{selected_partial_key_from_config}' (tabla original: '{full_key_to_load}')")
 
                     if table_path.exists():
                         try:
                             df = pd.read_csv(table_path, sep=',', decimal='.', encoding='utf-8', header=[0, 1, 2], index_col=0)
                             if target_multi_index_col not in df.columns:
-                                logger.warning(f"Columna '{column_str}' no encontrada en tabla {table_filename} (para clave parcial '{intended_partial_key}'). Se omite esta tabla para la agrupación.")
+                                logger.warning(f"Columna '{column_str}' no encontrada en tabla {table_filename} (para clave parcial '{selected_partial_key_from_config}'). Se omite esta tabla para la agrupación.")
                                 continue
                             
                             data_from_table = df[target_multi_index_col].dropna().tolist()
                             pooled_data_for_this_group.extend(data_from_table)
                         except Exception as e:
-                            logger.error(f"Error procesando tabla {table_path} (para clave parcial '{intended_partial_key}'): {e}", exc_info=True)
+                            logger.error(f"Error procesando tabla {table_path} (para clave parcial '{selected_partial_key_from_config}'): {e}", exc_info=True)
                     else:
-                        logger.warning(f"Modo 1VI: Tabla de resumen no encontrada: {table_path} (esperada para clave parcial '{intended_partial_key}', tabla original '{full_key_to_load}')")
+                        logger.warning(f"Modo 1VI: Tabla de resumen no encontrada: {table_path} (esperada para clave parcial '{selected_partial_key_from_config}', tabla original '{full_key_to_load}')")
                 
                 data_by_group.append(pooled_data_for_this_group)
                 logger.info(f"Modo 1VI: Para grupo de efecto principal '{descriptor_for_legend}' (basado en VI '{primary_vi_name_for_main_effect}'), se recolectaron {len(pooled_data_for_this_group)} puntos de datos de {len(unique_full_keys_to_pool_from)} tablas.")

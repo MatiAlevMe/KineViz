@@ -313,11 +313,12 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
                 primary_vi_name=primary_vi,
                 fixed_vi_name=fixed_vi,
                 fixed_descriptor_value=fixed_descriptor
-            )
+            ) # For 1VI, this now returns {partial_key: display_name}
+              # For 2VIs, this returns {original_full_key: display_name_of_variable_part}
 
-            # Mapear display_name -> original_key
+            # Mapear display_name -> key (partial_key for 1VI, original_full_key for 2VIs)
             self.available_groups_filtered = {display_name: key for key, display_name in filtered_groups.items()}
-            logger.debug(f"Grupos filtrados disponibles: {self.available_groups_filtered}")
+            logger.debug(f"Grupos filtrados disponibles para UI (display_name -> key): {self.available_groups_filtered}")
 
             # Mostrar el frame de selección de grupos y actualizar combos
             self.group_selection_outer_frame.grid()
