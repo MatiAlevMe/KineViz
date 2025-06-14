@@ -1288,6 +1288,30 @@ class AnalysisService:
             logger.error(f"No se pudo encontrar ruta estudio {study_id} para análisis continuo.")
             return None
         return study_path / "Analisis Continuo"
+
+    def does_continuous_analysis_exist(self, study_id: int, variable_folder_name: str, analysis_name: str) -> bool:
+        """
+        Verifica si ya existe un análisis continuo con el nombre dado para una variable específica.
+
+        :param study_id: ID del estudio.
+        :param variable_folder_name: Nombre de la carpeta de la variable (ej: "LAnkleAngles X").
+        :param analysis_name: Nombre del análisis a verificar.
+        :return: True si existe, False en caso contrario.
+        """
+        base_dir = self._get_continuous_analysis_base_dir(study_id)
+        if not base_dir or not base_dir.exists():
+            return False
+        
+        # Sanitize analysis_name just in case, though it should be clean from dialog
+        clean_analysis_name = analysis_name.strip()
+        invalid_chars = r'<>:"/\|?*'
+        if any(char in clean_analysis_name for char in invalid_chars):
+            logger.warning(f"Intento de verificar existencia de análisis con nombre inválido: '{clean_analysis_name}'")
+            return False # Or raise error, but for existence check, False is safer.
+
+        analysis_path = base_dir / variable_folder_name / clean_analysis_name
+        return analysis_path.exists() and analysis_path.is_dir()
+
     def list_continuous_analyses(self, study_id: int) -> list[dict]:
         """
         Lista los análisis continuos guardados para un estudio.

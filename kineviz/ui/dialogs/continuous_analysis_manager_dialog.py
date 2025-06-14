@@ -424,7 +424,21 @@ class ContinuousAnalysisManagerDialog(Toplevel):
             
             mtime = analysis_info.get('mtime')
             date_str = datetime.fromtimestamp(mtime).strftime('%Y-%m-%d %H:%M') if mtime else "N/A"
-            self.tree.insert("", tk.END, values=(name, column, groups_str, date_str), iid=name)
+            
+            # Use the unique path string as iid
+            analysis_path_str = str(analysis_info.get('path', name)) # Fallback to name if path is missing
+            
+            # Ensure iid is unique even if path somehow is duplicated (should not happen)
+            # or if name is used as fallback and is duplicated.
+            # This is a defensive measure for treeview stability.
+            final_iid = analysis_path_str
+            counter = 0
+            while self.tree.exists(final_iid):
+                counter += 1
+                final_iid = f"{analysis_path_str}_{counter}"
+                logger.warning(f"Duplicate iid detected for continuous analysis. Using '{final_iid}' instead of '{analysis_path_str}'. This might indicate an issue with analysis name uniqueness or path retrieval.")
+
+            self.tree.insert("", tk.END, values=(name, column, groups_str, date_str), iid=final_iid)
         
         self._on_analysis_selected() # Update button states
 
@@ -454,12 +468,23 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         selected_items = self.tree.selection()
         if not selected_items:
             return None
-        analysis_name = selected_items[0] # This is the iid, which is the analysis name
-        # Find the analysis in the master list
+        
+        selected_iid = selected_items[0] # This is the iid (now the path string or path_counter)
+        
+        # Find the analysis in the master list by comparing the iid to the stringified path
+        # or by checking if the iid starts with the stringified path (for the _counter case)
         for analysis_info in self.all_analyses_data:
-            if analysis_info.get('name') == analysis_name:
+            analysis_path_str = str(analysis_info.get('path', ''))
+            if selected_iid == analysis_path_str or selected_iid.startswith(f"{analysis_path_str}_"):
                 return analysis_info
-        logger.warning(f"Análisis seleccionado '{analysis_name}' no encontrado en self.all_analyses_data.")
+        
+        # Fallback: if iid was a name due to missing path (less likely now)
+        for analysis_info in self.all_analyses_data:
+            if analysis_info.get('name') == selected_iid:
+                logger.warning(f"Selected iid '{selected_iid}' matched by name (fallback). Path might be missing for this item.")
+                return analysis_info
+                
+        logger.warning(f"Análisis seleccionado con iid '{selected_iid}' no encontrado en self.all_analyses_data.")
         return None
 
     def _on_analysis_selected(self, event=None):
@@ -477,6 +502,25 @@ class ContinuousAnalysisManagerDialog(Toplevel):
 
         if dialog.result: # This will be checked after dialog closes
             logger.info(f"Configuración recibida del diálogo de análisis continuo: {dialog.result}")
+            
+            # --- Validación de Nombre Duplicado ---
+            analysis_name_to_check = dialog.result.get('analysis_name')
+            variable_analyzed_full = dialog.result.get('column') # e.g., "LAnkleAngles/X/deg"
+            
+            variable_folder_name_for_check = "VariableDesconocida"
+            if variable_analyzed_full:
+                parts = variable_analyzed_full.split('/')
+                variable_folder_name_for_check = " ".join(parts[:2]).replace("/", "_")
+
+            if self.analysis_service.does_continuous_analysis_exist(self.study_id, variable_folder_name_for_check, analysis_name_to_check):
+                messagebox.showerror("Nombre Duplicado", 
+                                     f"Ya existe un análisis continuo con el nombre '{analysis_name_to_check}' para la variable '{variable_folder_name_for_check}'.\n"
+                                     "Por favor, elija un nombre diferente.", 
+                                     parent=self)
+                # Re-open config dialog with previous values? Or just abort? For now, abort.
+                return 
+            # --- Fin Validación ---
+
             try:
                 analysis_results = self.analysis_service.perform_continuous_analysis(self.study_id, dialog.result)
                 logger.info(f"Resultado de perform_continuous_analysis: {analysis_results}")
