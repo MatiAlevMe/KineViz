@@ -2661,5 +2661,5 @@ class AnalysisService:
             # Opcional: Limpiar directorios padre si quedan vacíos
         except OSError as e:
             logger.error(f"Error eliminando directorio análisis "
-                         f"{analysis_dir}: {e}", exc_info=True)
+                         f"{analysis_folder_to_delete}: {e}", exc_info=True)
             raise
