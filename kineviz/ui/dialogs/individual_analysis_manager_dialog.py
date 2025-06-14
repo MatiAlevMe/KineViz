@@ -642,10 +642,6 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                 display_value_str = str(raw_value)
             
             text_lines.append(f"{translated_key}: {display_value_str}")
-            # Add "Claves Completas Comparadas" right after "Grupos Comparados"
-            if key == "groups":
-                raw_keys_str_for_display = ", ".join(raw_value) if isinstance(raw_value, list) else str(raw_value)
-                text_lines.append(f"  Claves Completas Comparadas: {raw_keys_str_for_display}")
         
         # Add any other parameters from config_data not in display_order
         other_params_added = False
