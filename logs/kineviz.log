@@ -30112,3 +30112,30 @@ NameError: name 'datetime' is not defined. Did you forget to import 'datetime'
 2025-06-13 20:59:29,574 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
 2025-06-13 20:59:52,314 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
 2025-06-13 20:59:52,315 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-13 21:10:34,544 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-13 21:10:34,544 - INFO - [__main__] - Iniciando KineViz...
+2025-06-13 21:10:35,007 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-13 21:10:35,007 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-13 21:10:36,620 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 32
+2025-06-13 21:10:36,638 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 32
+2025-06-13 21:10:36,639 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 32: {}
+2025-06-13 21:10:36,639 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-13 21:10:37,459 - ERROR - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Error cargando lista de análisis continuos para estudio 32: 'NoneType' object has no attribute 'study_service'
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/dialogs/continuous_analysis_manager_dialog.py", line 130, in load_analyses
+    aliases = self.main_window.study_service.get_study_aliases(self.study_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'study_service'
+2025-06-13 21:11:11,095 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-13 21:11:11,096 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-13 21:11:18,549 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 32
+2025-06-13 21:11:18,551 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 32: {}
+2025-06-13 21:11:18,551 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-13 21:11:19,580 - ERROR - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Error cargando lista de análisis continuos para estudio 32: 'NoneType' object has no attribute 'study_service'
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/dialogs/continuous_analysis_manager_dialog.py", line 130, in load_analyses
+    aliases = self.main_window.study_service.get_study_aliases(self.study_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'study_service'
+2025-06-13 21:11:28,140 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-13 21:11:28,141 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
