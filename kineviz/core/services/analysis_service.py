@@ -2626,13 +2626,25 @@ class AnalysisService:
         try:
             shutil.rmtree(analysis_path_to_delete)
             logger.info(f"Análisis individual eliminado: {analysis_path_to_delete}")
-            # Opcional: Limpiar directorios padre (variable_folder_name) si quedan vacíos.
-            # Esto requeriría verificar si el directorio padre está vacío después de la eliminación.
-            # Ejemplo:
-            # parent_dir = analysis_path_to_delete.parent
-            # if parent_dir.exists() and not any(parent_dir.iterdir()):
-            #     logger.info(f"Directorio de variable '{parent_dir.name}' está vacío, eliminándolo.")
-            #     parent_dir.rmdir() # rmdir solo funciona si está vacío
+
+            # Limpiar directorio padre (variable_folder_name) si queda vacío.
+            parent_dir = analysis_path_to_delete.parent
+            if parent_dir.exists() and parent_dir.is_dir() and not any(parent_dir.iterdir()):
+                # Verificar que el nombre del directorio padre no sea "Graficos" directamente
+                # para evitar eliminar la carpeta base "Graficos" si es el último análisis en general.
+                if parent_dir.name != "Graficos":
+                    logger.info(f"Directorio de variable '{parent_dir.name}' está vacío tras eliminar '{analysis_path_to_delete.name}', eliminándolo.")
+                    try:
+                        parent_dir.rmdir() # rmdir solo funciona si está vacío
+                        logger.info(f"Directorio de variable '{parent_dir.name}' eliminado.")
+                    except OSError as e_rmparent:
+                        logger.error(f"Error eliminando directorio padre vacío '{parent_dir.name}': {e_rmparent}", exc_info=True)
+                else:
+                    logger.debug(f"Directorio padre es '{parent_dir.name}' (carpeta base 'Graficos'), no se eliminará aunque esté vacío.")
+            elif parent_dir.exists() and parent_dir.is_dir(): # Parent exists but is not empty
+                 logger.debug(f"Directorio de variable '{parent_dir.name}' no está vacío, no se eliminará.")
+            # else: parent_dir does not exist or is not a dir, nothing to do.
+
         except OSError as e:
             logger.error(f"Error eliminando directorio análisis {analysis_path_to_delete}: {e}", exc_info=True)
             raise
