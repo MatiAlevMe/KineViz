@@ -76,8 +76,25 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         # Definir estilo para el botón de ayuda
         style = ttk.Style()
         style.configure("Help.TButton", foreground="white", background="blue")
+
+        # --- Setup for scrollable area ---
+        container_frame = ttk.Frame(self)
+        self.canvas = tk.Canvas(container_frame)
+        scrollbar = ttk.Scrollbar(container_frame, orient="vertical", command=self.canvas.yview)
+        self.scrollable_frame = ttk.Frame(self.canvas, padding="15") # Apply padding here
+
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+        )
+        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.canvas.configure(yscrollcommand=scrollbar.set)
+
+        container_frame.pack(fill=tk.BOTH, expand=True)
+        self.canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
         
-        self.create_widgets()
+        self.create_widgets(self.scrollable_frame) # Pass scrollable_frame as parent
         should_continue_init = self.load_initial_data() # Cambiado de load_data_types a load_initial_data
 
         if not should_continue_init:
@@ -106,10 +123,11 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         """Muestra un popup de ayuda simple."""
         messagebox.showinfo(title, message, parent=self)
 
-    def create_widgets(self):
+    def create_widgets(self, parent_frame): # Accept parent_frame
         """Crea los widgets del diálogo, similar a ConfigureIndividualAnalysisDialog."""
-        main_frame = ttk.Frame(self, padding="15")
-        main_frame.pack(fill=tk.BOTH, expand=True)
+        # main_frame is now parent_frame, padding is applied when scrollable_frame is created
+        main_frame = parent_frame 
+        # main_frame.pack(fill=tk.BOTH, expand=True) # Not needed, canvas manages scrollable_frame
         main_frame.columnconfigure(1, weight=1)
 
         row_idx = 0
