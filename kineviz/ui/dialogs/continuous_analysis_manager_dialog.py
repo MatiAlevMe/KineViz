@@ -277,140 +277,144 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                     # Correctly get the config dictionary from selected_info
                     config_data = selected_info.get("config") 
                     
-                    config_window = Toplevel(self)
-                    config_window.title(f"Configuración Detallada: {selected_info.get('name')}")
-                    config_window.geometry("750x600") # Adjusted size for Treeview
-                    config_window.transient(self)
-                    config_window.grab_set() # Make it modal to ensure interactivity
-                    
-                    # --- Treeview para mostrar la configuración ---
-                    tree_frame = ttk.Frame(config_window, padding=(10,10,10,0))
-                    tree_frame.pack(fill=tk.BOTH, expand=True)
+                    # Correctly get the config dictionary from selected_info
+                    config_data = selected_info.get("config")
+                    analysis_name = selected_info.get("name", "configuracion_desconocida")
+                    analysis_folder_path = selected_info.get("path") # This is the Path object to the analysis folder
 
-                    config_tree = ttk.Treeview(tree_frame, columns=("parametro", "valor"), show="headings")
-                    config_tree.heading("parametro", text="Parámetro")
-                    config_tree.heading("valor", text="Valor")
-                    config_tree.column("parametro", width=250, anchor=tk.W, stretch=tk.YES) # Allow resizing
-                    config_tree.column("valor", width=450, anchor=tk.W, stretch=tk.YES) # Allow resizing
-
-                    vsb = ttk.Scrollbar(tree_frame, orient="vertical", command=config_tree.yview)
-                    hsb = ttk.Scrollbar(tree_frame, orient="horizontal", command=config_tree.xview) # Horizontal scrollbar
-                    config_tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set) # Configure both
-                    
-                    vsb.pack(side=tk.RIGHT, fill=tk.Y)
-                    hsb.pack(side=tk.BOTTOM, fill=tk.X) # Pack horizontal scrollbar
-                    config_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-
-                    # --- Lógica de formato y populación (integrada desde _format_config_for_display) ---
                     if not config_data:
-                        config_tree.insert("", tk.END, values=("Error", "No hay datos de configuración disponibles."))
-                    else:
-                        aliases = self.main_window.study_service.get_study_aliases(self.study_id)
-                        key_translations = {
-                            "analysis_name": "Nombre del Análisis", "data_type": "Tipo de Dato",
-                            "column": "Variable Analizada", "grouping_mode": "Modo de Agrupación",
-                            "primary_vi_name": "VI Primaria (Modo 1VI)",
-                            "fixed_vi_name": "VI Fija (Modo 2VIs)",
-                            "fixed_descriptor_display": "Valor Fijo de VI (Modo 2VIs)",
-                            "groups": "Grupos Comparados",
-                            "show_std_dev": "Mostrar Desviación Estándar (DE)",
-                            "show_conf_int": "Mostrar Intervalos de Confianza (IC)",
-                            "show_sem": "Mostrar Error Estándar de la Media (EEM)",
-                            "annotate_spm_clusters_bottom": "Anotar Clusters SPM (Gráfico Inferior)",
-                            "annotate_spm_range_top": "Anotar Rango SPM (Gráfico Superior)",
-                            "delimit_time_range": "Delimitar Rango de Tiempo Mostrado",
-                            "time_min": "Tiempo Mínimo (%)", "time_max": "Tiempo Máximo (%)",
-                            "show_full_time_with_delimiters": "Mostrar Tiempo Completo con Delimitadores",
-                            "add_time_range_label": "Añadir Etiqueta de Rango de Tiempo",
-                            "time_range_label_text": "Texto de Etiqueta de Rango de Tiempo"
-                        }
-                        display_order = [
-                            "analysis_name", "data_type", "column", "grouping_mode", 
-                            "primary_vi_name", "fixed_vi_name", "fixed_descriptor_display", "groups",
-                            "show_std_dev", "show_conf_int", "show_sem",
-                            "annotate_spm_clusters_bottom", "annotate_spm_range_top",
-                            "delimit_time_range", "time_min", "time_max", 
-                            "show_full_time_with_delimiters", "add_time_range_label", "time_range_label_text"
-                        ]
+                        messagebox.showerror("Error", "No hay datos de configuración para mostrar.", parent=self)
+                        return
+                    if not analysis_folder_path:
+                        messagebox.showerror("Error", "No se pudo determinar la carpeta del análisis.", parent=self)
+                        return
 
-                        for key in display_order:
-                            if key not in config_data: continue
-                            translated_key = key_translations.get(key, key)
-                            raw_value = config_data.get(key)
-                            display_value = ""
+                    # --- Generate Markdown Content ---
+                    markdown_lines = []
+                    markdown_lines.append(f"# Configuración del Análisis: {analysis_name}\n")
+                    markdown_lines.append("| Parámetro                         | Valor                                      |")
+                    markdown_lines.append("|-----------------------------------|--------------------------------------------|")
 
-                            if isinstance(raw_value, bool):
-                                display_value = "Sí" if raw_value else "No"
-                            elif key == "groups":
-                                group_display_parts = []
-                                mode = config_data.get('grouping_mode')
-                                primary_vi = config_data.get('primary_vi_name')
-                                fixed_vi = config_data.get('fixed_vi_name')
-                                fixed_desc_original = None
-                                if config_data.get('fixed_descriptor_display'):
-                                    fixed_desc_original = config_data.get('fixed_descriptor_display').split(" (")[0]
+                    aliases = self.main_window.study_service.get_study_aliases(self.study_id)
+                    key_translations = {
+                        "analysis_name": "Nombre del Análisis", "data_type": "Tipo de Dato",
+                        "column": "Variable Analizada", "grouping_mode": "Modo de Agrupación",
+                        "primary_vi_name": "VI Primaria (Modo 1VI)",
+                        "fixed_vi_name": "VI Fija (Modo 2VIs)",
+                        "fixed_descriptor_display": "Valor Fijo de VI (Modo 2VIs)",
+                        "groups": "Grupos Comparados",
+                        "show_std_dev": "Mostrar Desviación Estándar (DE)",
+                        "show_conf_int": "Mostrar Intervalos de Confianza (IC)",
+                        "show_sem": "Mostrar Error Estándar de la Media (EEM)",
+                        "annotate_spm_clusters_bottom": "Anotar Clusters SPM (Gráfico Inferior)",
+                        "annotate_spm_range_top": "Anotar Rango SPM (Gráfico Superior)",
+                        "delimit_time_range": "Delimitar Rango de Tiempo Mostrado",
+                        "time_min": "Tiempo Mínimo (%)", "time_max": "Tiempo Máximo (%)",
+                        "show_full_time_with_delimiters": "Mostrar Tiempo Completo con Delimitadores",
+                        "add_time_range_label": "Añadir Etiqueta de Rango de Tiempo",
+                        "time_range_label_text": "Texto de Etiqueta de Rango de Tiempo"
+                    }
+                    display_order = [
+                        "analysis_name", "data_type", "column", "grouping_mode",
+                        "primary_vi_name", "fixed_vi_name", "fixed_descriptor_display", "groups",
+                        "show_std_dev", "show_conf_int", "show_sem",
+                        "annotate_spm_clusters_bottom", "annotate_spm_range_top",
+                        "delimit_time_range", "time_min", "time_max",
+                        "show_full_time_with_delimiters", "add_time_range_label", "time_range_label_text"
+                    ]
 
-                                for group_key_item in raw_value:
-                                    if mode == "1VI" and primary_vi:
-                                        try:
-                                            _, desc_val = group_key_item.split("=", 1)
-                                            alias = aliases.get(desc_val, desc_val)
-                                            group_display_parts.append(f"{primary_vi}: {alias}")
-                                        except ValueError: group_display_parts.append(group_key_item)
-                                    elif mode == "2VIs" and fixed_vi and fixed_desc_original:
-                                        fixed_pair_to_remove = f"{fixed_vi}={fixed_desc_original}"
-                                        variable_parts_inner = []
-                                        for part in group_key_item.split(';'):
-                                            if part != fixed_pair_to_remove:
-                                                try:
-                                                    vi_n, d_v = part.split('=',1)
-                                                    a_i = aliases.get(d_v, d_v)
-                                                    variable_parts_inner.append(f"{vi_n}: {a_i}")
-                                                except ValueError: variable_parts_inner.append(part)
-                                        group_display_parts.append(", ".join(variable_parts_inner))
-                                    else:
-                                        parts = []
-                                        for item_part_in_group_key_item in group_key_item.split(';'):
+                    for key in display_order:
+                        if key not in config_data: continue
+                        translated_key = key_translations.get(key, key)
+                        raw_value = config_data.get(key)
+                        display_value_str = ""
+
+                        if isinstance(raw_value, bool):
+                            display_value_str = "Sí" if raw_value else "No"
+                        elif key == "groups":
+                            group_display_parts = []
+                            mode = config_data.get('grouping_mode')
+                            primary_vi = config_data.get('primary_vi_name')
+                            fixed_vi = config_data.get('fixed_vi_name')
+                            fixed_desc_original = None
+                            if config_data.get('fixed_descriptor_display'):
+                                fixed_desc_original = config_data.get('fixed_descriptor_display').split(" (")[0]
+
+                            for group_key_item in raw_value: # raw_value is list of group keys
+                                if mode == "1VI" and primary_vi:
+                                    try:
+                                        _, desc_val = group_key_item.split("=", 1)
+                                        alias = aliases.get(desc_val, desc_val)
+                                        group_display_parts.append(f"{primary_vi}: {alias}")
+                                    except ValueError: group_display_parts.append(group_key_item)
+                                elif mode == "2VIs" and fixed_vi and fixed_desc_original:
+                                    fixed_pair_to_remove = f"{fixed_vi}={fixed_desc_original}"
+                                    variable_parts_inner = []
+                                    for part in group_key_item.split(';'):
+                                        if part != fixed_pair_to_remove:
                                             try:
-                                                vi_name_iter, desc_val_iter = item_part_in_group_key_item.split('=',1)
-                                                alias_iter = aliases.get(desc_val_iter, desc_val_iter)
-                                                parts.append(f"{vi_name_iter}: {alias_iter}")
-                                            except ValueError:
-                                                parts.append(item_part_in_group_key_item)
-                                        group_display_parts.append(" & ".join(parts)) # Use " & " for parts of a single complex group key
-                                display_value = ", ".join(group_display_parts) if group_display_parts else "N/A" # Join multiple groups with comma
-                            elif raw_value is None:
-                                display_value = "No especificado"
-                            # The redundant 'elif key == "groups":' block below is removed.
-                            else:
-                                display_value = str(raw_value)
-                            config_tree.insert("", tk.END, values=(translated_key, display_value))
-
-                        # Separador para "Otros Parámetros"
-                        config_tree.insert("", tk.END, values=("---", "---"))
-                        config_tree.insert("", tk.END, values=("---", "---")) # Separator
+                                                vi_n, d_v = part.split('=',1)
+                                                a_i = aliases.get(d_v, d_v)
+                                                variable_parts_inner.append(f"{vi_n}: {a_i}")
+                                            except ValueError: variable_parts_inner.append(part)
+                                    group_display_parts.append(", ".join(variable_parts_inner))
+                                else: # Combined mode or fallback
+                                    parts = []
+                                    for item_part in group_key_item.split(';'):
+                                        try:
+                                            vi_name_iter, desc_val_iter = item_part.split('=',1)
+                                            alias_iter = aliases.get(desc_val_iter, desc_val_iter)
+                                            parts.append(f"{vi_name_iter}: {alias_iter}")
+                                        except ValueError: parts.append(item_part)
+                                    group_display_parts.append(" & ".join(parts))
+                            display_value_str = ", ".join(group_display_parts) if group_display_parts else "N/A"
+                        elif raw_value is None:
+                            display_value_str = "No especificado"
+                        else:
+                            display_value_str = str(raw_value)
                         
-                        # Display any other parameters from the config JSON not in display_order
-                        other_params_header_added = False
-                        for key, value in config_data.items():
-                            if key not in display_order:
-                                if not other_params_header_added:
-                                    config_tree.insert("", tk.END, values=("Otros Parámetros (desde JSON)", ""))
-                                    other_params_header_added = True
-                                
-                                translated_key = key_translations.get(key, key.replace("_", " ").capitalize())
-                                display_value = str(value)
-                                config_tree.insert("", tk.END, values=(translated_key, display_value))
-                    
-                    # El botón Cerrar personalizado se elimina. El botón (X) de la ventana funcionará.
-                    config_window.update_idletasks() # Ensure window and widgets are fully processed
-                    config_window.focus_set() # Then set focus
+                        # Escape pipe characters in values for Markdown table
+                        display_value_md = display_value_str.replace("|", "\\|")
+                        markdown_lines.append(f"| {translated_key} | {display_value_md} |")
 
+                    # Add other parameters from JSON
+                    markdown_lines.append("\n## Otros Parámetros (desde JSON)\n")
+                    markdown_lines.append("| Parámetro Adicional             | Valor                                      |")
+                    markdown_lines.append("|-----------------------------------|--------------------------------------------|")
+                    other_params_added = False
+                    for key, value in config_data.items():
+                        if key not in display_order:
+                            translated_key = key_translations.get(key, key.replace("_", " ").capitalize())
+                            display_value_md = str(value).replace("|", "\\|")
+                            markdown_lines.append(f"| {translated_key} | {display_value_md} |")
+                            other_params_added = True
+                    if not other_params_added:
+                        markdown_lines.append("| (Ninguno)                         |                                            |")
+                    
+                    markdown_content = "\n".join(markdown_lines)
+
+                    # --- Save to Markdown File ---
+                    # analysis_folder_path is already a Path object
+                    md_config_path = analysis_folder_path / "configuracion_detallada.md"
+                    with open(md_config_path, 'w', encoding='utf-8') as f_md:
+                        f_md.write(markdown_content)
+                    
+                    logger.info(f"Archivo de configuración Markdown generado en: {md_config_path}")
+
+                    # --- Open the Markdown File ---
+                    try:
+                        if sys.platform == "win32": os.startfile(md_config_path)
+                        elif sys.platform == "darwin": subprocess.run(["open", md_config_path], check=True)
+                        else: subprocess.run(["xdg-open", md_config_path], check=True)
+                    except Exception as e_open:
+                        messagebox.showerror("Error al Abrir", f"No se pudo abrir el archivo de configuración Markdown:\n{md_config_path}\n\nError: {e_open}", parent=self)
+                        logger.error(f"Error abriendo archivo Markdown {md_config_path}: {e_open}", exc_info=True)
+                
                 except Exception as e:
-                    messagebox.showerror("Error", f"No se pudo leer o mostrar el archivo de configuración:\n{e}", parent=self)
-                    logger.error(f"Error leyendo/mostrando config {config_path}: {e}", exc_info=True)
+                    messagebox.showerror("Error", f"No se pudo generar o mostrar el archivo de configuración:\n{e}", parent=self)
+                    logger.error(f"Error generando/mostrando config Markdown para {config_path}: {e}", exc_info=True)
             else:
-                messagebox.showwarning("Archivo no encontrado", "El archivo de configuración no existe.", parent=self)
+                messagebox.showwarning("Archivo no encontrado", "El archivo de configuración JSON original no existe.", parent=self)
         else:
             messagebox.showinfo("Información", "No hay archivo de configuración para el análisis seleccionado o el análisis no está seleccionado.", parent=self)
 
