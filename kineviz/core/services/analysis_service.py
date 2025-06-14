@@ -1912,42 +1912,33 @@ class AnalysisService:
         all_groups = {key: display for display, key in all_groups_tuples}
         aliases = self.study_service.get_study_aliases(study_id)
         filtered_groups = {}
-        temp_groups = {} # Usar un dict temporal para evitar duplicados basados en el display
+        # temp_groups = {} # This variable was removed, causing the mismatch.
 
         if mode == '1VI' and primary_vi_name:
             logger.debug(f"Filtrando modo 1VI por '{primary_vi_name}'")
-            for key, _ in all_groups.items(): # Iterar sobre todas las claves originales
-                parts = key.split(';')
-                # Buscar la parte que corresponde a la VI primaria
-                primary_part = None
+            # Collect unique partial keys (e.g., "Edad=Joven") and their display names
+            unique_partial_keys_for_primary_vi = {} # {partial_key: display_name}
+            for original_full_key, _ in all_groups.items(): # Iterar sobre todas las claves originales
+                parts = original_full_key.split(';')
                 for part in parts:
                     if part.startswith(f"{primary_vi_name}="):
-                        primary_part = part
-                        break
-                # Si se encontró la parte de la VI primaria
-                if primary_part:
-                    try:
-                        vi_name, descriptor = primary_part.split('=')
-                        # Crear una clave y display basados SOLO en esta VI primaria
-                        effective_key = primary_part # Usar "VI=Desc" como clave efectiva
-                        alias = aliases.get(descriptor, descriptor)
-                        display_name = f"{primary_vi_name}: {alias}"
-                        # Guardar en temp_groups usando la clave original (key)
-                        # pero solo si el display_name no se ha visto (para agrupar visualmente)
-                        # OJO: Esto agrupa visualmente, pero la clave original se mantiene para obtener datos
-                        # Si queremos agrupar datos realmente, necesitaríamos otra lógica
-                        if display_name not in temp_groups.values():
-                             # Guardar la clave original asociada a este display único
-                             # Si múltiples claves originales mapean al mismo display, solo se guarda una.
-                             # ¿Es esto correcto? ¿O deberíamos devolver todas las claves originales que coinciden?
-                             # Por ahora, guardamos la primera clave original que genera este display.
-                             # Esto funciona para la UI, pero puede ser problemático para obtener datos si se agrupan.
-                             # REVISAR: Quizás el display debe ser único y la clave original se pasa al servicio.
-                             # Vamos a devolver {original_key: display_name} como antes, pero filtrado.
-                             filtered_groups[key] = display_name
-
-                    except ValueError:
-                        logger.warning(f"Error parseando parte '{primary_part}' de la clave '{key}'")
+                        try:
+                            # part is like "VI_Primaria=DescriptorValor"
+                            _, descriptor = part.split('=', 1)
+                            alias = aliases.get(descriptor, descriptor)
+                            display_name = f"{primary_vi_name}: {alias}"
+                            # Store the partial key itself, ensuring uniqueness by display_name
+                            # Check if display_name is already a value to avoid overwriting with a different partial_key
+                            # that maps to the same display_name (unlikely with current alias logic but safe).
+                            # The goal is to have a unique set of display_name -> partial_key for the UI.
+                            # So, if a display_name is already mapped, we prefer the first partial_key found.
+                            if display_name not in unique_partial_keys_for_primary_vi.values():
+                                unique_partial_keys_for_primary_vi[part] = display_name
+                            break # Found the primary VI part for this original_full_key
+                        except ValueError:
+                            logger.warning(f"Error parseando parte '{part}' de la clave '{original_full_key}'")
+            filtered_groups = unique_partial_keys_for_primary_vi # This is now {partial_key: display_name}
+            # The dialog will then use {display_name: partial_key}
 
         elif mode == '2VIs' and fixed_vi_name and fixed_descriptor_value:
             logger.debug(f"Filtrando modo 2VIs fijando '{fixed_vi_name}={fixed_descriptor_value}'")
