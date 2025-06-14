@@ -289,11 +289,10 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                         messagebox.showerror("Error", "No se pudo determinar la carpeta del análisis.", parent=self)
                         return
 
-                    # --- Generate Markdown Content ---
-                    markdown_lines = []
-                    markdown_lines.append(f"# Configuración del Análisis: {analysis_name}\n")
-                    markdown_lines.append("| Parámetro                         | Valor                                      |")
-                    markdown_lines.append("|-----------------------------------|--------------------------------------------|")
+                    # --- Generate Text Content ---
+                    text_lines = []
+                    text_lines.append(f"Configuración del Análisis: {analysis_name}\n")
+                    text_lines.append("=" * (len(text_lines[0]) -1) + "\n") # Underline for the title
 
                     aliases = self.main_window.study_service.get_study_aliases(self.study_id)
                     key_translations = {
@@ -373,46 +372,49 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                         else:
                             display_value_str = str(raw_value)
                         
-                        # Escape pipe characters in values for Markdown table
-                        display_value_md = display_value_str.replace("|", "\\|")
-                        markdown_lines.append(f"| {translated_key} | {display_value_md} |")
+                        # Format as "Key: Value"
+                        if key == "groups" and "\n" in display_value_str: # Handle multi-line groups
+                            group_lines = display_value_str.split("\n")
+                            text_lines.append(f"{translated_key}: {group_lines[0]}")
+                            for group_line in group_lines[1:]:
+                                text_lines.append(f"  {group_line}") # Indent subsequent group lines
+                        else:
+                            text_lines.append(f"{translated_key}: {display_value_str}")
 
                     # Add other parameters from JSON
-                    markdown_lines.append("\n## Otros Parámetros (desde JSON)\n")
-                    markdown_lines.append("| Parámetro Adicional             | Valor                                      |")
-                    markdown_lines.append("|-----------------------------------|--------------------------------------------|")
+                    text_lines.append("\nOtros Parámetros (desde JSON)")
+                    text_lines.append("-" * len(text_lines[-1]) + "\n")
                     other_params_added = False
                     for key, value in config_data.items():
                         if key not in display_order:
                             translated_key = key_translations.get(key, key.replace("_", " ").capitalize())
-                            display_value_md = str(value).replace("|", "\\|")
-                            markdown_lines.append(f"| {translated_key} | {display_value_md} |")
+                            text_lines.append(f"{translated_key}: {value}")
                             other_params_added = True
                     if not other_params_added:
-                        markdown_lines.append("| (Ninguno)                         |                                            |")
+                        text_lines.append("(Ninguno)")
                     
-                    markdown_content = "\n".join(markdown_lines)
+                    text_content = "\n".join(text_lines)
 
-                    # --- Save to Markdown File ---
+                    # --- Save to Text File ---
                     # analysis_folder_path is already a Path object
-                    md_config_path = analysis_folder_path / "configuracion_detallada.md"
-                    with open(md_config_path, 'w', encoding='utf-8') as f_md:
-                        f_md.write(markdown_content)
+                    txt_config_path = analysis_folder_path / "configuracion_detallada.txt" # Changed extension
+                    with open(txt_config_path, 'w', encoding='utf-8') as f_txt:
+                        f_txt.write(text_content)
                     
-                    logger.info(f"Archivo de configuración Markdown generado en: {md_config_path}")
+                    logger.info(f"Archivo de configuración de texto generado en: {txt_config_path}")
 
-                    # --- Open the Markdown File ---
+                    # --- Open the Text File ---
                     try:
-                        if sys.platform == "win32": os.startfile(md_config_path)
-                        elif sys.platform == "darwin": subprocess.run(["open", md_config_path], check=True)
-                        else: subprocess.run(["xdg-open", md_config_path], check=True)
+                        if sys.platform == "win32": os.startfile(txt_config_path)
+                        elif sys.platform == "darwin": subprocess.run(["open", txt_config_path], check=True)
+                        else: subprocess.run(["xdg-open", txt_config_path], check=True)
                     except Exception as e_open:
-                        messagebox.showerror("Error al Abrir", f"No se pudo abrir el archivo de configuración Markdown:\n{md_config_path}\n\nError: {e_open}", parent=self)
-                        logger.error(f"Error abriendo archivo Markdown {md_config_path}: {e_open}", exc_info=True)
+                        messagebox.showerror("Error al Abrir", f"No se pudo abrir el archivo de configuración de texto:\n{txt_config_path}\n\nError: {e_open}", parent=self)
+                        logger.error(f"Error abriendo archivo de texto {txt_config_path}: {e_open}", exc_info=True)
                 
                 except Exception as e:
                     messagebox.showerror("Error", f"No se pudo generar o mostrar el archivo de configuración:\n{e}", parent=self)
-                    logger.error(f"Error generando/mostrando config Markdown para {config_path}: {e}", exc_info=True)
+                    logger.error(f"Error generando/mostrando config de texto para {config_path}: {e}", exc_info=True)
             else:
                 messagebox.showwarning("Archivo no encontrado", "El archivo de configuración JSON original no existe.", parent=self)
         else:
