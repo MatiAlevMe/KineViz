@@ -281,7 +281,7 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                     config_window.title(f"Configuración Detallada: {selected_info.get('name')}")
                     config_window.geometry("750x600") # Adjusted size for Treeview
                     config_window.transient(self)
-                    # config_window.grab_set() # Non-modal
+                    config_window.grab_set() # Make it modal to ensure interactivity
                     
                     # --- Treeview para mostrar la configuración ---
                     tree_frame = ttk.Frame(config_window, padding=(10,10,10,0))
