@@ -503,7 +503,18 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                 # Values for the new column order
                 values = (analysis_name, calc, col_full, grupos_comparados_str, # Added calc
                           valores_clave_str, date_str)
-                self.analysis_tree.insert("", tk.END, text=analysis_name, values=values)
+                
+                # Use the unique path string as iid
+                analysis_path_str = str(analysis_info.get('path', analysis_name)) # Fallback to name if path is missing
+                
+                final_iid = analysis_path_str
+                counter = 0
+                while self.analysis_tree.exists(final_iid):
+                    counter += 1
+                    final_iid = f"{analysis_path_str}_{counter}"
+                    logger.warning(f"Duplicate iid detected for individual analysis. Using '{final_iid}' instead of '{analysis_path_str}'. This might indicate an issue with analysis name uniqueness or path retrieval.")
+
+                self.analysis_tree.insert("", tk.END, iid=final_iid, text=analysis_name, values=values) # Store original name in 'text' for compatibility if needed
         
         self._on_selection_changed() # Update button states based on current selection (if any)
 
@@ -543,6 +554,28 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.wait_window(dialog)
         
         if dialog.result: # Check if the configuration dialog was accepted
+            # --- Validación de Nombre Duplicado ---
+            analysis_name_to_check = dialog.result.get('name')
+            variable_analyzed_full = dialog.result.get('column') # e.g., "Attribute/Column/Unit"
+            
+            variable_folder_name_for_check = "VariableDesconocida"
+            if variable_analyzed_full:
+                parts = variable_analyzed_full.split('/')
+                if len(parts) >= 2:
+                    variable_folder_name_for_check = " ".join(parts[:2]).replace("/", "_")
+                else: # Fallback if format is unexpected
+                    variable_folder_name_for_check = variable_analyzed_full.replace("/", "_")
+
+
+            if self.analysis_service.does_individual_analysis_exist(self.study_id, variable_folder_name_for_check, analysis_name_to_check):
+                messagebox.showerror("Nombre Duplicado", 
+                                     f"Ya existe un análisis discreto con el nombre '{analysis_name_to_check}' para la variable '{variable_folder_name_for_check}'.\n"
+                                     "Por favor, elija un nombre diferente.", 
+                                     parent=self)
+                self.load_analyses() # Refresh list in case something changed externally
+                return 
+            # --- Fin Validación ---
+            
             try:
                 # perform_individual_analysis is expected to return a dict with 'plot_path' and 'config_path'
                 analysis_results = self.analysis_service.perform_individual_analysis(self.study_id, dialog.result)
@@ -595,20 +628,28 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         """Obtiene el diccionario de información del análisis seleccionado.
         Retorna None si no hay selección válida, sin mostrar message box.
         """
-        selected_item = self.analysis_tree.focus()
-        if not selected_item:
+        selected_item_iid = self.analysis_tree.focus()
+        if not selected_item_iid:
             return None # No item focused
         
-        analysis_name = self.analysis_tree.item(selected_item, "text")
-        if analysis_name == "NoAnalyses":  # Verificar si es el placeholder
+        if selected_item_iid == "NoAnalyses":  # Verificar si es el placeholder iid
             return None # Placeholder is not a valid selection
 
-        # Buscar la info completa en self.all_analyses_data
+        # Buscar la info completa en self.all_analyses_data usando el iid (path)
         for analysis_info in self.all_analyses_data:
-            if analysis_info['name'] == analysis_name:
+            analysis_path_str = str(analysis_info.get('path', ''))
+            # Check if iid matches path or path_with_counter
+            if selected_item_iid == analysis_path_str or selected_item_iid.startswith(f"{analysis_path_str}_"):
                 return analysis_info
-        logger.error(f"No se encontró información para análisis seleccionado: "
-                      f"{analysis_name}")
+        
+        # Fallback: if iid was somehow the name (e.g., path missing in data)
+        analysis_name_from_text = self.analysis_tree.item(selected_item_iid, "text")
+        for analysis_info in self.all_analyses_data:
+            if analysis_info.get('name') == analysis_name_from_text: # Match by name as a last resort
+                logger.warning(f"Selected iid '{selected_item_iid}' matched by name '{analysis_name_from_text}' (fallback). Path might be missing for this item.")
+                return analysis_info
+                
+        logger.error(f"No se encontró información para análisis seleccionado con iid: {selected_item_iid}")
         return None
 
     def _view_config(self):

@@ -2572,6 +2572,30 @@ class AnalysisService:
         # Por ahora, devolvemos la base de "Graficos".
         return study_path / "Analisis Discreto" / "Graficos"
 
+    def does_individual_analysis_exist(self, study_id: int, variable_folder_name: str, analysis_name: str) -> bool:
+        """
+        Verifica si ya existe un análisis discreto individual con el nombre dado para una variable específica.
+
+        :param study_id: ID del estudio.
+        :param variable_folder_name: Nombre de la carpeta de la variable (ej: "LAnkleAngles X").
+        :param analysis_name: Nombre del análisis a verificar.
+        :return: True si existe, False en caso contrario.
+        """
+        base_graphics_dir = self._get_individual_analysis_base_dir(study_id)
+        if not base_graphics_dir or not base_graphics_dir.exists():
+            return False
+        
+        # Sanitize analysis_name just in case, though it should be clean from dialog
+        clean_analysis_name = analysis_name.strip()
+        invalid_chars = r'<>:"/\|?*' # Mismos caracteres inválidos que en continuo
+        if any(char in clean_analysis_name for char in invalid_chars):
+            logger.warning(f"Intento de verificar existencia de análisis individual con nombre inválido: '{clean_analysis_name}'")
+            return False
+
+        # Path: .../Analisis Discreto/Graficos/[VARIABLE_FOLDER_NAME]/[ANALYSIS_NAME]
+        analysis_path = base_graphics_dir / variable_folder_name / clean_analysis_name
+        return analysis_path.exists() and analysis_path.is_dir()
+
     # get_individual_analysis_path is removed. The UI will pass the full path.
 
     def list_individual_analyses(self, study_id: int) -> list[dict]:
