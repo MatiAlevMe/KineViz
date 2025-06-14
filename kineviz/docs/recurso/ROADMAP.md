@@ -370,18 +370,20 @@ La aplicación sigue una estructura modular para separar responsabilidades:
 `ui.views`: Vistas principales que ocupan la mayor parte de la ventana.
 `LandingPage`: Vista inicial que se muestra cuando no existen estudios en la aplicación.
 `MainView`: Muestra la lista paginada de estudios existentes, permitiendo buscar y acceder a ellos.
-`StudyView`: Presenta una vista detallada de un estudio específico. Incluye un navegador de archivos (`FileBrowser`), opciones para agregar archivos, gestionar alias, y acceder a los módulos de análisis.
-`DiscreteAnalysisView`: Interfaz para gestionar y visualizar los resultados de los análisis discretos (tablas resumen generadas).
-*(Futuro: `ContinuousAnalysisView` para mostrar resultados de análisis SPM)*.
+`StudyView`: Presenta una vista detallada de un estudio específico. Incluye un navegador de archivos (`FileBrowser`), opciones para agregar archivos, gestionar alias, y acceder a los módulos de análisis (discreto y continuo).
+`DiscreteAnalysisView`: Interfaz para gestionar y visualizar las tablas de resumen `.xlsx` generadas por el análisis discreto. Permite generar/actualizar estas tablas y acceder al gestor de análisis individuales. Incluye filtros por Tipo de Dato, Cálculo, y Variables Independientes (1VI o 2VIs), además de búsqueda por palabra clave.
+`analysis_view.py`: (Placeholder) Destinado a una futura vista de análisis más general o combinada, actualmente no implementada.
 `ui.dialogs`: Ventanas modales que se utilizan para tareas específicas y entrada de datos.
-`StudyDialog`: Para crear nuevos estudios o editar los metadatos de estudios existentes, incluyendo la definición de Variables Independientes (VIs) y sus descriptores.
-`FileDialog`: Permite al usuario seleccionar y agregar archivos de datos a un estudio específico.
+`StudyDialog`: Para crear nuevos estudios o editar los metadatos de estudios existentes, incluyendo la definición de Variables Independientes (VIs), sus descriptores, y reglas de combinación/obligatoriedad.
+`FileDialog`: Permite al usuario seleccionar y agregar archivos de datos a un estudio específico, validando contra las VIs definidas.
 `DescriptorAliasDialog`: Facilita la gestión (creación, edición, eliminación) de alias para los descriptores de las VIs de un estudio.
-`ConfigureIndividualAnalysisDialog`: Diálogo para configurar los parámetros de un análisis discreto individual (selección de frecuencia, cálculo, columna, grupos a comparar, y supuestos estadísticos).
-`IndividualAnalysisManagerDialog`: Permite listar, visualizar (gráficos estáticos e interactivos), eliminar y abrir la carpeta de resultados de los análisis individuales guardados.
-`ContinuousAnalysisConfigDialog`: Diálogo para configurar los parámetros de un análisis continuo (SPM). Incluye selección de frecuencia de datos, la variable/columna específica a analizar, y la selección de grupos de descriptores (para modos 1VI y 2VIs [efectos simples]).
 `ConfigDialog`: Permite al usuario modificar configuraciones globales de la aplicación (ej. elementos por página) que se guardan en `config.ini`.
-`AnalysisDialog`: (Obsoleto/Comentado) Diálogo anterior para análisis, reemplazado por funcionalidades más específicas.
+`ConfigureIndividualAnalysisDialog`: Diálogo para configurar los parámetros de un análisis discreto individual. Guía al usuario a través de la selección de Tipo de Dato (fijo a "Cinematica"), Cálculo, modo de agrupación de VIs (1VI o 2VIs), grupos específicos a comparar (basados en VIs y sub-valores), la variable/columna a analizar, y los supuestos estadísticos.
+`IndividualAnalysisManagerDialog`: Permite listar, visualizar (gráficos estáticos e interactivos), eliminar y abrir la carpeta de resultados de los análisis individuales guardados. Incluye filtros por palabra clave y VIs (1VI o 2VIs). Ofrece una opción "Ver Configuración" que exporta los detalles del análisis a un archivo `.txt`.
+`ContinuousAnalysisConfigDialog`: Diálogo para configurar los parámetros de un análisis continuo (SPM). Similar al de análisis individual, permite seleccionar Tipo de Dato (fijo a "Cinematica"), modo de agrupación de VIs, grupos a comparar, y la variable/columna a analizar. También incluye opciones de visualización y anotación para el gráfico SPM.
+`ContinuousAnalysisManagerDialog`: Gestiona los análisis continuos (SPM) guardados. Permite listar, ver el gráfico SPM, exportar la configuración a `.txt` (incluyendo claves de archivo contribuyentes), abrir la carpeta de resultados y eliminar análisis. Incluye filtros por palabra clave y VIs (1VI o 2VIs).
+`AnalysisDialog`: (Obsoleto) Diálogo de análisis general anterior, reemplazado por funcionalidades más específicas.
+`report_dialog.py`: (No implementado/Obsoleto) Placeholder para una futura gestión de reportes PDF.
 `ui.widgets`: Componentes de UI reutilizables.
 `FileBrowser`: Widget para listar, filtrar y gestionar archivos dentro de un estudio, con paginación.
 `charting`: Módulo para generar gráficos estáticos (con `matplotlib`/`seaborn`) e interactivos (con `plotly`), como boxplots y gráficos de barras.
