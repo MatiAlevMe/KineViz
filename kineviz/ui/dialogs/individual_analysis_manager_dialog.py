@@ -436,19 +436,16 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
 
     def get_selected_analysis_info(self) -> dict | None:
-        """Obtiene el diccionario de información del análisis seleccionado."""
+        """Obtiene el diccionario de información del análisis seleccionado.
+        Retorna None si no hay selección válida, sin mostrar message box.
+        """
         selected_item = self.analysis_tree.focus()
         if not selected_item:
-            messagebox.showwarning("Sin Selección",
-                                   "Seleccione un análisis de la lista.",
-                                   parent=self)
-            return None
+            return None # No item focused
+        
         analysis_name = self.analysis_tree.item(selected_item, "text")
         if analysis_name == "NoAnalyses":  # Verificar si es el placeholder
-            messagebox.showwarning("Sin Selección",
-                                   "No hay un análisis válido seleccionado.",
-                                   parent=self)
-            return None
+            return None # Placeholder is not a valid selection
 
         # Buscar la info completa en self.all_analyses_data
         for analysis_info in self.all_analyses_data:
@@ -462,6 +459,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         """Abre el gráfico HTML interactivo del análisis seleccionado."""
         analysis_info = self.get_selected_analysis_info()
         if not analysis_info:
+            messagebox.showwarning("Sin Selección", "Por favor, seleccione un análisis de la lista.", parent=self)
             return
 
         # Buscar la ruta interactiva en la info cargada
@@ -491,6 +489,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         """Abre el gráfico PNG del análisis seleccionado."""
         analysis_info = self.get_selected_analysis_info()
         if not analysis_info:
+            messagebox.showwarning("Sin Selección", "Por favor, seleccione un análisis de la lista.", parent=self)
             return
 
         plot_path = analysis_info.get('plot_path')  # Obtener ruta del gráfico
@@ -520,6 +519,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         """Elimina el análisis seleccionado (carpeta y contenido)."""
         analysis_info = self.get_selected_analysis_info()
         if not analysis_info:
+            messagebox.showwarning("Sin Selección", "Por favor, seleccione un análisis para eliminar.", parent=self)
             return
         analysis_name = analysis_info['name']
 
@@ -553,6 +553,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         """Abre la carpeta que contiene los archivos del análisis."""
         analysis_info = self.get_selected_analysis_info()
         if not analysis_info:
+            messagebox.showwarning("Sin Selección", "Por favor, seleccione un análisis para abrir su carpeta.", parent=self)
             return
 
         analysis_dir = analysis_info.get('path')  # Obtener ruta del directorio
