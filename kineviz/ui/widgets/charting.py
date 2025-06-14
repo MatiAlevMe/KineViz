@@ -575,7 +575,8 @@ def create_interactive_spm_results_plot(normalized_data_by_group: dict,
             fig.add_vline(x=time_min, line_dash="dot", line_color="blue", row="all", col=1)
             fig.add_vline(x=time_max, line_dash="dot", line_color="blue", row="all", col=1)
         else:
-            fig.update_xaxes(range=[time_min, time_max], row=None, col=1) 
+            # Apply to all x-axes. For shared axes, this should set the desired range.
+            fig.update_xaxes(range=[time_min, time_max]) 
         
         if spm_results.get('add_time_range_label', False) and spm_results.get('time_range_label_text', ''):
             time_label = spm_results.get('time_range_label_text')
