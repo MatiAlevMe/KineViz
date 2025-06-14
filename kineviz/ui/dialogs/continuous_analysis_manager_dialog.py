@@ -639,16 +639,6 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                                 text_lines.append(f"  {group_line}") # Indent subsequent group lines
                         else:
                             text_lines.append(f"{translated_key}: {display_value_str}")
-                        
-                        # Add "Claves Completas Comparadas" right after "Grupos Comparados"
-                        if key == "groups":
-                            # raw_value here is config_data.get('groups'), which are the effective keys
-                            # For 1VI, these are partial keys like "VI=Desc"
-                            # For 2VIs, these are full keys like "VI1=DescA;VI2=DescB"
-                            # The term "Claves Completas" might be slightly misleading for 1VI if we show partials.
-                            # However, these are the keys *used* for comparison by SPM.
-                            raw_keys_str_for_display = ", ".join(raw_value) if isinstance(raw_value, list) else str(raw_value)
-                            text_lines.append(f"  Claves Efectivas Comparadas: {raw_keys_str_for_display}")
 
 
                     # Add other parameters from JSON
