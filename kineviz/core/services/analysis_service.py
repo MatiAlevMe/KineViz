@@ -1275,21 +1275,6 @@ class AnalysisService:
         if not study_path:
             logger.error(f"No se pudo encontrar ruta estudio {study_id} para análisis continuo.")
             return None
-        return study_path / "Analisis Continuo"
-
-    def get_continuous_analysis_path(self, study_id: int, analysis_name: str) -> Path | None:
-        """Obtiene la ruta completa al directorio de un análisis continuo específico."""
-        base_dir = self._get_continuous_analysis_base_dir(study_id)
-        if not base_dir:
-            return None
-        # Validar nombre por si acaso (similar a individual)
-        invalid_chars = r'<>:"/\|?*' # Mismos caracteres inválidos
-        if any(char in analysis_name for char in invalid_chars):
-            logger.error(f"Nombre de análisis continuo inválido solicitado: {analysis_name}")
-            return None
-        return base_dir / analysis_name.strip()
-
-
     def list_continuous_analyses(self, study_id: int) -> list[dict]:
         """
         Lista los análisis continuos guardados para un estudio.
@@ -1368,35 +1353,32 @@ class AnalysisService:
             logger.error(f"Error en _get_contributing_full_keys para estudio {study_id}, partes {required_parts}: {e}", exc_info=True)
             return []
 
-    def delete_continuous_analysis(self, study_id: int, analysis_name: str):
+    def delete_continuous_analysis(self, analysis_folder_to_delete: Path):
         """
         Elimina la carpeta y contenido de un análisis continuo específico.
 
-        :param study_id: ID del estudio.
-        :param analysis_name: Nombre del análisis a eliminar.
-        :raises ValueError: Si el nombre del análisis es inválido.
+        :param analysis_folder_to_delete: Path object de la carpeta del análisis a eliminar.
         :raises FileNotFoundError: Si el directorio del análisis no existe.
+        :raises ValueError: Si la ruta no es un directorio.
         :raises OSError: Si ocurre un error al eliminar el directorio.
         """
-        analysis_dir = self.get_continuous_analysis_path(study_id, analysis_name)
-        if not analysis_dir:
-            raise ValueError(f"Nombre de análisis continuo inválido o ruta de estudio no encontrada: {analysis_name}")
+        logger.info(f"Solicitud para eliminar análisis continuo en: {analysis_folder_to_delete}")
 
-        if not analysis_dir.exists():
-            raise FileNotFoundError(f"El directorio del análisis continuo no existe: {analysis_dir}")
-        if not analysis_dir.is_dir():
-            raise ValueError(f"La ruta del análisis continuo no es un directorio: {analysis_dir}")
+        if not analysis_folder_to_delete.exists():
+            raise FileNotFoundError(f"El directorio del análisis continuo no existe: {analysis_folder_to_delete}")
+        if not analysis_folder_to_delete.is_dir():
+            raise ValueError(f"La ruta del análisis continuo no es un directorio: {analysis_folder_to_delete}")
 
         try:
-            shutil.rmtree(analysis_dir)
-            logger.info(f"Análisis continuo eliminado: {analysis_dir}")
+            shutil.rmtree(analysis_folder_to_delete)
+            logger.info(f"Análisis continuo eliminado: {analysis_folder_to_delete}")
 
             # Opcional: Limpiar directorio padre (variable_folder_name) si queda vacío.
-            parent_dir = analysis_dir.parent
+            parent_dir = analysis_folder_to_delete.parent
             if parent_dir.exists() and parent_dir.is_dir() and not any(parent_dir.iterdir()):
                 # Verificar que el nombre del directorio padre no sea "Analisis Continuo" directamente
                 if parent_dir.name != "Analisis Continuo":
-                    logger.info(f"Directorio de variable '{parent_dir.name}' está vacío tras eliminar '{analysis_dir.name}', eliminándolo.")
+                    logger.info(f"Directorio de variable '{parent_dir.name}' está vacío tras eliminar '{analysis_folder_to_delete.name}', eliminándolo.")
                     try:
                         parent_dir.rmdir()
                         logger.info(f"Directorio de variable '{parent_dir.name}' eliminado.")
@@ -1408,7 +1390,7 @@ class AnalysisService:
                 logger.debug(f"Directorio de variable '{parent_dir.name}' no está vacío, no se eliminará.")
 
         except OSError as e:
-            logger.error(f"Error eliminando directorio análisis continuo {analysis_dir}: {e}", exc_info=True)
+            logger.error(f"Error eliminando directorio análisis continuo {analysis_folder_to_delete}: {e}", exc_info=True)
             raise
 
     # --- Métodos para Análisis Discreto (Fase 6) ---
