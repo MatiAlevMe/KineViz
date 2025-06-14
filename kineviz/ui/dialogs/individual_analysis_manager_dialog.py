@@ -43,9 +43,10 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.filter_vi2_name_var = tk.StringVar()
         self.filter_vi2_desc_var = tk.StringVar()
         self.filter_variable_var = tk.StringVar(value="Todos") # For Variable Analizada filter
+        self.filter_calc_var = tk.StringVar(value="Todos") # For Cálculo filter
 
         # Column definitions - Updated for new display
-        self.columns = ("Nombre Análisis", "Variable Analizada", "Grupos Comparados",
+        self.columns = ("Nombre Análisis", "Cálculo", "Variable Analizada", "Grupos Comparados",
                         "Valores Clave", "Fecha Creación/Modif.")
 
         self._load_study_vi_data() # Load VIs and aliases for filters
@@ -74,22 +75,28 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         search_entry.bind("<Return>", lambda event: self._apply_filters_and_search())
         ttk.Button(search_filter_frame, text="Buscar", command=self._apply_filters_and_search).grid(row=0, column=2, padx=5, pady=5, sticky="e")
 
+        # Filter by Cálculo
+        ttk.Label(search_filter_frame, text="Cálculo:").grid(row=1, column=0, padx=(0,5), pady=5, sticky="w")
+        self.filter_calc_combo = ttk.Combobox(search_filter_frame, textvariable=self.filter_calc_var, state="readonly", width=15)
+        self.filter_calc_combo.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+        self.filter_calc_combo.bind("<<ComboboxSelected>>", lambda e: self._apply_filters_and_search())
+
         # Filter by Variable Analizada
-        ttk.Label(search_filter_frame, text="Variable Analizada:").grid(row=1, column=0, padx=(0,5), pady=5, sticky="w")
+        ttk.Label(search_filter_frame, text="Variable Analizada:").grid(row=2, column=0, padx=(0,5), pady=5, sticky="w")
         self.filter_variable_combo = ttk.Combobox(search_filter_frame, textvariable=self.filter_variable_var, state="readonly", width=40)
-        self.filter_variable_combo.grid(row=1, column=1, columnspan=2, padx=5, pady=5, sticky="ew")
+        self.filter_variable_combo.grid(row=2, column=1, columnspan=2, padx=5, pady=5, sticky="ew")
         self.filter_variable_combo.bind("<<ComboboxSelected>>", lambda e: self._apply_filters_and_search())
 
         # Filter by VI count
-        ttk.Label(search_filter_frame, text="Filtrar por VIs:").grid(row=2, column=0, padx=(0,5), pady=5, sticky="w")
+        ttk.Label(search_filter_frame, text="Filtrar por VIs:").grid(row=3, column=0, padx=(0,5), pady=5, sticky="w") # Adjusted row
         self.filter_vi_count_combo = ttk.Combobox(search_filter_frame, textvariable=self.filter_vi_count_var,
                                                   values=["No filtrar", "1 VI", "2 VIs"], state="readonly", width=12)
-        self.filter_vi_count_combo.grid(row=2, column=1, padx=5, pady=5, sticky="w")
+        self.filter_vi_count_combo.grid(row=3, column=1, padx=5, pady=5, sticky="w") # Adjusted row
         self.filter_vi_count_combo.bind("<<ComboboxSelected>>", self._on_filter_vi_count_change)
 
         # VI 1 Filter
         self.filter_vi1_frame = ttk.Frame(search_filter_frame)
-        self.filter_vi1_frame.grid(row=3, column=0, columnspan=3, pady=5, sticky="ew") # Adjusted row
+        self.filter_vi1_frame.grid(row=4, column=0, columnspan=3, pady=5, sticky="ew") # Adjusted row
         self.filter_vi1_frame.columnconfigure(1, weight=1)
         self.filter_vi1_frame.columnconfigure(3, weight=1)
 
@@ -104,7 +111,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
         # VI 2 Filter (initially hidden)
         self.filter_vi2_frame = ttk.Frame(search_filter_frame)
-        self.filter_vi2_frame.grid(row=4, column=0, columnspan=3, pady=5, sticky="ew") # Adjusted row
+        self.filter_vi2_frame.grid(row=5, column=0, columnspan=3, pady=5, sticky="ew") # Adjusted row
         self.filter_vi2_frame.columnconfigure(1, weight=1)
         self.filter_vi2_frame.columnconfigure(3, weight=1)
 
@@ -122,7 +129,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
         # Filter Action Buttons
         filter_action_frame = ttk.Frame(search_filter_frame)
-        filter_action_frame.grid(row=2, column=2, columnspan=4, sticky="e", padx=5, pady=5) # Adjusted row
+        filter_action_frame.grid(row=3, column=2, columnspan=4, sticky="e", padx=5, pady=5) # Adjusted row
         ttk.Button(filter_action_frame, text="Aplicar Filtros", command=self._apply_filters_and_search).pack(side=tk.LEFT, padx=5)
         ttk.Button(filter_action_frame, text="Limpiar Filtros", command=self._clear_filters).pack(side=tk.LEFT, padx=5)
 
@@ -148,6 +155,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
         # Cabeceras iniciales - Updated for new display
         self.analysis_tree.heading("Nombre Análisis", text="Nombre Análisis")
+        self.analysis_tree.heading("Cálculo", text="Cálculo") # Added Cálculo
         self.analysis_tree.heading("Variable Analizada", text="Variable Analizada")
         self.analysis_tree.heading("Grupos Comparados", text="Grupos Comparados")
         self.analysis_tree.heading("Valores Clave", text="Resultado Test")
@@ -155,11 +163,12 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
 
         # Ancho columnas (ajustar según necesidad) - Updated for new display
-        self.analysis_tree.column("Nombre Análisis", width=200, anchor=tk.W)
-        self.analysis_tree.column("Variable Analizada", width=250, anchor=tk.W)
-        self.analysis_tree.column("Grupos Comparados", width=300, anchor=tk.W)
-        self.analysis_tree.column("Valores Clave", width=150, anchor=tk.W)
-        self.analysis_tree.column("Fecha Creación/Modif.", width=150, anchor=tk.CENTER)
+        self.analysis_tree.column("Nombre Análisis", width=180, anchor=tk.W)
+        self.analysis_tree.column("Cálculo", width=80, anchor=tk.W) # Added Cálculo
+        self.analysis_tree.column("Variable Analizada", width=220, anchor=tk.W)
+        self.analysis_tree.column("Grupos Comparados", width=250, anchor=tk.W)
+        self.analysis_tree.column("Valores Clave", width=120, anchor=tk.W)
+        self.analysis_tree.column("Fecha Creación/Modif.", width=130, anchor=tk.CENTER)
 
         # Scrollbars
         vsb = ttk.Scrollbar(tree_frame, orient="vertical",
@@ -278,6 +287,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
     def _apply_filters_and_search(self):
         search_term = self.search_term_var.get().lower()
+        selected_calc_filter = self.filter_calc_var.get() # Get Cálculo filter
         selected_variable_filter = self.filter_variable_var.get()
         filter_mode = self.filter_vi_count_var.get()
         
@@ -322,7 +332,16 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
             if not variable_match:
                 continue
 
-            # 3. Apply VI filters
+            # 3. Apply Cálculo filter
+            calc_match = True
+            if selected_calc_filter != "Todos":
+                if config.get('calculation', '') != selected_calc_filter:
+                    calc_match = False
+            
+            if not calc_match:
+                continue
+
+            # 4. Apply VI filters
             matches_filters = True
             if filter_mode != "No filtrar":
                 analysis_config_groups = config.get('groups', []) # List of group keys like "VI1=DescA;VI2=DescB"
@@ -342,6 +361,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
     def _clear_filters(self):
         self.search_term_var.set("")
+        self.filter_calc_var.set("Todos") # Reset Cálculo filter
         self.filter_variable_var.set("Todos")
         self.filter_vi_count_var.set("No filtrar")
         self._on_filter_vi_count_change()
@@ -481,7 +501,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                 grupos_comparados_str = " vs ".join(formatted_group_display_list)
 
                 # Values for the new column order
-                values = (analysis_name, col_full, grupos_comparados_str,
+                values = (analysis_name, calc, col_full, grupos_comparados_str, # Added calc
                           valores_clave_str, date_str)
                 self.analysis_tree.insert("", tk.END, text=analysis_name, values=values)
         
@@ -504,6 +524,14 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
             if info.get('config', {}).get('column')
         )))
         self.filter_variable_combo['values'] = ["Todos"] + variables
+
+        # Populate Cálculo filter
+        calcs = sorted(list(set(
+            info.get('config', {}).get('calculation', '')
+            for info in self.all_analyses_data
+            if info.get('config', {}).get('calculation')
+        )))
+        self.filter_calc_combo['values'] = ["Todos"] + calcs
         
         self._apply_filters_and_search()
 
