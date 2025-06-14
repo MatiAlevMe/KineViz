@@ -200,7 +200,7 @@ Si validación falla, se loguean errores específicos y se devuelve un error gen
 15. [Hecho] Ajuste UI en Diálogo de Estudio.
 15.1 [Hecho] `StudyDialog` UI: Ajustado el espaciado vertical de los checkboxes "¿Multiple?" y "¿Obligatorio?" para que estén más cerca de los descriptores. (Refinado para igualar espaciado inter-descriptor).
 
-## [EnProgreso] Fase 4: Análisis Continuo (SPM)
+## [Hecho] Fase 4: Análisis Continuo (SPM)
 1. [Hecho] Diseño y Prototipado de UI para Análisis Continuo.
 1.1 [Hecho] Botón en `StudyView`: Añadir botón "Análisis Continuo" en la vista de estudio, junto al de "Análisis Discreto".
 1.2 [Hecho] Crear `ContinuousAnalysisConfigDialog` (o similar): Creado diálogo base para configurar el análisis continuo.
@@ -234,7 +234,7 @@ Recibir los datos normalizados y agrupados.
 Preparar los datos en el formato requerido por `spm1d`.
 Ejecutar tests básicos de `spm1d` (`ttest2`, `anova1`), realizar inferencia estadística y loguear resultados.
 3.3 [Hecho] Almacenamiento de Resultados SPM: Guardar los resultados del análisis (curva SPM, umbral crítico, grados de libertad, clusters significativos con p-valores) en formato JSON.
-4. [En Progreso] Generación de Gráficos y Tablas para Análisis Continuo.
+4. [Hecho] Generación de Gráficos y Tablas para Análisis Continuo.
 4.1 [Hecho] `charting.py` - Nuevas Funciones para Gráficos SPM:
     - [Hecho] Función `create_spm_results_plot` para generar gráfico estático (PNG) con:
         - Panel superior: Curvas promedio por grupo (con opciones de visualización EEM, DE, IC) vs. tiempo normalizado.
@@ -257,12 +257,17 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
 2.1 [Pendiente] Añadir tooltips que explique el formato de cada ventana relevante:
 Editar estudio, crear estudio, agregar archivos, crear analisis discreto, crear analisis continuo.
 3. [Pendiente] Optimización del Sistema.
-3.1 [Pendiente] Decidir si mantener todas las tablas del analisis discreto o solamente las tablas .xlsx para ahorrar espacio.
+3.1 [Hecho] Decidir si mantener todas las tablas del analisis discreto o solamente las tablas .xlsx para ahorrar espacio.
 3.2 [Pendiente] Decidir formato final y filtrado de las ventanas de tablas de datos como:
 Ventana de estudio, ventana de estudio especifico, ventana de tablas de analisis discreto, analisis discreto, analisis continuo
+4. [Pendiente] Documentación
+4.1 [Pendiente] Refactorizar los manuales de usuario de la siguiente manera:
+4.1.1 [Pendiente] Unir todos los manuales en el manual principal con distintas secciones, esto es primero una descripción general del software, los objetivos, algunos flujos de trabajo u casos de uso del software que se podrían realizar, y una sección para cada parte importante como crear nuevo estudio, editar, agregar archivos, todo lo referente a la ventana principal, a la ventana de estudios, a la ventana de analisis continuo, a la ventana de analisis discreto y los distintos archivos resultantes, los formatos, etc. 
+4.1.2 [Pendiente] Agregar referencias dentro del mismo manual que diga "Vaya a la sección X" o similares para referirse a que sección ir del manual para alguna información importante relevante.
+4.2 [Pendiente] Eliminar todos los botones que hagan referencia a manuales antiguos que no sean el manual principal.
 
 ## [Pendiente] Fase 6: Cambios Opcionales.
-1. [Pendiente] (Cambio Manual) Cambiar terminos de:
+1. [Hecho] (Cambio Manual) Cambiar terminos de:
 "paciente" a "participante", "Paciente" a "Participante"
 "pacientes" a "participantes", "Pacientes" a "Participantes"
 "sujeto de prueba" a "participante", "Sujetos de Prueba" a "Participantes"
@@ -291,31 +296,27 @@ Con un botón de chincheta y se mantengan fijos sobre los demas estudios.
 Para que el usuario tenga la opción de escribir algún detalle que estime conveniente sobre el estudio especifico.
 9. [Pendiente] Opciones de Accesibilidad en la Configuración del Software:
 Como aumentar el tamaño de las letras, y cambiar el tema de blanco a oscuro.
-10. [Pendiente] Mejoras en la UI
+10. [Omitido] Mejoras en la UI
 
 ## [Pendiente] Fase 7: Pruebas, Documentación y Despliegue
-1. [Pendiente] Análisis Discreto
-1.1 [Pendiente] Corrección de Errores: Revisar y corregir errores conocidos (ej: formato cabeceras CSV, error generación tablas discretas, inconsistencia nombres archivo análisis individual).
-1.2 [Pendiente] Integración y Pruebas: Integrar y probar toda la funcionalidad de análisis discreto, incluyendo análisis de efectos principales.
-2. [Pendiente] Análisis Continuo 
-2.1 [Pendiente] Pruebas Unitarias: Para la lógica de normalización, interacción con `spm1d`, y generación de gráficos/tablas.
-2.2 [Pendiente] Pruebas de Integración: Probar el flujo completo desde la configuración en la UI hasta la visualización y gestión de los resultados del análisis continuo.
-3. [Pendiente] Documentación.
-3.1 [Pendiente] Refactorizar los manuales de usuario de la siguiente manera:
-3.1.1 [Pendiente] Unir todos los manuales en el manual principal con distintas secciones, esto es primero una descripción general del software, los objetivos, algunos flujos de trabajo u casos de uso del software que se podrían realizar, y una sección para cada parte importante como crear nuevo estudio, editar, agregar archivos, todo lo referente a la ventana principal, a la ventana de estudios, a la ventana de analisis continuo, a la ventana de analisis discreto y los distintos archivos resultantes, los formatos, etc. 
-3.1.2 [Pendiente] Agregar referencias dentro del mismo manual que diga "Vaya a la sección X" o similares para referirse a que sección ir del manual para alguna información importante relevante.
-3.2 [Pendiente] Eliminar todos los botones que hagan referencia a manuales antiguos que no sean el manual principal.
-3.3 [Pendiente] (Cambio Manual) Modificar Tabla de Modelo de Datos:
+1. [Omitido] Análisis Discreto
+1.1 [Omitido] Corrección de Errores: Revisar y corregir errores conocidos (ej: formato cabeceras CSV, error generación tablas discretas, inconsistencia nombres archivo análisis individual).
+1.2 [Omitido] Integración y Pruebas: Integrar y probar toda la funcionalidad de análisis discreto, incluyendo análisis de efectos principales.
+2. [Omitido] Análisis Continuo 
+2.1 [Omititdo] Pruebas Unitarias: Para la lógica de normalización, interacción con `spm1d`, y generación de gráficos/tablas.
+2.2 [Omititdo] Pruebas de Integración: Probar el flujo completo desde la configuración en la UI hasta la visualización y gestión de los resultados del análisis continuo.
+3. [Pendiente] Documentación (Manual).
+3.1 [Pendiente] (Cambio Manual) Modificar Tabla de Modelo de Datos:
 Modificar terminología de Frecuencia a Tipo de Dato y Pruebas (POST/PRE)
-3.4 [Pendiente] (Cambio Manual) Modificar el Abstract:
+3.2 [Pendiente] (Cambio Manual) Modificar el Abstract:
 Sugiero mejorar el abstract del proyecto para sea más claro en lo que hace Kineviz y en que tipos de análisis se enfoca
-3.5 [Pendiente] (Cambio Manual) Revisión Final de ortografía del informe con V. D.
+3.3 [Pendiente] (Cambio Manual) Revisión Final de ortografía del informe con V. D.
 También agregar imagenes finales del software funcionando
-3.6 [Pendiente] (Cambio Manual) Revisión Final de ortografía de la presentación con V. D.
+3.4 [Pendiente] (Cambio Manual) Revisión Final de ortografía de la presentación con V. D.
 Agregar el DEMO y optimizar los tiempos + añadir los ultimos cambios
-3.7 [Pendiente] (Cambio Manual) Limpiar archivos como kineviz.spec, kineviz/docs/recurso, logs de la repo final
-1. [Pendiente] (Cambio Manual) Creación de Demo en Video del Uso del Software con V. D.
-2. [Pendiente] Empaquetado y Distribución con Paquetes Distribuibles.
+3.5 [Pendiente] (Cambio Manual) Limpiar archivos como kineviz.spec, kineviz/docs/recurso, logs de la repo final
+4. [Pendiente] (Cambio Manual) Creación de Demo en Video del Uso del Software con V. D.
+5. [Pendiente] Empaquetado y Distribución con Paquetes Distribuibles.
 5.1 [Pendiente] Configurar PyInstaller: Creado y refinando `kineviz.spec` para definir el proceso de build (corrigiendo errores de hidden imports, backends, etc.).
 5.2 [Pendiente] Generar Build Windows: Ejecutar PyInstaller en Windows para crear el paquete.
 5.3 [Pendiente] Generar Build macOS: Ejecutando PyInstaller en macOS para crear el paquete (`.app` bundle).
