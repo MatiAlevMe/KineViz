@@ -104,66 +104,78 @@ class DiscreteAnalysisView(ttk.Frame):
         # --- Filtros y Búsqueda ---
         filter_frame = ttk.Frame(self)
         filter_frame.pack(fill=tk.X, pady=(5, 5))
-        filter_frame.columnconfigure(1, weight=1) # Allow search entry to expand
+        # Configure filter_frame to use grid
+        filter_frame.columnconfigure(1, weight=1) # Allow search entry/combos to expand
 
-        # Row 0 for Search and main filters
+        # Row 0: Search and main non-VI filters (Tipo de Dato, Cálculo)
         top_filter_row = ttk.Frame(filter_frame)
-        top_filter_row.pack(fill=tk.X, pady=(0,5))
+        top_filter_row.grid(row=0, column=0, columnspan=4, sticky="ew", pady=(0,5))
 
         ttk.Label(top_filter_row, text="Buscar:").pack(side=tk.LEFT, padx=(0, 5))
-        search_entry = ttk.Entry(top_filter_row, textvariable=self.search_var, width=30)
+        search_entry = ttk.Entry(top_filter_row, textvariable=self.search_var, width=25)
         search_entry.pack(side=tk.LEFT, padx=5)
-        search_entry.bind("<Return>", lambda e: self.apply_filters()) # Bind to apply_filters
+        search_entry.bind("<Return>", lambda e: self.apply_filters())
 
-        ttk.Button(top_filter_row, text="Buscar/Aplicar", command=self.apply_filters).pack(side=tk.LEFT, padx=5)
-
+        # Re-add Tipo de Dato filter
+        ttk.Label(top_filter_row, text="Tipo de Dato:").pack(side=tk.LEFT, padx=(10, 5))
+        self.type_combo = ttk.Combobox(top_filter_row, textvariable=self.filter_type_var, state="readonly", width=12)
+        self.type_combo.pack(side=tk.LEFT, padx=5)
+        self.type_combo.bind("<<ComboboxSelected>>", self.apply_filters)
+        
         ttk.Label(top_filter_row, text="Cálculo:").pack(side=tk.LEFT, padx=(10, 5))
         self.calc_filter_combo = ttk.Combobox(
             top_filter_row, textvariable=self.calc_filter_var,
             values=["Todos", "Maximo", "Minimo", "Rango"],
             state="readonly", width=10
         )
-        self.calc_filter_combo.set("Todos")
+        self.calc_filter_combo.set("Todos") # Default value
         self.calc_filter_combo.pack(side=tk.LEFT, padx=5)
         self.calc_filter_combo.bind("<<ComboboxSelected>>", self.apply_filters)
-        # Format filter removed
 
-        # Row 1 for VI filters
-        vi_filter_row = ttk.Frame(filter_frame)
-        vi_filter_row.pack(fill=tk.X, pady=(5,0))
+        # Row 1: VI Filter Controls (Label, VI count combo, Apply/Clear buttons)
+        vi_controls_row = ttk.Frame(filter_frame)
+        vi_controls_row.grid(row=1, column=0, columnspan=4, sticky="ew", pady=(5,0))
 
-        ttk.Label(vi_filter_row, text="Filtrar por VIs:").pack(side=tk.LEFT, padx=(0,5))
-        self.filter_vi_count_combo = ttk.Combobox(vi_filter_row, textvariable=self.filter_vi_count_var,
+        ttk.Label(vi_controls_row, text="Filtrar por VIs:").pack(side=tk.LEFT, padx=(0,5))
+        self.filter_vi_count_combo = ttk.Combobox(vi_controls_row, textvariable=self.filter_vi_count_var,
                                                   values=["No filtrar", "1 VI", "2 VIs"], state="readonly", width=12)
         self.filter_vi_count_combo.pack(side=tk.LEFT, padx=(0,10))
         self.filter_vi_count_combo.bind("<<ComboboxSelected>>", self._on_filter_vi_count_change)
-
-        # VI 1 Filter Section
-        self.filter_vi1_frame = ttk.Frame(vi_filter_row)
-        self.filter_vi1_frame.pack(side=tk.LEFT, padx=(5,0), fill=tk.X, expand=False)
-        ttk.Label(self.filter_vi1_frame, text="VI 1:").pack(side=tk.LEFT, padx=(0,2))
-        self.filter_vi1_name_combo = ttk.Combobox(self.filter_vi1_frame, textvariable=self.filter_vi1_name_var, state="readonly", width=15)
-        self.filter_vi1_name_combo.pack(side=tk.LEFT, padx=(0,5))
-        self.filter_vi1_name_combo.bind("<<ComboboxSelected>>", lambda e: self._update_filter_descriptor_combobox(1))
-        ttk.Label(self.filter_vi1_frame, text="Sub-valor:").pack(side=tk.LEFT, padx=(5,2))
-        self.filter_vi1_desc_combo = ttk.Combobox(self.filter_vi1_frame, textvariable=self.filter_vi1_desc_var, state="readonly", width=15)
-        self.filter_vi1_desc_combo.pack(side=tk.LEFT, padx=(0,5))
-        self.filter_vi1_frame.pack_forget() # Initially hidden
-
-        # VI 2 Filter Section
-        self.filter_vi2_frame = ttk.Frame(vi_filter_row)
-        self.filter_vi2_frame.pack(side=tk.LEFT, padx=(5,0), fill=tk.X, expand=False)
-        ttk.Label(self.filter_vi2_frame, text="VI 2:").pack(side=tk.LEFT, padx=(0,2))
-        self.filter_vi2_name_combo = ttk.Combobox(self.filter_vi2_frame, textvariable=self.filter_vi2_name_var, state="readonly", width=15)
-        self.filter_vi2_name_combo.pack(side=tk.LEFT, padx=(0,5))
-        self.filter_vi2_name_combo.bind("<<ComboboxSelected>>", lambda e: self._update_filter_descriptor_combobox(2))
-        ttk.Label(self.filter_vi2_frame, text="Sub-valor:").pack(side=tk.LEFT, padx=(5,2))
-        self.filter_vi2_desc_combo = ttk.Combobox(self.filter_vi2_frame, textvariable=self.filter_vi2_desc_var, state="readonly", width=15)
-        self.filter_vi2_desc_combo.pack(side=tk.LEFT, padx=(0,5))
-        self.filter_vi2_frame.pack_forget() # Initially hidden
         
-        ttk.Button(top_filter_row, text="Limpiar Filtros", command=self.clear_filters).pack(side=tk.LEFT, padx=10)
+        # Spacer to push buttons to the right
+        ttk.Frame(vi_controls_row).pack(side=tk.LEFT, expand=True, fill=tk.X) 
 
+        ttk.Button(vi_controls_row, text="Aplicar Todos los Filtros", command=self.apply_filters).pack(side=tk.LEFT, padx=5)
+        ttk.Button(vi_controls_row, text="Limpiar Todos los Filtros", command=self.clear_filters).pack(side=tk.LEFT, padx=5)
+
+
+        # Row 2: VI 1 Filter Section (managed by grid_remove/grid)
+        self.filter_vi1_frame = ttk.Frame(filter_frame)
+        self.filter_vi1_frame.grid(row=2, column=0, columnspan=4, sticky="ew", padx=5, pady=(5,0))
+        # self.filter_vi1_frame.columnconfigure(1, weight=1) # Optional: if combos need to expand more
+        # self.filter_vi1_frame.columnconfigure(3, weight=1)
+        ttk.Label(self.filter_vi1_frame, text="VI 1:").grid(row=0, column=0, padx=(0,2), pady=2, sticky="w")
+        self.filter_vi1_name_combo = ttk.Combobox(self.filter_vi1_frame, textvariable=self.filter_vi1_name_var, state="readonly", width=15)
+        self.filter_vi1_name_combo.grid(row=0, column=1, padx=(0,5), pady=2, sticky="ew")
+        self.filter_vi1_name_combo.bind("<<ComboboxSelected>>", lambda e: self._update_filter_descriptor_combobox(1))
+        ttk.Label(self.filter_vi1_frame, text="Sub-valor:").grid(row=0, column=2, padx=(5,2), pady=2, sticky="w")
+        self.filter_vi1_desc_combo = ttk.Combobox(self.filter_vi1_frame, textvariable=self.filter_vi1_desc_var, state="readonly", width=15)
+        self.filter_vi1_desc_combo.grid(row=0, column=3, padx=(0,5), pady=2, sticky="ew")
+        self.filter_vi1_frame.grid_remove() # Initially hidden
+
+        # Row 3: VI 2 Filter Section (managed by grid_remove/grid)
+        self.filter_vi2_frame = ttk.Frame(filter_frame)
+        self.filter_vi2_frame.grid(row=3, column=0, columnspan=4, sticky="ew", padx=5, pady=(5,0))
+        # self.filter_vi2_frame.columnconfigure(1, weight=1)
+        # self.filter_vi2_frame.columnconfigure(3, weight=1)
+        ttk.Label(self.filter_vi2_frame, text="VI 2:").grid(row=0, column=0, padx=(0,2), pady=2, sticky="w")
+        self.filter_vi2_name_combo = ttk.Combobox(self.filter_vi2_frame, textvariable=self.filter_vi2_name_var, state="readonly", width=15)
+        self.filter_vi2_name_combo.grid(row=0, column=1, padx=(0,5), pady=2, sticky="ew")
+        self.filter_vi2_name_combo.bind("<<ComboboxSelected>>", lambda e: self._update_filter_descriptor_combobox(2))
+        ttk.Label(self.filter_vi2_frame, text="Sub-valor:").grid(row=0, column=2, padx=(5,2), pady=2, sticky="w")
+        self.filter_vi2_desc_combo = ttk.Combobox(self.filter_vi2_frame, textvariable=self.filter_vi2_desc_var, state="readonly", width=15)
+        self.filter_vi2_desc_combo.grid(row=0, column=3, padx=(0,5), pady=2, sticky="ew")
+        self.filter_vi2_frame.grid_remove() # Initially hidden
 
         # --- Lista de Tablas Generadas (Treeview) ---
         list_frame = ttk.LabelFrame(self, text="Tablas Generadas (.xlsx)") # Updated title
@@ -518,6 +530,7 @@ class DiscreteAnalysisView(ttk.Frame):
         """Limpia los filtros y la búsqueda, y recarga la tabla."""
         self.search_var.set("")
         self.calc_filter_var.set("Todos")
+        self.filter_type_var.set("Todos") # Reset Tipo de Dato filter
         # format_filter_var removed
         self._clear_vi_filters() # Clear VI filters as well
         # self.current_page = 1 # apply_filters will reset page
@@ -619,14 +632,14 @@ class DiscreteAnalysisView(ttk.Frame):
         self._update_filter_descriptor_combobox(2)
 
         if count_mode == "1 VI":
-            self.filter_vi1_frame.pack(side=tk.LEFT, padx=(5,0), fill=tk.X, expand=False)
-            self.filter_vi2_frame.pack_forget()
+            self.filter_vi1_frame.grid() # Use grid to show
+            self.filter_vi2_frame.grid_remove()
         elif count_mode == "2 VIs":
-            self.filter_vi1_frame.pack(side=tk.LEFT, padx=(5,0), fill=tk.X, expand=False)
-            self.filter_vi2_frame.pack(side=tk.LEFT, padx=(5,0), fill=tk.X, expand=False)
+            self.filter_vi1_frame.grid()
+            self.filter_vi2_frame.grid()
         else: # "No filtrar"
-            self.filter_vi1_frame.pack_forget()
-            self.filter_vi2_frame.pack_forget()
+            self.filter_vi1_frame.grid_remove()
+            self.filter_vi2_frame.grid_remove()
         self.apply_filters() # Apply filters when VI count mode changes
 
     def _get_descriptor_original_value(self, display_name: str) -> str:
