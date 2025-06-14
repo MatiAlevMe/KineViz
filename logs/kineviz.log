@@ -40576,3 +40576,4 @@ Traceback (most recent call last):
   File "/Users/arakito/.pyenv/versions/aider/lib/python3.12/site-packages/plotly/basedatatypes.py", line 2339, in _validate_get_grid_ref
     raise Exception(
 Exception: In order to reference traces by row and column, you must first use plotly.tools.make_subplots to create the figure with a subplot grid.
+2025-06-14 04:12:35,907 - WARNING - [kineviz.ui.dialogs.continuous_analysis_config_dialog] - Grupo duplicado 'Edad: Joven' detectado, se ignorará en la lista final de claves.
