@@ -356,6 +356,21 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                                 display_value = "\n".join(group_display_parts) if group_display_parts else "N/A"
                             elif raw_value is None:
                                 display_value = "No especificado"
+                            elif key == "groups": # Handle 'groups' specifically for better display
+                                formatted_group_strings = []
+                                if isinstance(raw_value, list):
+                                    for group_key_item in raw_value: # e.g., "Edad=Adulto" or "VI1=DescA;VI2=DescB"
+                                        parts_with_aliases = []
+                                        # Split by ';' for combined keys, or handle single key
+                                        for part in group_key_item.split(';'):
+                                            try:
+                                                vi_name, descriptor = part.split('=', 1)
+                                                alias = aliases.get(descriptor, descriptor)
+                                                parts_with_aliases.append(f"{vi_name}: {alias}")
+                                            except ValueError:
+                                                parts_with_aliases.append(part) # Fallback
+                                        formatted_group_strings.append(" & ".join(parts_with_aliases))
+                                display_value = ", ".join(formatted_group_strings) if formatted_group_strings else "N/A"
                             else:
                                 display_value = str(raw_value)
                             config_tree.insert("", tk.END, values=(translated_key, display_value))
@@ -376,9 +391,7 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                                 display_value = str(value)
                                 config_tree.insert("", tk.END, values=(translated_key, display_value))
                     
-                    # Botón Cerrar
-                    close_button = ttk.Button(config_window, text="Cerrar", command=config_window.destroy)
-                    close_button.pack(pady=(5,10))
+                    # El botón Cerrar personalizado se elimina. El botón (X) de la ventana funcionará.
 
                 except Exception as e:
                     messagebox.showerror("Error", f"No se pudo leer o mostrar el archivo de configuración:\n{e}", parent=self)
