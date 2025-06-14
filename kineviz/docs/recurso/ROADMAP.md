@@ -181,9 +181,7 @@ Si validación falla, se loguean errores específicos y se devuelve un error gen
 15.1 [Hecho] `StudyDialog` UI: Ajustado el espaciado vertical de los checkboxes "¿Multiple?" y "¿Obligatorio?" para que estén más cerca de los descriptores. (Refinado para igualar espaciado inter-descriptor).
 
 ## [EnProgreso] Fase 4: Análisis Continuo (SPM)
-1. [Hecho] Gestor de Análisis Continuo Modal:
-   - `ContinuousAnalysisManagerDialog` se mantiene modal (usa `grab_set()`) para asegurar un flujo de trabajo simplificado y prevenir conflictos de estado con la ventana principal.
-2. [Pendiente] Diseño y Prototipado de UI para Análisis Continuo.
+1. [Pendiente] Diseño y Prototipado de UI para Análisis Continuo.
 1.1 [Hecho] Botón en `StudyView`: Añadir botón "Análisis Continuo" en la vista de estudio, junto al de "Análisis Discreto".
 1.2 [Hecho] Crear `ContinuousAnalysisConfigDialog` (o similar): Creado diálogo base para configurar el análisis continuo.
 Selección de Tipo de datos (ej: Cinemática, Cinética). Solo permite Cinemática inicialmente.
