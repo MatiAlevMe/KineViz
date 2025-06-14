@@ -52,6 +52,8 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         # Variable para el nombre del análisis (reutilizada)
         self.analysis_name_var = tk.StringVar()
 
+        self.result = None # Initialize result attribute
+
         self.create_widgets()
         should_continue_init = self.load_initial_data() # Cargará VIs, alias, frecuencias
         
@@ -723,15 +725,25 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             self.update_idletasks()
 
             logger.info(f"Llamando a perform_individual_analysis con config: {config}") # LOG ANTES
-            result = self.analysis_service.perform_individual_analysis(
-                self.study_id, config
+            # The result from perform_individual_analysis is used for the popup later
+            # but the config itself is what the calling dialog needs.
+            self.result = config # Set the result attribute
+            
+            # Call the service to perform the analysis
+            analysis_service_result = self.analysis_service.perform_individual_analysis(
+                self.study_id, config # Pass the original config
             )
             logger.info("Llamada a perform_individual_analysis completada.") # LOG DESPUÉS
-            messagebox.showinfo(
-                "Análisis Generado",
-                f"El análisis '{analysis_name}' se generó correctamente.\n"
-                f"Gráfico guardado en: {result['plot_path']}",
-                parent=self.parent)  # Mostrar sobre el gestor
+            
+            # The messagebox and plot opening logic is now handled by IndividualAnalysisManagerDialog
+            # So, we don't show a messagebox here directly.
+            # We just need to ensure self.result is set and then destroy.
+            
+            # messagebox.showinfo(
+            #     "Análisis Generado",
+            #     f"El análisis '{analysis_name}' se generó correctamente.\n"
+            #     f"Gráfico guardado en: {analysis_service_result['plot_path']}",
+            #     parent=self.parent)
             self.destroy()  # Cerrar diálogo de configuración
 
         except (ValueError, FileNotFoundError) as e:
