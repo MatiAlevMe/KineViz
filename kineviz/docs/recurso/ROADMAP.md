@@ -193,8 +193,7 @@ Opciones de Visualización y Anotación: Permitir al usuario configurar cómo se
     - [Hecho] Proveer opciones para cada análisis: ver gráfico SPM (PNG), ver configuración (JSON), abrir carpeta de resultados, eliminar análisis.
     - [Hecho] Botón para lanzar `ContinuousAnalysisConfigDialog` para crear nuevos análisis.
     - [Pendiente] Mostrar filtros y opciones de ordenación para la lista de análisis.
-    - [Pendiente] Opción para ver tabla de datos normalizados/resultados SPM (si aplica).
-2. [Hecho] Implementación de Normalización de Datos Temporales.
+1. [Hecho] Implementación de Normalización de Datos Temporales.
 2.1 [Hecho] Lógica de Normalización Temporal: Implementar una función (posiblemente en `processors.py` o un nuevo módulo) para normalizar la duración de las secuencias de datos a 101 puntos (0-100%).
 Esto se aplicará a la variable seleccionada para cada archivo/sujeto/intento.
 Investigar y aplicar métodos de interpolación adecuados (ej: splines, interpolación lineal).
@@ -203,7 +202,7 @@ Identificar los archivos relevantes del estudio según los tipos de datos y sub-
 Leer la columna de datos de la variable de interés de cada archivo.
 Aplicar la normalización temporal.
 2.3 [Hecho] Estructura de Datos Normalizados: `AnalysisService._get_normalized_data_for_groups` devuelve un diccionario de listas de arrays NumPy (101 puntos), adecuado para SPM.
-3. [Hecho] Lógica de Análisis Estadístico Continuo (usando `spm1d`).
+1. [Hecho] Lógica de Análisis Estadístico Continuo (usando `spm1d`).
 3.1 [Hecho] Integración de la Librería `spm1d`.
 3.2 [Hecho] `AnalysisService.perform_continuous_analysis`: Método expandido para:
 Orquestar la preparación de datos (llamando a `_get_normalized_data_for_groups`).
@@ -211,7 +210,7 @@ Recibir los datos normalizados y agrupados.
 Preparar los datos en el formato requerido por `spm1d`.
 Ejecutar tests básicos de `spm1d` (`ttest2`, `anova1`), realizar inferencia estadística y loguear resultados.
 3.3 [Hecho] Almacenamiento de Resultados SPM: Guardar los resultados del análisis (curva SPM, umbral crítico, grados de libertad, clusters significativos con p-valores) en formato JSON.
-4. [Hecho] Generación de Gráficos y Tablas para Análisis Continuo.
+1. [Hecho] Generación de Gráficos y Tablas para Análisis Continuo.
 4.1 [Hecho] `charting.py` - Nuevas Funciones para Gráficos SPM:
     - [Hecho] Función `create_spm_results_plot` para generar gráfico estático (PNG) con:
         - Panel superior: Curvas promedio por grupo (con opciones de visualización EEM, DE, IC) vs. tiempo normalizado.
@@ -220,7 +219,7 @@ Ejecutar tests básicos de `spm1d` (`ttest2`, `anova1`), realizar inferencia est
     - [Pendiente] Generar gráficos interactivos (HTML con Plotly, si es factible).
 4.2 [Pendiente] Nomenclatura de Creación de Carpeta de Guardado de Archivos:
 Guardar los archivos del analisis en una subcarpeta específica dentro de la carpeta del estudio (ej: `[NOMBRE_ESTUDIO]/Analisis Continuo/[NOMBRE_COMPLETO_MUSCULO_MAS_SU_DIMENSION_PERO_SIN _LA_UNIDAD_DE_MEDIDA] (ie. "Estudio de Adultos Mayores/Analisis Continuo/LAnkleMoment X")`).
-5. [Pendiente] Gestión de Análisis Continuos Guardados en `AnalysisService`.
+1. [Pendiente] Gestión de Análisis Continuos Guardados en `AnalysisService`.
 5.1 [Pendiente] Nuevos Métodos en `AnalysisService`:
 `list_continuous_analyses(study_id)`: Lista los análisis continuos guardados.
 `delete_continuous_analysis(study_id, analysis_name_or_id)`: Elimina un análisis continuo.
