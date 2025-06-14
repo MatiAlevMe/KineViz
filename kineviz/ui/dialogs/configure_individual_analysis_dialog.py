@@ -664,6 +664,9 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
 
     def update_available_columns(self, event=None):
         """Actualiza la lista de columnas comunes y muestra los siguientes pasos."""
+        # Primero, refrescar las opciones de los combobox de grupo
+        self._refresh_group_combobox_options()
+
         frequency = self.frequency_var.get()
         calculation = self.calculation_var.get()
         selected_group_keys = self.get_selected_group_keys()
