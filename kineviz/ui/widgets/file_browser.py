@@ -61,7 +61,7 @@ class FileBrowser(ttk.Frame):
         table_container.pack(fill=tk.BOTH, expand=True)
 
         # Crear tabla de archivos
-        columns = ('Paciente', 'Nombre', 'Tipo', 'Tipo de Dato', 'Ver', 'Eliminar')
+        columns = ('Participante', 'Nombre', 'Tipo', 'Tipo de Dato', 'Ver', 'Eliminar')
         self.tree = ttk.Treeview(table_container, columns=columns, show='headings')
 
         for col in columns:

@@ -543,7 +543,7 @@ class AnalysisService:
             study_aliases = self.study_service.get_study_aliases(study_id)
             # Mostrar parámetros seleccionados (ya no incluye 'descriptors' directamente)
             param_text = (
-                f"<b>Pacientes:</b> {', '.join(parameters.get('patients', []))}<br/>"
+                f"<b>Participantes:</b> {', '.join(parameters.get('patients', []))}<br/>"
                 f"<b>Tipos de Datos:</b> {', '.join(parameters.get('frequencies', []))}<br/>"
                 # Podríamos añadir VIs/Sub-valores si se seleccionaron explícitamente,
                 # pero por ahora omitimos esa parte ya que el análisis agrupa por todas las combinaciones.
@@ -643,7 +643,7 @@ class AnalysisService:
                                 charting.create_barchart(
                                     data_dict=valid_avg_calc,
                                     title=f"{calc} Promedio - {freq} ({group_display})",
-                                    xlabel="Paciente",
+                                    xlabel="Participante",
                                     ylabel=f"{calc} Promedio",
                                     output_path=barchart_filename
                                 )
@@ -665,7 +665,7 @@ class AnalysisService:
                             # Crear tabla: pacientes (filas) x mediciones (cols)
                             if valid_columns_for_calc:
                                 sorted_columns = sorted(list(valid_columns_for_calc))
-                                table_data = [['Paciente'] + sorted_columns]  # Cabecera
+                                table_data = [['Participante'] + sorted_columns]  # Cabecera
                                 # Iterar en orden de selección
                                 for patient in selected_patients:
                                     if patient in calc_results_by_patient:

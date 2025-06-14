@@ -40489,3 +40489,90 @@ Traceback (most recent call last):
     res = self.tk.call(self._w, "insert", parent, index,
           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 _tkinter.TclError: Item testing 1 already exists
+2025-06-14 02:50:47,070 - ERROR - [kineviz.ui.widgets.charting] - Error creando subplots con Plotly: module 'plotly.graph_objects' has no attribute 'subplots'. Usando figura simple.
+2025-06-14 02:50:47,086 - ERROR - [kineviz.ui.widgets.charting] - Error añadiendo trace para grupo 'Edad: Joven' en gráfico interactivo: In order to reference traces by row and column, you must first use plotly.tools.make_subplots to create the figure with a subplot grid.
+Traceback (most recent call last):
+  File "/Users/arakito/.pyenv/versions/aider/lib/python3.12/site-packages/plotly/basedatatypes.py", line 2337, in _validate_get_grid_ref
+    raise AttributeError("_grid_ref")
+AttributeError: _grid_ref
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/widgets/charting.py", line 460, in create_interactive_spm_results_plot
+    fig.add_trace(go.Scatter(
+  File "/Users/arakito/.pyenv/versions/aider/lib/python3.12/site-packages/plotly/graph_objs/_figure.py", line 912, in add_trace
+    return super(Figure, self).add_trace(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/.pyenv/versions/aider/lib/python3.12/site-packages/plotly/basedatatypes.py", line 2107, in add_trace
+    return self.add_traces(
+           ^^^^^^^^^^^^^^^^
+  File "/Users/arakito/.pyenv/versions/aider/lib/python3.12/site-packages/plotly/graph_objs/_figure.py", line 992, in add_traces
+    return super(Figure, self).add_traces(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/.pyenv/versions/aider/lib/python3.12/site-packages/plotly/basedatatypes.py", line 2237, in add_traces
+    self._set_trace_grid_position(trace, row, col, secondary_y)
+  File "/Users/arakito/.pyenv/versions/aider/lib/python3.12/site-packages/plotly/basedatatypes.py", line 2328, in _set_trace_grid_position
+    grid_ref = self._validate_get_grid_ref()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/.pyenv/versions/aider/lib/python3.12/site-packages/plotly/basedatatypes.py", line 2339, in _validate_get_grid_ref
+    raise Exception(
+Exception: In order to reference traces by row and column, you must first use plotly.tools.make_subplots to create the figure with a subplot grid.
+2025-06-14 02:50:47,092 - ERROR - [kineviz.ui.widgets.charting] - Error añadiendo trace para grupo 'Edad: Adulto' en gráfico interactivo: In order to reference traces by row and column, you must first use plotly.tools.make_subplots to create the figure with a subplot grid.
+Traceback (most recent call last):
+  File "/Users/arakito/.pyenv/versions/aider/lib/python3.12/site-packages/plotly/basedatatypes.py", line 2337, in _validate_get_grid_ref
+    raise AttributeError("_grid_ref")
+AttributeError: _grid_ref
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/widgets/charting.py", line 460, in create_interactive_spm_results_plot
+    fig.add_trace(go.Scatter(
+  File "/Users/arakito/.pyenv/versions/aider/lib/python3.12/site-packages/plotly/graph_objs/_figure.py", line 912, in add_trace
+    return super(Figure, self).add_trace(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/.pyenv/versions/aider/lib/python3.12/site-packages/plotly/basedatatypes.py", line 2107, in add_trace
+    return self.add_traces(
+           ^^^^^^^^^^^^^^^^
+  File "/Users/arakito/.pyenv/versions/aider/lib/python3.12/site-packages/plotly/graph_objs/_figure.py", line 992, in add_traces
+    return super(Figure, self).add_traces(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/.pyenv/versions/aider/lib/python3.12/site-packages/plotly/basedatatypes.py", line 2237, in add_traces
+    self._set_trace_grid_position(trace, row, col, secondary_y)
+  File "/Users/arakito/.pyenv/versions/aider/lib/python3.12/site-packages/plotly/basedatatypes.py", line 2328, in _set_trace_grid_position
+    grid_ref = self._validate_get_grid_ref()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/.pyenv/versions/aider/lib/python3.12/site-packages/plotly/basedatatypes.py", line 2339, in _validate_get_grid_ref
+    raise Exception(
+Exception: In order to reference traces by row and column, you must first use plotly.tools.make_subplots to create the figure with a subplot grid.
+2025-06-14 02:50:47,093 - ERROR - [kineviz.core.services.analysis_service] - Error generando gráfico SPM interactivo: In order to reference traces by row and column, you must first use plotly.tools.make_subplots to create the figure with a subplot grid.
+Traceback (most recent call last):
+  File "/Users/arakito/.pyenv/versions/aider/lib/python3.12/site-packages/plotly/basedatatypes.py", line 2337, in _validate_get_grid_ref
+    raise AttributeError("_grid_ref")
+AttributeError: _grid_ref
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/core/services/analysis_service.py", line 1249, in perform_continuous_analysis
+    charting.create_interactive_spm_results_plot(
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/widgets/charting.py", line 494, in create_interactive_spm_results_plot
+    fig.add_trace(go.Scatter(
+  File "/Users/arakito/.pyenv/versions/aider/lib/python3.12/site-packages/plotly/graph_objs/_figure.py", line 912, in add_trace
+    return super(Figure, self).add_trace(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/.pyenv/versions/aider/lib/python3.12/site-packages/plotly/basedatatypes.py", line 2107, in add_trace
+    return self.add_traces(
+           ^^^^^^^^^^^^^^^^
+  File "/Users/arakito/.pyenv/versions/aider/lib/python3.12/site-packages/plotly/graph_objs/_figure.py", line 992, in add_traces
+    return super(Figure, self).add_traces(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/.pyenv/versions/aider/lib/python3.12/site-packages/plotly/basedatatypes.py", line 2237, in add_traces
+    self._set_trace_grid_position(trace, row, col, secondary_y)
+  File "/Users/arakito/.pyenv/versions/aider/lib/python3.12/site-packages/plotly/basedatatypes.py", line 2328, in _set_trace_grid_position
+    grid_ref = self._validate_get_grid_ref()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/.pyenv/versions/aider/lib/python3.12/site-packages/plotly/basedatatypes.py", line 2339, in _validate_get_grid_ref
+    raise Exception(
+Exception: In order to reference traces by row and column, you must first use plotly.tools.make_subplots to create the figure with a subplot grid.

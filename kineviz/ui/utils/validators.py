@@ -281,9 +281,9 @@ def validate_files_for_vi_rules(
                 non_nulo_descriptors = {d for d in descriptors_used_by_patient_for_vi if d is not None}
                 if len(non_nulo_descriptors) > 1:
                     error_messages.append(
-                        f"Paciente '{patient_id}': Para la VI '{vi_name}' (no permite combinación), "
+                        f"Participante '{patient_id}': Para la VI '{vi_name}' (no permite combinación), "
                         f"se encontraron múltiples sub-valores diferentes: {', '.join(sorted(list(non_nulo_descriptors)))}. "
-                        f"Solo se permite un sub-valor (o 'Nulo') por paciente para esta VI."
+                        f"Solo se permite un sub-valor (o 'Nulo') por participante para esta VI."
                     )
             
             # Rule 2: Mandatory Sub-valor (allows_combination == True AND is_mandatory == True)
@@ -298,9 +298,9 @@ def validate_files_for_vi_rules(
                 missing_descriptors = vi_defined_descriptors - actual_descriptors_present
                 if missing_descriptors:
                     error_messages.append(
-                        f"Paciente '{patient_id}': Para la VI '{vi_name}' (múltiple y obligatoria), "
+                        f"Participante '{patient_id}': Para la VI '{vi_name}' (múltiple y obligatoria), "
                         f"faltan los siguientes sub-valores: {', '.join(sorted(list(missing_descriptors)))}. "
-                        f"Cada paciente debe tener al menos un archivo para cada sub-valor de esta VI."
+                        f"Cada participante debe tener al menos un archivo para cada sub-valor de esta VI."
                     )
     
     if error_messages:
