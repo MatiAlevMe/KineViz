@@ -13,11 +13,14 @@ from kineviz.ui.views.landing_page import LandingPage
 from kineviz.ui.views.study_view import StudyView
 from kineviz.ui.views.main_view import MainView
 from kineviz.ui.dialogs.study_dialog import StudyDialog
-# from kineviz.ui.dialogs.analysis_dialog import AnalysisDialog # Comentado si ya no se usa
+# from kineviz.ui.dialogs.analysis_dialog import AnalysisDialog
 from kineviz.ui.dialogs.config_dialog import ConfigDialog
-from kineviz.ui.dialogs.continuous_analysis_config_dialog import ContinuousAnalysisConfigDialog
+# ContinuousAnalysisConfigDialog is now opened by ContinuousAnalysisManagerDialog
+# from kineviz.ui.dialogs.continuous_analysis_config_dialog import ContinuousAnalysisConfigDialog 
+from kineviz.ui.dialogs.continuous_analysis_manager_dialog import ContinuousAnalysisManagerDialog # Import new manager dialog
 from kineviz.ui.views.discrete_analysis_view import DiscreteAnalysisView
-from kineviz.ui.views.continuous_analysis_view import ContinuousAnalysisView # Importar nueva vista
+# ContinuousAnalysisView will be removed
+# from kineviz.ui.views.continuous_analysis_view import ContinuousAnalysisView 
 # Servicios Core
 from kineviz.core.services.study_service import StudyService
 from kineviz.core.services.file_service import FileService
@@ -125,11 +128,11 @@ class MainWindow:
         self.current_view = DiscreteAnalysisView(self.root, self, self.analysis_service, study_id)
         # El pack/grid se maneja dentro de DiscreteAnalysisView
 
-    def show_continuous_analysis_view(self, study_id: int):
-        """Muestra la vista para gestionar análisis continuos."""
-        self.clear_window()
-        self.current_view = ContinuousAnalysisView(self.root, self, self.analysis_service, study_id)
-        # El pack/grid se maneja dentro de ContinuousAnalysisView
+    def show_continuous_analysis_manager_dialog(self, study_id: int):
+        """Muestra el diálogo para gestionar análisis continuos."""
+        # No limpia la ventana principal, es un diálogo Toplevel
+        ContinuousAnalysisManagerDialog(self.root, self.analysis_service, study_id)
+        # El diálogo es modal y se gestiona a sí mismo.
 
     def show_create_study_dialog(self, study_to_edit=None):
         """
@@ -149,42 +152,6 @@ class MainWindow:
         # En su lugar, o adicionalmente, podríamos tener diálogos más específicos.
         # Por ahora, este método puede quedar como estaba o ser eliminado si AnalysisDialog ya no se usa.
         messagebox.showinfo("Información", "La funcionalidad 'Analizar Estudio' (antigua) ha sido reemplazada por 'Análisis Discreto' y 'Análisis Continuo'.")
-
-
-    def show_continuous_analysis_config_dialog(self, study_id: int):
-        """Muestra el diálogo para configurar un análisis continuo."""
-        dialog = ContinuousAnalysisConfigDialog(self.root, self.analysis_service, study_id)
-        # El diálogo es modal, la ejecución esperará aquí hasta que se cierre.
-        self.root.wait_window(dialog) # Esperar a que el diálogo se cierre
-
-        if dialog.result:
-            logger.info(f"Configuración recibida del diálogo de análisis continuo: {dialog.result}")
-            try:
-                # Llamar al servicio para realizar el análisis
-                analysis_results = self.analysis_service.perform_continuous_analysis(study_id, dialog.result)
-                logger.info(f"Resultado de perform_continuous_analysis: {analysis_results}")
-
-                status = analysis_results.get("status", "error")
-                message = analysis_results.get("message", "Error desconocido durante el análisis.")
-                
-                if "error" in status: # Cubre "error" y "error_saving"
-                    messagebox.showerror("Error de Análisis Continuo", message, parent=self.root)
-                elif status == "partial_success":
-                    messagebox.showwarning("Análisis Continuo Parcial", message, parent=self.root)
-                else: # success
-                    success_msg = f"Análisis continuo '{dialog.result.get('analysis_name')}' completado.\n{message}"
-                    if analysis_results.get("output_dir"):
-                        success_msg += f"\n\nResultados guardados en la carpeta del estudio:\n...{Path(analysis_results.get('output_dir')).relative_to(Path.cwd().parent)}" # Mostrar ruta relativa más corta
-                    messagebox.showinfo("Análisis Continuo Completado", success_msg, parent=self.root)
-                
-                # Aquí podríamos querer refrescar alguna vista si los análisis se listan en la UI.
-                # Por ahora, solo mostramos el mensaje.
-
-            except Exception as e:
-                logger.critical(f"Excepción al llamar perform_continuous_analysis o procesar su resultado: {e}", exc_info=True)
-                messagebox.showerror("Error Crítico", f"Ocurrió un error inesperado al procesar el análisis continuo:\n{e}", parent=self.root)
-        else:
-            logger.info(f"Diálogo de configuración de análisis continuo cancelado o cerrado sin resultado para estudio {study_id}.")
 
 
     def show_config_dialog(self):
