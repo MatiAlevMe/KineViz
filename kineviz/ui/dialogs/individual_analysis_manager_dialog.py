@@ -422,7 +422,43 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         dialog = ConfigureIndividualAnalysisDialog(self, self.analysis_service, self.study_id)
         # Esperar a que el diálogo se cierre y luego refrescar la lista
         self.wait_window(dialog)
-        self.load_analyses()  # Recargar por si se creó uno nuevo
+        
+        if dialog.result: # Check if the configuration dialog was accepted
+            try:
+                # perform_individual_analysis is expected to return a dict with 'plot_path' and 'config_path'
+                analysis_results = self.analysis_service.perform_individual_analysis(self.study_id, dialog.result)
+                
+                plot_path_str = analysis_results.get('plot_path')
+                analysis_name = dialog.result.get('name', 'Análisis sin nombre')
+                
+                success_message = f"Análisis discreto '{analysis_name}' completado y guardado."
+
+                if plot_path_str and Path(plot_path_str).exists():
+                    if messagebox.askyesno("Análisis Completado", 
+                                           f"{success_message}\n\n¿Desea abrir el gráfico generado?", 
+                                           parent=self):
+                        plot_path_obj = Path(plot_path_str)
+                        try:
+                            if sys.platform == "win32": os.startfile(plot_path_obj)
+                            elif sys.platform == "darwin": subprocess.run(["open", plot_path_obj], check=True)
+                            else: subprocess.run(["xdg-open", plot_path_obj], check=True)
+                        except Exception as e_open:
+                            messagebox.showerror("Error al Abrir Gráfico", f"No se pudo abrir el gráfico:\n{e_open}", parent=self)
+                            logger.error(f"Error abriendo gráfico {plot_path_obj}: {e_open}", exc_info=True)
+                else:
+                    messagebox.showinfo("Análisis Completado", success_message, parent=self)
+
+            except FileNotFoundError as fnf_error:
+                logger.error(f"Error al realizar análisis individual (archivo no encontrado): {fnf_error}", exc_info=True)
+                messagebox.showerror("Error de Análisis", f"No se pudo completar el análisis. Archivo requerido no encontrado:\n{fnf_error}", parent=self)
+            except ValueError as val_error:
+                logger.error(f"Error de validación o datos al realizar análisis individual: {val_error}", exc_info=True)
+                messagebox.showerror("Error de Análisis", f"No se pudo completar el análisis. Problema con los datos o configuración:\n{val_error}", parent=self)
+            except Exception as e:
+                logger.critical(f"Error inesperado al realizar análisis individual: {e}", exc_info=True)
+                messagebox.showerror("Error Crítico", f"Ocurrió un error inesperado al realizar el análisis:\n{e}", parent=self)
+        
+        self.load_analyses()  # Recargar por si se creó uno nuevo o para reflejar cualquier estado
 
     def _on_selection_changed(self, event=None):
         """Actualiza el estado de los botones de acción basado en la selección."""
