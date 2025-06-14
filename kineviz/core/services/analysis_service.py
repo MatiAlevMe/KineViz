@@ -1565,20 +1565,10 @@ class AnalysisService:
                 results['errors'].append(f"No se encontraron archivos válidos agrupables por VIs para '{target_frequency}'.")
                 return results
 
-            # 2. Preparar directorio de salida (limpiar si existe)
+            # 2. Preparar directorio de salida
             output_base_dir = (study_path / "Analisis Discreto" / "Tablas" /
                                target_frequency)
-            if output_base_dir.exists():
-                logger.info(f"Limpiando directorio de salida existente: {output_base_dir}")
-                try:
-                    for item in output_base_dir.iterdir():
-                        if item.is_dir():
-                            shutil.rmtree(item)
-                        else:
-                            item.unlink()
-                except OSError as e:
-                    logger.error(f"Error limpiando directorio {output_base_dir}: {e}", exc_info=True)
-                    # Continuar de todos modos, puede que solo fallen algunos archivos
+            # Asegurar que el directorio exista, pero no limpiar su contenido.
             output_base_dir.mkdir(parents=True, exist_ok=True)
 
             # 3. Generar tabla para cada grupo y cálculo
