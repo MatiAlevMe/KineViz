@@ -372,22 +372,22 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         for analysis_info in analyses_to_display:
             name = analysis_info.get('name', 'N/A')
             config = analysis_info.get('config', {})
-                column = config.get('column', 'N/A')
-                
-                group_keys = config.get('groups', [])
-                mode = config.get('grouping_mode')
-                primary_vi = config.get('primary_vi_name')
-                fixed_vi = config.get('fixed_vi_name')
-                fixed_desc_display = config.get('fixed_descriptor_display')
-                
-                group_display_parts = self._format_analysis_groups_for_display(
-                    group_keys, mode, primary_vi, fixed_vi, fixed_desc_display
-                )
-                groups_str = " vs ".join(group_display_parts) if group_display_parts else "N/A"
-                
-                mtime = analysis_info.get('mtime')
-                date_str = datetime.fromtimestamp(mtime).strftime('%Y-%m-%d %H:%M') if mtime else "N/A"
-                self.tree.insert("", tk.END, values=(name, column, groups_str, date_str), iid=name)
+            column = config.get('column', 'N/A')
+            
+            group_keys = config.get('groups', [])
+            mode = config.get('grouping_mode')
+            primary_vi = config.get('primary_vi_name')
+            fixed_vi = config.get('fixed_vi_name')
+            fixed_desc_display = config.get('fixed_descriptor_display')
+            
+            group_display_parts = self._format_analysis_groups_for_display(
+                group_keys, mode, primary_vi, fixed_vi, fixed_desc_display
+            )
+            groups_str = " vs ".join(group_display_parts) if group_display_parts else "N/A"
+            
+            mtime = analysis_info.get('mtime')
+            date_str = datetime.fromtimestamp(mtime).strftime('%Y-%m-%d %H:%M') if mtime else "N/A"
+            self.tree.insert("", tk.END, values=(name, column, groups_str, date_str), iid=name)
         
         self._on_analysis_selected() # Update button states
 
