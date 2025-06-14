@@ -2,7 +2,7 @@
 
 Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicialmente se enfocó en la refactorización de la lógica original a una estructura modular. Luego, el enfoque cambia a mejoras incrementales y la adición de nuevas funcionalidades, mejoras a las funcionalidades actuales u bug-fixes.
 
-## Estrctura de carpetas de refactorización
+## Estrctura de carpetas del Proyecto
 
 ├── __init__.py
 ├── app.py           # Punto de entrada principal
@@ -32,13 +32,21 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 │   ├── views/            # Vistas complejas
 │   │   ├── landing_page.py
 │   │   ├── study_view.py
-│   │   └── analysis_view.py
+│   │   ├── main_view.py # Vista principal de listado de estudios
+│   │   ├── discrete_analysis_view.py # Vista para gestionar tablas de resumen discreto
+│   │   └── analysis_view.py # (Placeholder para futura vista de análisis general o combinado)
 │   │
 │   ├── dialogs/          # Diálogos modales
-│   │   ├── analysis_dialog.py
-│   │   ├── study_dialog.py
-│   │   ├── file_dialog.py
-│   │   └── report_dialog.py
+│   │   ├── study_dialog.py # Para crear/editar estudios y VIs
+│   │   ├── file_dialog.py # Para agregar archivos a un estudio
+│   │   ├── descriptor_alias_dialog.py # Para gestionar alias de descriptores
+│   │   ├── config_dialog.py # Para configurar ajustes de la aplicación
+│   │   ├── configure_individual_analysis_dialog.py # Para configurar un análisis discreto individual
+│   │   ├── individual_analysis_manager_dialog.py # Para gestionar análisis discretos individuales guardados
+│   │   ├── continuous_analysis_config_dialog.py # Para configurar un análisis continuo (SPM)
+│   │   ├── continuous_analysis_manager_dialog.py # Para gestionar análisis continuos (SPM) guardados
+│   │   ├── analysis_dialog.py # (Obsoleto) Diálogo de análisis general anterior
+│   │   └── report_dialog.py # (No implementado/Obsoleto) Para gestión de reportes PDF
 │   │
 │   ├── widgets/          # Componentes reutilizables
 │   │   ├── pagination.py
@@ -89,19 +97,30 @@ Detalle: Modificar la lógica en `kineviz.core.data_processing.file_handlers.lee
 
 ## [Hecho] Fase 2: Análisis Estadístico Discreto y Reportes
 1. [Hecho] Generación de Matrices: Crear tablas por tipo de cálculo y combinación de descriptores (ej: "máximo_cinemática_CMJ_Normal").
-1.1 [Hecho] Servicio `generate_discrete_summary_tables`: Lógica para agrupar archivos por combinación de descriptores, leer stats, crear DataFrames y guardar CSVs/TSVs/SCSVs/XLSX.
+1.1 [Hecho] Servicio `generate_discrete_summary_tables`: Lógica para agrupar archivos por combinación de descriptores, leer stats, crear DataFrames y guardar CSVs internos y XLSX para exportación (eliminada generación de TSV/SCSV).
 1.2 [Hecho] Botón en `StudyView`: Añadir botón "Análisis Discreto".
-1.3 [Hecho] Vista `DiscreteAnalysisView`: Crear vista para listar/mostrar/eliminar tablas generadas, con filtros y paginación.
+1.3 [Hecho] Vista `DiscreteAnalysisView`: Vista para listar/mostrar/eliminar tablas de resumen `.xlsx` generadas. Incluye:
+    - Filtros por Tipo de Dato (frecuencia) y Cálculo.
+    - Filtros por 1 o 2 Variables Independientes (VIs) y sus sub-valores.
+    - Búsqueda por palabra clave en nombre de archivo, cálculo y sub-valores.
+    - Columnas: "Nombre Archivo", "Cálculo", "Sub-valores" (formato "VI: Desc (Alias)"), "Fecha Creación/Modif.".
+    - Paginación y ordenación de columnas.
 2. Identificación de Grupos y Columnas Comunes.
 2.1 [Hecho] `AnalysisService._identify_study_groups`: Identifica grupos únicos por combinación de descriptores.
 2.2 [Hecho] `AnalysisService.get_discrete_analysis_groups`: Expone grupos combinados a la UI.
 2.3 [Hecho] `AnalysisService.get_common_columns_for_groups`: Encuentra columnas comunes en tablas CSV internas para grupos combinados.
 3. [Hecho] Diálogo de Configuración de Análisis Individual.
 3.1 [Hecho] Crear `ConfigureIndividualAnalysisDialog`: UI para seleccionar Frecuencia, Cálculo, Grupos combinados (dinámico), Columna (dinámico), y supuestos (paramétrico/pareado).
-3.2 [Hecho] Integración con VIs: Grupos combinados ahora usan formato "VI: Alias" y se seleccionan correctamente.
-4. [Hecho] Diálogo de Gestión de Análisis Individual.
-4.1 [Hecho] Crear `IndividualAnalysisManagerDialog`: UI para listar, ver (gráfico estático/interactivo), eliminar análisis guardados y abrir carpeta.
-4.2 [Hecho] Botón en `DiscreteAnalysisView`: Añadir botón para abrir el gestor.
+3.2 [Hecho] Integración con VIs: Grupos combinados ahora usan formato "VI: Alias" y se seleccionan correctamente, usando claves parciales para modo 1VI.
+4. [Hecho] Diálogo de Gestión de Análisis Individual (`IndividualAnalysisManagerDialog`).
+4.1 [Hecho] UI para listar, ver (gráfico estático/interactivo), eliminar análisis guardados y abrir carpeta.
+4.2 [Hecho] Implementados filtros y búsqueda:
+    - Búsqueda por palabra clave: En nombre de análisis, cálculo y columna analizada.
+    - Filtro por Variables Independientes (VIs): Permite filtrar por 1 o 2 VIs y sus sub-valores.
+4.3 [Hecho] Columnas de la tabla: "Nombre Análisis", "Variable Analizada", "Grupos Comparados", "Valores Clave", "Fecha Creación/Modif.".
+4.4 [Hecho] Botón "Ver Configuración": Exporta detalles del análisis a un archivo `.txt` (incluyendo "Claves de Archivo Completas Contribuyentes por Grupo Comparado") y lo abre.
+4.5 [Hecho] Popup para abrir gráfico estático después de crear un nuevo análisis.
+4.6 [Hecho] Botón en `DiscreteAnalysisView`: Añadir botón para abrir el gestor.
 5. [Hecho] Generación de Gráfico Boxplot Comparativo.
 5.1 [Hecho] Función `create_comparison_boxplot`: En `charting.py` usando seaborn/matplotlib.
 5.2 [Hecho] `AnalysisService.perform_individual_analysis`: Lógica para leer datos de tablas CSV internas, preparar datos por grupo combinado y llamar a `create_comparison_boxplot`. Guarda gráfico PNG y config.json.
@@ -191,9 +210,12 @@ Opciones de Visualización y Anotación: Permitir al usuario configurar cómo se
 1.3 [En Progreso] Crear `ContinuousAnalysisView` (anteriormente `ContinuousAnalysisResultsView`): Vista en la UI para:
     - [Hecho] Listar los análisis continuos generados (nombre, columna, grupos, fecha).
     - [Hecho] Proveer opciones para cada análisis: ver gráfico SPM (PNG), ver configuración (JSON), abrir carpeta de resultados, eliminar análisis.
-    - [Hecho] Exportar "Ver Configuración" a archivo .txt: La opción "Ver Configuración" ahora genera un archivo de texto plano (`configuracion_detallada.txt`) con los detalles del análisis y lo abre con la aplicación predeterminada del sistema.
+    - [Hecho] Exportar "Ver Configuración" a archivo .txt: La opción "Ver Configuración" ahora genera un archivo de texto plano (`configuracion_detallada.txt`) con los detalles del análisis (incluyendo "Claves de Archivo Completas Contribuyentes por Grupo Comparado") y lo abre con la aplicación predeterminada del sistema.
     - [Hecho] Botón para lanzar `ContinuousAnalysisConfigDialog` para crear nuevos análisis.
-    - [Pendiente] Mostrar filtros y opciones de ordenación para la lista de análisis.
+    - [Hecho] Implementados filtros y búsqueda para la lista de análisis continuos:
+        - Búsqueda por palabra clave: Permite buscar en el nombre del análisis, la variable analizada y los grupos comparados.
+        - Filtro por Variables Independientes (VIs): Permite filtrar análisis basados en la selección de 1 o 2 VIs y sus respectivos sub-valores.
+    - [Pendiente] Opciones de ordenación para la lista de análisis.
 2. [Hecho] Implementación de Normalización de Datos Temporales.
 2.1 [Hecho] Lógica de Normalización Temporal: Implementar una función (posiblemente en `processors.py` o un nuevo módulo) para normalizar la duración de las secuencias de datos a 101 puntos (0-100%).
 Esto se aplicará a la variable seleccionada para cada archivo/sujeto/intento.
@@ -321,7 +343,22 @@ La aplicación sigue una estructura modular para separar responsabilidades:
 `core.services`: Orquesta las operaciones y la lógica de negocio.
 `StudyService`: Gestiona las operaciones CRUD (Crear, Leer, Actualizar, Eliminar) para los estudios. Maneja los metadatos del estudio, la definición de Variables Independientes (VIs), y los alias de los descriptores.
 `FileService`: Administra las operaciones de archivos dentro de los estudios, incluyendo la adición, eliminación, listado y procesamiento de archivos crudos. También extrae parámetros únicos (como frecuencias y descriptores) de los archivos procesados.
-`AnalysisService`: Contiene la lógica para todos los tipos de análisis (discreto, individual, continuo). Esto incluye la agregación de datos, cálculos estadísticos (utilizando `scipy.stats` para discreto y `spm1d` para continuo), generación de reportes en PDF (con `reportlab`) y gráficos (con `matplotlib`, `seaborn`, `plotly`). Implementa métodos como `get_available_frequencies_for_study` y `get_data_columns_for_frequency` para poblar selectores en diálogos de configuración de análisis. Para el análisis continuo, incluye `_get_normalized_data_for_groups` para preparar los datos y `perform_continuous_analysis` para orquestar el análisis SPM.
+`AnalysisService`: Contiene la lógica para todos los tipos de análisis.
+    - Análisis Discreto:
+        - `generate_discrete_summary_tables`: Genera tablas de resumen (Maximo, Minimo, Rango) en formato `.xlsx` (y `.csv` interno) agrupadas por frecuencia y combinación de VIs.
+        - `_identify_study_groups`: Identifica grupos únicos basados en las VIs y sub-valores de los archivos procesados.
+        - `get_discrete_analysis_groups`: Proporciona grupos para la UI, formateados con alias.
+        - `get_filtered_discrete_analysis_groups`: Filtra los grupos disponibles según el modo de análisis (1VI, 2VIs) y las VIs seleccionadas.
+        - `get_common_columns_for_groups`: Encuentra columnas de datos comunes en las tablas de resumen para los grupos seleccionados.
+        - `perform_individual_analysis`: Realiza análisis estadísticos discretos (t-tests, ANOVA, etc., usando `scipy.stats`) sobre los datos de las tablas de resumen, genera gráficos comparativos (estáticos e interactivos) y guarda la configuración y resultados.
+        - `list_individual_analyses`, `delete_individual_analysis`: Gestiona los análisis individuales guardados.
+    - Análisis Continuo (SPM):
+        - `get_available_frequencies_for_study`, `get_data_columns_for_frequency`: Obtiene parámetros para la configuración del análisis.
+        - `_get_normalized_data_for_groups`: Prepara los datos normalizados (101 puntos) para los grupos seleccionados, manejando modos 1VI y 2VIs.
+        - `perform_continuous_analysis`: Orquesta el análisis SPM (usando `spm1d`), incluyendo la ejecución de tests (t-test, ANOVA), inferencia estadística, guardado de resultados (configuración, resultados SPM en JSON) y generación de gráficos SPM.
+        - `list_continuous_analyses`, `delete_continuous_analysis`: Gestiona los análisis continuos guardados.
+        - `_get_contributing_full_keys`: Identifica las claves de archivo completas que contribuyen a un grupo de comparación específico.
+    - Reportes (PDF con `reportlab`): Funcionalidad de `generate_report` (actualmente ligada al flujo de análisis discreto más antiguo).
 `core.data_processing`: Módulos encargados del procesamiento y manejo de datos.
 `file_handlers`: Responsable de leer e interpretar archivos de datos crudos (ej. `.txt`), extraer metadatos, identificar el tipo de frecuencia (Cinemática, Cinética, EMG) y realizar el procesamiento inicial para generar archivos estandarizados (incluyendo la adición de una columna "Tiempo").
 `processors`: Contiene funciones de utilidad para la transformación de datos, cálculos estadísticos básicos (máximo, mínimo, rango) sobre DataFrames de pandas, formateo de valores, y normalización temporal de datos (ej. `normalize_temporal_data`).
