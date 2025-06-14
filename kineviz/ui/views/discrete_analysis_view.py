@@ -390,7 +390,7 @@ class DiscreteAnalysisView(ttk.Frame):
         calcs = sorted(list(set(table_info["calc"] for table_info in self.all_tables_data)))
 
         self.type_combo['values'] = ["Todos"] + types
-        self.calc_combo['values'] = ["Todos"] + calcs
+        self.calc_filter_combo['values'] = ["Todos"] + calcs # Corrected: self.calc_filter_combo
         # Format filter is removed
 
     def _populate_treeview(self, tables_to_display: list):
