@@ -25,29 +25,41 @@ class DiscreteAnalysisView(ttk.Frame):
         self.main_window = main_window
         self.analysis_service = analysis_service
         self.study_id = study_id
-        self.settings = AppSettings()  # Cargar configuración
+        self.settings = AppSettings()
         self.tables_per_page = self.settings.discrete_tables_per_page
 
         # Estado de UI y datos
         self.tables_tree = None
-        # Lista completa de dicts:
-        # {'path': Path, 'name': str, 'calc': str, 'desc': str, 'format': str,
-        #  'mtime': float, 'size': int}
-        self.all_table_files = []
+        self.all_tables_data = [] # Lista para todos los datos de tablas analizadas
+        self.filtered_tables_data = [] # Lista para datos después de aplicar filtros
         self.current_page = 1
         self.total_tables = 0
         self.total_pages = 1
+        
+        # Study VIs and Aliases
+        self.study_vis = []
+        self.study_aliases = {}
 
         # Variables de control para filtros y búsqueda
         self.search_var = tk.StringVar()
-        self.calc_filter_var = tk.StringVar()
-        self.format_filter_var = tk.StringVar() # Para filtro de formato
+        self.calc_filter_var = tk.StringVar(value="Todos") # Initialize to "Todos"
+        # self.format_filter_var no longer needed
+
+        # VI Filter related StringVars
+        self.filter_vi_count_var = tk.StringVar(value="No filtrar")
+        self.filter_vi1_name_var = tk.StringVar()
+        self.filter_vi1_desc_var = tk.StringVar()
+        self.filter_vi2_name_var = tk.StringVar()
+        self.filter_vi2_desc_var = tk.StringVar()
 
         # Empaquetar el frame principal
         self.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
+        self._load_study_vi_data()
         self.create_widgets()
-        self.load_tables()  # Carga inicial de tablas
+        self._populate_filter_vi_comboboxes()
+        self._fetch_all_table_files_data() # Cargar todos los datos de tablas al inicio
+        self.apply_filters() # Aplicar filtros iniciales (mostrar todos)
 
     def create_widgets(self):
         """Crea los widgets para la vista de análisis discreto."""
@@ -92,76 +104,99 @@ class DiscreteAnalysisView(ttk.Frame):
         # --- Filtros y Búsqueda ---
         filter_frame = ttk.Frame(self)
         filter_frame.pack(fill=tk.X, pady=(5, 5))
+        filter_frame.columnconfigure(1, weight=1) # Allow search entry to expand
 
-        ttk.Label(filter_frame, text="Buscar:").pack(side=tk.LEFT, padx=(0, 5))
-        search_entry = ttk.Entry(filter_frame, textvariable=self.search_var,
-                                 width=30)
+        # Row 0 for Search and main filters
+        top_filter_row = ttk.Frame(filter_frame)
+        top_filter_row.pack(fill=tk.X, pady=(0,5))
+
+        ttk.Label(top_filter_row, text="Buscar:").pack(side=tk.LEFT, padx=(0, 5))
+        search_entry = ttk.Entry(top_filter_row, textvariable=self.search_var, width=30)
         search_entry.pack(side=tk.LEFT, padx=5)
-        search_entry.bind("<Return>", self.search_tables)  # Buscar con Enter
+        search_entry.bind("<Return>", lambda e: self.apply_filters()) # Bind to apply_filters
 
-        ttk.Button(filter_frame, text="Buscar",
-                   command=self.search_tables).pack(side=tk.LEFT, padx=5)
+        ttk.Button(top_filter_row, text="Buscar/Aplicar", command=self.apply_filters).pack(side=tk.LEFT, padx=5)
 
-        ttk.Label(filter_frame, text="Cálculo:").pack(side=tk.LEFT,
-                                                     padx=(10, 5))
+        ttk.Label(top_filter_row, text="Cálculo:").pack(side=tk.LEFT, padx=(10, 5))
         self.calc_filter_combo = ttk.Combobox(
-            filter_frame, textvariable=self.calc_filter_var,
+            top_filter_row, textvariable=self.calc_filter_var,
             values=["Todos", "Maximo", "Minimo", "Rango"],
             state="readonly", width=10
         )
         self.calc_filter_combo.set("Todos")
         self.calc_filter_combo.pack(side=tk.LEFT, padx=5)
         self.calc_filter_combo.bind("<<ComboboxSelected>>", self.apply_filters)
+        # Format filter removed
 
-        # Filtro por Formato
-        ttk.Label(filter_frame, text="Formato:").pack(side=tk.LEFT,
-                                                      padx=(10, 5))
-        self.format_filter_combo = ttk.Combobox(
-            filter_frame, textvariable=self.format_filter_var,
-            values=["Todos", ".csv", ".tsv", ".xlsx", ".scsv"],
-            state="readonly", width=6
-        )
-        self.format_filter_combo.set("Todos")
-        self.format_filter_combo.pack(side=tk.LEFT, padx=5)
-        self.format_filter_combo.bind("<<ComboboxSelected>>", self.apply_filters)
+        # Row 1 for VI filters
+        vi_filter_row = ttk.Frame(filter_frame)
+        vi_filter_row.pack(fill=tk.X, pady=(5,0))
 
+        ttk.Label(vi_filter_row, text="Filtrar por VIs:").pack(side=tk.LEFT, padx=(0,5))
+        self.filter_vi_count_combo = ttk.Combobox(vi_filter_row, textvariable=self.filter_vi_count_var,
+                                                  values=["No filtrar", "1 VI", "2 VIs"], state="readonly", width=12)
+        self.filter_vi_count_combo.pack(side=tk.LEFT, padx=(0,10))
+        self.filter_vi_count_combo.bind("<<ComboboxSelected>>", self._on_filter_vi_count_change)
 
-        ttk.Button(filter_frame, text="Limpiar Filtros",
-                   command=self.clear_filters).pack(side=tk.LEFT, padx=10)
+        # VI 1 Filter Section
+        self.filter_vi1_frame = ttk.Frame(vi_filter_row)
+        self.filter_vi1_frame.pack(side=tk.LEFT, padx=(5,0), fill=tk.X, expand=False)
+        ttk.Label(self.filter_vi1_frame, text="VI 1:").pack(side=tk.LEFT, padx=(0,2))
+        self.filter_vi1_name_combo = ttk.Combobox(self.filter_vi1_frame, textvariable=self.filter_vi1_name_var, state="readonly", width=15)
+        self.filter_vi1_name_combo.pack(side=tk.LEFT, padx=(0,5))
+        self.filter_vi1_name_combo.bind("<<ComboboxSelected>>", lambda e: self._update_filter_descriptor_combobox(1))
+        ttk.Label(self.filter_vi1_frame, text="Sub-valor:").pack(side=tk.LEFT, padx=(5,2))
+        self.filter_vi1_desc_combo = ttk.Combobox(self.filter_vi1_frame, textvariable=self.filter_vi1_desc_var, state="readonly", width=15)
+        self.filter_vi1_desc_combo.pack(side=tk.LEFT, padx=(0,5))
+        self.filter_vi1_frame.pack_forget() # Initially hidden
+
+        # VI 2 Filter Section
+        self.filter_vi2_frame = ttk.Frame(vi_filter_row)
+        self.filter_vi2_frame.pack(side=tk.LEFT, padx=(5,0), fill=tk.X, expand=False)
+        ttk.Label(self.filter_vi2_frame, text="VI 2:").pack(side=tk.LEFT, padx=(0,2))
+        self.filter_vi2_name_combo = ttk.Combobox(self.filter_vi2_frame, textvariable=self.filter_vi2_name_var, state="readonly", width=15)
+        self.filter_vi2_name_combo.pack(side=tk.LEFT, padx=(0,5))
+        self.filter_vi2_name_combo.bind("<<ComboboxSelected>>", lambda e: self._update_filter_descriptor_combobox(2))
+        ttk.Label(self.filter_vi2_frame, text="Sub-valor:").pack(side=tk.LEFT, padx=(5,2))
+        self.filter_vi2_desc_combo = ttk.Combobox(self.filter_vi2_frame, textvariable=self.filter_vi2_desc_var, state="readonly", width=15)
+        self.filter_vi2_desc_combo.pack(side=tk.LEFT, padx=(0,5))
+        self.filter_vi2_frame.pack_forget() # Initially hidden
+        
+        ttk.Button(top_filter_row, text="Limpiar Filtros", command=self.clear_filters).pack(side=tk.LEFT, padx=10)
+
 
         # --- Lista de Tablas Generadas (Treeview) ---
-        list_frame = ttk.LabelFrame(self, text="Tablas Generadas")
-        # Reducir padding inferior
-        list_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 0))
-        list_frame.columnconfigure(0, weight=1)  # Treeview se expande
-        list_frame.rowconfigure(0, weight=1)     # Treeview se expande
+        list_frame = ttk.LabelFrame(self, text="Tablas Generadas (.xlsx)") # Updated title
+        list_frame.pack(fill=tk.BOTH, expand=True, pady=(5, 0)) # Adjusted padding
+        list_frame.columnconfigure(0, weight=1)
+        list_frame.rowconfigure(0, weight=1)
 
-        # Crear Treeview con nuevas columnas
+        # Updated columns
         self.tables_tree = ttk.Treeview(
             list_frame,
-            columns=("Nombre Archivo", "Tipo Cálculo", "Sub-valores",
-                     "Fecha Modificación", "Tamaño"),
+            columns=("Nombre Archivo", "Cálculo", "Sub-valores", "Fecha Creación/Modif."),
             show="headings"
         )
-        # Reducir padding inferior
         self.tables_tree.grid(row=0, column=0, sticky='nsew', padx=5, pady=(5, 0))
 
-        # Definir cabeceras y comando de ordenación
-        cols = ("Nombre Archivo", "Tipo Cálculo", "Sub-valores",
-                "Fecha Modificación", "Tamaño")
-        for col in cols:
+        # Updated headings and sort commands
+        cols_map = {
+            "Nombre Archivo": "name",
+            "Cálculo": "calc",
+            "Sub-valores": "sub_values_display", # Use a display-formatted key for sorting
+            "Fecha Creación/Modif.": "mtime"
+        }
+        for col_display, col_key in cols_map.items():
             self.tables_tree.heading(
-                col, text=col,
-                command=lambda c=col: self.sort_column(c, False)
+                col_display, text=col_display,
+                command=lambda k=col_key: self.sort_column(k, False) # Sort by internal key
             )
 
-        # Definir ancho de columnas
-        self.tables_tree.column("Nombre Archivo", width=250, anchor=tk.W)
-        self.tables_tree.column("Tipo Cálculo", width=100, anchor=tk.W)
-        self.tables_tree.column("Sub-valores", width=200, anchor=tk.W)
-        self.tables_tree.column("Fecha Modificación", width=150,
-                                anchor=tk.CENTER)
-        self.tables_tree.column("Tamaño", width=100, anchor=tk.E)
+        # Updated column widths
+        self.tables_tree.column("Nombre Archivo", width=300, anchor=tk.W)
+        self.tables_tree.column("Cálculo", width=100, anchor=tk.W)
+        self.tables_tree.column("Sub-valores", width=300, anchor=tk.W)
+        self.tables_tree.column("Fecha Creación/Modif.", width=150, anchor=tk.CENTER)
 
         # Scrollbars
         vsb = ttk.Scrollbar(list_frame, orient="vertical",
@@ -251,188 +286,106 @@ class DiscreteAnalysisView(ttk.Frame):
                 f"Ocurrió un error inesperado al generar las tablas:\n{e}",
                 parent=self)
 
-    def _format_size(self, size_bytes):
-        """Formatea el tamaño en bytes a KB, MB, etc."""
-        if not isinstance(size_bytes, (int, float)) or size_bytes < 0:
-            return "N/A"
-        if size_bytes == 0:
-            return "0 B"
-        if size_bytes < 1024:
-            return f"{size_bytes} B"
-        elif size_bytes < 1024**2:
-            return f"{size_bytes / 1024:.1f} KB"
-        elif size_bytes < 1024**3:
-            return f"{size_bytes / (1024**2):.1f} MB"
-        else:
-            return f"{size_bytes / (1024**3):.1f} GB"
+    # _format_size is no longer needed as "Tamaño" column is removed.
 
-    def _parse_table_filename(self, filename: str) -> tuple[str, str, str]:
-        """Extrae Cálculo, Tipos de Datos y Sub-valores del nombre de archivo."""
-        # Formato: CALCULO_FRECUENCIA_DESC1_DESC2...DESCn.[csv|tsv|xlsx|scsv]
-        # Remover cualquier extensión conocida
-        base_name = filename
-        for ext in ['.csv', '.tsv', '.xlsx', '.scsv']:
-            if base_name.lower().endswith(ext):
-                base_name = base_name[:-len(ext)]
-                break # Salir después de encontrar la extensión
-
-        parts = base_name.split('_')
-        if len(parts) < 2:
-            return "Desconocido", "Desconocido", ""  # No se puede determinar
-
+    def _parse_table_filename(self, filename: str) -> tuple[str, str, list[str]]:
+        """
+        Parsea el nombre de archivo para extraer cálculo, tipo de dato (frecuencia),
+        y lista de sub-valores (VI=Desc).
+        Ejemplo: Maximo_Cinematica_VI1=DescA__VI2=DescB.xlsx
+        Retorna: (calculo, tipo_dato, [VI1=DescA, VI2=DescB])
+        """
+        name_part = filename.rsplit('.', 1)[0] # Quitar extensión
+        
+        parts = name_part.split('_')
+        if len(parts) < 3: # Necesita Calc_Freq_Subvalores
+            return "Desconocido", "Desconocido", []
+        
         calc_type = parts[0]
-        # Asumimos que siempre está presente después del cálculo
-        freq_type = parts[1]
-        descriptors = parts[2:]  # El resto son sub-valores
+        data_type = parts[1]
+        
+        sub_values_combined_str = '_'.join(parts[2:]) # Ej: VI1=DescA__VI2=DescB
+        sub_value_list = sub_values_combined_str.split('__') if sub_values_combined_str else []
+        
+        return calc_type, data_type, sub_value_list
 
-        # Unir sub-valores con coma
-        descriptor_str = ", ".join(descriptors) if descriptors \
-                                                else "SinSubValores"
-
-        return calc_type, freq_type, descriptor_str
-
-    def _fetch_all_table_files(self):
-        """Obtiene la lista completa de archivos CSV de tablas y sus metadatos."""
-        self.all_table_files = []
-        try:
-            tables_path = self.analysis_service.get_discrete_analysis_tables_path(
-                self.study_id
-            )
-            if not tables_path or not tables_path.exists() \
-               or not tables_path.is_dir():
-                logger.info("Directorio de tablas discretas no encontrado "
-                            f"para estudio {self.study_id}: {tables_path}")
-                return
-
-            # Definir extensiones válidas
-            valid_extensions = {'.csv', '.tsv', '.xlsx', '.scsv'}
-
-            for freq_dir in tables_path.iterdir():
+    def _fetch_all_table_files_data(self):
+        """Obtiene y parsea todos los archivos de tablas .xlsx del servicio."""
+        self.all_tables_data = []
+        tables_path = self.analysis_service.get_discrete_analysis_tables_path(self.study_id)
+        if tables_path:
+            for freq_dir in tables_path.iterdir(): # e.g., Cinematica, Cinetica
                 if freq_dir.is_dir():
-                    # Buscar cualquier archivo y luego filtrar por extensión
-                    for file_path in freq_dir.iterdir():
-                        if file_path.is_file() and file_path.suffix.lower() in valid_extensions:
+                    for file_path in freq_dir.iterdir(): # e.g., Maximo_Cinematica_VI1=DescA.xlsx
+                        if file_path.is_file() and file_path.suffix == '.xlsx': # Solo .xlsx
                             try:
-                                stats = file_path.stat()
-                                calc_type, _, descriptor_str = \
-                                    self._parse_table_filename(file_path.name)
-                                self.all_table_files.append({
-                                    'path': file_path,
-                                    'name': file_path.name,
-                                    'calc': calc_type,
-                                    'desc': descriptor_str,
-                                    'format': file_path.suffix.lower(), # Guardar formato
-                                    'mtime': stats.st_mtime,
-                                    'size': stats.st_size
+                                calc, freq, sub_values_list = self._parse_table_filename(file_path.name)
+                                mtime = file_path.stat().st_mtime
+                                self.all_tables_data.append({
+                                    "path": file_path,
+                                    "name": file_path.name,
+                                    "type": freq, # Tipo de Dato (Frecuencia)
+                                    "calc": calc,
+                                    "sub_values_raw": sub_values_list, # Lista de "VI=Desc"
+                                    "mtime": mtime
                                 })
-                            except Exception as e_file:
-                                logger.error("Error procesando metadatos de "
-                                             f"{file_path}: {e_file}",
-                                             exc_info=True)
+                            except Exception as e:
+                                logger.error(f"Error parseando nombre de archivo de tabla {file_path.name}: {e}")
+        
+        # Actualizar opciones de los filtros de Tipo de Dato y Cálculo
+        types = sorted(list(set(table_info["type"] for table_info in self.all_tables_data)))
+        calcs = sorted(list(set(table_info["calc"] for table_info in self.all_tables_data)))
 
-        except Exception as e:
-            logger.error("Error buscando archivos de tablas discretas para "
-                         f"estudio {self.study_id}: {e}", exc_info=True)
-            messagebox.showerror("Error",
-                                   f"No se pudo buscar la lista de tablas:\n{e}",
-                                   parent=self)
+        self.type_combo['values'] = ["Todos"] + types
+        self.calc_combo['values'] = ["Todos"] + calcs
+        # Format filter is removed
 
-    def load_tables(self):
-        """Filtra, ordena y muestra la página actual de tablas."""
-        if not self.tables_tree:
-            logger.warning("El Treeview de tablas aún no está inicializado.")
-            return
+    def _populate_treeview(self, tables_to_display: list):
+        """Popula el Treeview con la lista de datos de tablas proporcionada."""
+        self.tables_tree.delete(*self.tables_tree.get_children())
 
-        # 1. Obtener lista completa si es necesario
-        # Se llama al inicio y después de eliminar/generar
-        self._fetch_all_table_files() # Siempre refrescar la lista completa
-
-        # 2. Aplicar Filtros y Búsqueda
-        search_term = self.search_var.get().lower()
-        selected_calc = self.calc_filter_var.get()
-        selected_format = self.format_filter_var.get() # Obtener formato
-
-        filtered_files = self.all_table_files
-
-        # Filtrar por formato
-        if selected_format != "Todos":
-            filtered_files = [f for f in filtered_files
-                              if f['path'].suffix.lower() == selected_format]
-
-        # Filtrar por cálculo
-        if selected_calc != "Todos":
-            filtered_files = [f for f in filtered_files
-                              if f['calc'] == selected_calc]
-
-        # Filtrar por término de búsqueda (nombre, cálculo, sub-valores)
-        if search_term:
-            filtered_files = [
-                f for f in filtered_files if (
-                    search_term in f['name'].lower() or
-                    search_term in f['calc'].lower() or
-                    search_term in f['desc'].lower()
-                )
-            ]
-
-        # 3. Ordenar (Implementación básica)
-        # Por defecto, ordenar por fecha de modificación descendente
-        # TODO: Implementar ordenación por columna clickeada
-        filtered_files.sort(key=lambda x: x['mtime'], reverse=True)
-
-        # 4. Calcular Paginación
-        self.total_tables = len(filtered_files)
-        # Recargar por si cambió en config.ini
-        self.tables_per_page = self.settings.discrete_tables_per_page
-        if self.tables_per_page > 0:
-            self.total_pages = math.ceil(self.total_tables /
-                                         self.tables_per_page)
-        else:
-            self.total_pages = 1
-        self.total_pages = max(1, self.total_pages)  # Asegurar al menos 1
-
-        # Ajustar página actual si está fuera de rango
-        self.current_page = max(1, min(self.current_page, self.total_pages))
-
-        # 5. Obtener la porción para la página actual
         start_index = (self.current_page - 1) * self.tables_per_page
         end_index = start_index + self.tables_per_page
-        page_files = filtered_files[start_index:end_index]
+        paginated_tables_data = tables_to_display[start_index:end_index]
 
-        # 6. Limpiar y Poblar Treeview
-        for item in self.tables_tree.get_children():
-            self.tables_tree.delete(item)
-
-        if not page_files and self.total_tables > 0:
-            # Si no hay archivos en esta página pero sí hay en total
-            # (p.ej. página inválida), simplemente dejar vacío.
-            pass
-        elif not page_files and self.total_tables == 0:
-            # Mostrar mensaje si no hay tablas en absoluto (después de filtrar)
-            self.tables_tree.insert(
-                "", tk.END, text="NoMatch",
-                values=("No se encontraron tablas que coincidan.", "", "", "", ""))
+        if not paginated_tables_data:
+            num_empty_cols = len(self.tables_tree["columns"])
+            empty_values = tuple(["No hay tablas que coincidan con los filtros."] + [""] * (num_empty_cols -1))
+            self.tables_tree.insert("", tk.END, values=empty_values, iid="NoMatch")
         else:
-            for file_info in page_files:
-                mod_time_str = datetime.fromtimestamp(
-                    file_info['mtime']
-                ).strftime('%Y-%m-%d %H:%M:%S')
-                size_str = self._format_size(file_info['size'])
-
-                # Insertar en Treeview, usando la ruta como ID interno (text)
-                self.tables_tree.insert(
-                    "", tk.END,
-                    text=str(file_info['path']),  # Guardar ruta completa aquí
-                    values=(
-                        file_info['name'],
-                        file_info['calc'],
-                        file_info['desc'],
-                        mod_time_str,
-                        size_str
-                    )
-                )
-
-        # 7. Actualizar Controles de Paginación
+            for table_info in paginated_tables_data:
+                filename = table_info["name"]
+                # data_type = table_info["type"] # Not displayed directly in table anymore
+                calc_type = table_info["calc"]
+                
+                # Formatear sub-valores
+                sub_values_display_parts = []
+                for sv_part in table_info["sub_values_raw"]: # sv_part is "VI=Desc"
+                    try:
+                        vi_name, desc_val = sv_part.split('=', 1)
+                        alias = self.study_aliases.get(desc_val, desc_val)
+                        sub_values_display_parts.append(f"{vi_name}: {alias}")
+                    except ValueError:
+                        sub_values_display_parts.append(sv_part) # Fallback
+                sub_values_str_formatted = ", ".join(sub_values_display_parts)
+                table_info["sub_values_display"] = sub_values_str_formatted # Store for sorting
+                
+                date_str = datetime.fromtimestamp(table_info["mtime"]).strftime('%Y-%m-%d %H:%M')
+                
+                # Updated values for new column order
+                self.tables_tree.insert("", tk.END, text=str(table_info['path']), # Store path as iid
+                                        values=(filename, calc_type, 
+                                                sub_values_str_formatted, date_str))
+        
         self.update_pagination_controls()
+
+    def load_tables(self):
+        """Alias para aplicar filtros, que ahora maneja la carga y población."""
+        # Fetch all data first, then apply filters.
+        # This is slightly different from previous where apply_filters re-fetched.
+        # Now, _fetch_all_table_files_data is called once at init and after generation.
+        self.apply_filters()
+
 
     def update_pagination_controls(self):
         """Actualiza el estado y texto de los controles de paginación."""
@@ -454,38 +407,200 @@ class DiscreteAnalysisView(ttk.Frame):
         """Navega a una página específica."""
         if 1 <= page_number <= self.total_pages:
             self.current_page = page_number
-            self.load_tables()
+            self._populate_treeview(self.filtered_tables_data) # Repopulate with current filtered data
         else:
             logger.warning(f"Intento de ir a página inválida: {page_number}")
 
-    def search_tables(self, event=None):  # Aceptar event para bind <Return>
-        """Inicia la búsqueda y recarga la tabla."""
-        self.current_page = 1  # Volver a la primera página al buscar
-        self.load_tables()
+    # search_tables removed, combined into apply_filters
 
-    def apply_filters(self, event=None):  # Aceptar event para bind Combobox
+    def apply_filters(self, event=None):
         """Aplica los filtros seleccionados y recarga la tabla."""
-        self.current_page = 1  # Volver a la primera página al filtrar
-        self.load_tables()
+        search_term = self.search_var.get().lower()
+        selected_calc = self.calc_filter_var.get()
+        # selected_format no longer exists
+        
+        # VI Filters
+        vi_filter_mode = self.filter_vi_count_var.get()
+        vi1_name_filter = self.filter_vi1_name_var.get()
+        vi1_desc_display_filter = self.filter_vi1_desc_var.get()
+        vi1_desc_original_filter = self._get_descriptor_original_value(vi1_desc_display_filter)
+        
+        vi2_name_filter = self.filter_vi2_name_var.get()
+        vi2_desc_display_filter = self.filter_vi2_desc_var.get()
+        vi2_desc_original_filter = self._get_descriptor_original_value(vi2_desc_display_filter)
+
+        target_filter_vi_part1 = f"{vi1_name_filter}={vi1_desc_original_filter}" if vi1_name_filter and vi1_desc_original_filter else None
+        target_filter_vi_part2 = f"{vi2_name_filter}={vi2_desc_original_filter}" if vi2_name_filter and vi2_desc_original_filter else None
+
+        self.filtered_tables_data = []
+        for table_info in self.all_tables_data: # Iterate over parsed data
+            # Match search term (name, calc, sub_values_display)
+            search_match = True
+            if search_term:
+                # Use sub_values_display for search as it's what user sees
+                sv_display_for_search = table_info.get("sub_values_display", "") 
+                search_match = (search_term in table_info["name"].lower() or
+                                search_term in table_info["calc"].lower() or
+                                search_term in sv_display_for_search.lower())
+            if not search_match:
+                continue
+
+            # Match calculation filter
+            calc_match = (selected_calc == "Todos" or table_info["calc"] == selected_calc)
+            if not calc_match:
+                continue
+            
+            # Match VI filters
+            vi_match = True
+            if vi_filter_mode != "No filtrar":
+                table_sub_values_raw = table_info.get("sub_values_raw", []) # List of "VI=Desc"
+                
+                if target_filter_vi_part1:
+                    if not any(target_filter_vi_part1 == sv_part for sv_part in table_sub_values_raw):
+                        vi_match = False
+                
+                if vi_match and vi_filter_mode == "2 VIs" and target_filter_vi_part2:
+                    if not any(target_filter_vi_part2 == sv_part for sv_part in table_sub_values_raw):
+                        vi_match = False
+            
+            if vi_match: # If all filters pass
+                self.filtered_tables_data.append(table_info)
+        
+        self.total_tables = len(self.filtered_tables_data)
+        self.tables_per_page = self.settings.discrete_tables_per_page # Ensure it's up-to-date
+        self.total_pages = math.ceil(self.total_tables / self.tables_per_page) if self.tables_per_page > 0 else 1
+        self.total_pages = max(1, self.total_pages)
+        self.current_page = 1 # Reset to first page after filtering
+        
+        self._populate_treeview(self.filtered_tables_data)
 
     def clear_filters(self):
         """Limpia los filtros y la búsqueda, y recarga la tabla."""
         self.search_var.set("")
         self.calc_filter_var.set("Todos")
-        self.format_filter_var.set("Todos") # Resetear filtro formato
-        self.current_page = 1
-        # No es necesario _fetch_all_table_files aquí, load_tables lo hará
-        self.load_tables()
+        # format_filter_var removed
+        self._clear_vi_filters() # Clear VI filters as well
+        # self.current_page = 1 # apply_filters will reset page
+        # self.load_tables() # apply_filters is now the main method
+        self.apply_filters()
 
-    # TODO: Implementar sort_column si se desea ordenar al hacer clic
-    def sort_column(self, col, reverse):
+
+    def sort_column(self, sort_key_internal, reverse): # Renamed col to sort_key_internal
         """Ordena el Treeview por la columna especificada."""
-        # Esta implementación requiere guardar los datos mostrados o re-ordenar
-        # self.all_table_files y luego llamar a load_tables.
-        # Por simplicidad, se omite por ahora.
-        logger.info(f"Ordenar por {col}, reverso={reverse}. "
-                    "(Funcionalidad no implementada)")
-        pass
+        # sort_key_internal is now the internal key like "name", "calc", "mtime", "sub_values_display"
+        
+        if not sort_key_internal:
+            logger.warning(f"Clave de ordenación interna no válida: {sort_key_internal}")
+            return
+
+        # Ordenar self.filtered_tables_data
+        if sort_key_internal == "mtime":
+            self.filtered_tables_data.sort(key=lambda x: x.get(sort_key_internal, 0), reverse=reverse)
+        # For sub_values_display, it's already a string, direct sort is fine
+        else: # Ordenación alfabética para otras columnas (name, calc, sub_values_display)
+            self.filtered_tables_data.sort(key=lambda x: str(x.get(sort_key_internal, "")).lower(), reverse=reverse)
+
+        # Repopular el treeview con los datos ordenados (reseteando paginación)
+        self.current_page = 1
+        self._populate_treeview(self.filtered_tables_data)
+        
+        # Invertir dirección para la próxima vez
+        # Need to map back from internal key to display column name for the heading command
+        display_col_name = None
+        cols_map_for_heading = { # Inverse of the map in create_widgets or direct
+            "name": "Nombre Archivo", "calc": "Cálculo",
+            "sub_values_display": "Sub-valores", "mtime": "Fecha Creación/Modif."
+        }
+        display_col_name = cols_map_for_heading.get(sort_key_internal)
+
+        if display_col_name:
+            self.tables_tree.heading(display_col_name, command=lambda: self.sort_column(sort_key_internal, not reverse))
+        else:
+            logger.warning(f"No se pudo encontrar el nombre de display para la clave interna de ordenación: {sort_key_internal}")
+
+
+    def _load_study_vi_data(self):
+        """Loads VI names and their descriptors for the current study."""
+        try:
+            details = self.analysis_service.study_service.get_study_details(self.study_id)
+            self.study_vis = details.get('independent_variables', [])
+            self.study_aliases = self.analysis_service.study_service.get_study_aliases(self.study_id)
+        except Exception as e:
+            logger.error(f"Error loading VI data for study {self.study_id} in DiscreteAnalysisView: {e}", exc_info=True)
+            self.study_vis = []
+            self.study_aliases = {}
+
+    def _populate_filter_vi_comboboxes(self):
+        """Populates the VI name comboboxes for filtering."""
+        vi_names = [vi['name'] for vi in self.study_vis if vi.get('name')]
+        self.filter_vi1_name_combo['values'] = sorted(vi_names)
+        self.filter_vi2_name_combo['values'] = sorted(vi_names)
+
+    def _update_filter_descriptor_combobox(self, vi_num: int):
+        """Updates the descriptor combobox for the specified VI filter."""
+        selected_vi_name = ""
+        desc_combo = None
+        desc_var = None
+
+        if vi_num == 1:
+            selected_vi_name = self.filter_vi1_name_var.get()
+            desc_combo = self.filter_vi1_desc_combo
+            desc_var = self.filter_vi1_desc_var
+        elif vi_num == 2:
+            selected_vi_name = self.filter_vi2_name_var.get()
+            desc_combo = self.filter_vi2_desc_combo
+            desc_var = self.filter_vi2_desc_var
+        
+        if not desc_combo or not desc_var: return
+
+        desc_var.set("")
+        descriptors_for_vi = []
+        if selected_vi_name:
+            for vi_info in self.study_vis:
+                if vi_info.get('name') == selected_vi_name:
+                    descriptors_for_vi = [
+                        f"{d} ({self.study_aliases.get(d)})" if self.study_aliases.get(d) else d
+                        for d in vi_info.get('descriptors', [])
+                    ]
+                    break
+        desc_combo['values'] = sorted(descriptors_for_vi)
+        # Automatically apply filters when a VI descriptor is selected or cleared
+        self.apply_filters()
+
+
+    def _on_filter_vi_count_change(self, event=None):
+        """Handles changes in the VI count filter selection."""
+        count_mode = self.filter_vi_count_var.get()
+        self.filter_vi1_name_var.set("")
+        self.filter_vi1_desc_var.set("")
+        self.filter_vi2_name_var.set("")
+        self.filter_vi2_desc_var.set("")
+        self._update_filter_descriptor_combobox(1)
+        self._update_filter_descriptor_combobox(2)
+
+        if count_mode == "1 VI":
+            self.filter_vi1_frame.pack(side=tk.LEFT, padx=(5,0), fill=tk.X, expand=False)
+            self.filter_vi2_frame.pack_forget()
+        elif count_mode == "2 VIs":
+            self.filter_vi1_frame.pack(side=tk.LEFT, padx=(5,0), fill=tk.X, expand=False)
+            self.filter_vi2_frame.pack(side=tk.LEFT, padx=(5,0), fill=tk.X, expand=False)
+        else: # "No filtrar"
+            self.filter_vi1_frame.pack_forget()
+            self.filter_vi2_frame.pack_forget()
+        self.apply_filters() # Apply filters when VI count mode changes
+
+    def _get_descriptor_original_value(self, display_name: str) -> str:
+        if not display_name: return ""
+        if " (" in display_name and display_name.endswith(")"):
+            original_candidate = display_name.rsplit(" (", 1)[0]
+            if self.study_aliases.get(original_candidate) == display_name.rsplit(" (", 1)[1][:-1]:
+                return original_candidate
+        return display_name
+
+    def _clear_vi_filters(self):
+        self.filter_vi_count_var.set("No filtrar")
+        self._on_filter_vi_count_change() # This will hide frames and clear sub-vars
+        # self.apply_filters() # _on_filter_vi_count_change already calls apply_filters
 
     def view_table(self):
         """Abre la tabla CSV seleccionada con la aplicación predeterminada."""
@@ -496,10 +611,10 @@ class DiscreteAnalysisView(ttk.Frame):
                                    parent=self)
             return
 
-        # Recuperar la ruta completa guardada como 'text' en el item
-        file_path_str = self.tables_tree.item(selected_item, "text")
-        # Verificar si es el mensaje "No se encontraron..."
-        if not file_path_str or file_path_str == "NoMatch":
+        # Recuperar la ruta completa guardada como 'text' (iid) en el item
+        file_path_str = selected_item # selected_item is the iid (path string)
+        
+        if not file_path_str or file_path_str == "NoMatch": # Check if it's the placeholder iid
             messagebox.showwarning("Sin Selección",
                                    "No hay una tabla válida seleccionada.",
                                    parent=self)
@@ -558,8 +673,8 @@ class DiscreteAnalysisView(ttk.Frame):
                                    parent=self)
             return
 
-        file_path_str = self.tables_tree.item(selected_item, "text")
-        if not file_path_str or file_path_str == "NoMatch":
+        file_path_str = selected_item # selected_item is the iid (path string)
+        if not file_path_str or file_path_str == "NoMatch": # Check if it's the placeholder iid
             messagebox.showwarning("Sin Selección",
                                    "No hay una tabla válida seleccionada.",
                                    parent=self)
@@ -580,18 +695,18 @@ class DiscreteAnalysisView(ttk.Frame):
                                 f"La tabla '{file_name}' ha sido eliminada.",
                                 parent=self)
             # Eliminar de la lista en memoria y recargar la vista actual
-            self.all_table_files = [f for f in self.all_table_files
+            self.all_tables_data = [f for f in self.all_tables_data
                                     if f['path'] != file_path]
             # Recalculará paginación y mostrará página actual
-            self.load_tables()
+            self.apply_filters() # This will repopulate and update pagination
         except FileNotFoundError:
             messagebox.showerror("Error",
                                    f"El archivo ya no existe:\n{file_path}",
                                    parent=self)
             # Eliminar de la lista en memoria y recargar
-            self.all_table_files = [f for f in self.all_table_files
+            self.all_tables_data = [f for f in self.all_tables_data
                                     if f['path'] != file_path]
-            self.load_tables()
+            self.apply_filters()
         except (OSError, ValueError) as e:
             logger.error(f"Error al eliminar la tabla {file_path}: {e}",
                          exc_info=True)
