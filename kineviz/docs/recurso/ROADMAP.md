@@ -216,7 +216,7 @@ Opciones de Visualización y Anotación: Permitir al usuario configurar cómo se
     - [Hecho] Implementados filtros y búsqueda para la lista de análisis continuos:
         - Búsqueda por palabra clave: Permite buscar en el nombre del análisis, la variable analizada y los grupos comparados.
         - Filtro por Variables Independientes (VIs): Permite filtrar análisis basados en la selección de 1 o 2 VIs y sus respectivos sub-valores.
-    - [Hecho] Nomenclatura de Creación de Carpeta de Guardado de Archivos: Los análisis se guardan en `[NOMBRE_ESTUDIO]/Analisis Continuo/[VARIABLE_SIN_UNIDAD]/[NOMBRE_ANALISIS]`.
+    - [Hecho] Nomenclatura de Creación de Carpeta de Guardado de Archivos: Los análisis se guardan en `[NOMBRE_ESTUDIO]/Analisis Continuo/[VARIABLE_SIN_UNIDAD]/[NOMBRE_ANALISIS]`. (Confirmado: `Analisis Continuo/[Atributo Columna]/[Nombre Analisis]`).
 2. [Hecho] Implementación de Normalización de Datos Temporales.
 2.1 [Hecho] Lógica de Normalización Temporal: Implementar una función (posiblemente en `processors.py` o un nuevo módulo) para normalizar la duración de las secuencias de datos a 101 puntos (0-100%).
 Esto se aplicará a la variable seleccionada para cada archivo/sujeto/intento.
@@ -240,15 +240,15 @@ Ejecutar tests básicos de `spm1d` (`ttest2`, `anova1`), realizar inferencia est
         - Panel superior: Curvas promedio por grupo (con opciones de visualización EEM, DE, IC) vs. tiempo normalizado.
         - Panel inferior: Curva del estadístico SPM, umbral crítico y resaltado de clusters significativos (con opciones de anotación).
         - Opciones para delimitar el rango de tiempo mostrado en el gráfico y añadir etiquetas personalizadas.
-    - [En Progreso] Generar gráficos interactivos (HTML con Plotly, si es factible).
-4.2 [En Progreso] Nomenclatura de Creación de Carpeta de Guardado de Archivos:
-Guardar los archivos del analisis en una subcarpeta específica dentro de la carpeta del estudio (ej: `[NOMBRE_ESTUDIO]/Analisis Continuo/[NOMBRE_COMPLETO_MUSCULO_MAS_SU_DIMENSION_PERO_SIN _LA_UNIDAD_DE_MEDIDA] (ie. "Estudio de Adultos Mayores/Analisis Continuo/LAnkleMoment X")`).
-5. [Pendiente] Gestión de Análisis Continuos Guardados en `AnalysisService`.
-5.1 [Pendiente] Nuevos Métodos en `AnalysisService`:
+    - [Hecho] Generar gráficos interactivos (HTML con Plotly, si es factible).
+4.2 [Hecho] Nomenclatura de Creación de Carpeta de Guardado de Archivos:
+Guardar los archivos del analisis en una subcarpeta específica dentro de la carpeta del estudio (ej: `[NOMBRE_ESTUDIO]/Analisis Continuo/[NOMBRE_COMPLETO_MUSCULO_MAS_SU_DIMENSION_PERO_SIN _LA_UNIDAD_DE_MEDIDA] (ie. "Estudio de Adultos Mayores/Analisis Continuo/LAnkleMoment X")/[NOMBRE_ANALISIS]`).
+5. [Hecho] Gestión de Análisis Continuos Guardados en `AnalysisService`.
+5.1 [Hecho] Nuevos Métodos en `AnalysisService`:
 `list_continuous_analyses(study_id)`: Lista los análisis continuos guardados.
-`delete_continuous_analysis(study_id, analysis_name_or_id)`: Elimina un análisis continuo.
-`get_continuous_analysis_details(study_id, analysis_name_or_id)`: Obtiene detalles/archivos de un análisis.
-5.2 [Pendiente] Integración con UI: Conectar estos métodos a `ContinuousAnalysisResultsView` para la gestión de los análisis.
+`delete_continuous_analysis(analysis_folder_to_delete: Path)`: Elimina un análisis continuo (adaptado para tomar Path).
+`get_continuous_analysis_details(study_id, analysis_name_or_id)`: [Omitido] Obtiene detalles/archivos de un análisis (No requerido por el usuario).
+5.2 [Hecho] Integración con UI: Conectados métodos a `ContinuousAnalysisManagerDialog` (evolución de `ContinuousAnalysisResultsView`) para la gestión de los análisis.
 
 ## [Pendiente] Fase 5: Funcionalidades Adicionales
 1. [Pendiente] Copias de Seguridad Automaticas en la Ventana de Estudios.
