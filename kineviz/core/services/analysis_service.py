@@ -1287,6 +1287,7 @@ class AnalysisService:
         if not study_path:
             logger.error(f"No se pudo encontrar ruta estudio {study_id} para análisis continuo.")
             return None
+        return study_path / "Analisis Continuo"
     def list_continuous_analyses(self, study_id: int) -> list[dict]:
         """
         Lista los análisis continuos guardados para un estudio.
