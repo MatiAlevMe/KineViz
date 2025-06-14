@@ -42,6 +42,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.filter_vi1_desc_var = tk.StringVar()
         self.filter_vi2_name_var = tk.StringVar()
         self.filter_vi2_desc_var = tk.StringVar()
+        self.filter_variable_var = tk.StringVar(value="Todos") # For Variable Analizada filter
 
         # Column definitions - Updated for new display
         self.columns = ("Nombre Análisis", "Variable Analizada", "Grupos Comparados",
