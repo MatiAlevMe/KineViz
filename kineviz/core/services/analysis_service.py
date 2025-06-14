@@ -1256,6 +1256,99 @@ class AnalysisService:
             # results_payload["status"] is already "error" by default
             return results_payload
 
+    # --- Métodos para Gestión de Análisis Continuo ---
+
+    def _get_continuous_analysis_base_dir(self, study_id: int) -> Path | None:
+        """Obtiene el directorio base para los análisis continuos."""
+        study_path = self.file_service._get_study_path(study_id)
+        if not study_path:
+            logger.error(f"No se pudo encontrar ruta estudio {study_id} para análisis continuo.")
+            return None
+        return study_path / "Analisis Continuo"
+
+    def get_continuous_analysis_path(self, study_id: int, analysis_name: str) -> Path | None:
+        """Obtiene la ruta completa al directorio de un análisis continuo específico."""
+        base_dir = self._get_continuous_analysis_base_dir(study_id)
+        if not base_dir:
+            return None
+        # Validar nombre por si acaso (similar a individual)
+        invalid_chars = r'<>:"/\|?*' # Mismos caracteres inválidos
+        if any(char in analysis_name for char in invalid_chars):
+            logger.error(f"Nombre de análisis continuo inválido solicitado: {analysis_name}")
+            return None
+        return base_dir / analysis_name.strip()
+
+
+    def list_continuous_analyses(self, study_id: int) -> list[dict]:
+        """
+        Lista los análisis continuos guardados para un estudio.
+
+        :param study_id: ID del estudio.
+        :return: Lista de diccionarios:
+                 {'name': str, 'path': Path, 'config': dict, 'mtime': float,
+                  'plot_path': Path | None, 'spm_results_path': Path | None}
+        """
+        analyses = []
+        base_dir = self._get_continuous_analysis_base_dir(study_id)
+        if not base_dir or not base_dir.exists():
+            return []
+
+        for item_path in base_dir.iterdir():
+            if item_path.is_dir():
+                analysis_name = item_path.name
+                config_path = item_path / "config_continuous.json" # Nombre de config específico
+                plot_path = item_path / "spm_plot.png" # Nombre de plot específico
+                spm_results_path = item_path / "spm_results.json"
+
+                if config_path.exists() and config_path.is_file():
+                    try:
+                        with open(config_path, 'r', encoding='utf-8') as f:
+                            config_data = json.load(f)
+                        mtime = config_path.stat().st_mtime
+                        analyses.append({
+                            'name': analysis_name,
+                            'path': item_path,
+                            'config': config_data,
+                            'mtime': mtime,
+                            'plot_path': plot_path if plot_path.exists() else None,
+                            'spm_results_path': spm_results_path if spm_results_path.exists() else None
+                        })
+                    except json.JSONDecodeError:
+                        logger.error(f"Error leyendo config_continuous.json para análisis '{analysis_name}' en estudio {study_id}.")
+                    except Exception as e:
+                        logger.error(f"Error procesando análisis continuo '{analysis_name}' en estudio {study_id}: {e}", exc_info=True)
+                elif not config_path.exists() or not config_path.is_file():
+                     logger.warning(f"Directorio análisis continuo '{analysis_name}' encontrado sin config_continuous.json válido en estudio {study_id}.")
+        
+        analyses.sort(key=lambda x: x['mtime'], reverse=True)
+        return analyses
+
+    def delete_continuous_analysis(self, study_id: int, analysis_name: str):
+        """
+        Elimina la carpeta y contenido de un análisis continuo específico.
+
+        :param study_id: ID del estudio.
+        :param analysis_name: Nombre del análisis a eliminar.
+        :raises ValueError: Si el nombre del análisis es inválido.
+        :raises FileNotFoundError: Si el directorio del análisis no existe.
+        :raises OSError: Si ocurre un error al eliminar el directorio.
+        """
+        analysis_dir = self.get_continuous_analysis_path(study_id, analysis_name)
+        if not analysis_dir:
+            raise ValueError(f"Nombre de análisis continuo inválido o ruta de estudio no encontrada: {analysis_name}")
+
+        if not analysis_dir.exists():
+            raise FileNotFoundError(f"El directorio del análisis continuo no existe: {analysis_dir}")
+        if not analysis_dir.is_dir():
+            raise ValueError(f"La ruta del análisis continuo no es un directorio: {analysis_dir}")
+
+        try:
+            shutil.rmtree(analysis_dir)
+            logger.info(f"Análisis continuo eliminado: {analysis_dir}")
+        except OSError as e:
+            logger.error(f"Error eliminando directorio análisis continuo {analysis_dir}: {e}", exc_info=True)
+            raise
+
     # --- Métodos para Análisis Discreto (Fase 6) ---
 
     def get_discrete_analysis_tables_path(self, study_id: int) -> Path | None:
