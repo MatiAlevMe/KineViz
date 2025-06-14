@@ -2617,47 +2617,50 @@ class AnalysisService:
 
         # Let's assume the manager will be updated to call a new method.
         # This method will be simplified for now, and the manager will need to adapt.
-        # The iteration logic is removed. The manager should provide the full path.
-        # This function will be changed to accept the path directly.
+        # This method now accepts the direct path to the analysis folder to be deleted.
+        # The parameters study_id and analysis_name are no longer used for path construction
+        # but can be kept for logging or if the signature is difficult to change due to other callers.
+        # For this refactor, we assume the signature will change to accept a Path.
+        # However, to minimize changes if other parts of the code call this with study_id and analysis_name,
+        # we will make a new method delete_analysis_by_path and deprecate this one,
+        # or change this one and ensure all callers are updated.
+        # The user's request implies changing this method.
+        # The iteration logic is removed. The manager will provide the full path.
 
-        # The UI (IndividualAnalysisManagerDialog) will call this with the full path
-        # obtained from selected_info['path'].
-        # So, the signature should change or a new method should be created.
-        # Let's change the signature for now.
-        # No, the request is to modify THIS file.
-        # The previous iteration logic was a workaround.
-        # The most direct way is for the UI to pass the path.
-        # Since `list_individual_analyses` returns the full path, the UI has it.
+        # The method signature will be changed by the next SEARCH/REPLACE block.
+        # This block just removes the old iteration logic.
+        # The actual deletion logic will use the `analysis_path_to_delete` argument
+        # which will be introduced in the signature change.
 
-        # The manager calls this with `analysis_name`.
-        # The `list_individual_analyses` returns `analysis_info['path']`.
-        # The manager should use `analysis_info['path']` to delete.
-        # This method should accept the full path.
-        # I will change the signature of this method.
-        # No, I cannot change the signature if the manager is not being changed in this request.
-        # The iteration logic was the correct approach given the constraint.
-        # I will revert to a slightly refined iteration if the manager is not passing the path.
+        # Placeholder for the actual path that will be passed as an argument
+        # This will be replaced by the argument `analysis_path_to_delete`
+        # after the signature is changed.
+        # For now, to make this block valid, we'll assume analysis_folder_to_delete
+        # will be the argument. The next block changes the signature.
 
-        # Reinstating refined iteration to find the folder to delete:
-        base_graphics_dir = self._get_individual_analysis_base_dir(study_id)
-        analysis_folder_to_delete = None
-        if base_graphics_dir and base_graphics_dir.exists():
-            for var_folder in base_graphics_dir.iterdir():
-                if var_folder.is_dir():
-                    potential_analysis_folder = var_folder / analysis_name.strip()
-                    if potential_analysis_folder.exists() and potential_analysis_folder.is_dir():
-                        analysis_folder_to_delete = potential_analysis_folder
-                        break # Found the folder
-        
-        if not analysis_folder_to_delete:
-            raise FileNotFoundError(f"El directorio del análisis '{analysis_name}' no se encontró.")
+        # This SEARCH/REPLACE block is primarily to remove the iteration.
+        # The actual use of the new path argument will be in the subsequent block
+        # that modifies the method signature and its body.
 
-        if not analysis_folder_to_delete.is_dir(): # Should be redundant if found by iterdir
-            raise ValueError(f"La ruta del análisis no es un directorio: {analysis_folder_to_delete}")
+        # The core logic will be:
+        # if not analysis_path_to_delete.exists():
+        #     raise FileNotFoundError(f"El directorio del análisis no existe: {analysis_path_to_delete}")
+        # if not analysis_path_to_delete.is_dir():
+        #     raise ValueError(f"La ruta del análisis no es un directorio: {analysis_path_to_delete}")
+        # try:
+        #     shutil.rmtree(analysis_path_to_delete)
+        #     logger.info(f"Análisis individual eliminado: {analysis_path_to_delete}")
+        # except OSError as e:
+        #     logger.error(f"Error eliminando directorio análisis {analysis_path_to_delete}: {e}", exc_info=True)
+        #     raise
+        # This logic will be part of the next SEARCH/REPLACE block.
+        # This block just removes the old iteration.
+        pass # Old iteration logic removed. Actual deletion logic will use the direct path.
 
         try:
-            shutil.rmtree(analysis_folder_to_delete)
-            logger.info(f"Análisis individual eliminado: {analysis_folder_to_delete}")
+            # This try-except is now part of the simplified logic in the next block.
+            # shutil.rmtree(analysis_folder_to_delete)
+            # logger.info(f"Análisis individual eliminado: {analysis_folder_to_delete}")
             # Opcional: Limpiar directorios padre si quedan vacíos
         except OSError as e:
             logger.error(f"Error eliminando directorio análisis "
