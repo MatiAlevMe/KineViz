@@ -2590,79 +2590,32 @@ class AnalysisService:
         analyses.sort(key=lambda x: x['mtime'], reverse=True)
         return analyses
 
-    def delete_individual_analysis(self, study_id: int, analysis_name: str):
+    def delete_individual_analysis(self, analysis_path_to_delete: Path):
         """
         Elimina la carpeta y contenido de un análisis individual específico.
 
-        :param study_id: ID del estudio.
-        :param analysis_name: Nombre del análisis a eliminar.
-        :raises ValueError: Si el nombre del análisis es inválido.
+        :param analysis_path_to_delete: Path object de la carpeta del análisis a eliminar.
         :raises FileNotFoundError: Si el directorio del análisis no existe.
+        :raises ValueError: Si la ruta no es un directorio.
         :raises OSError: Si ocurre un error al eliminar el directorio.
         """
-        # This method now expects the UI to pass the full path to the analysis directory.
-        # The 'analysis_name' parameter is kept for logging/messaging but not for path construction.
-        # The 'study_id' is also kept for context but not directly used if analysis_path is absolute.
-        
-        # The IndividualAnalysisManagerDialog will get the path from selected_info['path']
-        # and pass it as an argument to a new method, e.g., delete_analysis_by_path(path_obj: Path).
-        # For now, to minimize changes to the manager's call, we'll assume the manager
-        # will be updated to pass the path.
-        # This function will be simplified to take the path directly.
-        # The current implementation with iteration is removed.
-        # The manager will now call a new method: delete_analysis_by_path(self, analysis_path_to_delete: Path)
-        # This method (delete_individual_analysis) will be deprecated or removed.
-        # For now, I will modify it to expect the path to be passed via a different mechanism
-        # or make it clear this needs a refactor in the manager.
+        logger.info(f"Solicitud para eliminar análisis individual en: {analysis_path_to_delete}")
 
-        # Let's assume the manager will be updated to call a new method.
-        # This method will be simplified for now, and the manager will need to adapt.
-        # This method now accepts the direct path to the analysis folder to be deleted.
-        # The parameters study_id and analysis_name are no longer used for path construction
-        # but can be kept for logging or if the signature is difficult to change due to other callers.
-        # For this refactor, we assume the signature will change to accept a Path.
-        # However, to minimize changes if other parts of the code call this with study_id and analysis_name,
-        # we will make a new method delete_analysis_by_path and deprecate this one,
-        # or change this one and ensure all callers are updated.
-        # The user's request implies changing this method.
-        # The iteration logic is removed. The manager will provide the full path.
-
-        # The method signature will be changed by the next SEARCH/REPLACE block.
-        # This block just removes the old iteration logic.
-        # The actual deletion logic will use the `analysis_path_to_delete` argument
-        # which will be introduced in the signature change.
-
-        # Placeholder for the actual path that will be passed as an argument
-        # This will be replaced by the argument `analysis_path_to_delete`
-        # after the signature is changed.
-        # For now, to make this block valid, we'll assume analysis_folder_to_delete
-        # will be the argument. The next block changes the signature.
-
-        # This SEARCH/REPLACE block is primarily to remove the iteration.
-        # The actual use of the new path argument will be in the subsequent block
-        # that modifies the method signature and its body.
-
-        # The core logic will be:
-        # if not analysis_path_to_delete.exists():
-        #     raise FileNotFoundError(f"El directorio del análisis no existe: {analysis_path_to_delete}")
-        # if not analysis_path_to_delete.is_dir():
-        #     raise ValueError(f"La ruta del análisis no es un directorio: {analysis_path_to_delete}")
-        # try:
-        #     shutil.rmtree(analysis_path_to_delete)
-        #     logger.info(f"Análisis individual eliminado: {analysis_path_to_delete}")
-        # except OSError as e:
-        #     logger.error(f"Error eliminando directorio análisis {analysis_path_to_delete}: {e}", exc_info=True)
-        #     raise
-        # This logic will be part of the next SEARCH/REPLACE block.
-        # This block just removes the old iteration.
-        pass # Old iteration logic removed. Actual deletion logic will use the direct path.
+        if not analysis_path_to_delete.exists():
+            raise FileNotFoundError(f"El directorio del análisis no existe: {analysis_path_to_delete}")
+        if not analysis_path_to_delete.is_dir():
+            raise ValueError(f"La ruta del análisis no es un directorio: {analysis_path_to_delete}")
 
         try:
-            # This try-except is now part of the simplified logic in the next block.
-            # shutil.rmtree(analysis_folder_to_delete)
-            # logger.info(f"Análisis individual eliminado: {analysis_folder_to_delete}")
-            # Opcional: Limpiar directorios padre si quedan vacíos
+            shutil.rmtree(analysis_path_to_delete)
+            logger.info(f"Análisis individual eliminado: {analysis_path_to_delete}")
+            # Opcional: Limpiar directorios padre (variable_folder_name) si quedan vacíos.
+            # Esto requeriría verificar si el directorio padre está vacío después de la eliminación.
+            # Ejemplo:
+            # parent_dir = analysis_path_to_delete.parent
+            # if parent_dir.exists() and not any(parent_dir.iterdir()):
+            #     logger.info(f"Directorio de variable '{parent_dir.name}' está vacío, eliminándolo.")
+            #     parent_dir.rmdir() # rmdir solo funciona si está vacío
         except OSError as e:
-            logger.error(f"Error eliminando directorio análisis "
-                         f"{analysis_folder_to_delete}: {e}", exc_info=True)
+            logger.error(f"Error eliminando directorio análisis {analysis_path_to_delete}: {e}", exc_info=True)
             raise
