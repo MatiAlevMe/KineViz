@@ -25668,3 +25668,30 @@ AttributeError: 'NoneType' object has no attribute 'delete'
 2025-06-14 00:58:02,501 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte09, Sub-valores: ['Adulto', 'BP'], Intento: 3
 2025-06-14 00:58:02,501 - DEBUG - [kineviz.core.services.analysis_service] - Grupos identificados (9): {'Edad=Mayor;Peso=BP', 'Edad=Adulto;Peso=BP', 'Edad=Adulto;Peso=OS', 'Edad=Joven;Peso=BP', 'Edad=Mayor;Peso=NP', 'Edad=Joven;Peso=OS', 'Edad=Adulto;Peso=NP', 'Edad=Mayor;Peso=OS', 'Edad=Joven;Peso=NP'}
 2025-06-14 00:58:02,503 - INFO - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Archivo de configuración de texto (discreto) generado en: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/1_Edad y Peso con 3 sub-valores/Analisis Discreto/Individual/anova testing/configuracion_detallada_discreto.txt
+2025-06-14 01:09:39,913 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-14 01:09:39,913 - INFO - [__main__] - Iniciando KineViz...
+2025-06-14 01:09:40,357 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-14 01:09:40,358 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-14 01:09:41,518 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 32
+2025-06-14 01:09:41,540 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 32
+2025-06-14 01:09:41,540 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 32: {}
+2025-06-14 01:09:41,540 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-14 01:09:42,245 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Loaded VIs for study 32: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['NP', 'OS', 'BP'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-14 01:09:42,260 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Cargados 21 análisis continuos para estudio 32.
+2025-06-14 01:11:56,602 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-14 01:11:56,602 - INFO - [__main__] - Iniciando KineViz...
+2025-06-14 01:11:56,809 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-14 01:11:56,809 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-14 01:11:58,556 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 32
+2025-06-14 01:11:58,578 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 32
+2025-06-14 01:11:58,578 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 32: {}
+2025-06-14 01:11:58,578 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-14 01:11:59,578 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Loaded VIs for study 32: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['NP', 'OS', 'BP'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-14 01:11:59,593 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Cargados 21 análisis continuos para estudio 32.
+2025-06-14 01:12:16,391 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-14 01:12:16,392 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-14 01:12:19,716 - DEBUG - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Loaded VIs for study 32: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['NP', 'OS', 'BP'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-14 01:12:19,723 - DEBUG - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Cargados 8 análisis individuales para estudio 32.
+2025-06-14 01:12:24,881 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 32
+2025-06-14 01:12:24,882 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 32: {}
+2025-06-14 01:12:24,882 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'

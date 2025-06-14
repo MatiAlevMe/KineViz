@@ -123,7 +123,8 @@ Detalle: Modificar la lógica en `kineviz.core.data_processing.file_handlers.lee
 4.6 [Hecho] Botón en `DiscreteAnalysisView`: Añadir botón para abrir el gestor.
 5. [Hecho] Generación de Gráfico Boxplot Comparativo.
 5.1 [Hecho] Función `create_comparison_boxplot`: En `charting.py` usando seaborn/matplotlib.
-5.2 [Hecho] `AnalysisService.perform_individual_analysis`: Lógica para leer datos de tablas CSV internas, preparar datos por grupo combinado y llamar a `create_comparison_boxplot`. Guarda gráfico PNG y config.json.
+5.2 [Hecho] `AnalysisService.perform_individual_analysis`: Lógica para leer datos de tablas CSV internas, preparar datos por grupo combinado y llamar a 
+`create_comparison_boxplot`. Guarda gráfico PNG y config.json en la nueva estructura de carpetas `Analisis Discreto/Graficos/[VARIABLE_SIN_UNIDAD]/[NOMBRE_ANALISIS]`.
 6. [Hecho] Implementación de Tests Estadísticos y Mejoras Gráficas.
 6.1 [Hecho] Lógica en `perform_individual_analysis`: Ejecutar tests (t-test/ANOVA/Wilcoxon/Kruskal/Friedman) usando `scipy.stats`.
 6.2 [Hecho] Mejorar `create_comparison_boxplot`: Usar `swarmplot`, añadir leyenda, mostrar significancia (statannot para 2 grupos, p-valor general para >2).
@@ -138,7 +139,7 @@ Detalle: Modificar la lógica en `kineviz.core.data_processing.file_handlers.lee
 8.1 [Hecho] `AnalysisService.list_individual_analyses` / `delete_individual_analysis`.
 8.2 [Hecho] Conectar UI `IndividualAnalysisManagerDialog`: Cargar, ver PNG, ver HTML, eliminar, abrir carpeta. Mostrar grupos combinados y p-valor.
 9. [Hecho] Implementar agregación de datos para análisis de efectos principales en `perform_individual_analysis`: Cuando se selecciona el modo "1VI" en la configuración de análisis individual, se agregan datos de las tablas de resumen combinadas correspondientes para permitir comparaciones de efectos principales (ej. "todos los jóvenes" vs "todos los mayores").
-10. [Hecho] Adaptar `get_common_columns_for_groups` para efectos principales: Asegurar que la selección de columnas comunes funcione correctamente cuando se comparan efectos principales en modo "1VI".
+10.  [Hecho] Adaptar `get_common_columns_for_groups` para efectos principales: Asegurar que la selección de columnas comunes funcione correctamente cuando se comparan efectos principales en modo "1VI".
 
 ## [Hecho] Fase 3: Refactorización a Variables Independientes (VI) y Mejoras UI/Validación
 1. [Hecho] Modificar Modelo de Estudio.
