@@ -362,6 +362,246 @@ def create_spm_results_plot(normalized_data_by_group: dict,
         plt.close(fig)
 
 
+def create_interactive_spm_results_plot(normalized_data_by_group: dict,
+                                        spm_results: dict,
+                                        group_legend_names: list[str],
+                                        variable_name: str,
+                                        output_path: Path):
+    """
+    Generates an interactive two-panel plot for SPM analysis results using Plotly.
+    Top panel: Mean curves +/- SEM/STD/CI for each group.
+    Bottom panel: SPM statistic curve, critical threshold, and significant clusters.
+
+    :param normalized_data_by_group: Dict {group_key: list_of_np_arrays (101,)}.
+    :param spm_results: Dict from AnalysisService, containing display options,
+                        'stat_curve', 'critical_threshold', 'clusters', etc.
+    :param group_legend_names: List of display names for the groups.
+    :param variable_name: Name of the analyzed variable for y-axis label.
+    :param output_path: Path object to save the HTML plot.
+    """
+    if not PLOTLY_AVAILABLE:
+        logger.error("Plotly no está instalado. No se puede generar gráfico SPM interactivo.")
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write("<html><body><p>Error: La biblioteca Plotly no está instalada. "
+                    "No se pudo generar el gráfico interactivo.</p></body></html>")
+        return
+
+    logger.debug(f"Generando gráfico SPM interactivo para variable '{variable_name}' en {output_path}")
+
+    if not normalized_data_by_group or not group_legend_names:
+        logger.warning("No hay datos normalizados o nombres de grupo para generar gráfico SPM interactivo.")
+        # Create an empty HTML file with a message
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write(f"<html><body><h3>Análisis SPM: {variable_name}</h3>"
+                    "<p>No hay datos normalizados o nombres de grupo para generar el gráfico.</p></body></html>")
+        return
+
+    group_keys = list(normalized_data_by_group.keys())
+    if len(group_keys) != len(group_legend_names):
+        logger.error("Discrepancia en número de grupos entre datos normalizados y nombres de leyenda para gráfico interactivo.")
+        group_legend_names = group_keys # Fallback
+
+    num_points = 101
+    time_axis = np.linspace(0, 100, num_points)
+
+    fig = go.Figure() # Will be replaced by make_subplots
+    try:
+        # Initialize with template and make subplots
+        fig = go.subplots.make_subplots(
+            rows=2, cols=1, shared_xaxes=True,
+            vertical_spacing=0.05, # Adjust spacing between subplots
+            row_heights=[0.6, 0.4], # Allocate more space to mean curves
+            figure=go.Figure(layout=go.Layout(template="plotly_white")) # Pass initial figure with template
+        )
+    except Exception as e_subplot: 
+        logger.error(f"Error creando subplots con Plotly: {e_subplot}. Usando figura simple.")
+        fig = go.Figure(layout=go.Layout(template="plotly_white"))
+
+
+    # Determine global fill type for title
+    show_ci_global = spm_results.get('show_conf_int', False)
+    show_std_global = spm_results.get('show_std_dev', False)
+    # Default SEM to True if others are false, or if explicitly set
+    show_sem_global = spm_results.get('show_sem', not (show_ci_global or show_std_global))
+
+    global_fill_type_label = ""
+    if show_ci_global: global_fill_type_label = "± 95% IC"
+    elif show_std_global: global_fill_type_label = "± DE"
+    elif show_sem_global: global_fill_type_label = "± EEM"
+
+
+    # --- Panel Superior: Curvas Promedio ---
+    color_sequence = pio.templates[pio.templates.default].layout.colorway or go.colors.DEFAULT_PLOTLY_COLORS
+
+    for i, group_key in enumerate(group_keys):
+        group_data_arrays = normalized_data_by_group[group_key]
+        if not group_data_arrays: continue
+
+        try:
+            stacked_data = np.stack(group_data_arrays, axis=0)
+            mean_curve = np.mean(stacked_data, axis=0)
+            std_dev_curve = np.std(stacked_data, axis=0, ddof=1)
+            
+            lower_bound, upper_bound = None, None
+            num_subjects_in_group = stacked_data.shape[0]
+
+            if num_subjects_in_group > 0:
+                sem_curve = std_dev_curve / np.sqrt(num_subjects_in_group)
+                if show_ci_global and num_subjects_in_group > 1:
+                    t_critical = scipy.stats.t.ppf((1 + 0.95) / 2, df=num_subjects_in_group - 1)
+                    ci_margin = t_critical * sem_curve
+                    lower_bound, upper_bound = mean_curve - ci_margin, mean_curve + ci_margin
+                elif show_std_global:
+                    lower_bound, upper_bound = mean_curve - std_dev_curve, mean_curve + std_dev_curve
+                elif show_sem_global: # This will be true if it's the default or explicitly chosen
+                    lower_bound, upper_bound = mean_curve - sem_curve, mean_curve + sem_curve
+
+            color = color_sequence[i % len(color_sequence)]
+            fig.add_trace(go.Scatter(
+                x=time_axis, y=mean_curve, name=group_legend_names[i],
+                legendgroup=f"group{i}",
+                line=dict(color=color, width=2),
+                mode='lines'
+            ), row=1, col=1)
+
+            if lower_bound is not None and upper_bound is not None:
+                # Convert hex color to rgba for fillcolor
+                r_hex, g_hex, b_hex = color[1:3], color[3:5], color[5:7]
+                fill_rgba_color = f'rgba({int(r_hex,16)},{int(g_hex,16)},{int(b_hex,16)},0.2)'
+                
+                fig.add_trace(go.Scatter(
+                    x=np.concatenate([time_axis, time_axis[::-1]]), 
+                    y=np.concatenate([upper_bound, lower_bound[::-1]]), 
+                    fill='toself',
+                    fillcolor=fill_rgba_color,
+                    line=dict(width=0),
+                    name=f"{group_legend_names[i]} {global_fill_type_label}",
+                    legendgroup=f"group{i}",
+                    showlegend=False 
+                ), row=1, col=1)
+        except Exception as e_trace:
+            logger.error(f"Error añadiendo trace para grupo '{group_legend_names[i]}' en gráfico interactivo: {e_trace}", exc_info=True)
+
+    # --- Panel Inferior: Curva Estadística SPM ---
+    stat_curve = spm_results.get('stat_curve')
+    critical_threshold = spm_results.get('critical_threshold')
+    clusters = spm_results.get('clusters', [])
+    test_type = spm_results.get('test_type', 'SPM').upper()
+    df_stat = spm_results.get('df', '')
+    alpha_level = spm_results.get('alpha_level', 0.05)
+
+    if stat_curve is not None:
+        fig.add_trace(go.Scatter(
+            x=time_axis, y=stat_curve, name=f'Estadístico {test_type}',
+            line=dict(color='black', width=1.5),
+            mode='lines'
+        ), row=2, col=1)
+
+        if critical_threshold is not None:
+            fig.add_hline(y=critical_threshold, line_dash="dash", line_color="red",
+                          annotation_text=f'Umbral Crítico (α={alpha_level})',
+                          annotation_position="bottom right", row=2, col=1)
+            if "ttest" in test_type.lower() and critical_threshold > 0:
+                 fig.add_hline(y=-critical_threshold, line_dash="dash", line_color="red", row=2, col=1)
+        
+        if clusters and spm_results.get('annotate_spm_clusters_bottom', True):
+            for i_clus, cluster in enumerate(clusters):
+                start_node, end_node = cluster.get('start_node'), cluster.get('end_node')
+                if start_node is not None and end_node is not None and \
+                   start_node < len(time_axis) and end_node < len(time_axis) and start_node <= end_node:
+                    
+                    time_start, time_end = time_axis[start_node], time_axis[end_node]
+                    fig.add_vrect(
+                        x0=time_start, x1=time_end,
+                        fillcolor="lightcoral", opacity=0.3,
+                        layer="below", line_width=0,
+                        name=f'Cluster Sig. {i_clus+1}' if i_clus == 0 else None, 
+                        showlegend= i_clus == 0, 
+                        row=2, col=1
+                    )
+                    peak_node, peak_value, p_val = cluster.get('peak_node'), cluster.get('peak_value'), cluster.get('p_value')
+                    if peak_node is not None and peak_value is not None and p_val is not None and peak_node < len(time_axis) and peak_node < len(stat_curve):
+                        time_of_peak = time_axis[peak_node]
+                        actual_peak_stat = stat_curve[peak_node]
+                        fig.add_annotation(
+                            x=time_of_peak, y=actual_peak_stat,
+                            text=(f"Peak: {peak_value:.2f}<br>"
+                                  f"p: {p_val:.3f}<br>"
+                                  f"t: {time_of_peak:.1f}%"),
+                            showarrow=True, arrowhead=1, arrowcolor="blue",
+                            ax=0, ay=-40 if actual_peak_stat >=0 else 40, 
+                            bgcolor="rgba(255,255,255,0.7)", bordercolor="grey", borderwidth=1,
+                            row=2, col=1
+                        )
+                        fig.add_trace(go.Scatter(
+                            x=[time_of_peak], y=[actual_peak_stat], mode='markers',
+                            marker=dict(color='blue', size=5), showlegend=False
+                        ), row=2, col=1)
+
+    if clusters and spm_results.get('annotate_spm_range_top', True):
+        for i_clus_top, cluster_top in enumerate(clusters):
+            start_node_top, end_node_top = cluster_top.get('start_node'), cluster_top.get('end_node')
+            if start_node_top is not None and end_node_top is not None and \
+               start_node_top < len(time_axis) and end_node_top < len(time_axis) and start_node_top <= end_node_top:
+                time_start_top, time_end_top = time_axis[start_node_top], time_axis[end_node_top]
+                fig.add_shape(type="rect",
+                    xref="x1", yref="paper", 
+                    x0=time_start_top, y0=0, 
+                    x1=time_end_top, y1=0.03, 
+                    fillcolor="lightcoral", opacity=0.5,
+                    layer="below", line_width=0,
+                    name=f'Rango Sig. (SPM) {i_clus_top+1}' if i_clus_top == 0 else None,
+                    row=1, col=1 # Apply to top plot
+                )
+                # Add to legend only once for the top plot annotation
+                if i_clus_top == 0:
+                    fig.add_trace(go.Scatter(
+                        x=[None], y=[None], # Dummy trace for legend
+                        mode='markers',
+                        marker=dict(color='lightcoral', size=10, symbol='square', opacity=0.5),
+                        legendgroup="spm_range_top",
+                        showlegend=True,
+                        name='Rango Significativo (SPM)'
+                    ), row=1, col=1)
+
+
+    # --- Layout y Títulos ---
+    main_title_text = f'Análisis SPM Interactivo: {variable_name}'
+    if spm_results.get('delimit_time_range', False):
+        time_min, time_max = spm_results.get('time_min', 0.0), spm_results.get('time_max', 100.0)
+        if spm_results.get('show_full_time_with_delimiters', True):
+            fig.add_vline(x=time_min, line_dash="dot", line_color="blue", row="all", col=1)
+            fig.add_vline(x=time_max, line_dash="dot", line_color="blue", row="all", col=1)
+        else:
+            fig.update_xaxes(range=[time_min, time_max], row=None, col=1) 
+        
+        if spm_results.get('add_time_range_label', False) and spm_results.get('time_range_label_text', ''):
+            time_label = spm_results.get('time_range_label_text')
+            main_title_text += f" ({time_label}: {time_min:.0f}-{time_max:.0f}%)"
+
+    fig.update_layout(
+        title_text=main_title_text, title_x=0.5,
+        legend_title_text='Grupos',
+        legend=dict(orientation="h", yanchor="bottom", y=-0.25, xanchor="center", x=0.5), 
+        margin=dict(l=60, r=30, t=80, b=180) # Increased bottom margin
+    )
+
+    fig.update_yaxes(title_text=variable_name, row=1, col=1, gridcolor='lightgrey', zerolinecolor='grey')
+    stat_label = f'Estadístico {test_type}'
+    if df_stat: stat_label += f' (gl={", ".join(map(str, df_stat))})'
+    fig.update_yaxes(title_text=stat_label, row=2, col=1, gridcolor='lightgrey', zerolinecolor='grey')
+    fig.update_xaxes(title_text='Tiempo Normalizado (%)', row=2, col=1, gridcolor='lightgrey')
+    fig.update_xaxes(row=1, col=1, gridcolor='lightgrey') # Ensure top x-axis also has grid
+
+    try:
+        fig.write_html(output_path, include_plotlyjs='cdn')
+        logger.info(f"Gráfico SPM interactivo guardado en: {output_path}")
+    except Exception as e_save:
+        logger.error(f"Error guardando gráfico SPM interactivo en {output_path}: {e_save}", exc_info=True)
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write(f"<html><body><p>Error al guardar el gráfico interactivo: {e_save}</p></body></html>")
+
+
 def create_interactive_comparison_boxplot(data_by_group: list,
                                           group_xaxis_labels: list[str],
                                           group_legend_names: list[str],

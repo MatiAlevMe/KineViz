@@ -1006,6 +1006,8 @@ class AnalysisService:
             "spm_results": None, # This will store the dict form of spm_inference
             "config_path": None,
             "spm_results_path": None,
+            "continuous_plot_path": None, # Path to static PNG
+            "continuous_interactive_plot_path": None, # Path to interactive HTML
             "output_dir": None
         }
         spm_inference = None # To store the spm1d inference object
@@ -1240,9 +1242,27 @@ class AnalysisService:
                         )
                         results_payload["continuous_plot_path"] = str(spm_plot_path)
                         logger.info(f"Gráfico de análisis continuo guardado en: {spm_plot_path}")
-                    except Exception as e_plot:
-                        logger.error(f"Error generando gráfico de análisis continuo: {e_plot}", exc_info=True)
+
+                        # --- Generar Gráfico SPM Interactivo ---
+                        spm_interactive_plot_path = current_analysis_output_dir / "spm_plot_interactive.html"
+                        try:
+                            charting.create_interactive_spm_results_plot(
+                                normalized_data_by_group=normalized_data,
+                                spm_results=plot_params_for_charting, # Same params as static plot
+                                group_legend_names=group_display_names_for_plot,
+                                variable_name=plot_variable_name,
+                                output_path=spm_interactive_plot_path
+                            )
+                            results_payload["continuous_interactive_plot_path"] = str(spm_interactive_plot_path)
+                            logger.info(f"Gráfico SPM interactivo guardado en: {spm_interactive_plot_path}")
+                        except Exception as e_iplot:
+                            logger.error(f"Error generando gráfico SPM interactivo: {e_iplot}", exc_info=True)
+                            results_payload["continuous_interactive_plot_path"] = None
+                    
+                    except Exception as e_plot: # Catch errors from static or interactive plot generation
+                        logger.error(f"Error generando gráficos de análisis continuo: {e_plot}", exc_info=True)
                         results_payload["continuous_plot_path"] = None
+                        results_payload["continuous_interactive_plot_path"] = None
                 
                 # Update final status and message based on successful saving and analysis
                 if spm_inference and not spm_error_message:
@@ -1319,7 +1339,8 @@ class AnalysisService:
         :param study_id: ID del estudio.
         :return: Lista de diccionarios:
                  {'name': str, 'path': Path, 'config': dict, 'mtime': float,
-                  'plot_path': Path | None, 'spm_results_path': Path | None}
+                  'plot_path': Path | None, 'interactive_plot_path': Path | None,
+                  'spm_results_path': Path | None}
         """
         analyses = []
         base_dir = self._get_continuous_analysis_base_dir(study_id)
@@ -1337,6 +1358,7 @@ class AnalysisService:
                     analysis_name = analysis_specific_folder_path.name
                     config_path = analysis_specific_folder_path / "config_continuous.json"
                     plot_path = analysis_specific_folder_path / "spm_plot.png"
+                    interactive_plot_path = analysis_specific_folder_path / "spm_plot_interactive.html"
                     spm_results_path = analysis_specific_folder_path / "spm_results.json"
 
                     if config_path.exists() and config_path.is_file():
@@ -1350,6 +1372,7 @@ class AnalysisService:
                                 'config': config_data,
                                 'mtime': mtime,
                                 'plot_path': plot_path if plot_path.exists() else None,
+                                'interactive_plot_path': interactive_plot_path if interactive_plot_path.exists() else None,
                                 'spm_results_path': spm_results_path if spm_results_path.exists() else None,
                                 'config_path': config_path
                             })
