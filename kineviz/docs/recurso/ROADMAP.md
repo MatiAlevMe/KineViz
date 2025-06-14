@@ -207,7 +207,7 @@ Selección de Tipo de datos (ej: Cinemática, Cinética). Solo permite Cinemáti
 Selección de Variable/Columna de Agrupación: Permitir al usuario seleccionar la variable específica a analizar (ej: "LAnkleAngles_X", "KneeMoment_Y"). Esto implica identificar y listar las columnas de datos relevantes de los archivos procesados, excluyendo "Frame", "Sub Frame" y "Tiempo".
 Selector de Descriptores: Permitir al usuario seleccionar dos o más grupos de descriptores (basados en las VIs del estudio) para comparar.
 Opciones de Visualización y Anotación: Permitir al usuario configurar cómo se visualizan las curvas promedio (EEM, DE, IC) y si se muestran anotaciones de clusters SPM y delimitaciones de tiempo.
-1.3 [En Progreso] Crear `ContinuousAnalysisView` (anteriormente `ContinuousAnalysisResultsView`): Vista en la UI para:
+1.3 [Hecho] Crear `ContinuousAnalysisView` (anteriormente `ContinuousAnalysisResultsView`): Vista en la UI para:
     - [Hecho] Listar los análisis continuos generados (nombre, columna, grupos, fecha).
     - [Hecho] Proveer opciones para cada análisis: ver gráfico SPM (PNG), ver configuración (JSON), abrir carpeta de resultados, eliminar análisis.
     - [Hecho] Exportar "Ver Configuración" a archivo .txt: La opción "Ver Configuración" ahora genera un archivo de texto plano (`configuracion_detallada.txt`) con los detalles del análisis (incluyendo "Claves de Archivo Completas Contribuyentes por Grupo Comparado") y lo abre con la aplicación predeterminada del sistema.
@@ -232,14 +232,14 @@ Recibir los datos normalizados y agrupados.
 Preparar los datos en el formato requerido por `spm1d`.
 Ejecutar tests básicos de `spm1d` (`ttest2`, `anova1`), realizar inferencia estadística y loguear resultados.
 3.3 [Hecho] Almacenamiento de Resultados SPM: Guardar los resultados del análisis (curva SPM, umbral crítico, grados de libertad, clusters significativos con p-valores) en formato JSON.
-4. [Hecho] Generación de Gráficos y Tablas para Análisis Continuo.
+4. [En Progreso] Generación de Gráficos y Tablas para Análisis Continuo.
 4.1 [Hecho] `charting.py` - Nuevas Funciones para Gráficos SPM:
     - [Hecho] Función `create_spm_results_plot` para generar gráfico estático (PNG) con:
         - Panel superior: Curvas promedio por grupo (con opciones de visualización EEM, DE, IC) vs. tiempo normalizado.
         - Panel inferior: Curva del estadístico SPM, umbral crítico y resaltado de clusters significativos (con opciones de anotación).
         - Opciones para delimitar el rango de tiempo mostrado en el gráfico y añadir etiquetas personalizadas.
-    - [Pendiente] Generar gráficos interactivos (HTML con Plotly, si es factible).
-4.2 [Pendiente] Nomenclatura de Creación de Carpeta de Guardado de Archivos:
+    - [En Progreso] Generar gráficos interactivos (HTML con Plotly, si es factible).
+4.2 [En Progreso] Nomenclatura de Creación de Carpeta de Guardado de Archivos:
 Guardar los archivos del analisis en una subcarpeta específica dentro de la carpeta del estudio (ej: `[NOMBRE_ESTUDIO]/Analisis Continuo/[NOMBRE_COMPLETO_MUSCULO_MAS_SU_DIMENSION_PERO_SIN _LA_UNIDAD_DE_MEDIDA] (ie. "Estudio de Adultos Mayores/Analisis Continuo/LAnkleMoment X")`).
 5. [Pendiente] Gestión de Análisis Continuos Guardados en `AnalysisService`.
 5.1 [Pendiente] Nuevos Métodos en `AnalysisService`:
