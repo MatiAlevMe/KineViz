@@ -643,6 +643,49 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
             
             text_lines.append(f"{translated_key}: {display_value_str}")
         
+        # --- Add Claves de Archivo Completas Contribuyentes por Grupo Comparado ---
+        text_lines.append("\n" + "-" * 40)
+        text_lines.append("Claves de Archivo Completas Contribuyentes por Grupo Comparado:")
+        text_lines.append("-" * 40)
+
+        comparison_groups_keys = config_data.get('groups', []) # These are the keys defining the comparison groups
+        mode_cfg = config_data.get('grouping_mode')
+        primary_vi_cfg = config_data.get('primary_vi_name')
+        # We need the frequency, which is stored in config_data as 'frequency'
+        frequency_cfg = config_data.get('frequency', 'Cinematica') # Default to Cinematica if not found
+
+        formatted_comparison_groups_display = self._format_analysis_groups_for_display(
+            comparison_groups_keys, mode_cfg, primary_vi_cfg, 
+            config_data.get('fixed_vi_name'), config_data.get('fixed_descriptor_display')
+        )
+
+        if not comparison_groups_keys:
+            text_lines.append("  No se definieron grupos para la comparación.")
+        else:
+            for i, comp_group_key_from_config in enumerate(comparison_groups_keys):
+                # comp_group_key_from_config is partial for 1VI, full for 2VI/Combined
+                
+                required_parts_for_lookup = []
+                if mode_cfg == '1VI':
+                    # comp_group_key_from_config is already the partial key, e.g., "Edad=Adulto"
+                    required_parts_for_lookup = [comp_group_key_from_config]
+                else: # 2VIs or Combined mode
+                    # comp_group_key_from_config is a full key, e.g., "Peso=OS;Edad=Adulto"
+                    required_parts_for_lookup = comp_group_key_from_config.split(';')
+
+                contributing_full_keys = self.analysis_service._get_contributing_full_keys(
+                    self.study_id, frequency_cfg, required_parts_for_lookup
+                )
+                
+                # Use the formatted display name for this comparison group
+                current_comparison_group_display_name = formatted_comparison_groups_display[i] if i < len(formatted_comparison_groups_display) else comp_group_key_from_config
+                text_lines.append(f"\n  Para Grupo Comparado '{current_comparison_group_display_name}':")
+                if contributing_full_keys:
+                    for cfk_idx, full_key in enumerate(contributing_full_keys):
+                        text_lines.append(f"    - {full_key}")
+                else:
+                    text_lines.append("    (No se encontraron archivos contribuyentes con estas VIs exactas)")
+        
         # Add any other parameters from config_data not in display_order
         other_params_added = False
         for key, value in config_data.items():
