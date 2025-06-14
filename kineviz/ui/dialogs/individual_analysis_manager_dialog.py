@@ -43,10 +43,9 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.filter_vi2_name_var = tk.StringVar()
         self.filter_vi2_desc_var = tk.StringVar()
 
-        # Column definitions
-        self.columns = ("Nombre", "Fecha", "Tipo de Dato", "Cálculo",
-                        "Columna Analizada", "Supuestos", "Valores Clave",
-                        "Grupos Comparados")
+        # Column definitions - Updated for new display
+        self.columns = ("Nombre Análisis", "Variable Analizada", "Grupos Comparados",
+                        "Valores Clave", "Fecha Creación/Modif.")
 
         self._load_study_vi_data() # Load VIs and aliases for filters
         self.create_widgets()
@@ -140,27 +139,20 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         )
         self.analysis_tree.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
 
-        # Cabeceras iniciales
-        self.analysis_tree.heading("Nombre", text="Nombre Análisis")
-        self.analysis_tree.heading("Fecha", text="Fecha Creación")
-        self.analysis_tree.heading("Tipo de Dato", text="Tipo de Dato")
-        self.analysis_tree.heading("Cálculo", text="Cálculo")
-        self.analysis_tree.heading("Columna Analizada", text="Columna")
-        self.analysis_tree.heading("Supuestos", text="Supuestos")
-        # Añadir cabecera para Valores Clave
+        # Cabeceras iniciales - Updated for new display
+        self.analysis_tree.heading("Nombre Análisis", text="Nombre Análisis")
+        self.analysis_tree.heading("Variable Analizada", text="Variable Analizada")
+        self.analysis_tree.heading("Grupos Comparados", text="Grupos Comparados")
         self.analysis_tree.heading("Valores Clave", text="Resultado Test")
-        self.analysis_tree.heading("Grupos Comparados", text="Grupos Comparados") # Renombrar Sub-valores
+        self.analysis_tree.heading("Fecha Creación/Modif.", text="Fecha Creación/Modif.")
 
-        # Ancho columnas (ajustar según necesidad)
-        self.analysis_tree.column("Nombre", width=150, anchor=tk.W)
-        self.analysis_tree.column("Fecha", width=140, anchor=tk.CENTER)
-        self.analysis_tree.column("Tipo de Dato", width=80, anchor=tk.W)
-        self.analysis_tree.column("Cálculo", width=80, anchor=tk.W)
-        self.analysis_tree.column("Columna Analizada", width=150, anchor=tk.W)
-        self.analysis_tree.column("Supuestos", width=140, anchor=tk.W)
-        # Añadir ancho para Valores Clave
-        self.analysis_tree.column("Valores Clave", width=120, anchor=tk.W)
-        self.analysis_tree.column("Grupos Comparados", width=250, anchor=tk.W) # Renombrar Sub-valores
+
+        # Ancho columnas (ajustar según necesidad) - Updated for new display
+        self.analysis_tree.column("Nombre Análisis", width=200, anchor=tk.W)
+        self.analysis_tree.column("Variable Analizada", width=250, anchor=tk.W)
+        self.analysis_tree.column("Grupos Comparados", width=300, anchor=tk.W)
+        self.analysis_tree.column("Valores Clave", width=150, anchor=tk.W)
+        self.analysis_tree.column("Fecha Creación/Modif.", width=150, anchor=tk.CENTER)
 
         # Scrollbars
         vsb = ttk.Scrollbar(tree_frame, orient="vertical",
@@ -182,6 +174,9 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
         self.view_plot_button = ttk.Button(selection_action_frame, text="Ver/Abrir Gráfico", command=self.view_analysis_plot, state=tk.DISABLED)
         self.view_plot_button.pack(side=tk.LEFT, padx=5)
+
+        self.view_config_button = ttk.Button(selection_action_frame, text="Ver Configuración", command=self._view_config, state=tk.DISABLED)
+        self.view_config_button.pack(side=tk.LEFT, padx=5)
         
         self.view_interactive_button = ttk.Button(selection_action_frame, text="Ver Gráfico Interactivo", command=self.view_interactive_plot, state=tk.DISABLED)
         self.view_interactive_button.pack(side=tk.LEFT, padx=5)
@@ -438,12 +433,10 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                 if 'mtime' in analysis_info:
                     date_str = datetime.fromtimestamp(analysis_info['mtime']).strftime('%Y-%m-%d %H:%M:%S')
                 freq = config.get('frequency', '?')
-                calc = config.get('calculation', '?')
-                col_full = config.get('column', '?')
-                parametric = config.get('parametric', True)
-                paired = config.get('paired', False)
-                supuestos_str = (f"{'Pareado' if paired else 'No Pareado'}, "
-                                 f"{'Paramétrico' if parametric else 'No Paramétrico'}")
+                calc = config.get('calculation', '?') # Not displayed directly, but used for config view
+                col_full = config.get('column', '?') # This is the "Variable Analizada"
+                # Supuestos (parametric, paired) are not displayed directly in table, but in config view
+                
                 stats_results = config.get('stats_results')
                 valores_clave_str = "N/A"
                 if stats_results:
@@ -458,23 +451,20 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                 elif 'test_name' in config: valores_clave_str = f"{config.get('test_name', 'Test')}: ?"
                 
                 group_keys_from_config = config.get('groups', [])
-                # Extract mode parameters for formatting
                 grouping_mode = config.get('grouping_mode')
                 primary_vi_name = config.get('primary_vi_name')
                 fixed_vi_name = config.get('fixed_vi_name')
                 fixed_descriptor_display = config.get('fixed_descriptor_display')
 
                 formatted_group_display_list = self._format_analysis_groups_for_display(
-                    group_keys_from_config, 
-                    grouping_mode, 
-                    primary_vi_name, 
-                    fixed_vi_name, 
-                    fixed_descriptor_display
+                    group_keys_from_config, grouping_mode, 
+                    primary_vi_name, fixed_vi_name, fixed_descriptor_display
                 )
                 grupos_comparados_str = " vs ".join(formatted_group_display_list)
 
-                values = (analysis_name, date_str, freq, calc, col_full,
-                          supuestos_str, valores_clave_str, grupos_comparados_str)
+                # Values for the new column order
+                values = (analysis_name, col_full, grupos_comparados_str,
+                          valores_clave_str, date_str)
                 self.analysis_tree.insert("", tk.END, text=analysis_name, values=values)
         
         self._on_selection_changed() # Update button states based on current selection (if any)
@@ -541,6 +531,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         can_act = selected_info is not None
         
         self.view_plot_button.config(state=tk.NORMAL if can_act and selected_info.get("plot_path") else tk.DISABLED)
+        self.view_config_button.config(state=tk.NORMAL if can_act and selected_info.get("config") else tk.DISABLED)
         self.view_interactive_button.config(state=tk.NORMAL if can_act and selected_info.get("interactive_plot_path") else tk.DISABLED)
         self.open_folder_button.config(state=tk.NORMAL if can_act and selected_info.get("path") else tk.DISABLED)
         self.delete_button.config(state=tk.NORMAL if can_act else tk.DISABLED)
@@ -565,6 +556,122 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         logger.error(f"No se encontró información para análisis seleccionado: "
                       f"{analysis_name}")
         return None
+
+    def _view_config(self):
+        """Genera y abre un archivo .txt con la configuración detallada del análisis seleccionado."""
+        selected_info = self.get_selected_analysis_info()
+        if not selected_info:
+            messagebox.showwarning("Sin Selección", "Por favor, seleccione un análisis para ver su configuración.", parent=self)
+            return
+
+        config_data = selected_info.get("config")
+        analysis_name_for_file = selected_info.get("name", "configuracion_desconocida")
+        analysis_folder_path = selected_info.get("path") # Path object to the analysis folder
+
+        if not config_data:
+            messagebox.showerror("Error", "No hay datos de configuración para mostrar.", parent=self)
+            return
+        if not analysis_folder_path:
+            messagebox.showerror("Error", "No se pudo determinar la carpeta del análisis para guardar el archivo de configuración.", parent=self)
+            return
+
+        # --- Generate Text Content ---
+        text_lines = []
+        text_lines.append(f"Configuración del Análisis Discreto: {analysis_name_for_file}\n")
+        text_lines.append("=" * (len(text_lines[0]) -1) + "\n")
+
+        # Translations and order for display (adapt from Continuous if needed, or define new)
+        key_translations = {
+            "name": "Nombre del Análisis",
+            "frequency": "Tipo de Dato",
+            "calculation": "Cálculo Aplicado",
+            "column": "Variable Analizada",
+            "groups": "Grupos Comparados (Claves Originales)",
+            "parametric": "Supuesto: Datos Paramétricos",
+            "paired": "Supuesto: Muestras Pareadas",
+            "grouping_mode": "Modo de Agrupación de VIs",
+            "primary_vi_name": "VI Primaria (Modo 1VI)",
+            "fixed_vi_name": "VI Fija (Modo 2VIs)",
+            "fixed_descriptor_display": "Valor Fijo de VI (Modo 2VIs)",
+            "stats_results": "Resultados Estadísticos"
+        }
+        
+        display_order = [
+            "name", "frequency", "calculation", "column", "groups", 
+            "parametric", "paired", "grouping_mode", 
+            "primary_vi_name", "fixed_vi_name", "fixed_descriptor_display",
+            "stats_results"
+        ]
+
+        for key in display_order:
+            if key not in config_data: continue
+            translated_key = key_translations.get(key, key.replace("_", " ").capitalize())
+            raw_value = config_data.get(key)
+            display_value_str = ""
+
+            if isinstance(raw_value, bool):
+                display_value_str = "Sí" if raw_value else "No"
+            elif key == "groups":
+                # For 'groups', show the raw keys and then the formatted display version
+                raw_keys_str = ", ".join(raw_value) if isinstance(raw_value, list) else str(raw_value)
+                
+                # Get formatted display for these groups
+                mode_cfg = config_data.get('grouping_mode')
+                primary_vi_cfg = config_data.get('primary_vi_name')
+                fixed_vi_cfg = config_data.get('fixed_vi_name')
+                fixed_desc_display_cfg = config_data.get('fixed_descriptor_display')
+                
+                formatted_display_list = self._format_analysis_groups_for_display(
+                    raw_value, mode_cfg, primary_vi_cfg, fixed_vi_cfg, fixed_desc_display_cfg
+                )
+                formatted_display_str = " vs ".join(formatted_display_list)
+                display_value_str = f"{formatted_display_str} (Claves: {raw_keys_str})"
+            elif key == "stats_results" and isinstance(raw_value, dict):
+                test_name = raw_value.get('test_name', 'N/A')
+                p_val = raw_value.get('p_value')
+                if p_val is not None and not np.isnan(p_val):
+                    p_text = f"p < 0.001" if p_val < 0.001 else f"p = {p_val:.4f}"
+                    display_value_str = f"{test_name}: {p_text}"
+                elif p_val is not None: # is NaN
+                    display_value_str = f"{test_name}: p=NaN (No calculable)"
+                else:
+                    display_value_str = f"{test_name}: No disponible"
+            elif raw_value is None:
+                display_value_str = "No especificado"
+            else:
+                display_value_str = str(raw_value)
+            
+            text_lines.append(f"{translated_key}: {display_value_str}")
+        
+        # Add any other parameters from config_data not in display_order
+        other_params_added = False
+        for key, value in config_data.items():
+            if key not in display_order:
+                if not other_params_added:
+                    text_lines.append("\n" + "-" * 40)
+                    text_lines.append("Otros Parámetros en Configuración:")
+                    text_lines.append("-" * 40)
+                    other_params_added = True
+                translated_key = key_translations.get(key, key.replace("_", " ").capitalize())
+                text_lines.append(f"{translated_key}: {value}")
+        
+        text_content = "\n".join(text_lines)
+
+        # --- Save to Text File ---
+        txt_config_path = analysis_folder_path / "configuracion_detallada_discreto.txt"
+        try:
+            with open(txt_config_path, 'w', encoding='utf-8') as f_txt:
+                f_txt.write(text_content)
+            logger.info(f"Archivo de configuración de texto (discreto) generado en: {txt_config_path}")
+
+            # --- Open the Text File ---
+            if sys.platform == "win32": os.startfile(txt_config_path)
+            elif sys.platform == "darwin": subprocess.run(["open", txt_config_path], check=True)
+            else: subprocess.run(["xdg-open", txt_config_path], check=True)
+        except Exception as e_open:
+            messagebox.showerror("Error al Abrir/Guardar", f"No se pudo abrir/guardar el archivo de configuración:\n{txt_config_path}\n\nError: {e_open}", parent=self)
+            logger.error(f"Error abriendo/guardando archivo de texto {txt_config_path}: {e_open}", exc_info=True)
+
 
     def view_interactive_plot(self):
         """Abre el gráfico HTML interactivo del análisis seleccionado."""
