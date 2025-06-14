@@ -930,6 +930,9 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
                 selected_keys.append(original_key)
             else:
                 logger.error(f"Clave original no encontrada para el grupo filtrado seleccionado: '{display_name}'")
+                # Si una clave no se encuentra, la selección es inválida
+                messagebox.showerror("Error Interno", f"No se pudo encontrar la clave para el grupo '{display_name}'.", parent=self)
+                return []
         
         # Eliminar duplicados de claves si por alguna razón pasaron (ej. dos display names diferentes apuntan a la misma clave)
         return list(dict.fromkeys(selected_keys))
