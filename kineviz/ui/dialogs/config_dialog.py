@@ -29,6 +29,11 @@ class ConfigDialog(Toplevel):
         self.var_pdfs_per_page = StringVar()
 
         self.load_current_settings()
+
+        # Definir estilo para el botón de ayuda
+        style = ttk.Style()
+        style.configure("Help.TButton", foreground="white", background="blue")
+        
         self.create_widgets()
 
         # Centrar diálogo
@@ -36,6 +41,10 @@ class ConfigDialog(Toplevel):
         self.grab_set()
         # Código para centrar (opcional, similar a StudyDialog)
         # ...
+
+    def _show_input_help(self, title: str, message: str):
+        """Muestra un popup de ayuda simple."""
+        messagebox.showinfo(title, message, parent=self)
 
     def load_current_settings(self):
         """Carga los valores actuales desde AppSettings a las variables."""
@@ -55,18 +64,36 @@ class ConfigDialog(Toplevel):
 
         # --- Campos de Configuración ---
         ttk.Label(main_frame, text="Estudios por página:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
-        studies_entry = ttk.Entry(main_frame, textvariable=self.var_studies_per_page, width=10)
-        studies_entry.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
+        studies_frame = ttk.Frame(main_frame)
+        studies_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
+        studies_entry = ttk.Entry(studies_frame, textvariable=self.var_studies_per_page, width=7)
+        studies_entry.pack(side=tk.LEFT, padx=(0,5))
+        ttk.Button(studies_frame, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Estudios por Página",
+                                                         "Número de estudios a mostrar por página en la vista principal.")
+                  ).pack(side=tk.LEFT)
         row_idx += 1
 
         ttk.Label(main_frame, text="Archivos por página (vista estudio):").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
-        files_entry = ttk.Entry(main_frame, textvariable=self.var_files_per_page, width=10)
-        files_entry.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
+        files_frame = ttk.Frame(main_frame)
+        files_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
+        files_entry = ttk.Entry(files_frame, textvariable=self.var_files_per_page, width=7)
+        files_entry.pack(side=tk.LEFT, padx=(0,5))
+        ttk.Button(files_frame, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Archivos por Página",
+                                                         "Número de archivos a mostrar por página en el navegador de archivos de la vista de estudio.")
+                  ).pack(side=tk.LEFT)
         row_idx += 1
 
         ttk.Label(main_frame, text="Reportes PDF por página (análisis):").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
-        pdfs_entry = ttk.Entry(main_frame, textvariable=self.var_pdfs_per_page, width=10)
-        pdfs_entry.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
+        pdfs_frame = ttk.Frame(main_frame)
+        pdfs_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
+        pdfs_entry = ttk.Entry(pdfs_frame, textvariable=self.var_pdfs_per_page, width=7)
+        pdfs_entry.pack(side=tk.LEFT, padx=(0,5))
+        ttk.Button(pdfs_frame, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Reportes PDF por Página",
+                                                         "Número de reportes PDF a mostrar por página en los gestores de análisis (funcionalidad futura).")
+                  ).pack(side=tk.LEFT)
         row_idx += 1
 
         # --- Botón Restablecer ---

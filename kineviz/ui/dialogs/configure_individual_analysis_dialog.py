@@ -54,11 +54,19 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
 
         self.result = None # Initialize result attribute
 
+        # Definir estilo para el botón de ayuda
+        style = ttk.Style()
+        style.configure("Help.TButton", foreground="white", background="blue")
+
         self.create_widgets()
         should_continue_init = self.load_initial_data() # Cargará VIs, alias, frecuencias
         
         if not should_continue_init:
             return # load_initial_data decided to destroy or stop
+
+    def _show_input_help(self, title: str, message: str):
+        """Muestra un popup de ayuda simple."""
+        messagebox.showinfo(title, message, parent=self)
 
     def create_widgets(self):
         """Crea los widgets del diálogo."""
@@ -70,16 +78,26 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
 
         # --- Selección de Tipo de Dato y Cálculo ---
         ttk.Label(main_frame, text="Tipo de Dato:").grid(row=row_idx, column=0, sticky="w", padx=5, pady=5)
-        self.freq_combo = ttk.Combobox(main_frame, textvariable=self.frequency_var, state="disabled") # Cambiado a disabled
-        self.freq_combo.grid(row=row_idx, column=1, sticky="ew", padx=5, pady=5)
-        # El postcommand ya no es necesario si se carga una vez y se fija.
-        # El bind para actualizar grupos se manejará de otra forma o no será necesario si la frecuencia es fija.
+        freq_frame = ttk.Frame(main_frame)
+        freq_frame.grid(row=row_idx, column=1, sticky="ew")
+        self.freq_combo = ttk.Combobox(freq_frame, textvariable=self.frequency_var, state="disabled") # Cambiado a disabled
+        self.freq_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
+        ttk.Button(freq_frame, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Tipo de Dato",
+                                                         "Tipo de datos a analizar.\nPara análisis discreto, actualmente solo 'Cinematica' está soportado y se selecciona automáticamente.")
+                  ).pack(side=tk.LEFT)
         row_idx += 1
 
         ttk.Label(main_frame, text="Cálculo:").grid(row=row_idx, column=0, sticky="w", padx=5, pady=5)
-        self.calc_combo = ttk.Combobox(main_frame, textvariable=self.calculation_var, values=self.available_calculations, state="readonly")
-        self.calc_combo.grid(row=row_idx, column=1, sticky="ew", padx=5, pady=5)
+        calc_frame = ttk.Frame(main_frame)
+        calc_frame.grid(row=row_idx, column=1, sticky="ew")
+        self.calc_combo = ttk.Combobox(calc_frame, textvariable=self.calculation_var, values=self.available_calculations, state="readonly")
+        self.calc_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.calc_combo.bind("<<ComboboxSelected>>", self.update_available_groups) # Actualizar grupos al seleccionar cálculo
+        ttk.Button(calc_frame, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Cálculo",
+                                                         "El tipo de cálculo (Maximo, Minimo, Rango) aplicado a los datos en las tablas de resumen que se usarán para el análisis.")
+                  ).pack(side=tk.LEFT)
         row_idx += 1
 
         # --- NUEVO: Selección de Modo de Agrupación (1 VI vs 2 VIs) ---
@@ -99,9 +117,15 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.one_vi_config_frame.grid_remove() # Ocultar inicialmente
         self.one_vi_config_frame.columnconfigure(1, weight=1) # Permitir que el combo se expanda
         ttk.Label(self.one_vi_config_frame, text="Agrupar por VI:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
-        self.primary_vi_combo = ttk.Combobox(self.one_vi_config_frame, textvariable=self.primary_vi_var, state="readonly")
-        self.primary_vi_combo.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
+        primary_vi_frame = ttk.Frame(self.one_vi_config_frame)
+        primary_vi_frame.grid(row=0, column=1, sticky="ew")
+        self.primary_vi_combo = ttk.Combobox(primary_vi_frame, textvariable=self.primary_vi_var, state="readonly")
+        self.primary_vi_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.primary_vi_combo.bind("<<ComboboxSelected>>", self.update_available_groups) # Actualizar grupos al seleccionar VI primaria
+        ttk.Button(primary_vi_frame, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Agrupar por VI",
+                                                         "Seleccione la Variable Independiente principal cuyos sub-valores (con alias) formarán los grupos a comparar.")
+                  ).pack(side=tk.LEFT)
 
         # Frame para selección de VI fija y sub-valor fijo (modo 2VIs)
         self.two_vi_config_frame = ttk.Frame(main_frame)
@@ -110,15 +134,27 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.two_vi_config_frame.columnconfigure(1, weight=1)
 
         ttk.Label(self.two_vi_config_frame, text="VI a Fijar:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
-        self.fixed_vi_combo = ttk.Combobox(self.two_vi_config_frame, textvariable=self.fixed_vi_var, state="readonly")
-        self.fixed_vi_combo.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
+        fixed_vi_frame = ttk.Frame(self.two_vi_config_frame)
+        fixed_vi_frame.grid(row=0, column=1, sticky="ew")
+        self.fixed_vi_combo = ttk.Combobox(fixed_vi_frame, textvariable=self.fixed_vi_var, state="readonly")
+        self.fixed_vi_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.fixed_vi_combo.bind("<<ComboboxSelected>>", self._update_fixed_descriptor_options) # Actualizar sub-valores al seleccionar VI fija
+        ttk.Button(fixed_vi_frame, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: VI a Fijar",
+                                                         "Seleccione la Variable Independiente que permanecerá constante mientras se comparan los sub-valores de la otra VI.")
+                  ).pack(side=tk.LEFT)
 
         self.fixed_descriptor_label = ttk.Label(self.two_vi_config_frame, text="Valor Fijo:")
         self.fixed_descriptor_label.grid(row=1, column=0, sticky="w", padx=5, pady=5)
-        self.fixed_descriptor_combo = ttk.Combobox(self.two_vi_config_frame, textvariable=self.fixed_descriptor_var, state="readonly")
-        self.fixed_descriptor_combo.grid(row=1, column=1, sticky="ew", padx=5, pady=5)
+        fixed_desc_frame = ttk.Frame(self.two_vi_config_frame)
+        fixed_desc_frame.grid(row=1, column=1, sticky="ew")
+        self.fixed_descriptor_combo = ttk.Combobox(fixed_desc_frame, textvariable=self.fixed_descriptor_var, state="readonly")
+        self.fixed_descriptor_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.fixed_descriptor_combo.bind("<<ComboboxSelected>>", self.update_available_groups) # Actualizar grupos al seleccionar descriptor fijo
+        ttk.Button(fixed_desc_frame, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Valor Fijo",
+                                                         "Seleccione el sub-valor (con alias) de la 'VI a Fijar' que se mantendrá constante.\nLos grupos a comparar se formarán con los sub-valores de la otra VI, dentro de este contexto.")
+                  ).pack(side=tk.LEFT)
 
         row_idx += 1 # Incrementar fila para el siguiente elemento
 
@@ -142,9 +178,15 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.column_frame.columnconfigure(1, weight=1)
         self.column_frame.grid_remove() # Ocultar inicialmente
         ttk.Label(self.column_frame, text="Columna:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
-        self.column_combo = ttk.Combobox(self.column_frame, textvariable=self.column_var, state="readonly", width=50) # Ajustar width si es necesario
-        self.column_combo.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
+        column_combo_frame = ttk.Frame(self.column_frame)
+        column_combo_frame.grid(row=0, column=1, sticky="ew")
+        self.column_combo = ttk.Combobox(column_combo_frame, textvariable=self.column_var, state="readonly", width=45) # Ajustar width si es necesario
+        self.column_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.column_combo.bind("<<ComboboxSelected>>", self._on_column_selected) # Llamar al seleccionar columna
+        ttk.Button(column_combo_frame, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Variable a Analizar",
+                                                         "Seleccione la columna de datos (variable dependiente) de las tablas de resumen que desea analizar.\nLas opciones se filtran a columnas comunes entre los grupos seleccionados.")
+                  ).pack(side=tk.LEFT)
         row_idx += 1
 
         # --- Supuestos Estadísticos (En su propio frame) ---
@@ -161,7 +203,13 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.analysis_name_frame.columnconfigure(1, weight=1)
         self.analysis_name_frame.grid_remove() # Ocultar inicialmente
         ttk.Label(self.analysis_name_frame, text="Nombre:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
-        ttk.Entry(self.analysis_name_frame, textvariable=self.analysis_name_var).grid(row=0, column=1, sticky="ew", padx=5, pady=5)
+        analysis_name_entry_frame = ttk.Frame(self.analysis_name_frame)
+        analysis_name_entry_frame.grid(row=0, column=1, sticky="ew")
+        ttk.Entry(analysis_name_entry_frame, textvariable=self.analysis_name_var).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
+        ttk.Button(analysis_name_entry_frame, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Nombre del Análisis",
+                                                         "Ingrese un nombre descriptivo para guardar este análisis.\nEvite caracteres especiales como / \\ : * ? \" < > |")
+                  ).pack(side=tk.LEFT)
         row_idx += 1
 
         # --- Botones de Acción (En su propio frame) ---
@@ -395,11 +443,19 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         selector_frame.pack(fill=tk.X, pady=2)
 
         group_var = tk.StringVar(value=initial_value)
-        # Usar los grupos filtrados
-        group_combo = ttk.Combobox(selector_frame, textvariable=group_var, state="readonly",
+        
+        group_combo_frame = ttk.Frame(selector_frame) # Frame para combo y botón de ayuda
+        group_combo_frame.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
+
+        group_combo = ttk.Combobox(group_combo_frame, textvariable=group_var, state="readonly",
                                    values=sorted(list(self.available_groups_filtered.keys())))
-        group_combo.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
+        group_combo.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0,5))
         group_combo.bind("<<ComboboxSelected>>", self.update_available_columns)
+        
+        ttk.Button(group_combo_frame, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Selección de Grupo",
+                                                         "Seleccione un grupo (sub-valor o combinación de sub-valores con alias) para incluir en la comparación.\nDebe seleccionar al menos dos grupos distintos.")
+                  ).pack(side=tk.LEFT)
 
         # Botón para eliminar este selector (icono basura)
         remove_button = ttk.Button(selector_frame, text="🗑️", width=3, # Usar icono

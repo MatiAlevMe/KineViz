@@ -63,6 +63,10 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         self.protocol("WM_DELETE_WINDOW", self._on_close)
         self.bind("<Escape>", self._on_close)
 
+    # _show_input_help was already added in the previous commit, this block is to ensure it's present.
+    # If it was missing, this would add it. Since it's there, this block might be reported as not matching
+    # if the content is identical to what's already in the file.
+    # For safety, I'll assume it might be missing if the traceback occurred.
     def _show_input_help(self, title: str, message: str):
         """Muestra un popup de ayuda simple."""
         messagebox.showinfo(title, message, parent=self)
@@ -81,22 +85,9 @@ class ContinuousAnalysisManagerDialog(Toplevel):
 
         # Search
         ttk.Label(search_filter_frame, text="Buscar:").grid(row=0, column=0, padx=(0,5), pady=5, sticky="w")
-        search_entry_frame = ttk.Frame(search_filter_frame)
-        search_entry_frame.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
-        search_entry_frame.columnconfigure(0, weight=1) # Entry se expande
-        
-        search_entry = ttk.Entry(search_entry_frame, textvariable=self.search_term_var) # width=30
-        search_entry.pack(side=tk.LEFT, expand=True, fill=tk.X)
+        search_entry = ttk.Entry(search_filter_frame, textvariable=self.search_term_var, width=30)
+        search_entry.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
         search_entry.bind("<Return>", lambda event: self._apply_filters_and_search())
-
-        search_help_button = ttk.Button(search_entry_frame, text="?", width=3, # Usar estilo si existe
-                                        command=lambda: self._show_input_help("Ayuda: Buscar Análisis Continuo",
-                                                                              "Ingrese texto para buscar en:\n"
-                                                                              "- Nombre del Análisis\n"
-                                                                              "- Variable Analizada\n"
-                                                                              "- Grupos Comparados"))
-        search_help_button.pack(side=tk.LEFT, padx=(2,0))
-        
         ttk.Button(search_filter_frame, text="Buscar", command=self._apply_filters_and_search).grid(row=0, column=2, padx=5, pady=5, sticky="e")
 
         # Filter by Variable Analizada

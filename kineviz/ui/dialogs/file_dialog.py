@@ -49,6 +49,11 @@ class FileDialog(Toplevel):
         # Código para centrar (similar a StudyDialog)
         # ...
 
+        # Definir estilo para el botón de ayuda
+        style = ttk.Style()
+        style.configure("Help.TButton", foreground="white", background="blue")
+
+
     def _show_input_help(self, title: str, message: str):
         """Muestra un popup de ayuda simple."""
         messagebox.showinfo(title, message, parent=self)
@@ -66,7 +71,7 @@ class FileDialog(Toplevel):
         select_button.pack(side=tk.LEFT, padx=(0, 5))
 
         # Botón de ayuda para formato de nombre de archivo
-        filename_help_button = ttk.Button(selection_header_frame, text="?", width=3, # Usar estilo si existe uno global para "?"
+        filename_help_button = ttk.Button(selection_header_frame, text="?", width=3, style="Help.TButton",
                                            command=lambda: self._show_input_help("Ayuda: Formato Nombre de Archivo",
                                                                                  "Los nombres de archivo deben seguir el formato:\n"
                                                                                  "[ID_Participante] [SubValor_VI1] [SubValor_VI2] ... [Intento].ext\n\n"

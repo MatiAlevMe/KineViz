@@ -72,6 +72,10 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
 
         # Variable para el nombre del análisis
         self.analysis_name_var = tk.StringVar()
+
+        # Definir estilo para el botón de ayuda
+        style = ttk.Style()
+        style.configure("Help.TButton", foreground="white", background="blue")
         
         self.create_widgets()
         should_continue_init = self.load_initial_data() # Cambiado de load_data_types a load_initial_data
@@ -107,10 +111,15 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         row_idx = 0
 
         # --- Tipo de Dato (Frecuencia) ---
-        # Aunque fijo a "Cinematica", lo mostramos para consistencia y claridad.
         ttk.Label(main_frame, text="Tipo de Dato:").grid(row=row_idx, column=0, sticky="w", padx=5, pady=5)
-        self.freq_combo = ttk.Combobox(main_frame, textvariable=self.frequency_var, state="disabled") # Deshabilitado
-        self.freq_combo.grid(row=row_idx, column=1, sticky="ew", padx=5, pady=5)
+        freq_frame_cont = ttk.Frame(main_frame)
+        freq_frame_cont.grid(row=row_idx, column=1, sticky="ew")
+        self.freq_combo = ttk.Combobox(freq_frame_cont, textvariable=self.frequency_var, state="disabled")
+        self.freq_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
+        ttk.Button(freq_frame_cont, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Tipo de Dato",
+                                                         "Tipo de datos a analizar.\nPara análisis continuo (SPM), actualmente solo 'Cinematica' está soportado y se selecciona automáticamente.")
+                  ).pack(side=tk.LEFT)
         row_idx += 1
 
         # --- NUEVO: Selección de Modo de Agrupación (1 VI vs 2 VIs) ---
@@ -130,9 +139,15 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.one_vi_config_frame.grid_remove() 
         self.one_vi_config_frame.columnconfigure(1, weight=1)
         ttk.Label(self.one_vi_config_frame, text="Agrupar por VI:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
-        self.primary_vi_combo = ttk.Combobox(self.one_vi_config_frame, textvariable=self.primary_vi_var, state="readonly")
-        self.primary_vi_combo.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
+        primary_vi_frame_cont = ttk.Frame(self.one_vi_config_frame)
+        primary_vi_frame_cont.grid(row=0, column=1, sticky="ew")
+        self.primary_vi_combo = ttk.Combobox(primary_vi_frame_cont, textvariable=self.primary_vi_var, state="readonly")
+        self.primary_vi_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.primary_vi_combo.bind("<<ComboboxSelected>>", self.update_available_groups)
+        ttk.Button(primary_vi_frame_cont, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Agrupar por VI (Continuo)",
+                                                         "Seleccione la Variable Independiente principal cuyos sub-valores (con alias) formarán los grupos de series temporales a comparar.")
+                  ).pack(side=tk.LEFT)
 
         # Frame para selección de VI fija y sub-valor fijo (modo 2VIs)
         self.two_vi_config_frame = ttk.Frame(main_frame)
@@ -141,15 +156,27 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.two_vi_config_frame.columnconfigure(1, weight=1)
 
         ttk.Label(self.two_vi_config_frame, text="VI a Fijar:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
-        self.fixed_vi_combo = ttk.Combobox(self.two_vi_config_frame, textvariable=self.fixed_vi_var, state="readonly")
-        self.fixed_vi_combo.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
+        fixed_vi_frame_cont = ttk.Frame(self.two_vi_config_frame)
+        fixed_vi_frame_cont.grid(row=0, column=1, sticky="ew")
+        self.fixed_vi_combo = ttk.Combobox(fixed_vi_frame_cont, textvariable=self.fixed_vi_var, state="readonly")
+        self.fixed_vi_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.fixed_vi_combo.bind("<<ComboboxSelected>>", self._update_fixed_descriptor_options)
+        ttk.Button(fixed_vi_frame_cont, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: VI a Fijar (Continuo)",
+                                                         "Seleccione la Variable Independiente que permanecerá constante mientras se comparan los sub-valores de la otra VI.")
+                  ).pack(side=tk.LEFT)
 
         self.fixed_descriptor_label = ttk.Label(self.two_vi_config_frame, text="Valor Fijo:")
         self.fixed_descriptor_label.grid(row=1, column=0, sticky="w", padx=5, pady=5)
-        self.fixed_descriptor_combo = ttk.Combobox(self.two_vi_config_frame, textvariable=self.fixed_descriptor_var, state="readonly")
-        self.fixed_descriptor_combo.grid(row=1, column=1, sticky="ew", padx=5, pady=5)
+        fixed_desc_frame_cont = ttk.Frame(self.two_vi_config_frame)
+        fixed_desc_frame_cont.grid(row=1, column=1, sticky="ew")
+        self.fixed_descriptor_combo = ttk.Combobox(fixed_desc_frame_cont, textvariable=self.fixed_descriptor_var, state="readonly")
+        self.fixed_descriptor_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.fixed_descriptor_combo.bind("<<ComboboxSelected>>", self.update_available_groups)
+        ttk.Button(fixed_desc_frame_cont, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Valor Fijo (Continuo)",
+                                                         "Seleccione el sub-valor (con alias) de la 'VI a Fijar' que se mantendrá constante.\nLos grupos a comparar se formarán con los sub-valores de la otra VI, dentro de este contexto.")
+                  ).pack(side=tk.LEFT)
         row_idx += 1
 
         # --- Selección Dinámica de Grupos ---
@@ -187,9 +214,15 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.column_frame.columnconfigure(1, weight=1)
         self.column_frame.grid_remove()
         ttk.Label(self.column_frame, text="Columna:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
-        self.column_combo = ttk.Combobox(self.column_frame, textvariable=self.column_var, state="readonly", width=50)
-        self.column_combo.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
+        column_combo_frame_cont = ttk.Frame(self.column_frame)
+        column_combo_frame_cont.grid(row=0, column=1, sticky="ew")
+        self.column_combo = ttk.Combobox(column_combo_frame_cont, textvariable=self.column_var, state="readonly", width=45)
+        self.column_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.column_combo.bind("<<ComboboxSelected>>", self._on_column_selected)
+        ttk.Button(column_combo_frame_cont, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Variable a Analizar (Continuo)",
+                                                         "Seleccione la columna de datos cinemáticos (variable dependiente) que contiene la serie temporal a analizar.\nEj: LAnkleAngles/X/deg")
+                  ).pack(side=tk.LEFT)
         row_idx += 1
 
         # --- Opciones de Visualización ---
@@ -197,17 +230,35 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.plot_options_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", padx=5, pady=10)
         self.plot_options_frame.grid_remove()
 
-        self.cb_std_dev = ttk.Checkbutton(self.plot_options_frame, text="Visualizar Desviación Estándar (DE)", variable=self.show_std_dev_var, command=lambda: self._on_viz_option_selected('std'))
-        self.cb_std_dev.pack(anchor="w", padx=5)
-        self.cb_conf_int = ttk.Checkbutton(self.plot_options_frame, text="Visualizar Intervalos de Confianza (IC)", variable=self.show_conf_int_var, command=lambda: self._on_viz_option_selected('ci'))
-        self.cb_conf_int.pack(anchor="w", padx=5)
-        self.cb_sem = ttk.Checkbutton(self.plot_options_frame, text="Visualizar Error Estándar de la Media (EEM)", variable=self.show_sem_var, command=lambda: self._on_viz_option_selected('sem'))
-        self.cb_sem.pack(anchor="w", padx=5)
+        # DE
+        std_dev_frame = ttk.Frame(self.plot_options_frame)
+        std_dev_frame.pack(anchor="w", padx=5)
+        self.cb_std_dev = ttk.Checkbutton(std_dev_frame, text="Visualizar Desviación Estándar (DE)", variable=self.show_std_dev_var, command=lambda: self._on_viz_option_selected('std'))
+        self.cb_std_dev.pack(side=tk.LEFT)
+        ttk.Button(std_dev_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Desviación Estándar", "Muestra la desviación estándar como una banda sombreada alrededor de la curva promedio del grupo.")).pack(side=tk.LEFT, padx=(2,0))
+
+        # IC
+        conf_int_frame = ttk.Frame(self.plot_options_frame)
+        conf_int_frame.pack(anchor="w", padx=5)
+        self.cb_conf_int = ttk.Checkbutton(conf_int_frame, text="Visualizar Intervalos de Confianza (IC)", variable=self.show_conf_int_var, command=lambda: self._on_viz_option_selected('ci'))
+        self.cb_conf_int.pack(side=tk.LEFT)
+        ttk.Button(conf_int_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Intervalos de Confianza", "Muestra los intervalos de confianza (generalmente 95%) como una banda sombreada alrededor de la curva promedio.")).pack(side=tk.LEFT, padx=(2,0))
+        
+        # EEM
+        sem_frame = ttk.Frame(self.plot_options_frame)
+        sem_frame.pack(anchor="w", padx=5)
+        self.cb_sem = ttk.Checkbutton(sem_frame, text="Visualizar Error Estándar de la Media (EEM)", variable=self.show_sem_var, command=lambda: self._on_viz_option_selected('sem'))
+        self.cb_sem.pack(side=tk.LEFT)
+        ttk.Button(sem_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Error Estándar de la Media", "Muestra el error estándar de la media como una banda sombreada alrededor de la curva promedio.")).pack(side=tk.LEFT, padx=(2,0))
 
         ttk.Separator(self.plot_options_frame, orient='horizontal').pack(fill='x', pady=5, padx=5)
         
-        self.cb_interactive_plot = ttk.Checkbutton(self.plot_options_frame, text="Generar Gráfico Interactivo (HTML)", variable=self.generate_interactive_plot_var)
-        self.cb_interactive_plot.pack(anchor="w", padx=5, pady=(0,5))
+        # Interactivo
+        interactive_frame = ttk.Frame(self.plot_options_frame)
+        interactive_frame.pack(anchor="w", padx=5, pady=(0,5))
+        self.cb_interactive_plot = ttk.Checkbutton(interactive_frame, text="Generar Gráfico Interactivo (HTML)", variable=self.generate_interactive_plot_var)
+        self.cb_interactive_plot.pack(side=tk.LEFT)
+        ttk.Button(interactive_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Gráfico Interactivo", "Genera una versión HTML interactiva del gráfico (usando Plotly) además del gráfico estático PNG.")).pack(side=tk.LEFT, padx=(2,0))
         row_idx += 1
 
         # --- Opciones de Anotación del Gráfico ---
@@ -215,12 +266,24 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.annotation_options_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", padx=5, pady=10)
         self.annotation_options_frame.grid_remove() # Ocultar inicialmente
 
-        ttk.Checkbutton(self.annotation_options_frame, text="Anotar clusters significativos SPM (gráfico inferior)", variable=self.annotate_spm_clusters_bottom_var).pack(anchor="w", padx=5, pady=(5,0))
-        ttk.Checkbutton(self.annotation_options_frame, text="Anotar rango significativo SPM (gráfico superior)", variable=self.annotate_spm_range_top_var).pack(anchor="w", padx=5)
+        # Anotar clusters
+        annotate_clusters_frame = ttk.Frame(self.annotation_options_frame)
+        annotate_clusters_frame.pack(anchor="w", padx=5, pady=(5,0))
+        ttk.Checkbutton(annotate_clusters_frame, text="Anotar clusters significativos SPM (gráfico inferior)", variable=self.annotate_spm_clusters_bottom_var).pack(side=tk.LEFT)
+        ttk.Button(annotate_clusters_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Anotar Clusters SPM", "Si se encuentran clusters de tiempo donde la diferencia es estadísticamente significativa, se resaltarán en el panel inferior del gráfico SPM.")).pack(side=tk.LEFT, padx=(2,0))
+
+        # Anotar rango
+        annotate_range_frame = ttk.Frame(self.annotation_options_frame)
+        annotate_range_frame.pack(anchor="w", padx=5)
+        ttk.Checkbutton(annotate_range_frame, text="Anotar rango significativo SPM (gráfico superior)", variable=self.annotate_spm_range_top_var).pack(side=tk.LEFT)
+        ttk.Button(annotate_range_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Anotar Rango SPM", "Si se encuentra un rango de tiempo general donde la diferencia es significativa, se indicará en el panel superior del gráfico SPM.")).pack(side=tk.LEFT, padx=(2,0))
         
         # Delimitar Rango de Tiempo
-        self.delimit_time_checkbox = ttk.Checkbutton(self.annotation_options_frame, text="Delimitar Rango de Tiempo Mostrado", variable=self.delimit_time_range_var, command=self._toggle_time_delimitation_widgets)
-        self.delimit_time_checkbox.pack(anchor="w", padx=5, pady=(5,0))
+        delimit_time_frame = ttk.Frame(self.annotation_options_frame)
+        delimit_time_frame.pack(anchor="w", padx=5, pady=(5,0))
+        self.delimit_time_checkbox = ttk.Checkbutton(delimit_time_frame, text="Delimitar Rango de Tiempo Mostrado", variable=self.delimit_time_range_var, command=self._toggle_time_delimitation_widgets)
+        self.delimit_time_checkbox.pack(side=tk.LEFT)
+        ttk.Button(delimit_time_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Delimitar Rango de Tiempo", "Permite especificar un sub-rango del ciclo normalizado (0-100%) para enfocar la visualización del gráfico.\nÚtil para examinar fases específicas del movimiento.")).pack(side=tk.LEFT, padx=(2,0))
 
         self.time_delimitation_subframe = ttk.Frame(self.annotation_options_frame, padding=(15, 5, 5, 5)) # Subframe con indentación
         self.time_delimitation_subframe.pack(fill=tk.X, expand=True)
@@ -234,7 +297,13 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.analysis_name_frame.columnconfigure(1, weight=1)
         self.analysis_name_frame.grid_remove()
         ttk.Label(self.analysis_name_frame, text="Nombre:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
-        ttk.Entry(self.analysis_name_frame, textvariable=self.analysis_name_var).grid(row=0, column=1, sticky="ew", padx=5, pady=5)
+        analysis_name_entry_frame_cont = ttk.Frame(self.analysis_name_frame)
+        analysis_name_entry_frame_cont.grid(row=0, column=1, sticky="ew")
+        ttk.Entry(analysis_name_entry_frame_cont, textvariable=self.analysis_name_var).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
+        ttk.Button(analysis_name_entry_frame_cont, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Nombre del Análisis (Continuo)",
+                                                         "Ingrese un nombre descriptivo para guardar este análisis continuo (SPM).\nEvite caracteres especiales como / \\ : * ? \" < > |")
+                  ).pack(side=tk.LEFT)
         row_idx += 1
 
         # --- Botones de Acción ---
@@ -593,30 +662,45 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
     def _create_time_delimitation_widgets(self):
         """Crea los widgets para la delimitación de tiempo, pero no los empaqueta."""
         # Tiempo Mínimo
-        ttk.Label(self.time_delimitation_subframe, text="Tiempo Mínimo (%):").grid(row=0, column=0, sticky="w", padx=5, pady=2)
-        self.time_min_entry = ttk.Entry(self.time_delimitation_subframe, textvariable=self.time_min_var, width=5)
-        self.time_min_entry.grid(row=0, column=1, sticky="w", padx=5, pady=2)
+        time_min_frame = ttk.Frame(self.time_delimitation_subframe)
+        time_min_frame.grid(row=0, column=0, columnspan=2, sticky="w", padx=5, pady=2)
+        ttk.Label(time_min_frame, text="Tiempo Mínimo (%):").pack(side=tk.LEFT)
+        self.time_min_entry = ttk.Entry(time_min_frame, textvariable=self.time_min_var, width=5)
+        self.time_min_entry.pack(side=tk.LEFT, padx=(2,0))
+        ttk.Button(time_min_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Tiempo Mínimo", "Inicio del rango de tiempo a visualizar (0-100%). Debe ser menor que Tiempo Máximo.")).pack(side=tk.LEFT, padx=(2,0))
 
         # Tiempo Máximo
-        ttk.Label(self.time_delimitation_subframe, text="Tiempo Máximo (%):").grid(row=0, column=2, sticky="w", padx=5, pady=2)
-        self.time_max_entry = ttk.Entry(self.time_delimitation_subframe, textvariable=self.time_max_var, width=5)
-        self.time_max_entry.grid(row=0, column=3, sticky="w", padx=5, pady=2)
+        time_max_frame = ttk.Frame(self.time_delimitation_subframe)
+        time_max_frame.grid(row=0, column=2, columnspan=2, sticky="w", padx=5, pady=2)
+        ttk.Label(time_max_frame, text="Tiempo Máximo (%):").pack(side=tk.LEFT)
+        self.time_max_entry = ttk.Entry(time_max_frame, textvariable=self.time_max_var, width=5)
+        self.time_max_entry.pack(side=tk.LEFT, padx=(2,0))
+        ttk.Button(time_max_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Tiempo Máximo", "Fin del rango de tiempo a visualizar (0-100%). Debe ser mayor que Tiempo Mínimo.")).pack(side=tk.LEFT, padx=(2,0))
 
         # Checkbox Mostrar Tiempo Completo
-        self.show_full_time_checkbox = ttk.Checkbutton(self.time_delimitation_subframe, text="Mostrar Tiempo Completo con Delimitadores", variable=self.show_full_time_with_delimiters_var)
-        self.show_full_time_checkbox.grid(row=1, column=0, columnspan=4, sticky="w", padx=5, pady=2)
+        show_full_frame = ttk.Frame(self.time_delimitation_subframe)
+        show_full_frame.grid(row=1, column=0, columnspan=4, sticky="w", padx=5, pady=2)
+        self.show_full_time_checkbox = ttk.Checkbutton(show_full_frame, text="Mostrar Tiempo Completo con Delimitadores", variable=self.show_full_time_with_delimiters_var)
+        self.show_full_time_checkbox.pack(side=tk.LEFT)
+        ttk.Button(show_full_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Mostrar Tiempo Completo", "Si está marcado, el gráfico mostrará el ciclo completo (0-100%) con el rango delimitado resaltado o indicado. Si no, solo mostrará el rango delimitado.")).pack(side=tk.LEFT, padx=(2,0))
         
         # Checkbox Añadir Etiqueta de Rango
-        self.add_label_checkbox = ttk.Checkbutton(self.time_delimitation_subframe, text="Añadir Etiqueta de Rango de Tiempo", variable=self.add_time_range_label_var, command=self._toggle_time_label_entry)
-        self.add_label_checkbox.grid(row=2, column=0, columnspan=4, sticky="w", padx=5, pady=2)
+        add_label_frame = ttk.Frame(self.time_delimitation_subframe)
+        add_label_frame.grid(row=2, column=0, columnspan=4, sticky="w", padx=5, pady=2)
+        self.add_label_checkbox = ttk.Checkbutton(add_label_frame, text="Añadir Etiqueta de Rango de Tiempo", variable=self.add_time_range_label_var, command=self._toggle_time_label_entry)
+        self.add_label_checkbox.pack(side=tk.LEFT)
+        ttk.Button(add_label_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Añadir Etiqueta de Rango", "Permite añadir un texto personalizado (ej. 'Fase de Apoyo') al gráfico para identificar el rango de tiempo delimitado.")).pack(side=tk.LEFT, padx=(2,0))
 
         # Frame para Etiqueta de Rango (inicialmente oculto)
-        self.time_label_entry_frame = ttk.Frame(self.time_delimitation_subframe)
-        self.time_label_entry_frame.grid(row=3, column=0, columnspan=4, sticky="ew", padx=(20, 5)) # Indent
+        self.time_label_entry_frame = ttk.Frame(self.time_delimitation_subframe) # Este es el frame que se muestra/oculta
+        self.time_label_entry_frame.grid(row=3, column=0, columnspan=4, sticky="ew", padx=(20, 5)) 
         
-        ttk.Label(self.time_label_entry_frame, text="Texto de Etiqueta:").pack(side=tk.LEFT, padx=(0,5))
-        self.time_label_text_entry = ttk.Entry(self.time_label_entry_frame, textvariable=self.time_range_label_text_var, width=30)
-        self.time_label_text_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        label_text_frame = ttk.Frame(self.time_label_entry_frame) # Sub-frame para label, entry y botón
+        label_text_frame.pack(fill=tk.X, expand=True)
+        ttk.Label(label_text_frame, text="Texto de Etiqueta:").pack(side=tk.LEFT, padx=(0,5))
+        self.time_label_text_entry = ttk.Entry(label_text_frame, textvariable=self.time_range_label_text_var, width=25)
+        self.time_label_text_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0,5))
+        ttk.Button(label_text_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Texto de Etiqueta", "El texto que se mostrará en el gráfico para identificar el rango de tiempo delimitado.")).pack(side=tk.LEFT)
 
 
     def _toggle_time_delimitation_widgets(self):
@@ -649,10 +733,19 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         selector_frame.pack(fill=tk.X, pady=2, padx=(0,0)) # Ajustar padding
 
         group_var = tk.StringVar(value=initial_value)
-        group_combo = ttk.Combobox(selector_frame, textvariable=group_var, state="readonly",
-                                   values=sorted(list(self.available_groups_filtered.keys())), width=35) # Ajustar width
-        group_combo.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
+        
+        group_combo_frame_cont = ttk.Frame(selector_frame) # Frame para combo y botón de ayuda
+        group_combo_frame_cont.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
+
+        group_combo = ttk.Combobox(group_combo_frame_cont, textvariable=group_var, state="readonly",
+                                   values=sorted(list(self.available_groups_filtered.keys())), width=30) # Ajustar width
+        group_combo.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0,5))
         group_combo.bind("<<ComboboxSelected>>", self._on_group_selection_change) # Cargar columnas al cambiar grupo
+        
+        ttk.Button(group_combo_frame_cont, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Selección de Grupo (Continuo)",
+                                                         "Seleccione un grupo (sub-valor o combinación de sub-valores con alias) para incluir en la comparación de series temporales.\nDebe seleccionar al menos dos grupos distintos.")
+                  ).pack(side=tk.LEFT)
 
         remove_button = ttk.Button(selector_frame, text="🗑️", width=3,
                                    command=lambda f=selector_frame, v=group_var: self.remove_group_selector(f, v))
