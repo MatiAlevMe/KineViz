@@ -15,8 +15,9 @@ from kineviz.ui.views.main_view import MainView
 from kineviz.ui.dialogs.study_dialog import StudyDialog
 # from kineviz.ui.dialogs.analysis_dialog import AnalysisDialog # Comentado si ya no se usa
 from kineviz.ui.dialogs.config_dialog import ConfigDialog
-from kineviz.ui.dialogs.continuous_analysis_config_dialog import ContinuousAnalysisConfigDialog # Importar nuevo diálogo
-from kineviz.ui.views.discrete_analysis_view import DiscreteAnalysisView # Importar nueva vista
+from kineviz.ui.dialogs.continuous_analysis_config_dialog import ContinuousAnalysisConfigDialog
+from kineviz.ui.views.discrete_analysis_view import DiscreteAnalysisView
+from kineviz.ui.views.continuous_analysis_view import ContinuousAnalysisView # Importar nueva vista
 # Servicios Core
 from kineviz.core.services.study_service import StudyService
 from kineviz.core.services.file_service import FileService
@@ -123,6 +124,12 @@ class MainWindow:
         # Pasar main_window, analysis_service y study_id
         self.current_view = DiscreteAnalysisView(self.root, self, self.analysis_service, study_id)
         # El pack/grid se maneja dentro de DiscreteAnalysisView
+
+    def show_continuous_analysis_view(self, study_id: int):
+        """Muestra la vista para gestionar análisis continuos."""
+        self.clear_window()
+        self.current_view = ContinuousAnalysisView(self.root, self, self.analysis_service, study_id)
+        # El pack/grid se maneja dentro de ContinuousAnalysisView
 
     def show_create_study_dialog(self, study_to_edit=None):
         """

@@ -56,7 +56,7 @@ class StudyView:
 
         # Botón Análisis Continuo (Fase 5)
         ttk.Button(header_frame, text="Análisis Continuo",
-                   command=lambda: self.main_window.show_continuous_analysis_config_dialog(self.study_id)).pack(side=tk.LEFT, padx=(0, 10))
+                   command=lambda: self.main_window.show_continuous_analysis_view(self.study_id)).pack(side=tk.LEFT, padx=(0, 10))
 
         # Botón Ayuda General (a la derecha)
         style = ttk.Style() # Asegurar que style exista
