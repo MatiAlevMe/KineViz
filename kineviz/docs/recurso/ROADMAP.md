@@ -191,6 +191,7 @@ Opciones de Visualización y Anotación: Permitir al usuario configurar cómo se
 1.3 [En Progreso] Crear `ContinuousAnalysisView` (anteriormente `ContinuousAnalysisResultsView`): Vista en la UI para:
     - [Hecho] Listar los análisis continuos generados (nombre, columna, grupos, fecha).
     - [Hecho] Proveer opciones para cada análisis: ver gráfico SPM (PNG), ver configuración (JSON), abrir carpeta de resultados, eliminar análisis.
+    - [Hecho] Exportar "Ver Configuración" a archivo .txt: La opción "Ver Configuración" ahora genera un archivo de texto plano (`configuracion_detallada.txt`) con los detalles del análisis y lo abre con la aplicación predeterminada del sistema.
     - [Hecho] Botón para lanzar `ContinuousAnalysisConfigDialog` para crear nuevos análisis.
     - [Pendiente] Mostrar filtros y opciones de ordenación para la lista de análisis.
 2. [Hecho] Implementación de Normalización de Datos Temporales.
