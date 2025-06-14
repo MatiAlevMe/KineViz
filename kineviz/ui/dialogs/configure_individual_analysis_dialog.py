@@ -168,7 +168,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.button_frame = ttk.Frame(main_frame)
         self.button_frame.grid(row=row_idx, column=0, columnspan=2, sticky="e", pady=10)
         self.button_frame.grid_remove() # Ocultar inicialmente
-        self.save_button = ttk.Button(self.button_frame, text="Generar Gráfico y Guardar", command=self.generate_analysis, state=tk.DISABLED) # Llamar a generate_analysis
+        self.save_button = ttk.Button(self.button_frame, text="Aceptar y Guardar Configuración", command=self._save_configuration_and_close, state=tk.DISABLED) # Actualizado comando
         self.save_button.pack(side=tk.RIGHT, padx=5)
         ttk.Button(self.button_frame, text="Cancelar", command=self.destroy).pack(side=tk.RIGHT)
 
@@ -611,8 +611,8 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.save_button.config(state=tk.DISABLED) # Deshabilitar botón de guardar
 
 
-    def generate_analysis(self):
-        """Valida la config y llama al servicio para generar el análisis."""
+    def _save_configuration_and_close(self):
+        """Valida la configuración, la establece en self.result y cierra el diálogo."""
         analysis_name = self.analysis_name_var.get().strip()
         selected_freq = self.frequency_var.get()
         selected_calc = self.calculation_var.get()
@@ -719,52 +719,11 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         }
 
 
-        # --- Llamar al Servicio ---
-        try:
-            self.title("Ejecutando Análisis...")
-            self.save_button.config(state=tk.DISABLED) # Deshabilitar botón
-            self.update_idletasks()
-
-            logger.info(f"Llamando a perform_individual_analysis con config: {config}") # LOG ANTES
-            # The result from perform_individual_analysis is used for the popup later
-            # but the config itself is what the calling dialog needs.
-            self.result = config # Set the result attribute
-            
-            # Call the service to perform the analysis
-            analysis_service_result = self.analysis_service.perform_individual_analysis(
-                self.study_id, config # Pass the original config
-            )
-            logger.info("Llamada a perform_individual_analysis completada.") # LOG DESPUÉS
-            
-            # The messagebox and plot opening logic is now handled by IndividualAnalysisManagerDialog
-            # So, we don't show a messagebox here directly.
-            # We just need to ensure self.result is set and then destroy.
-            
-            # messagebox.showinfo(
-            #     "Análisis Generado",
-            #     f"El análisis '{analysis_name}' se generó correctamente.\n"
-            #     f"Gráfico guardado en: {analysis_service_result['plot_path']}",
-            #     parent=self.parent)
-            self.destroy()  # Cerrar diálogo de configuración
-
-        except (ValueError, FileNotFoundError) as e:
-            logger.warning(f"Error de validación o datos al generar análisis "
-                           f"'{analysis_name}': {e}")
-            # Añadir log específico para ValueError
-            if isinstance(e, ValueError):
-                 logger.error(f"ValueError durante generate_analysis: {e}", exc_info=True)
-            messagebox.showerror("Error al Generar Análisis", f"{e}",
-                                   parent=self)
-            self.title("Configurar Análisis Individual") # Restaurar título
-            self.save_button.config(state=tk.NORMAL) # Rehabilitar botón
-        except Exception as e:
-            logger.critical(f"Error inesperado al generar análisis "
-                            f"'{analysis_name}': {e}", exc_info=True)
-            messagebox.showerror("Error Crítico",
-                                   f"Ocurrió un error inesperado:\n{e}",
-                                   parent=self)
-            self.title("Configurar Análisis Individual") # Restaurar título
-            self.save_button.config(state=tk.NORMAL) # Rehabilitar botón
+        # --- Establecer Resultado y Cerrar ---
+        # No se llama al servicio aquí. Solo se guarda la configuración.
+        self.result = config
+        logger.info(f"Configuración de análisis individual lista para ser devuelta: {self.result}")
+        self.destroy() # Cerrar el diálogo de configuración
 
 
 # Para pruebas rápidas
