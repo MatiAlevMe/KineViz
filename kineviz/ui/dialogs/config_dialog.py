@@ -97,10 +97,22 @@ class ConfigDialog(Toplevel):
         row_idx += 1
 
         # --- Botón Restablecer ---
+        reset_frame = ttk.Frame(main_frame)
+        reset_frame.grid(row=row_idx, column=0, columnspan=2, pady=(20, 5))
         # Este botón llama al callback proporcionado (MainWindow.reset_to_defaults)
         # que maneja la eliminación de DB y archivos.
-        reset_button = ttk.Button(main_frame, text="Restablecer Valores por Defecto (Global)", command=self.trigger_reset_callback)
-        reset_button.grid(row=row_idx, column=0, columnspan=2, pady=(20, 5))
+        reset_button = ttk.Button(reset_frame, text="Restablecer Valores por Defecto (Global)", command=self.trigger_reset_callback)
+        reset_button.pack(side=tk.LEFT, padx=(0,5))
+        ttk.Button(reset_frame, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Restablecer Valores por Defecto (Global)",
+                                                         "Esta acción eliminará TODA la información de la aplicación:\n"
+                                                         "- Todos los estudios y sus datos asociados.\n"
+                                                         "- Todos los análisis guardados (discretos y continuos).\n"
+                                                         "- La base de datos local de KineViz.\n"
+                                                         "- Las configuraciones personalizadas se revertirán a los valores iniciales.\n\n"
+                                                         "La aplicación se cerrará y deberá reiniciarse.\n"
+                                                         "Esta acción es IRREVERSIBLE. Úsela con precaución.")
+                  ).pack(side=tk.LEFT)
         row_idx += 1
 
         # --- Botones Guardar/Cancelar ---
