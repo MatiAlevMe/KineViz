@@ -49,13 +49,34 @@ class FileDialog(Toplevel):
         # Código para centrar (similar a StudyDialog)
         # ...
 
+    def _show_input_help(self, title: str, message: str):
+        """Muestra un popup de ayuda simple."""
+        messagebox.showinfo(title, message, parent=self)
+
     def create_widgets(self):
         main_frame = ttk.Frame(self, padding="10")
         main_frame.pack(fill=tk.BOTH, expand=True)
 
+        # Frame para botón de selección y ayuda
+        selection_header_frame = ttk.Frame(main_frame)
+        selection_header_frame.pack(pady=10)
+
         # Botón para seleccionar archivos
-        select_button = ttk.Button(main_frame, text="Seleccionar Archivos (.txt, .csv)", command=self.select_files)
-        select_button.pack(pady=10)
+        select_button = ttk.Button(selection_header_frame, text="Seleccionar Archivos (.txt, .csv)", command=self.select_files)
+        select_button.pack(side=tk.LEFT, padx=(0, 5))
+
+        # Botón de ayuda para formato de nombre de archivo
+        filename_help_button = ttk.Button(selection_header_frame, text="?", width=3, # Usar estilo si existe uno global para "?"
+                                           command=lambda: self._show_input_help("Ayuda: Formato Nombre de Archivo",
+                                                                                 "Los nombres de archivo deben seguir el formato:\n"
+                                                                                 "[ID_Participante] [SubValor_VI1] [SubValor_VI2] ... [Intento].ext\n\n"
+                                                                                 "Ejemplo: P01 CMJ PRE 01.txt\n\n"
+                                                                                 "- ID_Participante: Identificador único del participante (letras seguidas de números, ej: P01, Sujeto007).\n"
+                                                                                 "- SubValores VIs: Deben coincidir con los sub-valores definidos para cada VI en el estudio, en el orden correcto. Usar 'Nulo' si una VI opcional no aplica.\n"
+                                                                                 "- Intento: Número de intento para esa combinación de VIs (ej: 01, 02, 03).\n"
+                                                                                 "- Extensión: .txt o .csv"))
+        filename_help_button.pack(side=tk.LEFT)
+
 
         # Listbox para mostrar archivos seleccionados
         list_frame = ttk.Frame(main_frame)
