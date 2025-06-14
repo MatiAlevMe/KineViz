@@ -121,11 +121,25 @@ class StudyDialog(Toplevel):
         row_idx += 1
 
         # --- Sección de Variables Independientes Dinámicas ---
-        iv_frame = ttk.LabelFrame(main_frame, text="Variable(s) Independientes (VIs)")
-        iv_frame.grid(row=row_idx, column=0, columnspan=2, sticky="nsew", padx=5, pady=10)
-        iv_frame.columnconfigure(0, weight=1) # Permitir que el contenido se expanda
-        main_frame.rowconfigure(row_idx, weight=1) # Permitir que esta sección se expanda verticalmente
-        self.iv_container = iv_frame # Guardar referencia
+        # Usar un Frame normal para poder añadir un botón de ayuda al título
+        iv_title_frame = ttk.Frame(main_frame)
+        iv_title_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", padx=5, pady=(10,0)) # pady top only
+        
+        ttk.Label(iv_title_frame, text="Variable(s) Independientes (VIs)", font=('Helvetica', 10, 'bold')).pack(side=tk.LEFT, anchor="w")
+        ttk.Button(iv_title_frame, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Variables Independientes (VIs)",
+                                                         ("Las VIs definen las condiciones o factores que varían en su estudio.\n"
+                                                          "Cada VI tiene 'sub-valores' (niveles o categorías).\n"
+                                                          "Ej: VI 'Condicion' con sub-valores 'PRE', 'POST'.\n"
+                                                          "Los nombres de archivo deben reflejar estos sub-valores en el orden definido aquí."))
+                  ).pack(side=tk.LEFT, padx=(5,0))
+        row_idx += 1 # Incrementar fila para el contenedor de VIs
+
+        iv_frame = ttk.Frame(main_frame, relief="groove", borderwidth=1) # Contenedor para el canvas de VIs
+        iv_frame.grid(row=row_idx, column=0, columnspan=2, sticky="nsew", padx=5, pady=(0,10)) # pady bottom only
+        iv_frame.columnconfigure(0, weight=1) 
+        main_frame.rowconfigure(row_idx, weight=1) 
+        self.iv_container = iv_frame 
         row_idx += 1
 
         # --- Canvas y Scrollbar para VIs ---
@@ -252,9 +266,12 @@ class StudyDialog(Toplevel):
         allows_combination_cb.pack(side=tk.LEFT)
         multiple_help_button = ttk.Button(multiple_frame, text="?", width=3, style="Help.TButton",
                                           command=lambda: self._show_input_help("Ayuda: VI Múltiple",
-                                                                                "Permitir que esta VI tenga múltiples sub-valores seleccionados para un mismo archivo/intento.\n"
-                                                                                "Ej: Un archivo podría pertenecer a 'CondA' Y 'CondB' si 'Condicion' es múltiple.\n"
-                                                                                "Si no es múltiple, un archivo solo puede tener un sub-valor de esta VI."))
+                                                                                ("Permite que un archivo o intento se asocie con MÁS DE UN sub-valor de esta VI simultáneamente.\n\n"
+                                                                                 "Ejemplo: VI 'Equipamiento' con sub-valores 'Zapatillas', 'Canilleras', 'Vendas'.\n"
+                                                                                 "Si 'Equipamiento' es Múltiple, un archivo podría ser:\n"
+                                                                                 "  `P01 Zapatillas Canilleras 01.txt` (usa Zapatillas Y Canilleras).\n"
+                                                                                 "Si NO es Múltiple, un archivo solo puede tener UN sub-valor de 'Equipamiento':\n"
+                                                                                 "  `P01 Zapatillas 01.txt` O `P01 Canilleras 01.txt`, pero no ambos para la misma VI.")))
         multiple_help_button.pack(side=tk.LEFT, padx=(2,0))
 
 
@@ -298,7 +315,8 @@ class StudyDialog(Toplevel):
         # Estado inicial y visibilidad del checkbox "Obligatorio" para esta VI específica
         self._update_mandatory_checkbox_visibility_and_state(
             allows_combination_var, # Pasar la variable
-            is_mandatory_cb_widget  # Pasar el widget
+            is_mandatory_cb_widget, # Pasar el widget
+            self.mandatory_frame_for_vi # Pasar el frame contenedor del checkbox y su ayuda
         )
 
         # Añadir sub-valores iniciales para esta VI
@@ -436,10 +454,15 @@ class StudyDialog(Toplevel):
             # Crear y empaquetar botón de ayuda para "Obligatorio"
             # Este botón se crea aquí porque solo es relevante si "Multiple" está activo.
             mandatory_help_button = ttk.Button(mandatory_frame, text="?", width=3, style="Help.TButton",
-                                               command=lambda: self._show_input_help("Ayuda: VI Obligatoria",
-                                                                                     "Si una VI es 'Múltiple' y también 'Obligatoria',\n"
-                                                                                     "se debe especificar al menos un sub-valor de esta VI en el nombre del archivo.\n"
-                                                                                     "Si es 'Múltiple' pero NO 'Obligatoria', se puede usar 'Nulo' para esta VI si no aplica."))
+                                               command=lambda: self._show_input_help("Ayuda: VI Obligatoria (si es Múltiple)",
+                                                                                     ("Este checkbox SOLO aplica si la VI es 'Múltiple'.\n\n"
+                                                                                      "Si una VI es Múltiple Y Obligatoria:\n"
+                                                                                      "  Se debe especificar AL MENOS UN sub-valor de esta VI en el nombre del archivo.\n"
+                                                                                      "  NO se permite 'Nulo' para esta VI.\n"
+                                                                                      "  Ej: VI 'Equipamiento' (Múltiple, Obligatoria). Archivo `P01 Zapatillas 01.txt` es válido. `P01 Nulo 01.txt` NO es válido para 'Equipamiento'.\n\n"
+                                                                                      "Si una VI es Múltiple pero NO Obligatoria:\n"
+                                                                                      "  Se PUEDE usar 'Nulo' para esta VI si no aplica ningún sub-valor.\n"
+                                                                                      "  Ej: VI 'Equipamiento' (Múltiple, No Obligatoria). Archivo `P01 Nulo 01.txt` es válido para 'Equipamiento'.")))
             mandatory_help_button.pack(side=tk.LEFT, padx=(2,0))
 
             current_state = tk.NORMAL if not self.is_editing else tk.DISABLED

@@ -103,7 +103,21 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         # --- NUEVO: Selección de Modo de Agrupación (1 VI vs 2 VIs) ---
         vi_mode_frame = ttk.Frame(main_frame)
         vi_mode_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", padx=5, pady=10)
-        ttk.Label(vi_mode_frame, text="Agrupar por:").pack(side=tk.LEFT, padx=(0, 10))
+        
+        label_agrupar_frame = ttk.Frame(vi_mode_frame)
+        label_agrupar_frame.pack(side=tk.LEFT, padx=(0,5))
+        ttk.Label(label_agrupar_frame, text="Agrupar por:").pack(side=tk.LEFT)
+        ttk.Button(label_agrupar_frame, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Modo de Agrupación",
+                                                         ("Define cómo se formarán los grupos para la comparación:\n\n"
+                                                          "1 Variable Independiente (1VI):\n"
+                                                          "  Compara los diferentes sub-valores de UNA ÚNICA VI.\n"
+                                                          "  Ej: Comparar 'PRE' vs 'POST' de la VI 'Condicion'.\n\n"
+                                                          "2 Variables Independientes (2VIs):\n"
+                                                          "  Compara los sub-valores de una VI, MANTENIENDO FIJO un sub-valor de OTRA VI.\n"
+                                                          "  Ej: Comparar 'CMJ' vs 'SJ' de la VI 'TipoSalto', pero solo para la condición 'PRE' de la VI 'Condicion'."))
+                  ).pack(side=tk.LEFT, padx=(2,0))
+        
         self.one_vi_button = ttk.Button(vi_mode_frame, text="1 Variable Independiente", command=lambda: self.set_vi_grouping_mode('1VI'))
         self.one_vi_button.pack(side=tk.LEFT, padx=5)
         self.two_vi_button = ttk.Button(vi_mode_frame, text="2 Variables Independientes", command=lambda: self.set_vi_grouping_mode('2VIs'))
@@ -193,8 +207,27 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.assumptions_frame = ttk.LabelFrame(main_frame, text="Supuestos Estadísticos")
         self.assumptions_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", padx=5, pady=10)
         self.assumptions_frame.grid_remove() # Ocultar inicialmente
-        ttk.Checkbutton(self.assumptions_frame, text="Datos Paramétricos (Normalidad/Homocedasticidad)", variable=self.parametric_var).pack(anchor="w", padx=5)
-        ttk.Checkbutton(self.assumptions_frame, text="Muestras Pareadas (Mismos sujetos en todos los grupos)", variable=self.paired_var).pack(anchor="w", padx=5)
+
+        parametric_frame = ttk.Frame(self.assumptions_frame)
+        parametric_frame.pack(anchor="w", padx=5)
+        ttk.Checkbutton(parametric_frame, text="Datos Paramétricos (Normalidad/Homocedasticidad)", variable=self.parametric_var).pack(side=tk.LEFT)
+        ttk.Button(parametric_frame, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Datos Paramétricos",
+                                                         ("Marque si sus datos cumplen los supuestos para pruebas paramétricas (ej. t-test, ANOVA):\n"
+                                                          "- Aproximadamente distribuidos normalmente.\n"
+                                                          "- Homogeneidad de varianzas (homocedasticidad) entre grupos.\n"
+                                                          "Si no se cumplen, se usarán pruebas no paramétricas (ej. Wilcoxon, Kruskal-Wallis)."))
+                  ).pack(side=tk.LEFT, padx=(2,0))
+
+        paired_frame = ttk.Frame(self.assumptions_frame)
+        paired_frame.pack(anchor="w", padx=5)
+        ttk.Checkbutton(paired_frame, text="Muestras Pareadas (Mismos sujetos en todos los grupos)", variable=self.paired_var).pack(side=tk.LEFT)
+        ttk.Button(paired_frame, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Muestras Pareadas",
+                                                         ("Marque si los datos en los grupos a comparar provienen de los mismos participantes (medidas repetidas).\n"
+                                                          "Ej: Comparar 'PRE' vs 'POST' para los mismos sujetos.\n"
+                                                          "Si los grupos son independientes (diferentes sujetos), no marque esta opción."))
+                  ).pack(side=tk.LEFT, padx=(2,0))
         row_idx += 1
 
         # --- Nombre del Análisis (En su propio frame) ---
@@ -476,6 +509,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
 
         self.group_selector_vars.append(group_var)
         self.group_selector_frames.append(selector_frame) # Guardar frame
+        self._refresh_group_combobox_options() # Actualizar opciones de todos los combos
 
     def remove_group_selector(self, frame_to_remove, var_to_remove):
         """Elimina una fila de selector de grupo."""
@@ -503,8 +537,51 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
 
 
             self.update_available_columns()
+            self._refresh_group_combobox_options() # Actualizar opciones de todos los combos
         except (ValueError, IndexError):
             logger.warning("Intento de eliminar un selector de grupo que ya no existe o índice inválido.")
+
+    def _refresh_group_combobox_options(self):
+        """Actualiza las opciones de todos los combobox de grupo para evitar duplicados."""
+        all_possible_options = sorted(list(self.available_groups_filtered.keys()))
+        
+        # Obtener todas las selecciones actuales de todos los combos
+        current_selections_in_all_combos = set()
+        for sv in self.group_selector_vars:
+            val = sv.get()
+            if val:
+                current_selections_in_all_combos.add(val)
+
+        for i, combo_var in enumerate(self.group_selector_vars):
+            if i >= len(self.group_selector_frames): continue # Safety check
+
+            combo_frame_container = self.group_selector_frames[i].winfo_children()[0] # This is group_combo_frame
+            combo_widget = combo_frame_container.winfo_children()[0] # This is the actual Combobox
+            
+            if not isinstance(combo_widget, ttk.Combobox): continue
+
+            current_selection_this_combo = combo_var.get()
+            
+            options_for_this_combo = []
+            for option in all_possible_options:
+                # Una opción está disponible si:
+                # 1. Es la selección actual de ESTE combobox.
+                # 2. O NO está seleccionada en NINGÚN OTRO combobox.
+                is_selected_in_another_combo = False
+                for other_idx, other_var in enumerate(self.group_selector_vars):
+                    if i == other_idx: continue # No comparar consigo mismo
+                    if other_var.get() == option:
+                        is_selected_in_another_combo = True
+                        break
+                
+                if option == current_selection_this_combo or not is_selected_in_another_combo:
+                    options_for_this_combo.append(option)
+            
+            combo_widget['values'] = options_for_this_combo
+            
+            # Re-validar la selección actual del combo
+            if current_selection_this_combo and current_selection_this_combo not in options_for_this_combo:
+                combo_var.set("") # Limpiar si ya no es válida (debería ser raro con la lógica anterior)
 
 
     def _update_group_combobox_values(self):
@@ -532,6 +609,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
 
         # Disparar actualización de columnas ahora que los combos están listos
         self.update_available_columns()
+        self._refresh_group_combobox_options() # Asegurar que las opciones de combo se actualicen
 
 
     def _clear_group_selectors(self, update_columns=True):
@@ -549,27 +627,22 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
     def get_selected_group_keys(self) -> List[str]:
         """Obtiene las claves originales de los grupos seleccionados y válidos de los FILTRADOS."""
         selected_keys = []
-        selected_display_names = set()  # Para detectar duplicados
-        has_duplicates = False # Inicializar aquí
-
-        for group_var in self.group_selector_vars: # <--- CORREGIR AQUÍ
+        selected_display_names = set()
+        
+        for group_var in self.group_selector_vars:
             display_name = group_var.get()
-            if not display_name:
-                # Si una variable está vacía, no la consideramos para la selección
-                # pero no invalidamos toda la selección necesariamente.
-                # Podríamos simplemente continuar al siguiente.
-                continue # Saltar variables vacías
-                break  # Salir si uno está vacío
+            if not display_name: # Si un campo está vacío, la selección general no es válida para proceder
+                # messagebox.showwarning("Selección Incompleta", "Por favor, seleccione un grupo en todos los campos.", parent=self)
+                return [] # Devolver lista vacía indica selección inválida/incompleta
 
             if display_name in selected_display_names:
-                messagebox.showerror(
-                    "Error de Selección",
-                    f"El grupo '{display_name}' está seleccionado más de una vez.",
-                    parent=self)
-                return []  # Devolver vacío si hay duplicados
-
+                # Esta validación de duplicados se maneja ahora previniendo la selección.
+                # Pero si aun así ocurre, es un error.
+                logger.error(f"Error: Grupo duplicado '{display_name}' detectado a pesar de los filtros del combobox.")
+                messagebox.showerror("Error de Selección", f"El grupo '{display_name}' está seleccionado más de una vez. Corrija la selección.", parent=self)
+                return [] 
+            
             selected_display_names.add(display_name)
-            # Buscar en los grupos filtrados
             original_key = self.available_groups_filtered.get(display_name)
             if original_key:
                 selected_keys.append(original_key)
