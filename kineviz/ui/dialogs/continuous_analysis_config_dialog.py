@@ -59,6 +59,16 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.show_conf_int_var = tk.BooleanVar(value=False)
         self.show_sem_var = tk.BooleanVar(value=False) # Nueva variable para EEM
 
+        # Variables para opciones de anotación del gráfico
+        self.annotate_spm_clusters_bottom_var = tk.BooleanVar(value=True)
+        self.annotate_spm_range_top_var = tk.BooleanVar(value=True)
+        self.delimit_time_range_var = tk.BooleanVar(value=False)
+        self.time_min_var = tk.StringVar(value="0")
+        self.time_max_var = tk.StringVar(value="100")
+        self.show_full_time_with_delimiters_var = tk.BooleanVar(value=True)
+        self.add_time_range_label_var = tk.BooleanVar(value=False)
+        self.time_range_label_text_var = tk.StringVar()
+
         # Variable para el nombre del análisis
         self.analysis_name_var = tk.StringVar()
         
@@ -193,6 +203,24 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.cb_sem = ttk.Checkbutton(self.plot_options_frame, text="Visualizar Error Estándar de la Media (EEM)", variable=self.show_sem_var, command=lambda: self._on_viz_option_selected('sem'))
         self.cb_sem.pack(anchor="w", padx=5)
         row_idx += 1
+
+        # --- Opciones de Anotación del Gráfico ---
+        self.annotation_options_frame = ttk.LabelFrame(main_frame, text="Opciones de Anotación del Gráfico")
+        self.annotation_options_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", padx=5, pady=10)
+        self.annotation_options_frame.grid_remove() # Ocultar inicialmente
+
+        ttk.Checkbutton(self.annotation_options_frame, text="Anotar clusters significativos SPM (gráfico inferior)", variable=self.annotate_spm_clusters_bottom_var).pack(anchor="w", padx=5, pady=(5,0))
+        ttk.Checkbutton(self.annotation_options_frame, text="Anotar rango significativo SPM (gráfico superior)", variable=self.annotate_spm_range_top_var).pack(anchor="w", padx=5)
+        
+        # Delimitar Rango de Tiempo
+        self.delimit_time_checkbox = ttk.Checkbutton(self.annotation_options_frame, text="Delimitar Rango de Tiempo Mostrado", variable=self.delimit_time_range_var, command=self._toggle_time_delimitation_widgets)
+        self.delimit_time_checkbox.pack(anchor="w", padx=5, pady=(5,0))
+
+        self.time_delimitation_subframe = ttk.Frame(self.annotation_options_frame, padding=(15, 5, 5, 5)) # Subframe con indentación
+        self.time_delimitation_subframe.pack(fill=tk.X, expand=True)
+        # Los widgets dentro de este subframe se mostrarán/ocultarán dinámicamente
+
+        row_idx += 1
         
         # --- Nombre del Análisis ---
         self.analysis_name_frame = ttk.LabelFrame(main_frame, text="Guardar Análisis Como")
@@ -211,6 +239,10 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.save_button.pack(side=tk.RIGHT, padx=5)
         ttk.Button(self.button_frame, text="Cancelar", command=self._on_cancel).pack(side=tk.RIGHT)
 
+        # Crear widgets de delimitación de tiempo (inicialmente no empaquetados)
+        self._create_time_delimitation_widgets()
+        self._toggle_time_delimitation_widgets() # Para asegurar estado inicial correcto
+
 
     def _on_canvas_configure(self, event):
         """Ajusta el ancho del frame interior al del canvas."""
@@ -224,7 +256,18 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         selected_group_keys = self.get_selected_group_keys()
         show_std_dev = self.show_std_dev_var.get()
         show_conf_int = self.show_conf_int_var.get()
-        show_sem = self.show_sem_var.get() # Leer nueva variable
+        show_sem = self.show_sem_var.get()
+        
+        # Nuevas opciones de anotación
+        annotate_spm_clusters_bottom = self.annotate_spm_clusters_bottom_var.get()
+        annotate_spm_range_top = self.annotate_spm_range_top_var.get()
+        delimit_time_range = self.delimit_time_range_var.get()
+        time_min_str = self.time_min_var.get()
+        time_max_str = self.time_max_var.get()
+        show_full_time_with_delimiters = self.show_full_time_with_delimiters_var.get()
+        add_time_range_label = self.add_time_range_label_var.get()
+        time_range_label_text = self.time_range_label_text_var.get().strip()
+
         mode = self.vi_grouping_mode.get()
         primary_vi = self.primary_vi_var.get() if mode == '1VI' else None
         fixed_vi = self.fixed_vi_var.get() if mode == '2VIs' else None
@@ -253,6 +296,22 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
             messagebox.showerror("Error de Validación", "Seleccione la columna a analizar.", parent=self)
             return
 
+        time_min, time_max = 0.0, 100.0
+        if delimit_time_range:
+            try:
+                time_min = float(time_min_str)
+                time_max = float(time_max_str)
+                if not (0 <= time_min <= 100 and 0 <= time_max <= 100 and time_min < time_max):
+                    messagebox.showerror("Error de Validación", "Tiempo Mínimo y Máximo deben estar entre 0 y 100, y Mínimo < Máximo.", parent=self)
+                    return
+            except ValueError:
+                messagebox.showerror("Error de Validación", "Tiempo Mínimo y Máximo deben ser números.", parent=self)
+                return
+            if add_time_range_label and not time_range_label_text:
+                messagebox.showerror("Error de Validación", "Ingrese el texto para la etiqueta de rango de tiempo.", parent=self)
+                return
+
+
         self.result = {
             "analysis_name": analysis_name,
             "data_type": "Cinematica", # Fijo para análisis continuo por ahora
@@ -260,9 +319,17 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
             "groups": selected_group_keys,
             "show_std_dev": show_std_dev,
             "show_conf_int": show_conf_int,
-            "show_sem": show_sem, # Añadir nueva opción
+            "show_sem": show_sem,
             "grouping_mode": mode,
             "primary_vi_name": primary_vi,
+            "annotate_spm_clusters_bottom": annotate_spm_clusters_bottom,
+            "annotate_spm_range_top": annotate_spm_range_top,
+            "delimit_time_range": delimit_time_range,
+            "time_min": time_min,
+            "time_max": time_max,
+            "show_full_time_with_delimiters": show_full_time_with_delimiters,
+            "add_time_range_label": add_time_range_label,
+            "time_range_label_text": time_range_label_text,
             "fixed_vi_name": fixed_vi,
             "fixed_descriptor_display": fixed_descriptor_display,
         }
@@ -336,6 +403,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.group_selection_outer_frame.grid_remove()
         self.column_frame.grid_remove()
         self.plot_options_frame.grid_remove()
+        self.annotation_options_frame.grid_remove() # Ocultar nuevo frame
         self.analysis_name_frame.grid_remove()
         self.button_frame.grid_remove()
 
@@ -379,6 +447,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.group_selection_outer_frame.grid_remove()
         self.column_frame.grid_remove()
         self.plot_options_frame.grid_remove()
+        self.annotation_options_frame.grid_remove() # Ocultar nuevo frame
         self.analysis_name_frame.grid_remove()
         self.button_frame.grid_remove()
         if hasattr(self, 'save_button'): self.save_button.config(state=tk.DISABLED)
@@ -398,6 +467,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
             self.available_groups_filtered = {}
             self._clear_group_selectors(update_columns=False)
             self.group_selection_outer_frame.grid_remove()
+            self.annotation_options_frame.grid_remove() # Ocultar nuevo frame
             logger.debug("Limpiando grupos: falta información previa.")
             return
 
@@ -496,18 +566,71 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
             self._hide_final_steps()
 
     def _show_final_steps(self):
-        """Muestra los frames de opciones de visualización, nombre y botones."""
+        """Muestra los frames de opciones de visualización, anotación, nombre y botones."""
         self.plot_options_frame.grid()
+        self.annotation_options_frame.grid() # Mostrar nuevo frame
+        self._toggle_time_delimitation_widgets() # Asegurar estado correcto de sub-widgets
         self.analysis_name_frame.grid()
         self.button_frame.grid()
         if hasattr(self, 'save_button'): self.save_button.config(state=tk.NORMAL)
 
     def _hide_final_steps(self):
-        """Oculta los frames de opciones de visualización, nombre y botones."""
+        """Oculta los frames de opciones de visualización, anotación, nombre y botones."""
         self.plot_options_frame.grid_remove()
+        self.annotation_options_frame.grid_remove() # Ocultar nuevo frame
         self.analysis_name_frame.grid_remove()
         self.button_frame.grid_remove()
         if hasattr(self, 'save_button'): self.save_button.config(state=tk.DISABLED)
+
+    def _create_time_delimitation_widgets(self):
+        """Crea los widgets para la delimitación de tiempo, pero no los empaqueta."""
+        # Tiempo Mínimo
+        ttk.Label(self.time_delimitation_subframe, text="Tiempo Mínimo (%):").grid(row=0, column=0, sticky="w", padx=5, pady=2)
+        self.time_min_entry = ttk.Entry(self.time_delimitation_subframe, textvariable=self.time_min_var, width=5)
+        self.time_min_entry.grid(row=0, column=1, sticky="w", padx=5, pady=2)
+
+        # Tiempo Máximo
+        ttk.Label(self.time_delimitation_subframe, text="Tiempo Máximo (%):").grid(row=0, column=2, sticky="w", padx=5, pady=2)
+        self.time_max_entry = ttk.Entry(self.time_delimitation_subframe, textvariable=self.time_max_var, width=5)
+        self.time_max_entry.grid(row=0, column=3, sticky="w", padx=5, pady=2)
+
+        # Checkbox Mostrar Tiempo Completo
+        self.show_full_time_checkbox = ttk.Checkbutton(self.time_delimitation_subframe, text="Mostrar Tiempo Completo con Delimitadores", variable=self.show_full_time_with_delimiters_var)
+        self.show_full_time_checkbox.grid(row=1, column=0, columnspan=4, sticky="w", padx=5, pady=2)
+        
+        # Checkbox Añadir Etiqueta de Rango
+        self.add_label_checkbox = ttk.Checkbutton(self.time_delimitation_subframe, text="Añadir Etiqueta de Rango de Tiempo", variable=self.add_time_range_label_var, command=self._toggle_time_label_entry)
+        self.add_label_checkbox.grid(row=2, column=0, columnspan=4, sticky="w", padx=5, pady=2)
+
+        # Frame para Etiqueta de Rango (inicialmente oculto)
+        self.time_label_entry_frame = ttk.Frame(self.time_delimitation_subframe)
+        self.time_label_entry_frame.grid(row=3, column=0, columnspan=4, sticky="ew", padx=(20, 5)) # Indent
+        
+        ttk.Label(self.time_label_entry_frame, text="Texto de Etiqueta:").pack(side=tk.LEFT, padx=(0,5))
+        self.time_label_text_entry = ttk.Entry(self.time_label_entry_frame, textvariable=self.time_range_label_text_var, width=30)
+        self.time_label_text_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+
+    def _toggle_time_delimitation_widgets(self):
+        """Muestra u oculta los widgets de delimitación de tiempo."""
+        if self.delimit_time_range_var.get():
+            # Mostrar todos los widgets dentro del subframe
+            for widget in self.time_delimitation_subframe.winfo_children():
+                # El frame de la etiqueta de texto se maneja por separado
+                if widget != self.time_label_entry_frame:
+                    widget.grid() # O pack() si se usó pack para ellos
+            self._toggle_time_label_entry() # Asegurar estado correcto del entry de etiqueta
+        else:
+            # Ocultar todos los widgets dentro del subframe
+            for widget in self.time_delimitation_subframe.winfo_children():
+                widget.grid_remove() # O pack_forget()
+
+    def _toggle_time_label_entry(self):
+        """Muestra u oculta el campo de entrada para la etiqueta de rango de tiempo."""
+        if self.delimit_time_range_var.get() and self.add_time_range_label_var.get():
+            self.time_label_entry_frame.grid() # O pack()
+        else:
+            self.time_label_entry_frame.grid_remove() # O pack_forget()
 
 
     def add_group_selector(self, initial_value=""):

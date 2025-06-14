@@ -1195,7 +1195,17 @@ class AnalysisService:
                         plot_params_for_charting = current_spm_results_dict.copy()
                         plot_params_for_charting['show_std_dev'] = config.get('show_std_dev', False)
                         plot_params_for_charting['show_conf_int'] = config.get('show_conf_int', False)
-                        plot_params_for_charting['show_sem'] = config.get('show_sem', False) # New option for SEM visualization
+                        plot_params_for_charting['show_sem'] = config.get('show_sem', False)
+                        
+                        # Nuevas opciones de anotación y delimitación
+                        plot_params_for_charting['annotate_spm_clusters_bottom'] = config.get('annotate_spm_clusters_bottom', True)
+                        plot_params_for_charting['annotate_spm_range_top'] = config.get('annotate_spm_range_top', True)
+                        plot_params_for_charting['delimit_time_range'] = config.get('delimit_time_range', False)
+                        plot_params_for_charting['time_min'] = config.get('time_min', 0.0)
+                        plot_params_for_charting['time_max'] = config.get('time_max', 100.0)
+                        plot_params_for_charting['show_full_time_with_delimiters'] = config.get('show_full_time_with_delimiters', True)
+                        plot_params_for_charting['add_time_range_label'] = config.get('add_time_range_label', False)
+                        plot_params_for_charting['time_range_label_text'] = config.get('time_range_label_text', '')
 
                         spm_plot_path = current_analysis_output_dir / "spm_plot.png"
                         charting.create_spm_results_plot(
