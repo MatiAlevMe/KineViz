@@ -217,12 +217,29 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                     success_msg = f"Análisis continuo '{dialog.result.get('analysis_name')}' completado.\n{message}"
                     if analysis_results.get("output_dir"):
                         try:
-                            study_base_path = self.analysis_service.file_service._get_study_path(self.study_id).parent.parent
-                            relative_output_dir = Path(analysis_results.get('output_dir')).relative_to(study_base_path)
+                            # Try to get a shorter relative path for display
+                            study_root_path = self.analysis_service.file_service.project_root
+                            output_dir_path = Path(analysis_results.get('output_dir'))
+                            relative_output_dir = output_dir_path.relative_to(study_root_path)
                             success_msg += f"\n\nResultados guardados en:\n.../{relative_output_dir}"
-                        except Exception:
+                        except Exception: # Fallback to full path if relative fails
                              success_msg += f"\n\nResultados guardados en la carpeta del estudio:\n{analysis_results.get('output_dir')}"
-                    messagebox.showinfo("Análisis Continuo Completado", success_msg, parent=self)
+                    
+                    plot_path_str = analysis_results.get("continuous_plot_path")
+                    if plot_path_str and Path(plot_path_str).exists():
+                        if messagebox.askyesno("Análisis Completado",
+                                               f"{success_msg}\n\n¿Desea abrir el gráfico generado?",
+                                               parent=self):
+                            plot_path_obj = Path(plot_path_str)
+                            try:
+                                if sys.platform == "win32": os.startfile(plot_path_obj)
+                                elif sys.platform == "darwin": subprocess.run(["open", plot_path_obj], check=True)
+                                else: subprocess.run(["xdg-open", plot_path_obj], check=True)
+                            except Exception as e_open:
+                                messagebox.showerror("Error", f"No se pudo abrir el gráfico:\n{e_open}", parent=self)
+                                logger.error(f"Error abriendo gráfico {plot_path_obj}: {e_open}", exc_info=True)
+                    else: # No plot path, or plot doesn't exist, or user chose not to open
+                        messagebox.showinfo("Análisis Completado", success_msg, parent=self)
                 
                 self.load_analyses() # Recargar la lista
             except Exception as e:
@@ -278,9 +295,11 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                     config_tree.column("valor", width=450, anchor=tk.W, stretch=tk.YES) # Allow resizing
 
                     vsb = ttk.Scrollbar(tree_frame, orient="vertical", command=config_tree.yview)
-                    config_tree.configure(yscrollcommand=vsb.set)
+                    hsb = ttk.Scrollbar(tree_frame, orient="horizontal", command=config_tree.xview) # Horizontal scrollbar
+                    config_tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set) # Configure both
                     
                     vsb.pack(side=tk.RIGHT, fill=tk.Y)
+                    hsb.pack(side=tk.BOTTOM, fill=tk.X) # Pack horizontal scrollbar
                     config_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
                     # --- Lógica de formato y populación (integrada desde _format_config_for_display) ---
@@ -351,26 +370,19 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                                                 except ValueError: variable_parts_inner.append(part)
                                         group_display_parts.append(", ".join(variable_parts_inner))
                                     else:
-                                        parts = [f"{item.split('=',1)[0]}: {aliases.get(item.split('=',1)[1], item.split('=',1)[1])}" if '=' in item else item for item in group_key_item.split(';')]
-                                        group_display_parts.append(", ".join(parts))
-                                display_value = "\n".join(group_display_parts) if group_display_parts else "N/A"
+                                        parts = []
+                                        for item_part_in_group_key_item in group_key_item.split(';'):
+                                            try:
+                                                vi_name_iter, desc_val_iter = item_part_in_group_key_item.split('=',1)
+                                                alias_iter = aliases.get(desc_val_iter, desc_val_iter)
+                                                parts.append(f"{vi_name_iter}: {alias_iter}")
+                                            except ValueError:
+                                                parts.append(item_part_in_group_key_item)
+                                        group_display_parts.append(" & ".join(parts)) # Use " & " for parts of a single complex group key
+                                display_value = ", ".join(group_display_parts) if group_display_parts else "N/A" # Join multiple groups with comma
                             elif raw_value is None:
                                 display_value = "No especificado"
-                            elif key == "groups": # Handle 'groups' specifically for better display
-                                formatted_group_strings = []
-                                if isinstance(raw_value, list):
-                                    for group_key_item in raw_value: # e.g., "Edad=Adulto" or "VI1=DescA;VI2=DescB"
-                                        parts_with_aliases = []
-                                        # Split by ';' for combined keys, or handle single key
-                                        for part in group_key_item.split(';'):
-                                            try:
-                                                vi_name, descriptor = part.split('=', 1)
-                                                alias = aliases.get(descriptor, descriptor)
-                                                parts_with_aliases.append(f"{vi_name}: {alias}")
-                                            except ValueError:
-                                                parts_with_aliases.append(part) # Fallback
-                                        formatted_group_strings.append(" & ".join(parts_with_aliases))
-                                display_value = ", ".join(formatted_group_strings) if formatted_group_strings else "N/A"
+                            # The redundant 'elif key == "groups":' block below is removed.
                             else:
                                 display_value = str(raw_value)
                             config_tree.insert("", tk.END, values=(translated_key, display_value))
