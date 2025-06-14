@@ -257,14 +257,15 @@ class ContinuousAnalysisManagerDialog(Toplevel):
             config_path = Path(selected_info["config_path"])
             if config_path.exists():
                 try:
-                    with open(config_path, 'r', encoding='utf-8') as f:
-                        config_data = json.load(f)
+                    # Correctly get the config dictionary from selected_info
+                    config_data = selected_info.get("config") 
                     
                     config_window = Toplevel(self)
                     config_window.title(f"Configuración Detallada: {selected_info.get('name')}")
                     config_window.geometry("750x600") # Adjusted size for Treeview
                     config_window.transient(self)
                     # config_window.grab_set() # Non-modal
+                    config_window.focus_set() # Explicitly set focus to the new window
 
                     # --- Treeview para mostrar la configuración ---
                     tree_frame = ttk.Frame(config_window, padding=(10,10,10,0))
@@ -273,8 +274,8 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                     config_tree = ttk.Treeview(tree_frame, columns=("parametro", "valor"), show="headings")
                     config_tree.heading("parametro", text="Parámetro")
                     config_tree.heading("valor", text="Valor")
-                    config_tree.column("parametro", width=250, anchor=tk.W)
-                    config_tree.column("valor", width=450, anchor=tk.W) # Allow more space for value
+                    config_tree.column("parametro", width=250, anchor=tk.W, stretch=tk.YES) # Allow resizing
+                    config_tree.column("valor", width=450, anchor=tk.W, stretch=tk.YES) # Allow resizing
 
                     vsb = ttk.Scrollbar(tree_frame, orient="vertical", command=config_tree.yview)
                     config_tree.configure(yscrollcommand=vsb.set)
@@ -361,23 +362,18 @@ class ContinuousAnalysisManagerDialog(Toplevel):
 
                         # Separador para "Otros Parámetros"
                         config_tree.insert("", tk.END, values=("---", "---"))
-                        config_tree.insert("", tk.END, values=("Otros Parámetros (Internos)", ""))
-
+                        config_tree.insert("", tk.END, values=("---", "---")) # Separator
+                        
+                        # Display any other parameters from the config JSON not in display_order
+                        other_params_header_added = False
                         for key, value in config_data.items():
-                            if key not in display_order and key not in ["config", "path", "spm_results_path"]:
+                            if key not in display_order:
+                                if not other_params_header_added:
+                                    config_tree.insert("", tk.END, values=("Otros Parámetros (desde JSON)", ""))
+                                    other_params_header_added = True
+                                
                                 translated_key = key_translations.get(key, key.replace("_", " ").capitalize())
                                 display_value = str(value)
-                                if key == "mtime" and isinstance(value, (float, int)):
-                                    try:
-                                        display_value = datetime.fromtimestamp(value).strftime('%Y-%m-%d %H:%M:%S')
-                                        translated_key = "Fecha de Modificación"
-                                    except: pass
-                                elif key == "plot_path" and value:
-                                    display_value = Path(value).name
-                                    translated_key = "Archivo de Gráfico"
-                                elif key == "config_path" and value:
-                                    display_value = Path(value).name
-                                    translated_key = "Archivo de Configuración"
                                 config_tree.insert("", tk.END, values=(translated_key, display_value))
                     
                     # Botón Cerrar
