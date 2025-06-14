@@ -256,9 +256,9 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
 2. [Pendiente] Ayuda en la Interfaz: Añadir Tooltips Adicionales.
 2.1 [Pendiente] Añadir tooltips que explique el formato de cada ventana relevante:
 Editar estudio, crear estudio, agregar archivos, crear analisis discreto, crear analisis continuo.
-3. [Pendiente] Optimización del Sistema.
+3. [Hecho] Optimización del Sistema.
 3.1 [Hecho] Decidir si mantener todas las tablas del analisis discreto o solamente las tablas .xlsx para ahorrar espacio.
-3.2 [Pendiente] Decidir formato final y filtrado de las ventanas de tablas de datos como:
+3.2 [Hecho] Decidir formato final y filtrado de las ventanas de tablas de datos como:
 Ventana de estudio, ventana de estudio especifico, ventana de tablas de analisis discreto, analisis discreto, analisis continuo
 4. [Pendiente] Documentación
 4.1 [Pendiente] Refactorizar los manuales de usuario de la siguiente manera:
