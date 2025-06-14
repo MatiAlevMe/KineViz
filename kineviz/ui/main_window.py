@@ -131,8 +131,8 @@ class MainWindow:
     def show_continuous_analysis_manager_dialog(self, study_id: int):
         """Muestra el diálogo para gestionar análisis continuos."""
         # No limpia la ventana principal, es un diálogo Toplevel
-        ContinuousAnalysisManagerDialog(self.root, self.analysis_service, study_id)
-        # El diálogo es modal y se gestiona a sí mismo.
+        ContinuousAnalysisManagerDialog(self.root, self.analysis_service, study_id, main_window_instance=self)
+        # El diálogo se gestiona a sí mismo.
 
     def show_create_study_dialog(self, study_to_edit=None):
         """
