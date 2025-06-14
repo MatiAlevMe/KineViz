@@ -58,6 +58,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.show_std_dev_var = tk.BooleanVar(value=False)
         self.show_conf_int_var = tk.BooleanVar(value=False)
         self.show_sem_var = tk.BooleanVar(value=False) # Nueva variable para EEM
+        self.generate_interactive_plot_var = tk.BooleanVar(value=True) # Opción para gráfico interactivo
 
         # Variables para opciones de anotación del gráfico
         self.annotate_spm_clusters_bottom_var = tk.BooleanVar(value=True)
@@ -202,6 +203,11 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.cb_conf_int.pack(anchor="w", padx=5)
         self.cb_sem = ttk.Checkbutton(self.plot_options_frame, text="Visualizar Error Estándar de la Media (EEM)", variable=self.show_sem_var, command=lambda: self._on_viz_option_selected('sem'))
         self.cb_sem.pack(anchor="w", padx=5)
+
+        ttk.Separator(self.plot_options_frame, orient='horizontal').pack(fill='x', pady=5, padx=5)
+        
+        self.cb_interactive_plot = ttk.Checkbutton(self.plot_options_frame, text="Generar Gráfico Interactivo (HTML)", variable=self.generate_interactive_plot_var)
+        self.cb_interactive_plot.pack(anchor="w", padx=5, pady=(0,5))
         row_idx += 1
 
         # --- Opciones de Anotación del Gráfico ---
@@ -257,6 +263,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         show_std_dev = self.show_std_dev_var.get()
         show_conf_int = self.show_conf_int_var.get()
         show_sem = self.show_sem_var.get()
+        generate_interactive_plot = self.generate_interactive_plot_var.get()
         
         # Nuevas opciones de anotación
         annotate_spm_clusters_bottom = self.annotate_spm_clusters_bottom_var.get()
@@ -320,6 +327,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
             "show_std_dev": show_std_dev,
             "show_conf_int": show_conf_int,
             "show_sem": show_sem,
+            "generate_interactive_plot": generate_interactive_plot,
             "grouping_mode": mode,
             "primary_vi_name": primary_vi,
             "annotate_spm_clusters_bottom": annotate_spm_clusters_bottom,

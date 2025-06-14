@@ -15,6 +15,7 @@ import scipy.stats # Para calcular IC
 try:
     import plotly.graph_objects as go
     import plotly.io as pio
+    from plotly.subplots import make_subplots # Correct import
     # Configurar tema por defecto para Plotly (opcional)
     pio.templates.default = "plotly_white"
     PLOTLY_AVAILABLE = True
@@ -404,17 +405,18 @@ def create_interactive_spm_results_plot(normalized_data_by_group: dict,
     num_points = 101
     time_axis = np.linspace(0, 100, num_points)
 
-    fig = go.Figure() # Will be replaced by make_subplots
+    fig = go.Figure() # Default in case make_subplots fails
     try:
         # Initialize with template and make subplots
-        fig = go.subplots.make_subplots(
+        fig = make_subplots( # Correct function call
             rows=2, cols=1, shared_xaxes=True,
             vertical_spacing=0.05, # Adjust spacing between subplots
             row_heights=[0.6, 0.4], # Allocate more space to mean curves
             figure=go.Figure(layout=go.Layout(template="plotly_white")) # Pass initial figure with template
         )
-    except Exception as e_subplot: 
-        logger.error(f"Error creando subplots con Plotly: {e_subplot}. Usando figura simple.")
+    except Exception as e_subplot:
+        logger.error(f"Error creando subplots con Plotly: {e_subplot}. Usando figura simple.", exc_info=True)
+        # Fallback to a simple figure if make_subplots fails
         fig = go.Figure(layout=go.Layout(template="plotly_white"))
 
 

@@ -240,7 +240,7 @@ Ejecutar tests básicos de `spm1d` (`ttest2`, `anova1`), realizar inferencia est
         - Panel superior: Curvas promedio por grupo (con opciones de visualización EEM, DE, IC) vs. tiempo normalizado.
         - Panel inferior: Curva del estadístico SPM, umbral crítico y resaltado de clusters significativos (con opciones de anotación).
         - Opciones para delimitar el rango de tiempo mostrado en el gráfico y añadir etiquetas personalizadas.
-    - [En Progreso] Generar gráficos interactivos (HTML con Plotly, si es factible).
+    - [Hecho] Generar gráficos interactivos (HTML con Plotly) como opción configurable (activada por defecto).
 4.2 [Hecho] Nomenclatura de Creación de Carpeta de Guardado de Archivos:
 Guardar los archivos del analisis en una subcarpeta específica dentro de la carpeta del estudio (ej: `[NOMBRE_ESTUDIO]/Analisis Continuo/[NOMBRE_COMPLETO_MUSCULO_MAS_SU_DIMENSION_PERO_SIN _LA_UNIDAD_DE_MEDIDA] (ie. "Estudio de Adultos Mayores/Analisis Continuo/LAnkleMoment X")/[NOMBRE_ANALISIS]`).
 5. [Hecho] Gestión de Análisis Continuos Guardados en `AnalysisService`.
