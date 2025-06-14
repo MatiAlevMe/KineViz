@@ -42,6 +42,7 @@ class DiscreteAnalysisView(ttk.Frame):
 
         # Variables de control para filtros y búsqueda
         self.search_var = tk.StringVar()
+        self.filter_type_var = tk.StringVar(value="Todos") # Re-add missing filter_type_var
         self.calc_filter_var = tk.StringVar(value="Todos") # Initialize to "Todos"
         # self.format_filter_var no longer needed
 
