@@ -27,50 +27,108 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.study_id = study_id
 
         self.title(f"Gestor de Análisis Discretos - Estudio {study_id}")
-        self.geometry("800x500")
+        self.geometry("950x700") # Adjusted size for filters
         self.grab_set()  # Hacer modal
 
-        self.analysis_list = []  # Lista de dicts con info de análisis guardados
+        self.all_analyses_data = []  # Store all analyses data
         self.analysis_tree = None
-        # Añadir "Valores Clave"
+        self.study_vis = [] # Store VI definitions for the study
+        self.study_aliases = {} # Store aliases for the study
+
+        # Filter related StringVars
+        self.search_term_var = tk.StringVar()
+        self.filter_vi_count_var = tk.StringVar(value="No filtrar")
+        self.filter_vi1_name_var = tk.StringVar()
+        self.filter_vi1_desc_var = tk.StringVar()
+        self.filter_vi2_name_var = tk.StringVar()
+        self.filter_vi2_desc_var = tk.StringVar()
+
+        # Column definitions
         self.columns = ("Nombre", "Fecha", "Tipo de Dato", "Cálculo",
                         "Columna Analizada", "Supuestos", "Valores Clave",
                         "Grupos Comparados")
 
+        self._load_study_vi_data() # Load VIs and aliases for filters
         self.create_widgets()
-        self.load_analyses()
+        self._populate_filter_vi_comboboxes() # Populate VI comboboxes after widgets are created
+        self.load_analyses() # This will now fetch all and then apply current (empty) filters
 
     def create_widgets(self):
         """Crea los widgets del diálogo."""
         main_frame = ttk.Frame(self, padding="10")
         main_frame.pack(fill=tk.BOTH, expand=True)
-        main_frame.rowconfigure(1, weight=1)  # Permitir que el treeview se expanda
+        main_frame.rowconfigure(2, weight=1)  # Adjust row for treeview expansion
         main_frame.columnconfigure(0, weight=1)
 
-        # --- Acciones ---
-        action_frame = ttk.Frame(main_frame)
-        action_frame.grid(row=0, column=0, sticky="ew", pady=(0, 10))
+        # --- Search and Filter Frame ---
+        search_filter_frame = ttk.LabelFrame(main_frame, text="Buscar y Filtrar Análisis", padding="10")
+        search_filter_frame.grid(row=0, column=0, sticky="ew", pady=(0,10))
+        search_filter_frame.columnconfigure(1, weight=1)
+        search_filter_frame.columnconfigure(3, weight=1)
+        search_filter_frame.columnconfigure(5, weight=1)
 
-        ttk.Button(action_frame, text="Nuevo Análisis...",
-                   command=self.open_new_analysis_dialog) \
-            .pack(side=tk.LEFT, padx=5)
-        ttk.Button(action_frame, text="Ver/Abrir Gráfico",
-                   command=self.view_analysis_plot) \
-            .pack(side=tk.LEFT, padx=5)
-        ttk.Button(action_frame, text="Eliminar Análisis",
-                   command=self.delete_analysis) \
-            .pack(side=tk.LEFT, padx=5)
-        ttk.Button(action_frame, text="Abrir Carpeta",
-                    command=self.open_analysis_folder) \
-             .pack(side=tk.LEFT, padx=5)
-        ttk.Button(action_frame, text="Ver Gráfico Interactivo",
-                   command=self.view_interactive_plot) \
-            .pack(side=tk.LEFT, padx=5)
-        # TODO: Añadir búsqueda/filtrado si es necesario
+        # Search
+        ttk.Label(search_filter_frame, text="Buscar:").grid(row=0, column=0, padx=(0,5), pady=5, sticky="w")
+        search_entry = ttk.Entry(search_filter_frame, textvariable=self.search_term_var, width=30)
+        search_entry.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
+        search_entry.bind("<Return>", lambda event: self._apply_filters_and_search())
+        ttk.Button(search_filter_frame, text="Buscar", command=self._apply_filters_and_search).grid(row=0, column=2, padx=5, pady=5, sticky="e")
+
+        # Filter by VI count
+        ttk.Label(search_filter_frame, text="Filtrar por VIs:").grid(row=1, column=0, padx=(0,5), pady=5, sticky="w")
+        self.filter_vi_count_combo = ttk.Combobox(search_filter_frame, textvariable=self.filter_vi_count_var,
+                                                  values=["No filtrar", "1 VI", "2 VIs"], state="readonly", width=12)
+        self.filter_vi_count_combo.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+        self.filter_vi_count_combo.bind("<<ComboboxSelected>>", self._on_filter_vi_count_change)
+
+        # VI 1 Filter
+        self.filter_vi1_frame = ttk.Frame(search_filter_frame)
+        self.filter_vi1_frame.grid(row=2, column=0, columnspan=3, pady=5, sticky="ew")
+        self.filter_vi1_frame.columnconfigure(1, weight=1)
+        self.filter_vi1_frame.columnconfigure(3, weight=1)
+
+        ttk.Label(self.filter_vi1_frame, text="VI 1:").grid(row=0, column=0, padx=(0,5), pady=2, sticky="w")
+        self.filter_vi1_name_combo = ttk.Combobox(self.filter_vi1_frame, textvariable=self.filter_vi1_name_var, state="readonly", width=15)
+        self.filter_vi1_name_combo.grid(row=0, column=1, padx=5, pady=2, sticky="ew")
+        self.filter_vi1_name_combo.bind("<<ComboboxSelected>>", lambda e: self._update_filter_descriptor_combobox(1))
+        
+        ttk.Label(self.filter_vi1_frame, text="Sub-valor VI 1:").grid(row=0, column=2, padx=(10,5), pady=2, sticky="w")
+        self.filter_vi1_desc_combo = ttk.Combobox(self.filter_vi1_frame, textvariable=self.filter_vi1_desc_var, state="readonly", width=15)
+        self.filter_vi1_desc_combo.grid(row=0, column=3, padx=5, pady=2, sticky="ew")
+
+        # VI 2 Filter (initially hidden)
+        self.filter_vi2_frame = ttk.Frame(search_filter_frame)
+        self.filter_vi2_frame.grid(row=3, column=0, columnspan=3, pady=5, sticky="ew")
+        self.filter_vi2_frame.columnconfigure(1, weight=1)
+        self.filter_vi2_frame.columnconfigure(3, weight=1)
+
+        ttk.Label(self.filter_vi2_frame, text="VI 2:").grid(row=0, column=0, padx=(0,5), pady=2, sticky="w")
+        self.filter_vi2_name_combo = ttk.Combobox(self.filter_vi2_frame, textvariable=self.filter_vi2_name_var, state="readonly", width=15)
+        self.filter_vi2_name_combo.grid(row=0, column=1, padx=5, pady=2, sticky="ew")
+        self.filter_vi2_name_combo.bind("<<ComboboxSelected>>", lambda e: self._update_filter_descriptor_combobox(2))
+
+        ttk.Label(self.filter_vi2_frame, text="Sub-valor VI 2:").grid(row=0, column=2, padx=(10,5), pady=2, sticky="w")
+        self.filter_vi2_desc_combo = ttk.Combobox(self.filter_vi2_frame, textvariable=self.filter_vi2_desc_var, state="readonly", width=15)
+        self.filter_vi2_desc_combo.grid(row=0, column=3, padx=5, pady=2, sticky="ew")
+        
+        self.filter_vi1_frame.grid_remove() # Hide VI1 frame initially
+        self.filter_vi2_frame.grid_remove() # Hide VI2 frame initially
+
+        # Filter Action Buttons
+        filter_action_frame = ttk.Frame(search_filter_frame)
+        filter_action_frame.grid(row=1, column=2, columnspan=4, sticky="e", padx=5, pady=5) # Adjusted column
+        ttk.Button(filter_action_frame, text="Aplicar Filtros", command=self._apply_filters_and_search).pack(side=tk.LEFT, padx=5)
+        ttk.Button(filter_action_frame, text="Limpiar Filtros", command=self._clear_filters).pack(side=tk.LEFT, padx=5)
+
+        # --- Acciones (Nuevo Análisis) ---
+        new_analysis_frame = ttk.Frame(main_frame)
+        new_analysis_frame.grid(row=1, column=0, sticky="ew", pady=(5, 10))
+        ttk.Button(new_analysis_frame, text="Nuevo Análisis...",
+                   command=self.open_new_analysis_dialog).pack(side=tk.LEFT, padx=0) # No padx needed if it's the only button on left
 
         # --- Lista de Análisis (Treeview) ---
         tree_frame = ttk.LabelFrame(main_frame, text="Análisis Guardados")
-        tree_frame.grid(row=1, column=0, sticky="nsew")
+        tree_frame.grid(row=2, column=0, sticky="nsew") # Adjusted row
         tree_frame.rowconfigure(0, weight=1)
         tree_frame.columnconfigure(0, weight=1)
 
@@ -116,120 +174,227 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
         # --- Botón Cerrar ---
         ttk.Button(main_frame, text="Cerrar", command=self.destroy) \
-            .grid(row=2, column=0, sticky="e", pady=(10, 0))
+            .grid(row=4, column=0, sticky="e", pady=(10, 0)) # Adjusted row
 
-    def load_analyses(self):
-        """Carga la lista de análisis individuales guardados."""
-        # Limpiar treeview
+    def _load_study_vi_data(self):
+        """Loads VI names and their descriptors for the current study."""
+        try:
+            details = self.analysis_service.study_service.get_study_details(self.study_id)
+            self.study_vis = details.get('independent_variables', [])
+            self.study_aliases = self.analysis_service.study_service.get_study_aliases(self.study_id) # Use service method
+            logger.debug(f"Loaded VIs for study {self.study_id}: {self.study_vis}")
+        except Exception as e:
+            logger.error(f"Error loading VI data for study {self.study_id}: {e}", exc_info=True)
+            self.study_vis = []
+            self.study_aliases = {}
+
+    def _populate_filter_vi_comboboxes(self):
+        """Populates the VI name comboboxes for filtering."""
+        vi_names = [vi['name'] for vi in self.study_vis if vi.get('name')]
+        self.filter_vi1_name_combo['values'] = sorted(vi_names)
+        self.filter_vi2_name_combo['values'] = sorted(vi_names)
+
+    def _update_filter_descriptor_combobox(self, vi_num: int):
+        """Updates the descriptor combobox for the specified VI filter."""
+        selected_vi_name = ""
+        desc_combo = None
+        desc_var = None
+
+        if vi_num == 1:
+            selected_vi_name = self.filter_vi1_name_var.get()
+            desc_combo = self.filter_vi1_desc_combo
+            desc_var = self.filter_vi1_desc_var
+        elif vi_num == 2:
+            selected_vi_name = self.filter_vi2_name_var.get()
+            desc_combo = self.filter_vi2_desc_combo
+            desc_var = self.filter_vi2_desc_var
+        
+        if not desc_combo or not desc_var: return
+
+        desc_var.set("")
+        descriptors_for_vi = []
+        if selected_vi_name:
+            for vi_info in self.study_vis:
+                if vi_info.get('name') == selected_vi_name:
+                    descriptors_for_vi = [
+                        f"{d} ({self.study_aliases.get(d)})" if self.study_aliases.get(d) else d
+                        for d in vi_info.get('descriptors', [])
+                    ]
+                    break
+        desc_combo['values'] = sorted(descriptors_for_vi)
+
+    def _on_filter_vi_count_change(self, event=None):
+        """Handles changes in the VI count filter selection."""
+        count_mode = self.filter_vi_count_var.get()
+        self.filter_vi1_name_var.set("")
+        self.filter_vi1_desc_var.set("")
+        self.filter_vi2_name_var.set("")
+        self.filter_vi2_desc_var.set("")
+        self._update_filter_descriptor_combobox(1)
+        self._update_filter_descriptor_combobox(2)
+
+        if count_mode == "1 VI":
+            self.filter_vi1_frame.grid()
+            self.filter_vi2_frame.grid_remove()
+        elif count_mode == "2 VIs":
+            self.filter_vi1_frame.grid()
+            self.filter_vi2_frame.grid()
+        else: # "No filtrar"
+            self.filter_vi1_frame.grid_remove()
+            self.filter_vi2_frame.grid_remove()
+        self._apply_filters_and_search()
+
+    def _get_descriptor_original_value(self, display_name: str) -> str:
+        """Converts a display name (e.g., 'Desc (Alias)') back to original descriptor."""
+        if not display_name: return ""
+        if " (" in display_name and display_name.endswith(")"):
+            original_candidate = display_name.rsplit(" (", 1)[0]
+            if self.study_aliases.get(original_candidate) == display_name.rsplit(" (", 1)[1][:-1]:
+                return original_candidate
+        return display_name
+
+    def _apply_filters_and_search(self):
+        search_term = self.search_term_var.get().lower()
+        filter_mode = self.filter_vi_count_var.get()
+        
+        vi1_name_filter = self.filter_vi1_name_var.get()
+        vi1_desc_display_filter = self.filter_vi1_desc_var.get()
+        vi1_desc_original_filter = self._get_descriptor_original_value(vi1_desc_display_filter)
+        
+        vi2_name_filter = self.filter_vi2_name_var.get()
+        vi2_desc_display_filter = self.filter_vi2_desc_var.get()
+        vi2_desc_original_filter = self._get_descriptor_original_value(vi2_desc_display_filter)
+
+        target_filter_key1 = f"{vi1_name_filter}={vi1_desc_original_filter}" if vi1_name_filter and vi1_desc_original_filter else None
+        target_filter_key2 = f"{vi2_name_filter}={vi2_desc_original_filter}" if vi2_name_filter and vi2_desc_original_filter else None
+
+        filtered_analyses = []
+        for analysis_info in self.all_analyses_data:
+            config = analysis_info.get('config', {})
+            
+            # 1. Apply search term
+            matches_search = True
+            if search_term:
+                name_match = search_term in analysis_info.get('name', '').lower()
+                calc_match = search_term in config.get('calculation', '').lower()
+                column_match = search_term in config.get('column', '').lower()
+                
+                groups_str_match = False
+                if 'groups' in config:
+                    formatted_groups = self._format_analysis_groups_for_display(config.get('groups', []))
+                    groups_str_match = search_term in (" vs ".join(formatted_groups)).lower()
+                
+                matches_search = name_match or calc_match or column_match or groups_str_match
+            
+            if not matches_search:
+                continue
+
+            # 2. Apply VI filters
+            matches_filters = True
+            if filter_mode != "No filtrar":
+                analysis_config_groups = config.get('groups', []) # List of group keys like "VI1=DescA;VI2=DescB"
+                
+                if target_filter_key1:
+                    key1_found = any(target_filter_key1 in group_key.split(';') for group_key in analysis_config_groups)
+                    if not key1_found: matches_filters = False
+                
+                if matches_filters and filter_mode == "2 VIs" and target_filter_key2:
+                    key2_found = any(target_filter_key2 in group_key.split(';') for group_key in analysis_config_groups)
+                    if not key2_found: matches_filters = False
+            
+            if matches_filters:
+                filtered_analyses.append(analysis_info)
+        
+        self._populate_treeview(filtered_analyses)
+
+    def _clear_filters(self):
+        self.search_term_var.set("")
+        self.filter_vi_count_var.set("No filtrar")
+        self._on_filter_vi_count_change()
+
+    def _format_analysis_groups_for_display(self, group_keys: list) -> list[str]:
+        """Helper to format group keys for display, using aliases."""
+        # group_keys are original keys like "VI1=DescA;VI2=DescB"
+        group_display_names = []
+        sorted_group_keys = sorted(group_keys) # Sort for consistent display order
+        for i, group_key in enumerate(sorted_group_keys):
+            display_parts = []
+            if group_key != "SinGrupo":
+                for part in group_key.split(';'):
+                    try:
+                        vi_name, desc_value = part.split('=', 1)
+                        alias = self.study_aliases.get(desc_value, desc_value)
+                        display_parts.append(f"{vi_name}: {alias}")
+                    except ValueError:
+                        display_parts.append(part) # Fallback
+            base_display_name = ", ".join(display_parts) if display_parts else "General"
+            full_display_name = f"Grupo {i+1} - {base_display_name}"
+            group_display_names.append(full_display_name)
+        return group_display_names
+
+    def _populate_treeview(self, analyses_to_display: list):
+        """Populates the treeview with the given list of analyses."""
         for item in self.analysis_tree.get_children():
             self.analysis_tree.delete(item)
 
-        try:
-            self.analysis_list = self.analysis_service.list_individual_analyses(self.study_id)
-        except Exception as e:
-             logger.error(f"Error cargando lista de análisis individuales: {e}", exc_info=True)
-             messagebox.showerror("Error", f"No se pudo cargar la lista de análisis:\n{e}", parent=self)
-             self.analysis_list = []
-
-        # Asegurar que todos los encabezados estén definidos
-        # (Importante si se reabre el diálogo y las columnas cambiaron)
         self.analysis_tree["columns"] = self.columns
         for col in self.columns:
-            # Usar el texto del encabezado ya definido si existe, si no, usar el ID
             header_text = self.analysis_tree.heading(col, 'text') or col
             self.analysis_tree.heading(col, text=header_text)
 
-        # Poblar Treeview
-        if not self.analysis_list:
-                # Crear valores vacíos para todas las columnas
-                # Ajustar el mensaje para que quepa en la primera columna
-                num_empty_cols = len(self.columns) - 1
-                empty_values = tuple(["No hay análisis guardados."] + [""] * num_empty_cols)
-                self.analysis_tree.insert("", tk.END, text="NoAnalyses",
-                                          values=empty_values)
+        if not analyses_to_display:
+            num_empty_cols = len(self.columns) - 1
+            empty_values = tuple(["No hay análisis que coincidan con los filtros."] + [""] * num_empty_cols)
+            self.analysis_tree.insert("", tk.END, text="NoAnalyses", values=empty_values)
         else:
-            for analysis_info in self.analysis_list:
+            for analysis_info in analyses_to_display:
                 config = analysis_info.get('config', {})
                 analysis_name = analysis_info.get('name', 'N/A')
-
-                # Fecha
                 date_str = "N/A"
                 if 'mtime' in analysis_info:
-                    date_str = datetime.fromtimestamp(
-                        analysis_info['mtime']
-                    ).strftime('%Y-%m-%d %H:%M:%S')
-
-                # Tipo de Dato, Cálculo, Columna
+                    date_str = datetime.fromtimestamp(analysis_info['mtime']).strftime('%Y-%m-%d %H:%M:%S')
                 freq = config.get('frequency', '?')
                 calc = config.get('calculation', '?')
                 col_full = config.get('column', '?')
-
-                # Supuestos
                 parametric = config.get('parametric', True)
                 paired = config.get('paired', False)
                 supuestos_str = (f"{'Pareado' if paired else 'No Pareado'}, "
                                  f"{'Paramétrico' if parametric else 'No Paramétrico'}")
-
-                # Resultado Test (Valores Clave)
                 stats_results = config.get('stats_results')
                 valores_clave_str = "N/A"
                 if stats_results:
                     test_name = stats_results.get('test_name', 'Test')
                     p_value = stats_results.get('p_value')
-                    # Usar isnan para verificar NaN de forma segura
-                    if p_value is not None and not isinstance(p_value, str) and not np.isnan(p_value): # Check for NaN
-                         # Formatear p-valor
+                    if p_value is not None and not isinstance(p_value, str) and not np.isnan(p_value):
                         if p_value < 0.001: p_text = "p < 0.001"
                         else: p_text = f"p = {p_value:.3f}"
                         valores_clave_str = f"{test_name}: {p_text}"
-                    elif p_value is not None: # Podría ser NaN
-                         valores_clave_str = f"{test_name}: p=NaN"
-                    else: # p_value es None
-                         valores_clave_str = f"{test_name}: N/A"
-                elif 'test_name' in config: # Compatibilidad con configs antiguas sin p-valor
-                    valores_clave_str = f"{config.get('test_name', 'Test')}: ?"
+                    elif p_value is not None: valores_clave_str = f"{test_name}: p=NaN"
+                    else: valores_clave_str = f"{test_name}: N/A"
+                elif 'test_name' in config: valores_clave_str = f"{config.get('test_name', 'Test')}: ?"
+                
+                group_keys_from_config = config.get('groups', [])
+                formatted_group_display_list = self._format_analysis_groups_for_display(group_keys_from_config)
+                grupos_comparados_str = " vs ".join(formatted_group_display_list)
 
+                values = (analysis_name, date_str, freq, calc, col_full,
+                          supuestos_str, valores_clave_str, grupos_comparados_str)
+                self.analysis_tree.insert("", tk.END, text=analysis_name, values=values)
+        
+        self._on_selection_changed() # Update button states based on current selection (if any)
 
-                # Grupos (con alias, usando claves nuevas)
-                group_keys = config.get('groups', []) # Claves originales "VI=Desc;..."
-                group_display_names = []
-                # Obtener alias una vez
-                study_aliases = self.analysis_service.study_service.get_study_aliases(self.study_id)
-                # Ordenar claves originales para numeración consistente
-                sorted_group_keys = sorted(group_keys)
-                for i, group_key in enumerate(sorted_group_keys):
-                    display_parts = []
-                    if group_key != "SinGrupo":
-                        for part in group_key.split(';'):
-                            vi_name, desc_value = part.split('=', 1)
-                            alias = study_aliases.get(desc_value, desc_value)
-                            display_parts.append(f"{vi_name}: {alias}")
-                    base_display_name = ", ".join(display_parts) if display_parts else "General"
-                    # Añadir prefijo "Grupo X - "
-                    full_display_name = f"Grupo {i+1} - {base_display_name}"
-                    group_display_names.append(full_display_name)
+    def load_analyses(self):
+        """Carga la lista de análisis individuales guardados y aplica filtros."""
+        try:
+            self.all_analyses_data = self.analysis_service.list_individual_analyses(self.study_id)
+            logger.debug(f"Cargados {len(self.all_analyses_data)} análisis individuales para estudio {self.study_id}.")
+        except Exception as e:
+             logger.error(f"Error cargando lista de análisis individuales: {e}", exc_info=True)
+             messagebox.showerror("Error", f"No se pudo cargar la lista de análisis:\n{e}", parent=self)
+             self.all_analyses_data = []
+        
+        self._apply_filters_and_search()
 
-                # Unir nombres de grupo completos para la columna "Grupos Comparados"
-                grupos_comparados_str = " vs ".join(group_display_names)
-
-                # Construir tupla de valores para insertar
-                values = (
-                    analysis_name,
-                    date_str,
-                    freq,
-                    calc,
-                    col_full,
-                    supuestos_str,
-                    valores_clave_str, # Añadir valores clave
-                    grupos_comparados_str # Añadir string de grupos
-                )
-
-                # Insertar en Treeview
-                self.analysis_tree.insert(
-                    "", tk.END,
-                    text=analysis_name,  # Guardar nombre para identificar
-                    values=values
-                )
 
     def open_new_analysis_dialog(self):
         """Abre el diálogo para configurar un nuevo análisis."""
@@ -237,6 +402,17 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         # Esperar a que el diálogo se cierre y luego refrescar la lista
         self.wait_window(dialog)
         self.load_analyses()  # Recargar por si se creó uno nuevo
+
+    def _on_selection_changed(self, event=None):
+        """Actualiza el estado de los botones de acción basado en la selección."""
+        selected_info = self.get_selected_analysis_info()
+        can_act = selected_info is not None
+        
+        self.view_plot_button.config(state=tk.NORMAL if can_act and selected_info.get("plot_path") else tk.DISABLED)
+        self.view_interactive_button.config(state=tk.NORMAL if can_act and selected_info.get("interactive_plot_path") else tk.DISABLED)
+        self.open_folder_button.config(state=tk.NORMAL if can_act and selected_info.get("path") else tk.DISABLED)
+        self.delete_button.config(state=tk.NORMAL if can_act else tk.DISABLED)
+
 
     def get_selected_analysis_info(self) -> dict | None:
         """Obtiene el diccionario de información del análisis seleccionado."""
@@ -253,13 +429,13 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                                    parent=self)
             return None
 
-        # Buscar la info completa en self.analysis_list
-        for analysis_info in self.analysis_list:
+        # Buscar la info completa en self.all_analyses_data
+        for analysis_info in self.all_analyses_data:
             if analysis_info['name'] == analysis_name:
                 return analysis_info
         logger.error(f"No se encontró información para análisis seleccionado: "
                       f"{analysis_name}")
-        return None  # No debería ocurrir si la lista está sincronizada
+        return None
 
     def view_interactive_plot(self):
         """Abre el gráfico HTML interactivo del análisis seleccionado."""
