@@ -56,6 +56,10 @@ class DescriptorAliasDialog(Toplevel):
         self.transient(parent)
         self.grab_set()
 
+    def _show_input_help(self, title: str, message: str):
+        """Muestra un popup de ayuda simple."""
+        messagebox.showinfo(title, message, parent=self)
+
     def create_widgets(self, parent_frame):
         """Crea los widgets dentro del frame especificado."""
         main_frame = ttk.Frame(parent_frame, padding="10")
@@ -122,9 +126,22 @@ class DescriptorAliasDialog(Toplevel):
                     alias_var = tk.StringVar()
                     # Cargar alias actual del estudio
                     alias_var.set(self.current_aliases.get(descriptor, ""))
-                    alias_entry = ttk.Entry(self.alias_grid_frame, textvariable=alias_var)
-                    alias_entry.grid(row=row_idx, column=1, padx=5, pady=2, sticky='ew')
+                    
+                    alias_entry_frame = ttk.Frame(self.alias_grid_frame)
+                    alias_entry_frame.grid(row=row_idx, column=1, padx=5, pady=2, sticky='ew')
+                    alias_entry_frame.columnconfigure(0, weight=1) # Entry se expande
 
+                    alias_entry = ttk.Entry(alias_entry_frame, textvariable=alias_var)
+                    alias_entry.pack(side=tk.LEFT, expand=True, fill=tk.X)
+
+                    alias_help_button = ttk.Button(alias_entry_frame, text="?", width=3, # Usar estilo si existe
+                                                   command=lambda d=descriptor: self._show_input_help(f"Ayuda: Alias para '{d}'",
+                                                                                                     f"Asigne un alias descriptivo opcional para el sub-valor '{d}'.\n"
+                                                                                                     "Este alias se usará en gráficos y reportes para mayor claridad.\n"
+                                                                                                     "Si se deja vacío, se usará el nombre original del sub-valor.\n"
+                                                                                                     "Ej: Para 'CTRL', el alias podría ser 'Control'."))
+                    alias_help_button.pack(side=tk.LEFT, padx=(2,0))
+                    
                     self.alias_vars[descriptor] = alias_var
                     row_idx += 1
 

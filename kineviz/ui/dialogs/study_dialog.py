@@ -56,6 +56,9 @@ class StudyDialog(Toplevel):
         y = parent_y + (parent_height // 2) - (dialog_height // 2)
         self.geometry(f'{dialog_width}x{dialog_height}+{x}+{y}')
 
+    def _show_input_help(self, title: str, message: str):
+        """Muestra un popup de ayuda simple."""
+        messagebox.showinfo(title, message, parent=self)
 
     def _load_study_data(self):
         """Carga los datos del estudio existente en las variables del formulario."""
@@ -88,15 +91,33 @@ class StudyDialog(Toplevel):
 
         # --- Campos Fijos ---
         ttk.Label(main_frame, text="Nombre del Estudio:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
-        ttk.Entry(main_frame, textvariable=self.var_nombre).grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5)
+        nombre_frame = ttk.Frame(main_frame)
+        nombre_frame.grid(row=row_idx, column=1, sticky="ew")
+        ttk.Entry(nombre_frame, textvariable=self.var_nombre).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
+        nombre_help_button = ttk.Button(nombre_frame, text="?", width=3, style="Help.TButton",
+                                        command=lambda: self._show_input_help("Ayuda: Nombre del Estudio",
+                                                                              "Nombre descriptivo para el estudio.\nEj: Estudio Piloto Marcha, Análisis Comparativo CMJ"))
+        nombre_help_button.pack(side=tk.LEFT)
         row_idx += 1
 
         ttk.Label(main_frame, text="Cantidad de Participantes:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
-        ttk.Entry(main_frame, textvariable=self.var_num_sujetos).grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5)
+        num_sujetos_frame = ttk.Frame(main_frame)
+        num_sujetos_frame.grid(row=row_idx, column=1, sticky="ew")
+        ttk.Entry(num_sujetos_frame, textvariable=self.var_num_sujetos).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
+        num_sujetos_help_button = ttk.Button(num_sujetos_frame, text="?", width=3, style="Help.TButton",
+                                             command=lambda: self._show_input_help("Ayuda: Cantidad de Participantes",
+                                                                                   "Número entero positivo que representa la cantidad máxima de participantes en el estudio.\nEj: 15"))
+        num_sujetos_help_button.pack(side=tk.LEFT)
         row_idx += 1
 
         ttk.Label(main_frame, text="Cantidad de Intento(s) de Prueba:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
-        ttk.Entry(main_frame, textvariable=self.var_cantidad_intentos).grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5)
+        intentos_frame = ttk.Frame(main_frame)
+        intentos_frame.grid(row=row_idx, column=1, sticky="ew")
+        ttk.Entry(intentos_frame, textvariable=self.var_cantidad_intentos).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
+        intentos_help_button = ttk.Button(intentos_frame, text="?", width=3, style="Help.TButton",
+                                          command=lambda: self._show_input_help("Ayuda: Cantidad de Intento(s)",
+                                                                                "Número entero positivo que representa la cantidad máxima de intentos por cada combinación de sub-valores de VIs para cada participante.\nEj: 3"))
+        intentos_help_button.pack(side=tk.LEFT)
         row_idx += 1
 
         # --- Sección de Variables Independientes Dinámicas ---
@@ -182,15 +203,22 @@ class StudyDialog(Toplevel):
         vi_header_frame.pack(fill=tk.X)
 
         vi_name_var = tk.StringVar(value=name_value)
-        vi_name_entry = ttk.Entry(vi_header_frame, textvariable=vi_name_var, width=30)
-        vi_name_entry.pack(side=tk.LEFT, padx=5, pady=5, fill=tk.X, expand=True)
+        vi_name_entry = ttk.Entry(vi_header_frame, textvariable=vi_name_var, width=25) # Ajustar ancho para botón
+        vi_name_entry.pack(side=tk.LEFT, padx=(5,0), pady=5, fill=tk.X, expand=True)
         # Permitir editar nombre VI en modo edición
         # vi_name_entry.config(state='readonly' if self.is_editing else 'normal')
+
+        if not self.is_editing:
+            vi_name_help_button = ttk.Button(vi_header_frame, text="?", width=3, style="Help.TButton",
+                                              command=lambda: self._show_input_help("Ayuda: Nombre de VI",
+                                                                                    "Nombre corto y descriptivo para la Variable Independiente.\nEvite espacios y caracteres especiales.\nEj: Condicion, Grupo, TipoSalto"))
+            vi_name_help_button.pack(side=tk.LEFT, padx=(2,5), pady=5)
+
 
         # Botón para añadir sub-valor a ESTA VI
         add_desc_button = ttk.Button(vi_header_frame, text="+", width=3,
                                      command=lambda v=vi_name_var: self.add_descriptor_ui(v))
-        add_desc_button.pack(side=tk.LEFT, padx=(0, 5))
+        add_desc_button.pack(side=tk.LEFT, padx=(0,5))
         if self.is_editing:
             add_desc_button.config(state=tk.DISABLED)
 
@@ -301,15 +329,24 @@ class StudyDialog(Toplevel):
         desc_frame.pack(fill=tk.X, pady=1)
 
         desc_var = tk.StringVar(value=value)
-        desc_entry = ttk.Entry(desc_frame, textvariable=desc_var)
-        desc_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+        desc_entry_frame = ttk.Frame(desc_frame) # Frame para entry y botón de ayuda
+        desc_entry_frame.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(5,0))
+
+        desc_entry = ttk.Entry(desc_entry_frame, textvariable=desc_var)
+        desc_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
         if self.is_editing:
             desc_entry.config(state='readonly')
+        else:
+            desc_help_button = ttk.Button(desc_entry_frame, text="?", width=3, style="Help.TButton",
+                                           command=lambda: self._show_input_help("Ayuda: Sub-valor de VI",
+                                                                                 "Valor o nivel específico de la Variable Independiente.\nEvite espacios y caracteres especiales. No usar 'Nulo'.\nEj: PRE, POST, Control, Experimental, CMJ, SJ"))
+            desc_help_button.pack(side=tk.LEFT, padx=(2,0))
+
 
         # Botón para eliminar este sub-valor
         remove_desc_button = ttk.Button(desc_frame, text="🗑️", width=3,
                                         command=lambda f=desc_frame, v=desc_var, vi_v=vi_name_var: self.remove_descriptor_ui(f, v, vi_v))
-        remove_desc_button.pack(side=tk.LEFT, padx=(0, 5))
+        remove_desc_button.pack(side=tk.LEFT, padx=(5,5)) # Ajustar padx
         if self.is_editing:
             remove_desc_button.config(state=tk.DISABLED)
 
