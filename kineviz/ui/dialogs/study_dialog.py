@@ -269,7 +269,7 @@ class StudyDialog(Toplevel):
                                                                                 ("Permite que un archivo o intento se asocie con MÁS DE UN sub-valor de esta VI simultáneamente.\n\n"
                                                                                  "Ejemplo: VI 'Equipamiento' con sub-valores 'Zapatillas', 'Canilleras', 'Vendas'.\n"
                                                                                  "Si 'Equipamiento' es Múltiple, un archivo podría ser:\n"
-                                                                                 "  `P01 Zapatillas Canilleras 01.txt` (usa Zapatillas Y Canilleras).\n"
+                                                                                 "  `P01 Zapatillas 01.txt` y `P01 Zapatillas 01.txt` (P01 usa Zapatillas Y Canilleras).\n"
                                                                                  "Si NO es Múltiple, un archivo solo puede tener UN sub-valor de 'Equipamiento':\n"
                                                                                  "  `P01 Zapatillas 01.txt` O `P01 Canilleras 01.txt`, pero no ambos para la misma VI.")))
         multiple_help_button.pack(side=tk.LEFT, padx=(2,0))
@@ -462,7 +462,7 @@ class StudyDialog(Toplevel):
                                                                                       "  Ej: VI 'Equipamiento' (Múltiple, Obligatoria). Archivo `P01 Zapatillas 01.txt` es válido. `P01 Nulo 01.txt` NO es válido para 'Equipamiento'.\n\n"
                                                                                       "Si una VI es Múltiple pero NO Obligatoria:\n"
                                                                                       "  Se PUEDE usar 'Nulo' para esta VI si no aplica ningún sub-valor.\n"
-                                                                                      "  Ej: VI 'Equipamiento' (Múltiple, No Obligatoria). Archivo `P01 Nulo 01.txt` es válido para 'Equipamiento'.")))
+                                                                                      "  Ej: VI 'Equipamiento' (Múltiple, No Obligatoria). Archivo `P01 Nulo VI2 01.txt` es válido para 'Equipamiento' siempre que exista al menos una VI no nula.")))
             mandatory_help_button.pack(side=tk.LEFT, padx=(2,0))
 
             current_state = tk.NORMAL if not self.is_editing else tk.DISABLED
