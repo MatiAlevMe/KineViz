@@ -17,17 +17,17 @@ class ContinuousAnalysisManagerDialog(Toplevel):
     """
     Dialog for managing (listing, creating, viewing, deleting) continuous analyses.
     """
-    def __init__(self, parent, analysis_service: AnalysisService, study_id: int):
+    def __init__(self, parent, analysis_service: AnalysisService, study_id: int, main_window_instance):
         super().__init__(parent)
         self.parent = parent
         self.analysis_service = analysis_service
         self.study_id = study_id
-        self.main_window = parent.master # Assuming parent is a widget within MainWindow's root
+        self.main_window = main_window_instance # Correctly assign MainWindow instance
 
         self.title(f"Gestor de Análisis Continuos - Estudio {study_id}")
         # self.geometry("850x550") # Adjust as needed
-        self.grab_set()
-        self.transient(parent)
+        # self.grab_set() # Removed to make the dialog non-modal
+        self.transient(parent) # Keeps it on top of parent
 
         self.create_widgets()
         self.load_analyses()
@@ -399,14 +399,14 @@ if __name__ == '__main__':
     # So, self.main_window = parent.master would correctly get MainWindow instance.
     # For this dummy, we pass root as parent, and the dialog will try self.parent.master
     # We need to ensure root.master is set.
-    root.master = dummy_main_window_ref 
+    # root.master = dummy_main_window_ref # No longer strictly needed for main_window assignment in dialog
 
     dummy_analysis_service_ref = DummyAnalysisService()
     test_study_id_for_manager = 1
     
     # Button to open the manager dialog
-    ttk.Button(root, text="Open Continuous Analysis Manager", 
-               command=lambda: ContinuousAnalysisManagerDialog(root, dummy_analysis_service_ref, test_study_id_for_manager)
+    ttk.Button(root, text="Open Continuous Analysis Manager",
+               command=lambda: ContinuousAnalysisManagerDialog(root, dummy_analysis_service_ref, test_study_id_for_manager, main_window_instance=dummy_main_window_ref)
               ).pack(padx=20, pady=20)
 
     root.mainloop()
