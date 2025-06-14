@@ -24,11 +24,11 @@ Esta vista te permite gestionar los archivos y análisis de un estudio específi
 
 * Muestra una lista de los archivos asociados a este estudio.
 * **Columnas:**
-    * `Paciente`: Identificador del paciente extraído del nombre del archivo.
+    * `Participante`: Identificador del participante extraído del nombre del archivo.
     * `Nombre Archivo`: Nombre completo del archivo.
     * `Tipo`: "Procesado" (generado por Kineviz) u "Original" (copia del archivo fuente).
     * `TipoDeDato`: Tipo de datos procesados (Cinematica, Cinetica, etc.) o "N/A" para originales.
-* **Búsqueda:** Escribe parte del nombre del archivo o paciente y presiona Enter para filtrar.
+* **Búsqueda:** Escribe parte del nombre del archivo o participante y presiona Enter para filtrar.
 * **Filtros (Tipo, Tipo de Dato):** Selecciona valores en los menús desplegables para filtrar. Haz clic en "Limpiar Filtros" para volver a ver todos.
 * **Paginación:** Usa los botones `<<`, `<`, `>` `>>` o introduce un número de página para navegar.
 * **Acciones (al seleccionar un archivo):**

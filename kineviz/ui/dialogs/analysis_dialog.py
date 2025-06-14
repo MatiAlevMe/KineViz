@@ -81,7 +81,7 @@ class AnalysisDialog(Toplevel):
         params_frame.pack(fill=tk.BOTH, expand=True)
 
         # Crear selectores para cada parámetro
-        self.patient_selector = self._create_parameter_selector(params_frame, "Pacientes", self.available_params.get('patients', set()))
+        self.patient_selector = self._create_parameter_selector(params_frame, "Participantes", self.available_params.get('patients', set()))
         self.frequency_selector = self._create_parameter_selector(params_frame, "Tipos de Datos", self.available_params.get('frequencies', set()), use_alias=False)
         # Reemplazar selectores de tipo/periodo por sub-valor, indicando usar alias
         self.descriptor_selector = self._create_parameter_selector(params_frame, "Sub-valores", self.available_params.get('descriptors', set()), use_alias=True)
@@ -281,7 +281,7 @@ class AnalysisDialog(Toplevel):
         # Validar selecciones
         valid_patients = selected_parameters.get('patients', [])
         if len(valid_patients) < 2:
-             messagebox.showwarning("Validación Fallida", "Debe seleccionar al menos dos pacientes con datos procesados válidos para realizar el análisis.", parent=self)
+             messagebox.showwarning("Validación Fallida", "Debe seleccionar al menos dos participantes con datos procesados válidos para realizar el análisis.", parent=self)
              return
         # Añadir más validaciones si es necesario (ej. al menos una frecuencia, etc.)
         if not selected_parameters.get('frequencies'):
@@ -308,7 +308,7 @@ class AnalysisDialog(Toplevel):
         # Validar selecciones
         valid_patients = selected_parameters.get('patients', [])
         if len(valid_patients) < 2:
-             messagebox.showwarning("Validación Fallida", "Debe seleccionar al menos dos pacientes con datos procesados válidos para generar el reporte.", parent=self)
+             messagebox.showwarning("Validación Fallida", "Debe seleccionar al menos dos participantes con datos procesados válidos para generar el reporte.", parent=self)
              return
         if not selected_parameters.get('frequencies'):
              messagebox.showwarning("Validación Fallida", "Debe seleccionar al menos una frecuencia para generar el reporte.", parent=self)
