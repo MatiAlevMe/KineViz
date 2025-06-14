@@ -644,8 +644,9 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
             text_lines.append(f"{translated_key}: {display_value_str}")
         
         # --- Add Claves de Archivo Completas Contribuyentes por Grupo Comparado ---
+        calculation_cfg = config_data.get('calculation', 'Desconocido') # Get the calculation
         text_lines.append("\n" + "-" * 40)
-        text_lines.append("Claves de Archivo Completas Contribuyentes por Grupo Comparado:")
+        text_lines.append(f"Claves de Archivo Completas Contribuyentes (para Cálculo: {calculation_cfg}) por Grupo Comparado:")
         text_lines.append("-" * 40)
 
         comparison_groups_keys = config_data.get('groups', []) # These are the keys defining the comparison groups
