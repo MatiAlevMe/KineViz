@@ -26,7 +26,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.analysis_service = analysis_service
         self.study_id = study_id
 
-        self.title(f"Gestor de Análisis Individuales - Estudio {study_id}")
+        self.title(f"Gestor de Análisis Discretos - Estudio {study_id}")
         self.geometry("800x500")
         self.grab_set()  # Hacer modal
 
