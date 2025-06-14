@@ -215,6 +215,7 @@ Opciones de Visualización y Anotación: Permitir al usuario configurar cómo se
     - [Hecho] Implementados filtros y búsqueda para la lista de análisis continuos:
         - Búsqueda por palabra clave: Permite buscar en el nombre del análisis, la variable analizada y los grupos comparados.
         - Filtro por Variables Independientes (VIs): Permite filtrar análisis basados en la selección de 1 o 2 VIs y sus respectivos sub-valores.
+    - [Hecho] Nomenclatura de Creación de Carpeta de Guardado de Archivos: Los análisis se guardan en `[NOMBRE_ESTUDIO]/Analisis Continuo/[VARIABLE_SIN_UNIDAD]/[NOMBRE_ANALISIS]`.
 2. [Hecho] Implementación de Normalización de Datos Temporales.
 2.1 [Hecho] Lógica de Normalización Temporal: Implementar una función (posiblemente en `processors.py` o un nuevo módulo) para normalizar la duración de las secuencias de datos a 101 puntos (0-100%).
 Esto se aplicará a la variable seleccionada para cada archivo/sujeto/intento.
