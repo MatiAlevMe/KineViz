@@ -240,14 +240,13 @@ Ejecutar tests básicos de `spm1d` (`ttest2`, `anova1`), realizar inferencia est
         - Panel superior: Curvas promedio por grupo (con opciones de visualización EEM, DE, IC) vs. tiempo normalizado.
         - Panel inferior: Curva del estadístico SPM, umbral crítico y resaltado de clusters significativos (con opciones de anotación).
         - Opciones para delimitar el rango de tiempo mostrado en el gráfico y añadir etiquetas personalizadas.
-    - [Hecho] Generar gráficos interactivos (HTML con Plotly, si es factible).
+    - [En Progreso] Generar gráficos interactivos (HTML con Plotly, si es factible).
 4.2 [Hecho] Nomenclatura de Creación de Carpeta de Guardado de Archivos:
 Guardar los archivos del analisis en una subcarpeta específica dentro de la carpeta del estudio (ej: `[NOMBRE_ESTUDIO]/Analisis Continuo/[NOMBRE_COMPLETO_MUSCULO_MAS_SU_DIMENSION_PERO_SIN _LA_UNIDAD_DE_MEDIDA] (ie. "Estudio de Adultos Mayores/Analisis Continuo/LAnkleMoment X")/[NOMBRE_ANALISIS]`).
 5. [Hecho] Gestión de Análisis Continuos Guardados en `AnalysisService`.
 5.1 [Hecho] Nuevos Métodos en `AnalysisService`:
 `list_continuous_analyses(study_id)`: Lista los análisis continuos guardados.
 `delete_continuous_analysis(analysis_folder_to_delete: Path)`: Elimina un análisis continuo (adaptado para tomar Path).
-`get_continuous_analysis_details(study_id, analysis_name_or_id)`: [Omitido] Obtiene detalles/archivos de un análisis (No requerido por el usuario).
 5.2 [Hecho] Integración con UI: Conectados métodos a `ContinuousAnalysisManagerDialog` (evolución de `ContinuousAnalysisResultsView`) para la gestión de los análisis.
 
 ## [Pendiente] Fase 5: Funcionalidades Adicionales

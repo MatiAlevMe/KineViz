@@ -40473,3 +40473,19 @@ AttributeError: 'NoneType' object has no attribute 'delete'
 2025-06-14 02:17:50,637 - INFO - [kineviz.core.services.analysis_service] - Análisis continuo eliminado: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/1_Edad y Peso con 3 sub-valores/Analisis Continuo/LAnkleAngles Z/testing 1
 2025-06-14 02:17:50,637 - INFO - [kineviz.core.services.analysis_service] - Directorio de variable 'LAnkleAngles Z' está vacío tras eliminar 'testing 1', eliminándolo.
 2025-06-14 02:17:50,637 - INFO - [kineviz.core.services.analysis_service] - Directorio de variable 'LAnkleAngles Z' eliminado.
+2025-06-14 02:20:31,081 - CRITICAL - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Excepción al llamar perform_continuous_analysis o procesar su resultado: Item testing 1 already exists
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/dialogs/continuous_analysis_manager_dialog.py", line 519, in _open_new_analysis_dialog
+    self.load_analyses() # Recargar la lista
+    ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/dialogs/continuous_analysis_manager_dialog.py", line 450, in load_analyses
+    self._apply_filters_and_search() # Populate tree with (initially unfiltered) data
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/dialogs/continuous_analysis_manager_dialog.py", line 342, in _apply_filters_and_search
+    self._populate_treeview(filtered_analyses)
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/dialogs/continuous_analysis_manager_dialog.py", line 427, in _populate_treeview
+    self.tree.insert("", tk.END, values=(name, column, groups_str, date_str), iid=name)
+  File "/Users/arakito/.pyenv/versions/3.12.6/lib/python3.12/tkinter/ttk.py", line 1339, in insert
+    res = self.tk.call(self._w, "insert", parent, index,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_tkinter.TclError: Item testing 1 already exists
