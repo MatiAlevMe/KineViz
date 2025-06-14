@@ -254,13 +254,13 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
 1.1 [Pendiente] Implementar copias de seguridad automáticas cada vez que se agreguen archivos a un estudio.
 1.2 [Pendiente] Implementar opción de volver a versión anterior del estudio.
 2. [Pendiente] Ayuda en la Interfaz: Añadir Tooltips Adicionales.
-2.1 [Pendiente] Añadir tooltips que explique el formato de cada ventana relevante:
-Editar estudio, crear estudio, agregar archivos, crear analisis discreto, crear analisis continuo.
-3. [Hecho] Optimización del Sistema.
+2.1 [Pendiente] Añadir tooltips con el mismo icono "i" que se utiliza en la ventana de estudio para explicar las VIs, necesito que estos tooltips explique el formato de cada ventana relevante donde se necesite input del usuario, esto es:
+Editar estudio, crear nuevo estudio, agregar archivos a un estudio, gestor de analisis discretos, gestor de analisis continuos, gestionar alias de sub-valores.
+1. [Hecho] Optimización del Sistema.
 3.1 [Hecho] Decidir si mantener todas las tablas del analisis discreto o solamente las tablas .xlsx para ahorrar espacio.
 3.2 [Hecho] Decidir formato final y filtrado de las ventanas de tablas de datos como:
 Ventana de estudio, ventana de estudio especifico, ventana de tablas de analisis discreto, analisis discreto, analisis continuo
-4. [Pendiente] Documentación
+1. [Pendiente] Documentación
 4.1 [Pendiente] Refactorizar los manuales de usuario de la siguiente manera:
 4.1.1 [Pendiente] Unir todos los manuales en el manual principal con distintas secciones, esto es primero una descripción general del software, los objetivos, algunos flujos de trabajo u casos de uso del software que se podrían realizar, y una sección para cada parte importante como crear nuevo estudio, editar, agregar archivos, todo lo referente a la ventana principal, a la ventana de estudios, a la ventana de analisis continuo, a la ventana de analisis discreto y los distintos archivos resultantes, los formatos, etc. 
 4.1.2 [Pendiente] Agregar referencias dentro del mismo manual que diga "Vaya a la sección X" o similares para referirse a que sección ir del manual para alguna información importante relevante.
