@@ -344,34 +344,37 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         formatted_parts = []
         for key_from_config in group_keys_from_config:
             if mode == "1VI" and primary_vi_name:
-                # key_from_config is expected to be like "VI_Primaria=DescriptorValor"
-                try:
-                    # Ensure we are splitting the correct key part if it's somehow a full key
-                    # This part assumes key_from_config is ALREADY the partial key for 1VI mode.
-                    # If key_from_config could be a full key, logic to extract the primary_vi_name part is needed.
-                    # Based on ConfigureIndividualAnalysisDialog, config['groups'] for 1VI stores partial keys.
-                    
-                    # Check if key_from_config actually matches the primary_vi_name structure
-                    if key_from_config.startswith(f"{primary_vi_name}="):
-                        _, desc_val = key_from_config.split("=", 1)
-                        alias = self.study_aliases.get(desc_val, desc_val)
-                        formatted_parts.append(f"{primary_vi_name}: {alias}")
-                    else:
-                        # This case might happen if a full key was stored unexpectedly for a 1VI mode analysis
-                        # or if primary_vi_name doesn't match. Fallback to generic formatting.
-                        logger.warning(f"Modo 1VI: Clave '{key_from_config}' no coincide con VI primaria '{primary_vi_name}'. Formateo genérico.")
-                        current_display_sub_parts = []
-                        for item_part in key_from_config.split(';'):
-                            try:
-                                vi_n, d_v = item_part.split('=', 1)
-                                current_alias = self.study_aliases.get(d_v, d_v)
-                                current_display_sub_parts.append(f"{vi_n}: {current_alias}")
-                            except ValueError: current_display_sub_parts.append(item_part)
-                        formatted_parts.append(", ".join(current_display_sub_parts))
+                # key_from_config is a full key, e.g., "VI1=DescA;VI2=DescB"
+                # We need to find the part that matches primary_vi_name.
+                found_primary_vi_part = False
+                for part_of_key in key_from_config.split(';'): # part_of_key is "VI=Desc"
+                    try:
+                        vi_name_in_part, descriptor_value_in_part = part_of_key.split('=', 1)
+                        if vi_name_in_part == primary_vi_name:
+                            alias = self.study_aliases.get(descriptor_value_in_part, descriptor_value_in_part)
+                            formatted_parts.append(f"{primary_vi_name}: {alias}")
+                            found_primary_vi_part = True
+                            break # Found the relevant part for this key_from_config
+                    except ValueError:
+                        # This part_of_key is malformed, log it and continue to the next part
+                        logger.warning(f"Modo 1VI: Parte malformada '{part_of_key}' en clave '{key_from_config}'.")
+                        continue 
+                
+                if not found_primary_vi_part:
+                    # If the primary VI part was not found in this key_from_config,
+                    # this indicates an issue or an unexpected key structure.
+                    logger.warning(f"Modo 1VI: VI primaria '{primary_vi_name}' no encontrada en la clave de configuración '{key_from_config}'. Se usará la clave completa como fallback.")
+                    # Fallback: format the full key as best as possible
+                    display_sub_parts_fallback = []
+                    for item_part_fallback in key_from_config.split(';'):
+                        try:
+                            vi_name_fb, desc_val_fb = item_part_fallback.split('=', 1)
+                            alias_fb = self.study_aliases.get(desc_val_fb, desc_val_fb)
+                            display_sub_parts_fallback.append(f"{vi_name_fb}: {alias_fb}")
+                        except ValueError: 
+                            display_sub_parts_fallback.append(item_part_fallback)
+                    formatted_parts.append(", ".join(display_sub_parts_fallback) if display_sub_parts_fallback else key_from_config)
 
-                except ValueError: 
-                    formatted_parts.append(key_from_config) # Fallback if split fails
-            
             elif mode == "2VIs" and fixed_vi_name and fixed_descriptor_display:
                 # key_from_config is a full key, e.g., "VI_Fija=ValorFijo;VI_Variable=ValorVariable"
                 fixed_desc_original = self._get_descriptor_original_value(fixed_descriptor_display)
