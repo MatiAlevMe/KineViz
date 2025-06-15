@@ -134,13 +134,13 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         ttk.Button(filter_action_frame, text="Limpiar Filtros", command=self._clear_filters).pack(side=tk.LEFT, padx=5)
 
         # --- Acciones (Nuevo Análisis) ---
-        new_analysis_frame = ttk.Frame(main_frame)
+        new_analysis_frame = ttk.Frame(self.main_frame)
         new_analysis_frame.grid(row=1, column=0, sticky="ew", pady=(5, 10))
         ttk.Button(new_analysis_frame, text="Nuevo Análisis...",
                    command=self.open_new_analysis_dialog).pack(side=tk.LEFT, padx=0) # No padx needed if it's the only button on left
 
         # --- Lista de Análisis (Treeview) ---
-        tree_frame = ttk.LabelFrame(main_frame, text="Análisis Guardados")
+        tree_frame = ttk.LabelFrame(self.main_frame, text="Análisis Guardados")
         tree_frame.grid(row=2, column=0, sticky="nsew") # Adjusted row
         tree_frame.rowconfigure(0, weight=1)
         tree_frame.columnconfigure(0, weight=1)
