@@ -983,14 +983,10 @@ class ContinuousAnalysisManagerDialog(Toplevel):
             return
 
         num_selected = len(selected_analyses_info)
-        analysis_names = [info.get('name', 'Desconocido') for info in selected_analyses_info]
+        # analysis_names = [info.get('name', 'Desconocido') for info in selected_analyses_info] # No longer needed for message
         
-        confirm_message = (f"¿Está seguro de que desea eliminar los {num_selected} análisis continuos seleccionados?\n\n"
-                           f"- {analysis_names[0]}" + (f" y {num_selected-1} más" if num_selected > 1 else "") +
-                           "\n\nEsta acción es IRREVERSIBLE.")
-        if num_selected > 3:
-            confirm_message = (f"¿Está seguro de que desea eliminar los {num_selected} análisis continuos seleccionados?\n"
-                               "Esta acción es IRREVERSIBLE.")
+        confirm_message = (f"¿Está seguro de que desea eliminar los {num_selected} análisis continuos seleccionados?\n"
+                           "Esta acción es IRREVERSIBLE.")
 
         if messagebox.askyesno("Confirmar Eliminación Múltiple", confirm_message, icon='warning', parent=self):
             paths_to_delete = [info['path'] for info in selected_analyses_info if 'path' in info and isinstance(info['path'], Path)]
