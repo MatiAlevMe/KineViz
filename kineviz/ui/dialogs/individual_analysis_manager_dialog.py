@@ -38,6 +38,9 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         # Filter related StringVars
         self.search_term_var = tk.StringVar()
         self.filter_vi_count_var = tk.StringVar(value="No filtrar")
+        self.current_page = 1 # For pagination
+        self.total_pages = 1  # For pagination
+        self.items_per_page = parent.main_window.settings.analysis_items_per_page # Get from settings
         self.filter_vi1_name_var = tk.StringVar()
         self.filter_vi1_desc_var = tk.StringVar()
         self.filter_vi2_name_var = tk.StringVar()
@@ -135,12 +138,8 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         ttk.Button(filter_action_buttons_frame, text="Refrescar Lista", command=self.load_analyses).pack(side=tk.LEFT, padx=5)
 
 
-        # --- Acciones (Nuevo Análisis) ---
-        new_analysis_frame = ttk.Frame(self.main_frame)
-        new_analysis_frame.grid(row=1, column=0, sticky="ew", pady=(5, 10))
-        ttk.Button(new_analysis_frame, text="Nuevo Análisis...",
-                   command=self.open_new_analysis_dialog).pack(side=tk.LEFT, padx=0)
-        # Label "Análisis Guardados" will be part of the Treeview's LabelFrame
+        # --- Acciones (Nuevo Análisis) - Button moved to view_action_frame ---
+        # new_analysis_frame no longer needed here
 
         # --- Lista de Análisis (Treeview) ---
         tree_frame = ttk.LabelFrame(self.main_frame, text="Análisis Guardados") # Text is fine here
@@ -200,6 +199,12 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.view_config_button = ttk.Button(view_action_frame, text="Ver Configuración", command=self._view_config, state=tk.DISABLED)
         self.view_config_button.pack(side=tk.LEFT, padx=5)
 
+        # Spacer to push "Nuevo Análisis..." to the right
+        ttk.Frame(view_action_frame).pack(side=tk.LEFT, expand=True, fill=tk.X)
+        ttk.Button(view_action_frame, text="Nuevo Análisis...",
+                   command=self.open_new_analysis_dialog).pack(side=tk.RIGHT, padx=5)
+
+
         # --- Action Buttons Frame (Folder actions) ---
         folder_action_frame = ttk.Frame(self.main_frame)
         folder_action_frame.grid(row=4, column=0, sticky="ew", pady=(5,0))
@@ -215,9 +220,13 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.open_main_discrete_folder_button.pack(side=tk.LEFT, padx=5)
 
 
+        # --- Pagination Controls ---
+        self.pagination_controls_frame = ttk.Frame(self.main_frame)
+        self.pagination_controls_frame.grid(row=6, column=0, sticky="ew", pady=(5,0)) # New row for pagination
+
         # --- Bottom Action Frame (Delete and Close buttons) ---
         bottom_action_frame = ttk.Frame(self.main_frame)
-        bottom_action_frame.grid(row=5, column=0, sticky="ew", pady=(10, 0)) # Adjusted row
+        bottom_action_frame.grid(row=7, column=0, sticky="ew", pady=(10, 0)) # Adjusted row
 
         self.delete_all_button = ttk.Button(
             bottom_action_frame,
@@ -517,16 +526,27 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
             self.analysis_tree.delete(item)
 
         self.analysis_tree["columns"] = self.columns
-        for col in self.columns:
-            header_text = self.analysis_tree.heading(col, 'text') or col
-            self.analysis_tree.heading(col, text=header_text)
+        for col_name in self.columns: # Use col_name for clarity
+            header_text = self.analysis_tree.heading(col_name, 'text') or col_name
+            self.analysis_tree.heading(col_name, text=header_text) # Use col_name here
 
-        if not analyses_to_display:
+        # Pagination logic
+        start_index = (self.current_page - 1) * self.items_per_page
+        end_index = start_index + self.items_per_page
+        paginated_analyses = analyses_to_display[start_index:end_index]
+
+        if not paginated_analyses and analyses_to_display: # If current page is empty but there is data
+            self.current_page = max(1, self.total_pages)
+            start_index = (self.current_page - 1) * self.items_per_page
+            end_index = start_index + self.items_per_page
+            paginated_analyses = analyses_to_display[start_index:end_index]
+
+        if not paginated_analyses:
             num_empty_cols = len(self.columns) - 1
             empty_values = tuple(["No hay análisis que coincidan con los filtros."] + [""] * num_empty_cols)
-            self.analysis_tree.insert("", tk.END, text="NoAnalyses", values=empty_values)
+            self.analysis_tree.insert("", tk.END, text="NoAnalyses", values=empty_values, iid="NoAnalysesPlaceholder")
         else:
-            for analysis_info in analyses_to_display:
+            for analysis_info in paginated_analyses:
                 config = analysis_info.get('config', {})
                 analysis_name = analysis_info.get('name', 'N/A')
                 date_str = "N/A"
@@ -576,9 +596,10 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                     final_iid = f"{analysis_path_str}_{counter}"
                     logger.warning(f"Duplicate iid detected for individual analysis. Using '{final_iid}' instead of '{analysis_path_str}'. This might indicate an issue with analysis name uniqueness or path retrieval.")
 
-                self.analysis_tree.insert("", tk.END, iid=final_iid, text=analysis_name, values=values) # Store original name in 'text' for compatibility if needed
+                self.analysis_tree.insert("", tk.END, iid=final_iid, text=analysis_name, values=values)
         
-        self._on_selection_changed() # Update button states based on current selection (if any)
+        self._update_pagination_controls(len(analyses_to_display))
+        self._on_selection_changed()
 
     def load_analyses(self):
         """Carga la lista de análisis individuales guardados y aplica filtros."""
@@ -607,6 +628,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.filter_calc_combo['values'] = ["Todos"] + calcs
         
         self._apply_filters_and_search()
+        self._update_pagination_controls(len(self.all_analyses_data)) # Initial pagination setup
 
 
     def open_new_analysis_dialog(self):
@@ -1151,7 +1173,54 @@ if __name__ == '__main__':
                   f"{analysis_name})")
             # Simular éxito
 
+    def _update_pagination_controls(self, total_items_in_filter):
+        """Actualiza los controles de paginación."""
+        for widget in self.pagination_controls_frame.winfo_children():
+            widget.destroy()
+
+        self.total_pages = (total_items_in_filter // self.items_per_page) + \
+                           (1 if total_items_in_filter % self.items_per_page else 0)
+        self.total_pages = max(1, self.total_pages)
+
+        if self.total_pages <= 1:
+            return
+
+        ttk.Button(self.pagination_controls_frame, text="<<", command=lambda: self._go_to_page(1),
+                   state=tk.DISABLED if self.current_page == 1 else tk.NORMAL).pack(side=tk.LEFT, padx=2)
+        ttk.Button(self.pagination_controls_frame, text="<", command=lambda: self._go_to_page(self.current_page - 1),
+                   state=tk.DISABLED if self.current_page == 1 else tk.NORMAL).pack(side=tk.LEFT, padx=2)
+
+        ttk.Label(self.pagination_controls_frame, text=f"Página {self.current_page} de {self.total_pages}").pack(side=tk.LEFT, padx=5)
+
+        ttk.Button(self.pagination_controls_frame, text=">", command=lambda: self._go_to_page(self.current_page + 1),
+                   state=tk.DISABLED if self.current_page == self.total_pages else tk.NORMAL).pack(side=tk.LEFT, padx=2)
+        ttk.Button(self.pagination_controls_frame, text=">>", command=lambda: self._go_to_page(self.total_pages),
+                   state=tk.DISABLED if self.current_page == self.total_pages else tk.NORMAL).pack(side=tk.LEFT, padx=2)
+
+    def _go_to_page(self, page_number):
+        """Navega a una página específica y repopula el treeview."""
+        if 1 <= page_number <= self.total_pages:
+            self.current_page = page_number
+            self._apply_filters_and_search() # This will repopulate based on current filters and new page
+        else:
+            logger.warning(f"Intento de ir a página inválida {page_number} (Total: {self.total_pages})")
+
     # --- Ejecutar Diálogo ---
     dummy_service = DummyAnalysisService()
-    dialog = IndividualAnalysisManagerDialog(root, dummy_service, 1)
+
+    # Need a dummy main_window for settings
+    class DummyMainWindow:
+        def __init__(self):
+            class DummySettings:
+                analysis_items_per_page = 5 # Example value
+            self.settings = DummySettings()
+    
+    # The parent of IndividualAnalysisManagerDialog is DiscreteAnalysisView,
+    # which has a main_window attribute.
+    class DummyDiscreteAnalysisView:
+        def __init__(self):
+            self.main_window = DummyMainWindow()
+
+    dummy_parent_view = DummyDiscreteAnalysisView()
+    dialog = IndividualAnalysisManagerDialog(dummy_parent_view, dummy_service, 1)
     root.mainloop()
