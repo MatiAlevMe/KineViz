@@ -114,17 +114,6 @@ class MainView:
         action_button_frame = ttk.Frame(header_frame)
         action_button_frame.pack(side=tk.RIGHT)
 
-        # General Help Tooltip for MainView
-        info_label = ttk.Label(action_button_frame, text=" (?)", style="TooltipReference.TLabel") # Use a style if you have one, or just text
-        info_label.pack(side=tk.RIGHT, padx=5)
-        Tooltip(info_label, 
-                "Ventana Principal de Estudios:\n\n"
-                "- Muestra una lista de todos los estudios creados.\n"
-                "- Permite buscar estudios por su nombre.\n"
-                "- Ofrece acciones para ver detalles, editar o eliminar cada estudio.\n"
-                "- Puede destacar hasta 5 estudios usando el icono '📌'\n"
-                "  para que aparezcan siempre al inicio de la lista.")
-
         ttk.Button(action_button_frame, text='Manual', command=self.main_window.open_user_manual).pack(side=tk.RIGHT, padx=5)
         ttk.Button(action_button_frame, text='Configuración', command=self.main_window.show_config_dialog).pack(side=tk.RIGHT, padx=5) # Placeholder
         ttk.Button(action_button_frame, text='Ayuda', command=self.main_window.show_welcome_message).pack(side=tk.RIGHT, padx=5)
@@ -267,6 +256,17 @@ class MainView:
         last_btn.pack(side=tk.LEFT, padx=2)
         if self.current_page == self.total_pages:
             last_btn.config(state=tk.DISABLED)
+
+        # Tooltip de ayuda para la vista principal, al lado de la paginación
+        main_view_help_label = ttk.Label(self.pagination_frame, text=" (?)", style="TooltipReference.TLabel") # Puede usar un estilo si lo tiene
+        main_view_help_label.pack(side=tk.LEFT, padx=(10, 2)) # Añadir padding a la izquierda
+        Tooltip(main_view_help_label,
+                "Ventana Principal de Estudios:\n\n"
+                "- Muestra una lista de todos los estudios creados.\n"
+                "- Permite buscar estudios por su nombre.\n"
+                "- Ofrece acciones para ver detalles, editar o eliminar cada estudio.\n"
+                "- Puede destacar hasta 5 estudios usando el icono '📌'\n"
+                "  para que aparezcan siempre al inicio de la lista.")
 
     def go_to_page(self, page_number):
         """Navega a una página específica."""
