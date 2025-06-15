@@ -140,7 +140,8 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         filter_action_frame = ttk.Frame(search_filter_frame)
         filter_action_frame.grid(row=2, column=2, columnspan=4, sticky="e", padx=5, pady=5) # Adjusted row
         ttk.Button(filter_action_frame, text="Aplicar Filtros", command=self._apply_filters_and_search).pack(side=tk.LEFT, padx=5)
-        ttk.Button(filter_action_frame, text="Limpiar Filtros", command=self._clear_filters).pack(side=tk.LEFT, padx=5)
+        ttk.Button(filter_action_frame, text="Limpiar Filtros", command=self._clear_filters).pack(side=tk.LEFT, padx=(0,5))
+        ttk.Button(filter_action_frame, text="Refrescar Lista", command=self.load_analyses).pack(side=tk.LEFT, padx=5)
 
 
         # --- Header and New Analysis Button ---
@@ -177,25 +178,6 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         self.tree.bind("<<TreeviewSelect>>", self._on_analysis_selected)
         self.tree.bind("<Double-1>", self._view_plot) # Double click to view plot
 
-    def _confirm_delete_all_continuous_analyses(self):
-        """Muestra confirmación y luego elimina todos los análisis continuos."""
-        if messagebox.askyesno("Confirmar Eliminación Total de Análisis Continuos",
-                               "¿Está SEGURO de que desea eliminar TODOS los análisis continuos (SPM) guardados "
-                               f"para el estudio ID {self.study_id}?\n\n"
-                               "Esta acción es IRREVERSIBLE.",
-                               icon='warning', parent=self):
-            try:
-                deleted_count = self.analysis_service.delete_all_continuous_analyses(self.study_id)
-                messagebox.showinfo("Eliminación Completada",
-                                    f"{deleted_count} análisis continuos han sido eliminados.",
-                                    parent=self)
-                self.load_analyses() # Recargar la lista
-            except Exception as e:
-                logger.error(f"Error al eliminar todos los análisis continuos para estudio {self.study_id}: {e}", exc_info=True)
-                messagebox.showerror("Error al Eliminar Análisis",
-                                     f"Ocurrió un error al eliminar los análisis:\n{e}",
-                                     parent=self)
-
         # --- Action Buttons ---
         action_frame = ttk.Frame(self.main_frame)
         action_frame.pack(fill=tk.X, pady=(5,0))
@@ -229,6 +211,31 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         close_button_frame.pack(fill=tk.X, pady=(10,0))
         ttk.Button(close_button_frame, text="Cerrar", command=self._on_close).pack(side=tk.RIGHT)
 
+    def _confirm_delete_all_continuous_analyses(self):
+        """Muestra confirmación y luego elimina todos los análisis continuos."""
+        study_name = "ID Desconocido"
+        try:
+            study_details = self.analysis_service.study_service.get_study_details(self.study_id)
+            study_name = study_details.get('name', f"ID {self.study_id}")
+        except Exception:
+            logger.error(f"No se pudo obtener el nombre del estudio {self.study_id} para el diálogo de confirmación.")
+
+        if messagebox.askyesno("Confirmar Eliminación Total de Análisis Continuos",
+                               f"¿Está SEGURO de que desea eliminar TODOS los análisis continuos (SPM) guardados "
+                               f"para el estudio '{study_name}'?\n\n"
+                               "Esta acción es IRREVERSIBLE.",
+                               icon='warning', parent=self):
+            try:
+                deleted_count = self.analysis_service.delete_all_continuous_analyses(self.study_id)
+                messagebox.showinfo("Eliminación Completada",
+                                    f"{deleted_count} análisis continuos han sido eliminados.",
+                                    parent=self)
+                self.load_analyses() # Recargar la lista
+            except Exception as e:
+                logger.error(f"Error al eliminar todos los análisis continuos para estudio {self.study_id}: {e}", exc_info=True)
+                messagebox.showerror("Error al Eliminar Análisis",
+                                     f"Ocurrió un error al eliminar los análisis:\n{e}",
+                                     parent=self)
 
     def _load_study_vi_data(self):
         """Loads VI names and their descriptors for the current study."""

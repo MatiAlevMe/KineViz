@@ -144,8 +144,9 @@ class DiscreteAnalysisView(ttk.Frame):
         self.filter_vi_count_combo.bind("<<ComboboxSelected>>", self._on_filter_vi_count_change)
         
         # Spacer to push buttons to the right
-        ttk.Frame(vi_controls_row).pack(side=tk.LEFT, expand=True, fill=tk.X) 
+        ttk.Frame(vi_controls_row).pack(side=tk.LEFT, expand=True, fill=tk.X)
 
+        ttk.Button(vi_controls_row, text="Refrescar Lista", command=self.refresh_table_list_action).pack(side=tk.LEFT, padx=5)
         ttk.Button(vi_controls_row, text="Aplicar Todos los Filtros", command=self.apply_filters).pack(side=tk.LEFT, padx=5)
         ttk.Button(vi_controls_row, text="Limpiar Todos los Filtros", command=self.clear_filters).pack(side=tk.LEFT, padx=5)
 
@@ -251,9 +252,6 @@ class DiscreteAnalysisView(ttk.Frame):
         table_action_frame.grid(row=3, column=0, columnspan=2, sticky='ew',
                                 pady=(0, 5))
 
-        # Quitar botón Refrescar
-        # ttk.Button(table_action_frame, text="Refrescar Lista",
-        #            command=self.load_tables).pack(side=tk.LEFT, padx=5)
         ttk.Button(table_action_frame, text="Ver Tabla",
                    command=self.view_table).pack(side=tk.LEFT, padx=5)
         ttk.Button(table_action_frame, text="Eliminar Tabla",
@@ -271,9 +269,16 @@ class DiscreteAnalysisView(ttk.Frame):
 
     def _confirm_delete_all_summary_tables(self):
         """Muestra confirmación y luego elimina todas las tablas de resumen."""
+        study_name = "ID Desconocido"
+        try:
+            study_details = self.analysis_service.study_service.get_study_details(self.study_id)
+            study_name = study_details.get('name', f"ID {self.study_id}")
+        except Exception:
+            logger.error(f"No se pudo obtener el nombre del estudio {self.study_id} para el diálogo de confirmación.")
+
         if messagebox.askyesno("Confirmar Eliminación Total de Tablas",
-                               "¿Está SEGURO de que desea eliminar TODAS las tablas de resumen (.xlsx) "
-                               f"para el estudio ID {self.study_id}?\n\n"
+                               f"¿Está SEGURO de que desea eliminar TODAS las tablas de resumen (.xlsx) "
+                               f"para el estudio '{study_name}'?\n\n"
                                "Esta acción es IRREVERSIBLE.",
                                icon='warning', parent=self):
             try:
@@ -288,6 +293,11 @@ class DiscreteAnalysisView(ttk.Frame):
                 messagebox.showerror("Error al Eliminar Tablas",
                                      f"Ocurrió un error al eliminar las tablas:\n{e}",
                                      parent=self)
+
+    def refresh_table_list_action(self):
+        """Acción del botón Refrescar: recarga todos los datos y aplica filtros."""
+        self._fetch_all_table_files_data()
+        self.apply_filters()
 
     def generate_tables(self):
         """Llama al servicio para generar las tablas resumen CSV."""
@@ -318,7 +328,8 @@ class DiscreteAnalysisView(ttk.Frame):
                 messagebox.showinfo("Resultado Generación", message, parent=self)
 
             # Refrescar la lista de tablas después de mostrar el mensaje
-            self.load_tables()
+            self._fetch_all_table_files_data() # Re-fetch all data
+            self.apply_filters() # Then apply filters to refresh view
 
         except Exception as e:
             logger.critical("Error crítico al llamar a "
@@ -396,7 +407,7 @@ class DiscreteAnalysisView(ttk.Frame):
         """Obtiene y parsea todos los archivos de tablas .xlsx del servicio."""
         self.all_tables_data = []
         tables_path = self.analysis_service.get_discrete_analysis_tables_path(self.study_id)
-        if tables_path:
+        if tables_path and tables_path.exists(): # Check if path exists
             for freq_dir in tables_path.iterdir(): # e.g., Cinematica, Cinetica
                 if freq_dir.is_dir():
                     for file_path in freq_dir.iterdir(): # e.g., Maximo_Cinematica_VI1=DescA.xlsx
