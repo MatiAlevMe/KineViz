@@ -245,29 +245,28 @@ class DiscreteAnalysisView(ttk.Frame):
         )
         self.next_button.pack(side=tk.LEFT, padx=5)
 
-        # Botón "Ver Tabla" movido a la derecha de la paginación
-        ttk.Button(pagination_frame, text="Ver Tabla",
-                   command=self.view_table).pack(side=tk.LEFT, padx=(10, 5))
+        # "Ver Tabla" ya no está en pagination_frame
 
-
-        # --- Botones de Acción para Tablas (solo Eliminar) ---
+        # --- Botones de Acción para Tablas ---
         table_action_frame = ttk.Frame(list_frame)
-        # Mover abajo, añadir padding inferior
-        table_action_frame.grid(row=3, column=0, columnspan=2, sticky='ew',
-                                pady=(0, 5))
+        table_action_frame.grid(row=3, column=0, columnspan=2, sticky='ew', pady=(0, 5))
 
-        # "Eliminar Tabla" a la izquierda
-        ttk.Button(table_action_frame, text="Eliminar Tabla",
-                   command=self.delete_table).pack(side=tk.LEFT, padx=5)
-        
-        # "Eliminar Todas las Tablas de Resumen" a la derecha de "Eliminar Tabla"
+        # "Eliminar Todas las Tablas de Resumen" a la izquierda
         delete_all_tables_button = ttk.Button(
             table_action_frame,
             text="Eliminar Todas las Tablas de Resumen",
             command=self._confirm_delete_all_summary_tables,
             style="Danger.TButton"
         )
-        delete_all_tables_button.pack(side=tk.LEFT, padx=5) # Cambiado de side=tk.RIGHT
+        delete_all_tables_button.pack(side=tk.LEFT, padx=5)
+
+        # "Eliminar Tabla" a la derecha de "Eliminar Todas..."
+        ttk.Button(table_action_frame, text="Eliminar Tabla",
+                   command=self.delete_table).pack(side=tk.LEFT, padx=5)
+        
+        # "Ver Tabla" al extremo derecho de esta fila
+        ttk.Button(table_action_frame, text="Ver Tabla",
+                   command=self.view_table).pack(side=tk.RIGHT, padx=5)
 
 
     def _confirm_delete_all_summary_tables(self):
