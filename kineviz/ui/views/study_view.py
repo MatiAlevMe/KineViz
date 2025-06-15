@@ -152,7 +152,7 @@ class StudyView:
             return
 
         if messagebox.askyesno("Confirmar Eliminación",
-                               "¿Está seguro de que desea eliminar los archivos seleccionados?\n"
+                               f"¿Está seguro de que desea eliminar los {len(selected_file_paths)} archivo(s) seleccionados?\n"
                                "Esta acción es IRREVERSIBLE.",
                                icon='warning', parent=self.frame):
             try:
