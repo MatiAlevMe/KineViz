@@ -56,7 +56,8 @@ class MainView:
         search_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
         search_entry.bind("<Return>", lambda event: self.search_studies()) # Buscar al presionar Enter
         ttk.Button(search_frame, text="Buscar", command=self.search_studies).pack(side=tk.LEFT, padx=5)
-        ttk.Button(search_frame, text="Limpiar", command=self.clear_search).pack(side=tk.LEFT)
+        ttk.Button(search_frame, text="Limpiar", command=self.clear_search).pack(side=tk.LEFT, padx=(0,5))
+        ttk.Button(search_frame, text="Refrescar", command=self.load_studies).pack(side=tk.LEFT)
 
         # --- Tabla de Estudios ---
         table_frame = ttk.Frame(self.frame)

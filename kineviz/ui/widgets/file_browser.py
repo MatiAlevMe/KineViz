@@ -53,7 +53,9 @@ class FileBrowser(ttk.Frame):
 
         # Botones de Filtro
         ttk.Button(filter_frame, text="Aplicar", command=self.apply_filters).pack(side=tk.LEFT, padx=5)
-        ttk.Button(filter_frame, text="Limpiar", command=self.clear_filters).pack(side=tk.LEFT, padx=5)
+        ttk.Button(filter_frame, text="Limpiar", command=self.clear_filters).pack(side=tk.LEFT, padx=(0,5))
+        ttk.Button(filter_frame, text="Refrescar", command=self.load_files).pack(side=tk.LEFT, padx=5)
+
 
         # --- Frame para Tabla y Scrollbar ---
         table_container = ttk.Frame(self)
