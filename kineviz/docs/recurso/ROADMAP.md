@@ -316,7 +316,7 @@ Sugiero mejorar el abstract del proyecto para sea más claro en lo que hace Kine
 También agregar imagenes finales del software funcionando
 3.4 [Pendiente] (Cambio Manual) Revisión Final de ortografía de la presentación con V. D.
 Agregar el DEMO y optimizar los tiempos + añadir los ultimos cambios
-3.5 [Pendiente] (Cambio Manual) Limpiar archivos como kineviz.spec, kineviz/docs/recurso, logs de la repo final
+3.5 [Pendiente] (Cambio Manual) Limpiar archivos como kineviz.spec, kineviz/docs/recurso, logs de la repo final. Eliminar pruebas y cambiar el LOG a INFO o WARNING.
 4. [Pendiente] (Cambio Manual) Creación de Demo en Video del Uso del Software con V. D.
 5. [Pendiente] Empaquetado y Distribución con Paquetes Distribuibles.
 5.1 [Pendiente] Configurar PyInstaller: Creado y refinando `kineviz.spec` para definir el proceso de build (corrigiendo errores de hidden imports, backends, etc.).
