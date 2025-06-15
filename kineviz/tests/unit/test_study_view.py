@@ -23,7 +23,8 @@ class TestStudyView(unittest.TestCase):
         self.mock_main_window.study_service = MagicMock(spec=StudyService)
         self.mock_main_window.file_service = MagicMock(spec=FileService) # Added file_service mock
         self.mock_main_window.settings = MagicMock(spec=AppSettings)
-        self.mock_main_window.settings.files_per_page = 5 # Example value
+        # self.mock_main_window.settings.files_per_page = 5 # This was for AppSettings mock
+        self.mock_main_window.files_per_page = 5 # Set directly on mock_main_window
         self.mock_main_window.style = ttk.Style()
         
         # Mock study details that StudyView constructor will try to fetch
