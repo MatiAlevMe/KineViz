@@ -2718,3 +2718,131 @@ class AnalysisService:
         except OSError as e:
             logger.error(f"Error eliminando directorio análisis {analysis_path_to_delete}: {e}", exc_info=True)
             raise
+
+    def delete_all_discrete_summary_tables(self, study_id: int):
+        """
+        Elimina todas las tablas de resumen discreto (.xlsx) para un estudio.
+        :param study_id: ID del estudio.
+        """
+        tables_base_dir = self.get_discrete_analysis_tables_path(study_id)
+        if not tables_base_dir or not tables_base_dir.exists():
+            logger.info(f"No se encontró directorio de tablas de resumen para estudio {study_id}. Nada que eliminar.")
+            return 0 # No files deleted
+
+        deleted_count = 0
+        logger.info(f"Iniciando eliminación de todas las tablas de resumen en: {tables_base_dir}")
+        for freq_dir in list(tables_base_dir.iterdir()): # e.g., Cinematica
+            if freq_dir.is_dir():
+                for table_file in list(freq_dir.iterdir()):
+                    if table_file.is_file() and table_file.suffix == '.xlsx':
+                        try:
+                            table_file.unlink()
+                            deleted_count += 1
+                            logger.info(f"Tabla de resumen eliminada: {table_file}")
+                        except OSError as e:
+                            logger.error(f"Error eliminando tabla de resumen {table_file}: {e}", exc_info=True)
+                # Limpiar carpeta de frecuencia si queda vacía
+                if not any(freq_dir.iterdir()):
+                    try:
+                        freq_dir.rmdir()
+                        logger.info(f"Carpeta de frecuencia de tablas vacía eliminada: {freq_dir}")
+                    except OSError as e:
+                        logger.error(f"Error eliminando carpeta de frecuencia de tablas vacía {freq_dir}: {e}", exc_info=True)
+        
+        # Limpiar carpeta base "Tablas" si queda vacía
+        if tables_base_dir.exists() and not any(tables_base_dir.iterdir()):
+            try:
+                tables_base_dir.rmdir()
+                logger.info(f"Carpeta base de tablas de resumen vacía eliminada: {tables_base_dir}")
+            except OSError as e:
+                 logger.error(f"Error eliminando carpeta base de tablas vacía {tables_base_dir}: {e}", exc_info=True)
+        
+        logger.info(f"Eliminación de tablas de resumen completada. Total eliminadas: {deleted_count}.")
+        return deleted_count
+
+
+    def delete_all_individual_analyses(self, study_id: int):
+        """
+        Elimina todos los análisis discretos individuales guardados para un estudio.
+        :param study_id: ID del estudio.
+        """
+        analyses_base_dir = self._get_individual_analysis_base_dir(study_id) # .../Analisis Discreto/Graficos
+        if not analyses_base_dir or not analyses_base_dir.exists():
+            logger.info(f"No se encontró directorio base de análisis individuales para estudio {study_id}. Nada que eliminar.")
+            return 0
+
+        deleted_count = 0
+        logger.info(f"Iniciando eliminación de todos los análisis individuales en: {analyses_base_dir}")
+        # Iterar sobre carpetas de variables (ej: "LAnkleMoment X")
+        for variable_folder in list(analyses_base_dir.iterdir()):
+            if variable_folder.is_dir():
+                # Iterar sobre carpetas de análisis específicos dentro de la carpeta de variable
+                for analysis_folder in list(variable_folder.iterdir()):
+                    if analysis_folder.is_dir(): # Es una carpeta de un análisis individual
+                        try:
+                            shutil.rmtree(analysis_folder)
+                            deleted_count += 1
+                            logger.info(f"Análisis individual eliminado: {analysis_folder}")
+                        except OSError as e:
+                            logger.error(f"Error eliminando análisis individual {analysis_folder}: {e}", exc_info=True)
+                # Limpiar carpeta de variable si queda vacía
+                if not any(variable_folder.iterdir()):
+                    try:
+                        variable_folder.rmdir()
+                        logger.info(f"Carpeta de variable de análisis individual vacía eliminada: {variable_folder}")
+                    except OSError as e:
+                        logger.error(f"Error eliminando carpeta de variable vacía {variable_folder}: {e}", exc_info=True)
+        
+        # Limpiar carpeta base "Graficos" si queda vacía
+        if analyses_base_dir.exists() and not any(analyses_base_dir.iterdir()):
+            try:
+                analyses_base_dir.rmdir()
+                logger.info(f"Carpeta base de gráficos de análisis individual vacía eliminada: {analyses_base_dir}")
+            except OSError as e:
+                logger.error(f"Error eliminando carpeta base de gráficos vacía {analyses_base_dir}: {e}", exc_info=True)
+
+        logger.info(f"Eliminación de análisis individuales completada. Total eliminados: {deleted_count}.")
+        return deleted_count
+
+    def delete_all_continuous_analyses(self, study_id: int):
+        """
+        Elimina todos los análisis continuos guardados para un estudio.
+        :param study_id: ID del estudio.
+        """
+        analyses_base_dir = self._get_continuous_analysis_base_dir(study_id) # .../Analisis Continuo
+        if not analyses_base_dir or not analyses_base_dir.exists():
+            logger.info(f"No se encontró directorio base de análisis continuos para estudio {study_id}. Nada que eliminar.")
+            return 0
+
+        deleted_count = 0
+        logger.info(f"Iniciando eliminación de todos los análisis continuos en: {analyses_base_dir}")
+        # Iterar sobre carpetas de variables (ej: "LAnkleMoment X")
+        for variable_folder in list(analyses_base_dir.iterdir()):
+            if variable_folder.is_dir():
+                # Iterar sobre carpetas de análisis específicos dentro de la carpeta de variable
+                for analysis_folder in list(variable_folder.iterdir()):
+                    if analysis_folder.is_dir(): # Es una carpeta de un análisis continuo
+                        try:
+                            shutil.rmtree(analysis_folder)
+                            deleted_count += 1
+                            logger.info(f"Análisis continuo eliminado: {analysis_folder}")
+                        except OSError as e:
+                            logger.error(f"Error eliminando análisis continuo {analysis_folder}: {e}", exc_info=True)
+                # Limpiar carpeta de variable si queda vacía
+                if not any(variable_folder.iterdir()):
+                    try:
+                        variable_folder.rmdir()
+                        logger.info(f"Carpeta de variable de análisis continuo vacía eliminada: {variable_folder}")
+                    except OSError as e:
+                        logger.error(f"Error eliminando carpeta de variable vacía {variable_folder}: {e}", exc_info=True)
+
+        # Limpiar carpeta base "Analisis Continuo" si queda vacía
+        if analyses_base_dir.exists() and not any(analyses_base_dir.iterdir()):
+            try:
+                analyses_base_dir.rmdir()
+                logger.info(f"Carpeta base de análisis continuo vacía eliminada: {analyses_base_dir}")
+            except OSError as e:
+                logger.error(f"Error eliminando carpeta base de análisis continuo vacía {analyses_base_dir}: {e}", exc_info=True)
+
+        logger.info(f"Eliminación de análisis continuos completada. Total eliminados: {deleted_count}.")
+        return deleted_count

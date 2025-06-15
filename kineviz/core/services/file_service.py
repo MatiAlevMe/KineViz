@@ -639,6 +639,71 @@ class FileService:
         logger.debug(f"Parámetros únicos encontrados: {parameters}")
         return parameters
 
+    def delete_all_files_in_study(self, study_id: int):
+        """
+        Elimina todos los archivos (originales y procesados) dentro de un estudio específico.
+        También limpia las carpetas de frecuencia y paciente si quedan vacías.
+
+        :param study_id: ID del estudio.
+        :raises ValueError: Si no se puede obtener la ruta del estudio.
+        :raises OSError: Si ocurren errores durante la eliminación.
+        """
+        study_path = self._get_study_path(study_id)
+        if not study_path:
+            raise ValueError(f"No se pudo obtener la ruta del estudio {study_id} para eliminar archivos.")
+
+        logger.info(f"Iniciando eliminación de todos los archivos en el estudio: {study_path.name} (ID: {study_id})")
+        deleted_files_count = 0
+        
+        # Carpetas de frecuencia conocidas y la carpeta OG
+        frequency_folders_to_scan = ["Cinematica", "Cinetica", "Electromiografica", "Desconocida", "OG"]
+
+        for patient_dir_item in study_path.iterdir():
+            if patient_dir_item.is_dir() and patient_dir_item.name.lower() not in ["reportes", "temp", "analisis discreto", "analisis continuo"]:
+                # Es una carpeta de paciente
+                patient_path = patient_dir_item
+                logger.debug(f"Procesando carpeta de participante: {patient_path.name}")
+                
+                for freq_folder_name in frequency_folders_to_scan:
+                    freq_path = patient_path / freq_folder_name
+                    if freq_path.exists() and freq_path.is_dir():
+                        logger.debug(f"  Escaneando carpeta de frecuencia: {freq_path.name}")
+                        for file_item in list(freq_path.iterdir()): # Usar list() para poder modificar mientras se itera
+                            if file_item.is_file():
+                                try:
+                                    file_item.unlink()
+                                    deleted_files_count += 1
+                                    logger.info(f"    Archivo eliminado: {file_item}")
+                                except OSError as e:
+                                    logger.error(f"    Error eliminando archivo {file_item}: {e}", exc_info=True)
+                                    # Continuar con otros archivos si es posible
+                        
+                        # Después de eliminar archivos, verificar si la carpeta de frecuencia está vacía
+                        if not any(freq_path.iterdir()): # Si está vacía
+                            try:
+                                freq_path.rmdir()
+                                logger.info(f"  Carpeta de frecuencia vacía eliminada: {freq_path}")
+                            except OSError as e:
+                                logger.error(f"  Error eliminando carpeta de frecuencia vacía {freq_path}: {e}", exc_info=True)
+                
+                # Después de procesar todas las carpetas de frecuencia, verificar si la carpeta del paciente está vacía
+                if not any(patient_path.iterdir()):
+                    try:
+                        patient_path.rmdir()
+                        logger.info(f"Carpeta de participante vacía eliminada: {patient_path}")
+                    except OSError as e:
+                        logger.error(f"Error eliminando carpeta de participante vacía {patient_path}: {e}", exc_info=True)
+            elif patient_dir_item.is_file(): # Archivos sueltos en la carpeta del estudio (no deberían existir según estructura)
+                try:
+                    patient_dir_item.unlink() # Eliminar archivo suelto
+                    deleted_files_count +=1
+                    logger.warning(f"Archivo suelto eliminado de la carpeta del estudio: {patient_dir_item}")
+                except OSError as e:
+                    logger.error(f"Error eliminando archivo suelto {patient_dir_item} de la carpeta del estudio: {e}", exc_info=True)
+
+
+        logger.info(f"Eliminación de todos los archivos completada para estudio {study_id}. Total eliminados: {deleted_files_count}.")
+
 
 # Ejemplo de cómo podría usarse (requiere StudyService y estructura de carpetas)
 # if __name__ == '__main__':

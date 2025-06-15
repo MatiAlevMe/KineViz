@@ -98,8 +98,33 @@ class MainView:
         self.pagination_frame.pack(pady=(10, 0), fill=tk.X)
 
         # --- Botón Crear Nuevo Estudio ---
-        ttk.Button(self.frame, text='Crear Nuevo Estudio',
-                  command=lambda: self.main_window.show_create_study_dialog(study_to_edit=None)).pack(pady=10)
+        # Frame para los botones inferiores
+        bottom_buttons_frame = ttk.Frame(self.frame)
+        bottom_buttons_frame.pack(pady=10, fill=tk.X)
+
+        # Botón Eliminar Todos los Estudios (a la izquierda)
+        delete_all_button = ttk.Button(bottom_buttons_frame, text='Eliminar Todos los Estudios',
+                                       command=self._confirm_delete_all_studies, style="Danger.TButton")
+        delete_all_button.pack(side=tk.LEFT, padx=(0, 10))
+        # Configurar estilo para el botón de peligro (opcional, si no existe se usará TButton normal)
+        try:
+            self.main_window.style.configure("Danger.TButton", foreground="white", background="red")
+        except tk.TclError: # Si el estilo ya existe o hay otro problema
+            logger.warning("No se pudo configurar el estilo Danger.TButton. Usando estilo por defecto.")
+
+
+        # Botón Crear Nuevo Estudio (a la derecha)
+        create_study_button = ttk.Button(bottom_buttons_frame, text='Crear Nuevo Estudio',
+                                         command=lambda: self.main_window.show_create_study_dialog(study_to_edit=None))
+        create_study_button.pack(side=tk.RIGHT)
+
+
+    def _confirm_delete_all_studies(self):
+        """
+        Llama al método de MainWindow para confirmar y eliminar todos los estudios.
+        """
+        self.main_window.confirm_delete_all_studies()
+
 
     def load_studies(self):
         """Carga los estudios desde el servicio y los muestra en la tabla."""
@@ -205,7 +230,8 @@ class MainView:
             "- Eliminar un estudio haciendo clic en 'Eliminar'.\n"
             "- Destacar hasta 5 estudios usando el icono '📌' para que aparezcan siempre al inicio de la lista.\n"
             "- Navegar entre páginas de estudios si hay muchos.\n"
-            "- Crear un nuevo estudio usando el botón 'Crear Nuevo Estudio'."
+            "- Crear un nuevo estudio usando el botón 'Crear Nuevo Estudio'.\n"
+            "- Eliminar TODOS los estudios existentes usando el botón 'Eliminar Todos los Estudios' (¡con precaución!)."
         )
         messagebox.showinfo(help_title, help_message, parent=self.root)
 

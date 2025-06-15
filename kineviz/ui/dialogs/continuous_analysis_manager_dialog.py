@@ -177,6 +177,25 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         self.tree.bind("<<TreeviewSelect>>", self._on_analysis_selected)
         self.tree.bind("<Double-1>", self._view_plot) # Double click to view plot
 
+    def _confirm_delete_all_continuous_analyses(self):
+        """Muestra confirmación y luego elimina todos los análisis continuos."""
+        if messagebox.askyesno("Confirmar Eliminación Total de Análisis Continuos",
+                               "¿Está SEGURO de que desea eliminar TODOS los análisis continuos (SPM) guardados "
+                               f"para el estudio ID {self.study_id}?\n\n"
+                               "Esta acción es IRREVERSIBLE.",
+                               icon='warning', parent=self):
+            try:
+                deleted_count = self.analysis_service.delete_all_continuous_analyses(self.study_id)
+                messagebox.showinfo("Eliminación Completada",
+                                    f"{deleted_count} análisis continuos han sido eliminados.",
+                                    parent=self)
+                self.load_analyses() # Recargar la lista
+            except Exception as e:
+                logger.error(f"Error al eliminar todos los análisis continuos para estudio {self.study_id}: {e}", exc_info=True)
+                messagebox.showerror("Error al Eliminar Análisis",
+                                     f"Ocurrió un error al eliminar los análisis:\n{e}",
+                                     parent=self)
+
         # --- Action Buttons ---
         action_frame = ttk.Frame(main_frame)
         action_frame.pack(fill=tk.X, pady=(5,0))
@@ -192,6 +211,15 @@ class ContinuousAnalysisManagerDialog(Toplevel):
 
         self.open_folder_button = ttk.Button(action_frame, text="Abrir Carpeta", command=self._open_folder, state=tk.DISABLED)
         self.open_folder_button.pack(side=tk.LEFT, padx=5)
+
+        # Botón Eliminar Todos los Análisis Continuos (a la izquierda del botón Eliminar Análisis individual)
+        self.delete_all_button = ttk.Button(
+            action_frame,
+            text="Eliminar Todos los Análisis Continuos",
+            command=self._confirm_delete_all_continuous_analyses,
+            style="Danger.TButton" # Usar estilo de peligro
+        )
+        self.delete_all_button.pack(side=tk.RIGHT, padx=(0, 5)) # A la derecha, antes de "Eliminar Análisis"
         
         self.delete_button = ttk.Button(action_frame, text="Eliminar Análisis", command=self._delete_analysis, state=tk.DISABLED)
         self.delete_button.pack(side=tk.RIGHT, padx=5) # Align to right

@@ -106,6 +106,43 @@ class StudyView:
         # Llamar a update_alias_display después de que todo esté creado
         self.update_alias_display()
 
+        # --- Botón Eliminar Todos los Archivos ---
+        # Colocarlo después del FileBrowser y su paginación
+        delete_all_files_button_frame = ttk.Frame(self.frame)
+        delete_all_files_button_frame.pack(fill=tk.X, pady=(10, 0)) # Padding superior
+
+        delete_all_files_button = ttk.Button(
+            delete_all_files_button_frame,
+            text="Eliminar Todos los Archivos del Estudio",
+            command=self._confirm_delete_all_files,
+            style="Danger.TButton" # Usar estilo de peligro
+        )
+        delete_all_files_button.pack(side=tk.LEFT, padx=(0,5)) # Alinear a la izquierda
+        # El estilo Danger.TButton se define en MainView, asumimos que está disponible
+        # o se puede definir globalmente en MainWindow si es necesario.
+
+
+    def _confirm_delete_all_files(self):
+        """Muestra confirmación y luego elimina todos los archivos del estudio."""
+        study_details = self.main_window.study_service.get_study_details(self.study_id)
+        study_name = study_details.get('name', f"ID {self.study_id}")
+        if messagebox.askyesno("Confirmar Eliminación de Archivos",
+                               f"¿Está SEGURO de que desea eliminar TODOS los archivos (originales y procesados) "
+                               f"del estudio '{study_name}'?\n\n"
+                               "Esta acción es IRREVERSIBLE.",
+                               icon='warning', parent=self.frame):
+            try:
+                self.file_service.delete_all_files_in_study(self.study_id)
+                messagebox.showinfo("Eliminación Completada",
+                                    "Todos los archivos del estudio han sido eliminados.",
+                                    parent=self.frame)
+                self.refresh_file_list() # Actualizar el FileBrowser
+            except Exception as e:
+                logger.error(f"Error al eliminar todos los archivos del estudio {self.study_id}: {e}", exc_info=True)
+                messagebox.showerror("Error al Eliminar Archivos",
+                                     f"Ocurrió un error al eliminar los archivos:\n{e}",
+                                     parent=self.frame)
+
     def update_alias_display(self):
         """Obtiene y muestra los alias asignados a los sub-valores definidos."""
         logger.debug(f"Actualizando display de alias para estudio {self.study_id}")
