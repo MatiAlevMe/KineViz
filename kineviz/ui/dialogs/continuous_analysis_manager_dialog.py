@@ -72,11 +72,11 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         messagebox.showinfo(title, message, parent=self)
 
     def create_widgets(self):
-        main_frame = ttk.Frame(self, padding="10")
-        main_frame.pack(fill=tk.BOTH, expand=True)
+        self.main_frame = ttk.Frame(self, padding="10")
+        self.main_frame.pack(fill=tk.BOTH, expand=True)
 
         # --- Search and Filter Frame ---
-        search_filter_frame = ttk.LabelFrame(main_frame, text="Buscar y Filtrar Análisis", padding="10")
+        search_filter_frame = ttk.LabelFrame(self.main_frame, text="Buscar y Filtrar Análisis", padding="10")
         search_filter_frame.pack(fill=tk.X, pady=(0,10))
         search_filter_frame.columnconfigure(1, weight=1) # Allow search entry to expand
         search_filter_frame.columnconfigure(3, weight=1)
@@ -144,14 +144,14 @@ class ContinuousAnalysisManagerDialog(Toplevel):
 
 
         # --- Header and New Analysis Button ---
-        list_header_frame = ttk.Frame(main_frame) # Renamed from header_frame
+        list_header_frame = ttk.Frame(self.main_frame) # Renamed from header_frame
         list_header_frame.pack(fill=tk.X, pady=(5,10)) # Added top padding
         ttk.Label(list_header_frame, text="Análisis Continuos Guardados:", font=('Helvetica', 12, 'bold')).pack(side=tk.LEFT)
         ttk.Button(list_header_frame, text="Nuevo Análisis Continuo...", command=self._open_new_analysis_dialog).pack(side=tk.RIGHT, padx=5)
 
 
         # --- Treeview for listing analyses ---
-        tree_frame = ttk.Frame(main_frame)
+        tree_frame = ttk.Frame(self.main_frame)
         tree_frame.pack(fill=tk.BOTH, expand=True, pady=(0,10))
 
         columns = ("name", "column", "groups", "date")
@@ -197,7 +197,7 @@ class ContinuousAnalysisManagerDialog(Toplevel):
                                      parent=self)
 
         # --- Action Buttons ---
-        action_frame = ttk.Frame(main_frame)
+        action_frame = ttk.Frame(self.main_frame)
         action_frame.pack(fill=tk.X, pady=(5,0))
 
         self.view_plot_button = ttk.Button(action_frame, text="Ver Gráfico SPM (PNG)", command=self._view_plot, state=tk.DISABLED)
@@ -225,7 +225,7 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         self.delete_button.pack(side=tk.RIGHT, padx=5) # Align to right
 
         # --- Close Button ---
-        close_button_frame = ttk.Frame(main_frame) # Separate frame for close button
+        close_button_frame = ttk.Frame(self.main_frame) # Separate frame for close button
         close_button_frame.pack(fill=tk.X, pady=(10,0))
         ttk.Button(close_button_frame, text="Cerrar", command=self._on_close).pack(side=tk.RIGHT)
 
