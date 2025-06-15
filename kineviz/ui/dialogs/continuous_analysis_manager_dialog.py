@@ -196,7 +196,7 @@ class ContinuousAnalysisManagerDialog(Toplevel):
 
         self.open_main_continuous_folder_button = ttk.Button(
             action_frame,
-            text="Abrir Carpeta Principal de Análisis Continuos",
+            text="Abrir Carpeta de Análisis Continuos",
             command=self._open_main_continuous_analyses_folder
         )
         self.open_main_continuous_folder_button.pack(side=tk.LEFT, padx=5)

@@ -40604,3 +40604,48 @@ AttributeError: 'StudyService' object has no attribute 'MAX_PINNED_STUDIES'
 2025-06-15 00:43:03,715 - WARNING - [kineviz.core.services.study_service] - No se puede pinear estudio 21. Límite de 5 alcanzado.
 2025-06-15 13:53:46,521 - WARNING - [kineviz.core.services.analysis_service] - No se pudo calcular p-valor para analisis 1 con test T-test independiente.
 2025-06-15 13:56:27,262 - WARNING - [kineviz.core.services.file_service] - Archivo suelto eliminado de la carpeta del estudio: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/2_Test/.DS_Store
+2025-06-15 15:49:56,373 - ERROR - [kineviz.core.services.analysis_service] - Error eliminando tabla de resumen I004: El archivo de tabla no existe: I004
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/core/services/analysis_service.py", line 2917, in delete_selected_discrete_summary_tables
+    self.delete_discrete_summary_table(table_path_str)
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/core/services/analysis_service.py", line 1495, in delete_discrete_summary_table
+    raise FileNotFoundError(f"El archivo de tabla no existe: "
+FileNotFoundError: El archivo de tabla no existe: I004
+2025-06-15 15:49:56,377 - ERROR - [kineviz.core.services.analysis_service] - Error eliminando tabla de resumen I006: El archivo de tabla no existe: I006
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/core/services/analysis_service.py", line 2917, in delete_selected_discrete_summary_tables
+    self.delete_discrete_summary_table(table_path_str)
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/core/services/analysis_service.py", line 1495, in delete_discrete_summary_table
+    raise FileNotFoundError(f"El archivo de tabla no existe: "
+FileNotFoundError: El archivo de tabla no existe: I006
+2025-06-15 15:49:56,377 - WARNING - [kineviz.core.services.analysis_service] - Se encontraron errores durante la eliminación masiva de tablas de resumen: ['Error eliminando tabla de resumen I004: El archivo de tabla no existe: I004', 'Error eliminando tabla de resumen I006: El archivo de tabla no existe: I006']
+2025-06-15 15:53:08,537 - ERROR - [kineviz.core.services.analysis_service] - Error eliminando tabla de resumen I097: El archivo de tabla no existe: I097
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/core/services/analysis_service.py", line 2917, in delete_selected_discrete_summary_tables
+    self.delete_discrete_summary_table(table_path_str)
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/core/services/analysis_service.py", line 1495, in delete_discrete_summary_table
+    raise FileNotFoundError(f"El archivo de tabla no existe: "
+FileNotFoundError: El archivo de tabla no existe: I097
+2025-06-15 15:53:08,540 - ERROR - [kineviz.core.services.analysis_service] - Error eliminando tabla de resumen I09B: El archivo de tabla no existe: I09B
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/core/services/analysis_service.py", line 2917, in delete_selected_discrete_summary_tables
+    self.delete_discrete_summary_table(table_path_str)
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/core/services/analysis_service.py", line 1495, in delete_discrete_summary_table
+    raise FileNotFoundError(f"El archivo de tabla no existe: "
+FileNotFoundError: El archivo de tabla no existe: I09B
+2025-06-15 15:53:08,540 - WARNING - [kineviz.core.services.analysis_service] - Se encontraron errores durante la eliminación masiva de tablas de resumen: ['Error eliminando tabla de resumen I097: El archivo de tabla no existe: I097', 'Error eliminando tabla de resumen I09B: El archivo de tabla no existe: I09B']
+2025-06-15 16:04:27,074 - ERROR - [kineviz.core.services.analysis_service] - Error eliminando tabla de resumen Rango_Cinematica_Edad_Adulto__Peso_NP.xlsx: El archivo no parece ser una tabla CSV: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/1_Edad y Peso con 3 sub-valores/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_NP.xlsx
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/core/services/analysis_service.py", line 2878, in delete_selected_discrete_summary_tables
+    self.delete_discrete_summary_table(table_path_str)
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/core/services/analysis_service.py", line 1500, in delete_discrete_summary_table
+    raise ValueError(f"El archivo no parece ser una tabla CSV: "
+ValueError: El archivo no parece ser una tabla CSV: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/1_Edad y Peso con 3 sub-valores/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_NP.xlsx
+2025-06-15 16:04:27,082 - ERROR - [kineviz.core.services.analysis_service] - Error eliminando tabla de resumen Minimo_Cinematica_Edad_Joven__Peso_OS.xlsx: El archivo no parece ser una tabla CSV: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/1_Edad y Peso con 3 sub-valores/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_OS.xlsx
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/core/services/analysis_service.py", line 2878, in delete_selected_discrete_summary_tables
+    self.delete_discrete_summary_table(table_path_str)
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/core/services/analysis_service.py", line 1500, in delete_discrete_summary_table
+    raise ValueError(f"El archivo no parece ser una tabla CSV: "
+ValueError: El archivo no parece ser una tabla CSV: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/1_Edad y Peso con 3 sub-valores/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_OS.xlsx
+2025-06-15 16:04:27,083 - WARNING - [kineviz.core.services.analysis_service] - Se encontraron errores durante la eliminación masiva de tablas de resumen: ['Error eliminando tabla de resumen Rango_Cinematica_Edad_Adulto__Peso_NP.xlsx: El archivo no parece ser una tabla CSV: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/1_Edad y Peso con 3 sub-valores/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_NP.xlsx', 'Error eliminando tabla de resumen Minimo_Cinematica_Edad_Joven__Peso_OS.xlsx: El archivo no parece ser una tabla CSV: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/1_Edad y Peso con 3 sub-valores/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_OS.xlsx']

@@ -204,7 +204,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
         self.open_main_discrete_folder_button = ttk.Button(
             selection_action_frame,
-            text="Abrir Carpeta Principal de Análisis Discretos",
+            text="Abrir Carpeta de Análisis Discretos",
             command=self._open_main_discrete_analyses_folder
         )
         self.open_main_discrete_folder_button.pack(side=tk.LEFT, padx=5)

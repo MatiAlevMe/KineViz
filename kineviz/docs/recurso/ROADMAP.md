@@ -265,7 +265,7 @@ Ventana de estudio, ventana de estudio especifico, ventana de tablas de analisis
 4.2 [Pendiente] Agregar referencias dentro del mismo manual que diga "Vaya a la sección X" o similares para referirse a que sección ir del manual para alguna información importante dentro de otra sección.
 4.3 [Pendiente] Eliminar todos los botones que hagan referencia a manuales antiguos que no sean el manual principal.
 
-## [Pendiente] Fase 6: Cambios Opcionales.
+## [En Progreso] Fase 6: Cambios Opcionales.
 1. [Hecho] (Cambio Manual) Cambiar terminos de:
 "paciente" a "participante", "Paciente" a "Participante"
 "pacientes" a "participantes", "Pacientes" a "Participantes"
@@ -277,13 +277,13 @@ Full Two-Way ANOVA: The current "2VIs" mode performs comparisons within a level 
 2.3 [Omitido] Interaction effect (VI1 x VI2) This would require a different UI setup (selecting both VIs and all their relevant levels) and significant changes in AnalysisService to  structure data for spm1d.stats.anova2 and interpret its multi-faceted results.
 2.4 [Omitido] Post-hoc tests for ANOVA: If an ANOVA (either 1-way in 1VI mode or the simple main effect ANOVA in 2VI mode) is significant, post-hoc tests would be needed to determine which specific groups differ. spm1d offers functions for this (e.g., spm1d.stats.posthoc.ttest_paired, spm1d.stats.posthoc.anova1_ttest_paired).
 2.5 [Omitido] Visualizations for 2VI: Specific plots for interactions (if a 2-way ANOVA was implemented) or more complex comparative plots for the "slicing" approach might be beneficial.
-3. [Omitido] Funcionalidad Extra para Eliminar:
+3. [Hecho] Funcionalidad Extra para Eliminar:
 3.1 [Hecho] Botón para eliminar todos los archivos dentro de un estudio.
 3.2 [Hecho] Botón para eliminar todas las tablas del análisis discreto y pruebas para el analisis discreto y el analisis continuo.
-3.3 [Omitido] Botón "Eliminación Masiva" para seleccionar los archivos que se deseen eliminar. Tanto en la ventana de estudio como en la ventana de pruebas de analisis discreto y pruebas analisis continuo.
+3.3 [Hecho] Botón "Eliminación Masiva" para seleccionar los archivos que se deseen eliminar. Tanto en la ventana de estudio como en la ventana de pruebas de analisis discreto y pruebas analisis continuo.
 3.4 [Hecho] Botón para eliminar todos los estudios.
 3.5 [Pendiente] (Cambio Manúal) Validar manualmente si es que se pueden eliminar todos los estudios junto a la funcionalida de backup de seguridad.
-4. [Omitido] Agregar las Siguiente Reglas a la Eliminación de Archivos Individuales o Eliminación Masiva:
+4. [Hecho] Agregar las Siguiente Reglas a la Eliminación de Archivos Individuales o Eliminación Masiva:
 "Si no hay archivos o carpetas dentro del estudio elimina los archivos carpetas locales dentro de ese estudio (sin incluir el propio estudio padre)"
 "Si no hay archivos para un participante en particular, elimina la carpeta con el nombre del participante"
 5. [Hecho] Agregar Botón para Refrescar Archivos en Todas las Tablas:
@@ -298,7 +298,6 @@ Para que el usuario tenga la opción de escribir algún detalle que estime conve
 Este comentario de estudio podrá ser modificado también
 9. [Pendiente] Opciones de Accesibilidad en la Configuración del Software:
 Como aumentar el tamaño de las letras, y cambiar el tema de KineViz de blanco a oscuro.
-10. [Omitido] Mejoras en la UI
 
 ## [Pendiente] Fase 7: Pruebas, Documentación y Despliegue
 1. [Omitido] Análisis Discreto
@@ -317,6 +316,7 @@ También agregar imagenes finales del software funcionando
 3.4 [Pendiente] (Cambio Manual) Revisión Final de ortografía de la presentación con V. D.
 Agregar el DEMO y optimizar los tiempos + añadir los ultimos cambios
 3.5 [Pendiente] (Cambio Manual) Limpiar archivos como kineviz.spec, kineviz/docs/recurso, logs de la repo final. Eliminar pruebas y cambiar el LOG a INFO o WARNING.
+3.6 [Pendiente] (Revisión Manual) Posible revisión y correción de UI con V. D.
 4. [Pendiente] (Cambio Manual) Creación de Demo en Video del Uso del Software con V. D.
 5. [Pendiente] Empaquetado y Distribución con Paquetes Distribuibles.
 5.1 [Pendiente] Configurar PyInstaller: Creado y refinando `kineviz.spec` para definir el proceso de build (corrigiendo errores de hidden imports, backends, etc.).
