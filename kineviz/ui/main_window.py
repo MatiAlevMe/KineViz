@@ -231,8 +231,10 @@ class MainWindow:
     def show_config_dialog(self):
         """Muestra el diálogo de configuración."""
         # Pasar la instancia de AppSettings y el método de reseteo como callback
-        ConfigDialog(self.root, self.settings, reset_callback=self.reset_to_defaults)
+        dialog = ConfigDialog(self.root, self.settings, reset_callback=self.reset_to_defaults)
         # El diálogo se encargará de guardar los settings si el usuario presiona "Guardar"
+        # Esperar a que el diálogo se cierre antes de continuar
+        self.root.wait_window(dialog)
         # Recargar settings en MainWindow después de cerrar el diálogo (por si cambiaron)
         self.reload_settings()
 
