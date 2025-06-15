@@ -278,13 +278,15 @@ Full Two-Way ANOVA: The current "2VIs" mode performs comparisons within a level 
 2.4 [Omitido] Post-hoc tests for ANOVA: If an ANOVA (either 1-way in 1VI mode or the simple main effect ANOVA in 2VI mode) is significant, post-hoc tests would be needed to determine which specific groups differ. spm1d offers functions for this (e.g., spm1d.stats.posthoc.ttest_paired, spm1d.stats.posthoc.anova1_ttest_paired).
 2.5 [Omitido] Visualizations for 2VI: Specific plots for interactions (if a 2-way ANOVA was implemented) or more complex comparative plots for the "slicing" approach might be beneficial.
 3. [Omitido] Funcionalidad Extra para Eliminar:
-3.1 [Omitido] Botón para eliminar todos los archivos dentro de un estudio.
-3.2 [Omitido] Botón para eliminar todas las pruebas para el analisis discreto y el analisis continuo.
+3.1 [Hecho] Botón para eliminar todos los archivos dentro de un estudio.
+3.2 [Hecho] Botón para eliminar todas las tablas del análisis discreto y pruebas para el analisis discreto y el analisis continuo.
 3.3 [Omitido] Botón "Eliminación Masiva" para seleccionar los archivos que se deseen eliminar. Tanto en la ventana de estudio como en la ventana de pruebas de analisis discreto y pruebas analisis continuo.
+3.4 [Hecho] Botón para eliminar todos los estudios.
+3.5 [Pendiente] (Cambio Manúal) Validar manualmente si es que se pueden eliminar todos los estudios junto a la funcionalida de backup de seguridad.
 4. [Omitido] Agregar las Siguiente Reglas a la Eliminación de Archivos Individuales o Eliminación Masiva:
 "Si no hay archivos o carpetas dentro del estudio elimina los archivos carpetas locales dentro de ese estudio (sin incluir el propio estudio padre)"
 "Si no hay archivos para un participante en particular, elimina la carpeta con el nombre del participante"
-5. [Omitido] Agregar Botón para Refrescar Archivos en Todas las Tablas:
+5. [Hecho] Agregar Botón para Refrescar Archivos en Todas las Tablas:
 Este botón mostrara los nuevos archivos en caso de por ejemplo el usuario modifique los archivos locales.
 6. [Omitido] Manejo de Floats al Procesar Archivos en un Estudio:
 Que exista la posibilidad de manejar situaciones donde los archivos de entrada esten en float como "Pte03 CMJ 03.txt: could not convert string to float: '5,47567'" en cuyo caso se debería poder convertir al valor convencional de "5.47567".
