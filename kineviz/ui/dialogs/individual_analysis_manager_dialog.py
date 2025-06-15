@@ -1107,6 +1107,10 @@ if __name__ == '__main__':
                      print(f"DummyStudyService: get_study_aliases({study_id})")
                      return {'CMJ': 'Salto CM', 'PRE': 'Antes', 'POST': 'Despues',
                              'SJ_TipoA': 'SJ A', 'SJ_TipoB': 'SJ B', 'SJ_TipoC': 'SJ C'}
+                 def get_study_details(self, study_id): # Needed for _load_study_vi_data
+                     return {'independent_variables': [{'name': 'Condicion', 'descriptors': ['PRE', 'POST']}],
+                             'aliases': self.get_study_aliases(study_id)}
+
             self.study_service = DummyStudyService()
 
         def list_individual_analyses(self, study_id):
