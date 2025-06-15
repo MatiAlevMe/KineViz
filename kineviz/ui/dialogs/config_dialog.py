@@ -20,8 +20,8 @@ class ConfigDialog(Toplevel):
         self.reset_callback = reset_callback # Callback para la acción de reseteo global
 
         self.title("Configuración")
-        self.geometry("450x380") # Aumentar altura para nuevos botones
-        self.resizable(False, False)
+        # self.geometry("450x380") # Initial size will be determined by content or set after widgets are created
+        self.resizable(True, True) # Allow resizing
 
         # Variables para los campos de entrada
         self.var_studies_per_page = StringVar()
@@ -31,10 +31,6 @@ class ConfigDialog(Toplevel):
         self.var_theme = StringVar()
 
         self.load_current_settings()
-
-        # Definir estilo para el botón de ayuda
-        style = ttk.Style()
-        style.configure("Help.TButton", foreground="white", background="blue")
         
         self.create_widgets()
 
@@ -62,7 +58,8 @@ class ConfigDialog(Toplevel):
         main_frame.pack(fill=tk.BOTH, expand=True)
 
         # Configurar grid layout
-        main_frame.columnconfigure(1, weight=1)
+        main_frame.columnconfigure(0, weight=1) # Allow label column to take some space
+        main_frame.columnconfigure(1, weight=3) # Give more weight to widget column for expansion
 
         row_idx = 0
 
@@ -171,6 +168,10 @@ class ConfigDialog(Toplevel):
 
         ttk.Button(button_frame, text="Guardar", command=self.save_settings).pack(side=tk.RIGHT, padx=5)
         ttk.Button(button_frame, text="Cancelar", command=self.destroy).pack(side=tk.RIGHT)
+
+        # After all widgets are created, set a minimum size based on their initial requested size
+        self.update_idletasks() # Ensure Tkinter has processed widget sizes
+        self.minsize(self.winfo_reqwidth() + 10, self.winfo_reqheight() + 10) # Add a little padding to requested size
 
     def validate_input(self) -> bool:
         """Valida que los valores ingresados sean enteros positivos."""

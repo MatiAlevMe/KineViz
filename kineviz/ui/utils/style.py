@@ -187,6 +187,12 @@ def apply_theme_and_font(style: ttk.Style, theme_name: str, font_scale: float):
                     font=get_scaled_font(TREEVIEW_HEADING_FONT_SIZE, font_scale, weight="bold"),
                     relief='raised')
 
+    # Adjust Treeview row height based on font size
+    treeview_font_obj = get_font_object(DEFAULT_FONT_SIZE, font_scale)
+    # Approximate row height: font's linespace + scaled padding
+    row_height = treeview_font_obj.metrics("linespace") + int(8 * min(1.5, max(0.5, font_scale))) # Ensure scale_factor is positive for padding
+    style.configure('Treeview', rowheight=max(18, row_height)) # Ensure a minimum row height
+
 
     # --- Other Widget Styles ---
     style.configure('TLabelframe',
