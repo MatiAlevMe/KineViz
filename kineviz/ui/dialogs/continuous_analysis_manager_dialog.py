@@ -74,10 +74,12 @@ class ContinuousAnalysisManagerDialog(Toplevel):
     def create_widgets(self):
         self.main_frame = ttk.Frame(self, padding="10")
         self.main_frame.pack(fill=tk.BOTH, expand=True)
+        self.main_frame.columnconfigure(0, weight=1) # Allow content to expand horizontally
+        self.main_frame.rowconfigure(2, weight=1) # Allow tree_frame to expand vertically
 
         # --- Search and Filter Frame ---
         search_filter_frame = ttk.LabelFrame(self.main_frame, text="Buscar y Filtrar Análisis", padding="10")
-        search_filter_frame.pack(fill=tk.X, pady=(0,10))
+        search_filter_frame.grid(row=0, column=0, sticky="ew", pady=(0,10)) # Changed to grid
         search_filter_frame.columnconfigure(1, weight=1) # Allow search entry to expand
         search_filter_frame.columnconfigure(3, weight=1)
         search_filter_frame.columnconfigure(5, weight=1)
@@ -136,24 +138,26 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         self.filter_vi1_frame.grid_remove() # Hide VI1 frame initially
         self.filter_vi2_frame.grid_remove() # Hide VI2 frame initially
 
-        # Filter Action Buttons
-        filter_action_frame = ttk.Frame(search_filter_frame)
-        filter_action_frame.grid(row=2, column=2, columnspan=4, sticky="e", padx=5, pady=5) # Adjusted row
-        ttk.Button(filter_action_frame, text="Aplicar Filtros", command=self._apply_filters_and_search).pack(side=tk.LEFT, padx=5)
-        ttk.Button(filter_action_frame, text="Limpiar Filtros", command=self._clear_filters).pack(side=tk.LEFT, padx=(0,5))
-        ttk.Button(filter_action_frame, text="Refrescar Lista", command=self.load_analyses).pack(side=tk.LEFT, padx=5)
+        # Filter Action Buttons (moved to a new row)
+        filter_action_buttons_frame = ttk.Frame(search_filter_frame)
+        filter_action_buttons_frame.grid(row=5, column=0, columnspan=3, sticky="ew", pady=(5,0)) # New row for these buttons
+        ttk.Button(filter_action_buttons_frame, text="Aplicar Filtros", command=self._apply_filters_and_search).pack(side=tk.LEFT, padx=5)
+        ttk.Button(filter_action_buttons_frame, text="Limpiar Filtros", command=self._clear_filters).pack(side=tk.LEFT, padx=(0,5))
+        ttk.Button(filter_action_buttons_frame, text="Refrescar Lista", command=self.load_analyses).pack(side=tk.LEFT, padx=5)
 
 
         # --- Header and New Analysis Button ---
-        list_header_frame = ttk.Frame(self.main_frame) # Renamed from header_frame
-        list_header_frame.pack(fill=tk.X, pady=(5,10)) # Added top padding
-        ttk.Label(list_header_frame, text="Análisis Continuos Guardados:", font=('Helvetica', 12, 'bold')).pack(side=tk.LEFT)
-        ttk.Button(list_header_frame, text="Nuevo Análisis Continuo...", command=self._open_new_analysis_dialog).pack(side=tk.RIGHT, padx=5)
+        list_header_frame = ttk.Frame(self.main_frame)
+        list_header_frame.grid(row=1, column=0, sticky="ew", pady=(5,10)) # Changed to grid
+        ttk.Button(list_header_frame, text="Nuevo Análisis...", command=self._open_new_analysis_dialog).pack(side=tk.LEFT, padx=(0,10)) # Moved to left, text changed
+        ttk.Label(list_header_frame, text="Análisis Guardados", style="TLabelframe.Label").pack(side=tk.LEFT) # Text changed, style applied
 
 
         # --- Treeview for listing analyses ---
-        tree_frame = ttk.Frame(self.main_frame)
-        tree_frame.pack(fill=tk.BOTH, expand=True, pady=(0,10))
+        tree_frame = ttk.LabelFrame(self.main_frame, text="") # LabelFrame without text, text is above
+        tree_frame.grid(row=2, column=0, sticky="nsew", pady=(0,10)) # Changed to grid, sticky nsew
+        tree_frame.columnconfigure(0, weight=1) # Allow tree to expand horizontally
+        tree_frame.rowconfigure(0, weight=1)    # Allow tree to expand vertically
 
         columns = ("name", "column", "groups", "date")
         self.tree = ttk.Treeview(tree_frame, columns=columns, show="headings", selectmode="extended") # Allow multi-select
@@ -172,41 +176,43 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         hsb = ttk.Scrollbar(tree_frame, orient="horizontal", command=self.tree.xview)
         self.tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
         vsb.pack(side=tk.RIGHT, fill=tk.Y)
-        hsb.pack(side=tk.BOTTOM, fill=tk.X)
+        hsb.pack(side=tk.BOTTOM, fill=tk.X, padx=(0, vsb.winfo_reqwidth())) # Add padx to align with vsb
         self.tree.pack(fill=tk.BOTH, expand=True)
 
         self.tree.bind("<<TreeviewSelect>>", self._on_analysis_selected)
         self.tree.bind("<Double-1>", self._view_plot) # Double click to view plot
 
-        # --- Action Buttons ---
-        action_frame = ttk.Frame(self.main_frame)
-        action_frame.pack(fill=tk.X, pady=(5,0))
+        # --- Action Buttons Frame (View actions) ---
+        view_action_frame = ttk.Frame(self.main_frame)
+        view_action_frame.grid(row=3, column=0, sticky="ew", pady=(5,0)) # Changed to grid
 
-        self.view_plot_button = ttk.Button(action_frame, text="Ver Gráfico SPM (PNG)", command=self._view_plot, state=tk.DISABLED)
+        self.view_plot_button = ttk.Button(view_action_frame, text="Ver Gráfico SPM (PNG)", command=self._view_plot, state=tk.DISABLED)
         self.view_plot_button.pack(side=tk.LEFT, padx=5)
 
-        self.view_interactive_plot_button = ttk.Button(action_frame, text="Ver Gráfico Interactivo SPM", command=self._view_interactive_plot, state=tk.DISABLED)
+        self.view_interactive_plot_button = ttk.Button(view_action_frame, text="Ver Gráfico Interactivo SPM", command=self._view_interactive_plot, state=tk.DISABLED)
         self.view_interactive_plot_button.pack(side=tk.LEFT, padx=5)
 
-        self.view_config_button = ttk.Button(action_frame, text="Ver Configuración", command=self._view_config, state=tk.DISABLED)
+        self.view_config_button = ttk.Button(view_action_frame, text="Ver Configuración", command=self._view_config, state=tk.DISABLED)
         self.view_config_button.pack(side=tk.LEFT, padx=5)
 
-        self.open_folder_button = ttk.Button(action_frame, text="Abrir Carpeta", command=self._open_folder, state=tk.DISABLED)
+        # --- Action Buttons Frame (Folder actions) ---
+        folder_action_frame = ttk.Frame(self.main_frame)
+        folder_action_frame.grid(row=4, column=0, sticky="ew", pady=(5,0)) # Changed to grid
+
+        self.open_folder_button = ttk.Button(folder_action_frame, text="Abrir Carpeta de Análisis", command=self._open_folder, state=tk.DISABLED)
         self.open_folder_button.pack(side=tk.LEFT, padx=5)
 
         self.open_main_continuous_folder_button = ttk.Button(
-            action_frame,
-            text="Abrir Carpeta de Análisis Continuos",
+            folder_action_frame,
+            text="Abrir Carpeta Principal de Análisis Continuos", # Slightly more descriptive
             command=self._open_main_continuous_analyses_folder
         )
         self.open_main_continuous_folder_button.pack(side=tk.LEFT, padx=5)
 
 
-        # Los botones de eliminar se moverán a un frame inferior.
-
         # --- Bottom Action Frame (Delete and Close buttons) ---
-        bottom_action_frame = ttk.Frame(self.main_frame) # This frame will hold delete and close
-        bottom_action_frame.pack(fill=tk.X, pady=(10,0))
+        bottom_action_frame = ttk.Frame(self.main_frame)
+        bottom_action_frame.grid(row=5, column=0, sticky="ew", pady=(10,0)) # Changed to grid
 
         self.delete_all_button = ttk.Button(
             bottom_action_frame,
