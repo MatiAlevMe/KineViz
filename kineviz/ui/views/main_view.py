@@ -13,6 +13,7 @@ class MainView:
         self.main_window = main_window
         self.study_service = main_window.study_service
         # self.config = main_window.config # Ya no es necesario, se accede a través de main_window.settings o propiedades
+        self.MAX_PINNED_STUDIES = self.study_service.MAX_PINNED_STUDIES # Acceder a la constante
 
         # Variables de estado
         self.current_page = 1
@@ -58,17 +59,19 @@ class MainView:
         table_frame = ttk.Frame(self.frame)
         table_frame.pack(fill=tk.BOTH, expand=True)
 
-        columns = ('Nombre', 'Ver', 'Editar', 'Eliminar')
+        columns = ('Pin', 'Nombre', 'Ver', 'Editar', 'Eliminar') # Añadir 'Pin'
         self.tree = ttk.Treeview(table_frame, columns=columns, show='headings', style='Treeview')
 
         # Configurar cabeceras
+        self.tree.heading('Pin', text='Pin', anchor='center') # Cabecera para Pin
         self.tree.heading('Nombre', text='Nombre del Estudio')
         self.tree.heading('Ver', text='Ver', anchor='center')
         self.tree.heading('Editar', text='Editar', anchor='center')
         self.tree.heading('Eliminar', text='Eliminar', anchor='center')
 
         # Configurar ancho de columnas (ajustar según necesidad)
-        self.tree.column('Nombre', width=400, stretch=tk.YES)
+        self.tree.column('Pin', width=50, anchor='center', stretch=tk.NO) # Ancho para Pin
+        self.tree.column('Nombre', width=350, stretch=tk.YES) # Ajustar ancho de Nombre
         self.tree.column('Ver', width=80, anchor='center', stretch=tk.NO)
         self.tree.column('Editar', width=80, anchor='center', stretch=tk.NO)
         self.tree.column('Eliminar', width=80, anchor='center', stretch=tk.NO)
@@ -122,13 +125,16 @@ class MainView:
                     # Podríamos eliminar el estudio aquí o marcarlo visualmente
                     # self.study_service.delete_study(study['id']) # ¡Cuidado con esto!
                     # continue # Omitir estudio sin carpeta
+                
+                pin_char = "📌" if study.get('is_pinned') else ""
 
                 self.tree.insert('', tk.END, values=(
+                    pin_char,
                     study['name'],
                     'Ver',      # Texto para el botón
                     'Editar',   # Texto para el botón
                     'Eliminar'  # Texto para el botón
-                ), tags=(str(study['id']), study['name'])) # Guardar ID y nombre en tags
+                ), tags=(str(study['id']), study['name'], str(study.get('is_pinned', 0)))) # Guardar ID, nombre y estado de pin
 
             self.update_pagination_controls()
 
@@ -215,17 +221,44 @@ class MainView:
         # Determinar la acción basada en la columna clickeada
         column_index = int(column_id.replace('#', '')) - 1 # Índice basado en 0
 
-        if column_index == 1: # Columna "Ver"
+        if column_index == 0: # Columna "Pin"
+            logger.debug(f"Acción 'Pin' para estudio ID {study_id}")
+            self.toggle_pin_study(study_id)
+        elif column_index == 1: # Columna "Nombre" - sin acción directa, pero podría tenerla
+            pass # O podrías querer abrir el estudio, similar a "Ver"
+        elif column_index == 2: # Columna "Ver"
             logger.debug(f"Acción 'Ver' para estudio ID {study_id}")
             self.main_window.show_study_view(study_id)
-        elif column_index == 2: # Columna "Editar"
+        elif column_index == 3: # Columna "Editar"
             logger.debug(f"Acción 'Editar' para estudio ID {study_id}")
             # Pasar el diccionario del estudio para precargar el diálogo
             study_details = {'id': study_id, 'name': study_name} # Info mínima necesaria
             self.main_window.show_create_study_dialog(study_to_edit=study_details)
-        elif column_index == 3: # Columna "Eliminar"
+        elif column_index == 4: # Columna "Eliminar"
             logger.debug(f"Acción 'Eliminar' para estudio ID {study_id}")
             self.delete_study(study_id, study_name)
+
+    def toggle_pin_study(self, study_id: int):
+        """Alterna el estado de pin de un estudio."""
+        try:
+            success = self.study_service.toggle_study_pin_status(study_id)
+            if success:
+                logger.info(f"Estado de pin para estudio {study_id} cambiado.")
+                self.load_studies() # Recargar para reflejar el cambio y el orden
+            else:
+                messagebox.showwarning("Límite Alcanzado",
+                                       f"No se pudo pinear el estudio. Ya hay {self.study_service.MAX_PINNED_STUDIES} estudios pineados.",
+                                       parent=self.root)
+        except ValueError as ve: # Estudio no encontrado
+            logger.error(f"Error al cambiar pin para estudio {study_id}: {ve}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudo encontrar el estudio para cambiar su estado de pin:\n{ve}", parent=self.root)
+        except RuntimeError as re: # Error general del servicio
+            logger.error(f"Error de servicio al cambiar pin para estudio {study_id}: {re}", exc_info=True)
+            messagebox.showerror("Error", f"Ocurrió un error al cambiar el estado de pin del estudio:\n{re}", parent=self.root)
+        except Exception as e:
+            logger.error(f"Error inesperado al cambiar pin para estudio {study_id}: {e}", exc_info=True)
+            messagebox.showerror("Error Inesperado", f"Ocurrió un error inesperado:\n{e}", parent=self.root)
+
 
     def delete_study(self, study_id, study_name):
         """Solicita confirmación y elimina un estudio."""
