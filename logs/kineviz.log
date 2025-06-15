@@ -40602,3 +40602,5 @@ AttributeError: 'StudyService' object has no attribute 'MAX_PINNED_STUDIES'
 2025-06-15 00:42:45,380 - WARNING - [kineviz.core.services.study_service] - No se puede pinear estudio 31. Límite de 5 alcanzado.
 2025-06-15 00:42:49,734 - WARNING - [kineviz.core.services.study_service] - No se puede pinear estudio 31. Límite de 5 alcanzado.
 2025-06-15 00:43:03,715 - WARNING - [kineviz.core.services.study_service] - No se puede pinear estudio 21. Límite de 5 alcanzado.
+2025-06-15 13:53:46,521 - WARNING - [kineviz.core.services.analysis_service] - No se pudo calcular p-valor para analisis 1 con test T-test independiente.
+2025-06-15 13:56:27,262 - WARNING - [kineviz.core.services.file_service] - Archivo suelto eliminado de la carpeta del estudio: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/2_Test/.DS_Store
