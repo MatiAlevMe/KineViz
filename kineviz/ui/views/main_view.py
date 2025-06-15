@@ -137,7 +137,7 @@ class MainView:
             return
 
         if messagebox.askyesno("Confirmar Eliminación",
-                               "¿Está seguro de que desea eliminar los estudios seleccionados?\n"
+                               f"¿Está seguro de que desea eliminar los {len(selected_items)} estudio(s) seleccionados?\n"
                                "Esta acción también eliminará sus carpetas y todos los archivos asociados.",
                                icon='warning', parent=self.root):
             study_ids_to_delete = []
