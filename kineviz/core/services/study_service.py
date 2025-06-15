@@ -6,6 +6,8 @@ from kineviz.database.repositories import StudyRepository
 
 logger = logging.getLogger(__name__)
 
+MAX_PINNED_STUDIES = 5
+
 class StudyService:
     def __init__(self):
         self.repo = StudyRepository()
@@ -268,3 +270,34 @@ class StudyService:
         except Exception as e: # Otros errores inesperados
             logger.error(f"Error inesperado actualizando alias para estudio {study_id}: {e}", exc_info=True)
             raise
+
+    def toggle_study_pin_status(self, study_id: int) -> bool:
+        """
+        Cambia el estado de 'pinned' de un estudio.
+        No permite pinear más de MAX_PINNED_STUDIES estudios.
+
+        :param study_id: ID del estudio a actualizar.
+        :return: True si el estado se cambió, False si se alcanzó el límite de pineados.
+        :raises ValueError: Si el estudio no se encuentra.
+        """
+        try:
+            study_details = self.repo.get_study_by_id(study_id) # Verifica si el estudio existe
+            current_is_pinned = study_details.get('is_pinned', 0) == 1
+            new_is_pinned = not current_is_pinned
+
+            if new_is_pinned: # Si se va a pinear
+                pinned_count = self.repo.count_pinned_studies()
+                if pinned_count >= MAX_PINNED_STUDIES:
+                    logger.warning(f"No se puede pinear estudio {study_id}. Límite de {MAX_PINNED_STUDIES} alcanzado.")
+                    return False # Límite alcanzado
+
+            self.repo.update_study_pin_status(study_id, new_is_pinned)
+            logger.info(f"Estado de pin para estudio {study_id} cambiado a {new_is_pinned}.")
+            return True
+        except ValueError as ve: # Estudio no encontrado por get_study_by_id o update_study_pin_status
+            logger.error(f"Error al cambiar pin para estudio {study_id}: {ve}", exc_info=True)
+            raise
+        except Exception as e:
+            logger.error(f"Error inesperado al cambiar pin para estudio {study_id}: {e}", exc_info=True)
+            # Podríamos relanzar una excepción más genérica o específica del servicio
+            raise RuntimeError(f"Error inesperado al cambiar el estado de pin del estudio: {e}")
