@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import ttk, Toplevel, messagebox, Text
 import logging
 
+from kineviz.ui.utils.style import get_font_object, DEFAULT_FONT_SIZE # Import font utility
+
 logger = logging.getLogger(__name__)
 
 MAX_COMMENT_LENGTH = 150
@@ -15,8 +17,8 @@ class CommentDialog(Toplevel):
         self.on_save_callback = on_save_callback
 
         self.title(f"Comentario para Estudio: {self.study_name}")
-        self.geometry("450x300") # Ajustar tamaño según necesidad
-        self.resizable(False, False)
+        # self.geometry("450x300") # Initial size will be determined by content
+        self.resizable(True, True) # Allow resizing
 
         self.comment_var = tk.StringVar(value=current_comment if current_comment is not None else "")
         self.char_count_var = tk.StringVar()
@@ -41,11 +43,20 @@ class CommentDialog(Toplevel):
     def create_widgets(self):
         main_frame = ttk.Frame(self, padding="10")
         main_frame.pack(fill=tk.BOTH, expand=True)
+        main_frame.columnconfigure(0, weight=1) # Allow content to expand
+
+        # Attempt to get font_scale from parent (MainWindow typically)
+        font_scale = 1.0 # Default
+        if hasattr(self.master, 'settings') and hasattr(self.master.settings, 'font_scale'):
+            font_scale = self.master.settings.font_scale
+        
+        scaled_font = get_font_object(DEFAULT_FONT_SIZE, font_scale)
+        # For labels, ttk styles handle scaling. For tk.Text, we set it directly.
 
         ttk.Label(main_frame, text=f"Editar comentario para el estudio: '{self.study_name}'").pack(pady=(0, 5), anchor="w")
 
         # Text widget para el comentario
-        self.comment_text = Text(main_frame, height=8, width=50, wrap=tk.WORD, relief=tk.SOLID, borderwidth=1)
+        self.comment_text = Text(main_frame, height=8, width=50, wrap=tk.WORD, relief=tk.SOLID, borderwidth=1, font=scaled_font)
         self.comment_text.insert(tk.END, self.comment_var.get())
         self.comment_text.pack(pady=5, fill=tk.BOTH, expand=True)
         self.comment_text.bind("<<Modified>>", self._on_text_modified) # Para actualizar contador en tiempo real
@@ -62,6 +73,10 @@ class CommentDialog(Toplevel):
         ttk.Button(button_frame, text="Cancelar", command=self.destroy).pack(side=tk.RIGHT, padx=(5,0))
         self.save_button = ttk.Button(button_frame, text="Guardar", command=self.save_comment)
         self.save_button.pack(side=tk.RIGHT)
+
+        # After all widgets are created, set a minimum size
+        self.update_idletasks()
+        self.minsize(self.winfo_reqwidth() + 10, self.winfo_reqheight() + 10)
 
 
     def _on_text_modified(self, event=None):
