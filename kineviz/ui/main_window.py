@@ -174,6 +174,27 @@ class MainWindow:
         # Recargar settings en MainWindow después de cerrar el diálogo (por si cambiaron)
         self.reload_settings()
 
+    def confirm_delete_all_studies(self):
+        """
+        Muestra confirmación y llama al servicio para eliminar todos los estudios.
+        """
+        if messagebox.askyesno("Confirmar Eliminación Total",
+                               "¿Está SEGURO de que desea eliminar TODOS los estudios?\n\n"
+                               "Esta acción es IRREVERSIBLE y eliminará toda la base de datos "
+                               "y todas las carpetas de estudios.",
+                               icon='error', parent=self.root): # Usar icono de error para mayor advertencia
+            try:
+                self.study_service.delete_all_studies()
+                messagebox.showinfo("Eliminación Completada",
+                                    "Todos los estudios han sido eliminados.",
+                                    parent=self.root)
+                self.show_landing_page() # Volver a la landing page ya que no hay estudios
+            except Exception as e:
+                logger.critical(f"Error crítico al eliminar todos los estudios: {e}", exc_info=True)
+                messagebox.showerror("Error Crítico",
+                                     f"Ocurrió un error al eliminar todos los estudios:\n{e}",
+                                     parent=self.root)
+
     def reload_settings(self):
          """Recarga las configuraciones desde AppSettings."""
          # No es necesario recargar el archivo, AppSettings lo maneja.

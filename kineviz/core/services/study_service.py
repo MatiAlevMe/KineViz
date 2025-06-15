@@ -358,3 +358,14 @@ class StudyService:
             logger.error(f"Error inesperado al cambiar pin para estudio {study_id}: {e}", exc_info=True)
             # Podríamos relanzar una excepción más genérica o específica del servicio
             raise RuntimeError(f"Error inesperado al cambiar el estado de pin del estudio: {e}")
+
+    def delete_all_studies(self):
+        """
+        Elimina todos los estudios. Llama al método del repositorio.
+        """
+        try:
+            self.repo.delete_all_studies()
+            logger.info("Servicio: Todos los estudios han sido eliminados.")
+        except Exception as e:
+            logger.error(f"Servicio: Error al eliminar todos los estudios: {e}", exc_info=True)
+            raise # Relanzar para que la UI maneje el error

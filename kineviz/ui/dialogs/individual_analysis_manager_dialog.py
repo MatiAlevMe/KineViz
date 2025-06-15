@@ -183,6 +183,24 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.analysis_tree.bind("<<TreeviewSelect>>", self._on_selection_changed) # Bind selection event
         self.analysis_tree.bind("<Double-1>", lambda e: self.view_analysis_plot()) # Double click to view plot
 
+    def _confirm_delete_all_individual_analyses(self):
+        """Muestra confirmación y luego elimina todos los análisis individuales."""
+        if messagebox.askyesno("Confirmar Eliminación Total de Análisis Discretos",
+                               "¿Está SEGURO de que desea eliminar TODOS los análisis discretos individuales guardados "
+                               f"para el estudio ID {self.study_id}?\n\n"
+                               "Esta acción es IRREVERSIBLE.",
+                               icon='warning', parent=self):
+            try:
+                deleted_count = self.analysis_service.delete_all_individual_analyses(self.study_id)
+                messagebox.showinfo("Eliminación Completada",
+                                    f"{deleted_count} análisis individuales han sido eliminados.",
+                                    parent=self)
+                self.load_analyses() # Recargar la lista
+            except Exception as e:
+                logger.error(f"Error al eliminar todos los análisis individuales para estudio {self.study_id}: {e}", exc_info=True)
+                messagebox.showerror("Error al Eliminar Análisis",
+                                     f"Ocurrió un error al eliminar los análisis:\n{e}",
+                                     parent=self)
 
         # --- Botones de Acción para Selección ---
         selection_action_frame = ttk.Frame(main_frame)
@@ -199,6 +217,15 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
         self.open_folder_button = ttk.Button(selection_action_frame, text="Abrir Carpeta", command=self.open_analysis_folder, state=tk.DISABLED)
         self.open_folder_button.pack(side=tk.LEFT, padx=5)
+
+        # Botón Eliminar Todos los Análisis Discretos (a la izquierda del botón Eliminar Análisis individual)
+        self.delete_all_button = ttk.Button(
+            selection_action_frame,
+            text="Eliminar Todos los Análisis Discretos",
+            command=self._confirm_delete_all_individual_analyses,
+            style="Danger.TButton" # Usar estilo de peligro
+        )
+        self.delete_all_button.pack(side=tk.RIGHT, padx=(0, 5)) # A la derecha, antes de "Eliminar Análisis"
         
         self.delete_button = ttk.Button(selection_action_frame, text="Eliminar Análisis", command=self.delete_analysis, state=tk.DISABLED)
         self.delete_button.pack(side=tk.RIGHT, padx=5) # Align to right

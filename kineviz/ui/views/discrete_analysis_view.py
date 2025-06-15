@@ -90,7 +90,7 @@ class DiscreteAnalysisView(ttk.Frame):
         ).pack(side=tk.LEFT, padx=5)
 
         ttk.Button(
-            action_frame, text="Análisis Individual",
+            action_frame, text="Gestor de Análisis Discretos", # Texto del botón cambiado
             command=self.open_individual_analysis_manager
         ).pack(side=tk.LEFT, padx=5)
 
@@ -258,6 +258,36 @@ class DiscreteAnalysisView(ttk.Frame):
                    command=self.view_table).pack(side=tk.LEFT, padx=5)
         ttk.Button(table_action_frame, text="Eliminar Tabla",
                    command=self.delete_table).pack(side=tk.LEFT, padx=5)
+        
+        # Botón Eliminar Todas las Tablas de Resumen (a la derecha de los otros botones de acción de tabla)
+        delete_all_tables_button = ttk.Button(
+            table_action_frame,
+            text="Eliminar Todas las Tablas de Resumen",
+            command=self._confirm_delete_all_summary_tables,
+            style="Danger.TButton"
+        )
+        delete_all_tables_button.pack(side=tk.RIGHT, padx=5)
+
+
+    def _confirm_delete_all_summary_tables(self):
+        """Muestra confirmación y luego elimina todas las tablas de resumen."""
+        if messagebox.askyesno("Confirmar Eliminación Total de Tablas",
+                               "¿Está SEGURO de que desea eliminar TODAS las tablas de resumen (.xlsx) "
+                               f"para el estudio ID {self.study_id}?\n\n"
+                               "Esta acción es IRREVERSIBLE.",
+                               icon='warning', parent=self):
+            try:
+                deleted_count = self.analysis_service.delete_all_discrete_summary_tables(self.study_id)
+                messagebox.showinfo("Eliminación Completada",
+                                    f"{deleted_count} tablas de resumen han sido eliminadas.",
+                                    parent=self)
+                self._fetch_all_table_files_data() # Recargar datos base
+                self.apply_filters() # Aplicar filtros para refrescar la vista
+            except Exception as e:
+                logger.error(f"Error al eliminar todas las tablas de resumen para estudio {self.study_id}: {e}", exc_info=True)
+                messagebox.showerror("Error al Eliminar Tablas",
+                                     f"Ocurrió un error al eliminar las tablas:\n{e}",
+                                     parent=self)
 
     def generate_tables(self):
         """Llama al servicio para generar las tablas resumen CSV."""
