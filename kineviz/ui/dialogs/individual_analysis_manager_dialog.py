@@ -56,13 +56,13 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
     def create_widgets(self):
         """Crea los widgets del diálogo."""
-        main_frame = ttk.Frame(self, padding="10")
-        main_frame.pack(fill=tk.BOTH, expand=True)
-        main_frame.rowconfigure(2, weight=1)  # Adjust row for treeview expansion
-        main_frame.columnconfigure(0, weight=1)
+        self.main_frame = ttk.Frame(self, padding="10")
+        self.main_frame.pack(fill=tk.BOTH, expand=True)
+        self.main_frame.rowconfigure(2, weight=1)  # Adjust row for treeview expansion
+        self.main_frame.columnconfigure(0, weight=1)
 
         # --- Search and Filter Frame ---
-        search_filter_frame = ttk.LabelFrame(main_frame, text="Buscar y Filtrar Análisis", padding="10")
+        search_filter_frame = ttk.LabelFrame(self.main_frame, text="Buscar y Filtrar Análisis", padding="10")
         search_filter_frame.grid(row=0, column=0, sticky="ew", pady=(0,10))
         search_filter_frame.columnconfigure(1, weight=1)
         search_filter_frame.columnconfigure(3, weight=1)
@@ -203,7 +203,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                                      parent=self)
 
         # --- Botones de Acción para Selección ---
-        selection_action_frame = ttk.Frame(main_frame)
+        selection_action_frame = ttk.Frame(self.main_frame)
         selection_action_frame.grid(row=3, column=0, sticky="ew", pady=(10,0))
 
         self.view_plot_button = ttk.Button(selection_action_frame, text="Ver/Abrir Gráfico", command=self.view_analysis_plot, state=tk.DISABLED)
@@ -232,7 +232,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
 
         # --- Botón Cerrar ---
-        ttk.Button(main_frame, text="Cerrar", command=self.destroy) \
+        ttk.Button(self.main_frame, text="Cerrar", command=self.destroy) \
             .grid(row=4, column=0, sticky="e", pady=(10, 0)) # Adjusted row
 
     def _load_study_vi_data(self):
