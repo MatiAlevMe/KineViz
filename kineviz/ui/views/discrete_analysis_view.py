@@ -829,8 +829,19 @@ class DiscreteAnalysisView(ttk.Frame):
         # _dialog.grab_set()  # Hacer modal si se desea
         # Se usa _dialog para evitar F841, aunque no se use después
 
-    # TODO: Implementar open_summary_tables_folder
-    # def open_summary_tables_folder(self): ...
+    def _open_summary_tables_folder(self):
+        """Abre la carpeta donde se guardan las tablas de resumen discreto."""
+        try:
+            tables_path = self.analysis_service.get_discrete_analysis_tables_path(self.study_id)
+            if tables_path and tables_path.exists():
+                self.main_window.open_folder(str(tables_path))
+            elif tables_path:
+                messagebox.showinfo("Información", f"La carpeta de tablas de resumen ({tables_path}) aún no ha sido creada.", parent=self)
+            else:
+                messagebox.showerror("Error", "No se pudo determinar la ruta de la carpeta de tablas de resumen.", parent=self)
+        except Exception as e:
+            logger.error(f"Error al intentar abrir carpeta de tablas de resumen para estudio {self.study_id}: {e}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudo abrir la carpeta de tablas de resumen:\n{e}", parent=self)
 
     def destroy(self):
         """Destruye el frame principal de esta vista."""
