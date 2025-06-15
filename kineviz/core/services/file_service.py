@@ -704,6 +704,31 @@ class FileService:
 
         logger.info(f"Eliminación de todos los archivos completada para estudio {study_id}. Total eliminados: {deleted_files_count}.")
 
+    def delete_selected_files(self, study_id: int, file_paths: list[Path]):
+        """
+        Elimina una lista de archivos específicos y limpia directorios vacíos.
+
+        :param study_id: ID del estudio al que pertenecen los archivos.
+        :param file_paths: Lista de objetos Path de los archivos a eliminar.
+        :raises Exception: Si ocurre un error durante la eliminación de alguno de los archivos.
+        """
+        if not file_paths:
+            return
+
+        errors = []
+        for file_path in file_paths:
+            try:
+                self.delete_file(file_path, study_id) # delete_file ya maneja la limpieza de carpetas
+                logger.info(f"Archivo {file_path} eliminado como parte de una operación masiva para estudio {study_id}.")
+            except Exception as e:
+                logger.error(f"Error eliminando archivo {file_path} en operación masiva para estudio {study_id}: {e}", exc_info=True)
+                errors.append(f"Error eliminando archivo {file_path.name}: {e}")
+        
+        if errors:
+            # Podríamos acumular errores y lanzar una excepción agregada o solo loguear.
+            # Por ahora, lanzamos una excepción general si hubo algún error.
+            raise Exception("Ocurrieron errores durante la eliminación masiva de archivos:\n" + "\n".join(errors))
+
 
 # Ejemplo de cómo podría usarse (requiere StudyService y estructura de carpetas)
 # if __name__ == '__main__':

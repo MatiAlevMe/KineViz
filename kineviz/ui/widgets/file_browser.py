@@ -64,7 +64,7 @@ class FileBrowser(ttk.Frame):
 
         # Crear tabla de archivos
         columns = ('Participante', 'Nombre', 'Tipo', 'Tipo de Dato', 'Ver', 'Eliminar')
-        self.tree = ttk.Treeview(table_container, columns=columns, show='headings')
+        self.tree = ttk.Treeview(table_container, columns=columns, show='headings', selectmode="extended")
 
         for col in columns:
             self.tree.heading(col, text=col)
@@ -83,6 +83,8 @@ class FileBrowser(ttk.Frame):
 
         # Configurar eventos
         self.tree.bind('<ButtonRelease-1>', self.on_tree_click)
+        self.tree.bind('<<TreeviewSelect>>', self._on_fb_selection_change)
+
 
         # --- Frame para Paginación ---
         self.pagination_frame = ttk.Frame(self)
@@ -195,9 +197,30 @@ class FileBrowser(ttk.Frame):
         else:
             logger.warning(f"Intento de ir a página inválida {page_number} (Total: {self.total_pages})")
 
+    def _on_fb_selection_change(self, event=None):
+        """Emite un evento cuando la selección en el FileBrowser cambia."""
+        self.event_generate("<<FileBrowserSelectionChanged>>")
+
+    def get_selected_file_paths(self) -> list[Path]:
+        """Retorna una lista de objetos Path para los archivos seleccionados."""
+        selected_paths = []
+        selected_items = self.tree.selection()
+        for item_id in selected_items:
+            item_tags = self.tree.item(item_id, "tags")
+            if item_tags and item_tags[0]:
+                try:
+                    # El tag es la ruta como string, convertir a Path
+                    selected_paths.append(Path(item_tags[0]))
+                except Exception as e:
+                    logger.error(f"Error convirtiendo tag a Path: {item_tags[0]}, error: {e}")
+        return selected_paths
 
     def on_tree_click(self, event):
         """Maneja los clics en la tabla de archivos."""
+        # Si hay múltiples selecciones, no procesar clics de celda individuales
+        if len(self.tree.selection()) > 1:
+            return
+
         region = self.tree.identify("region", event.x, event.y)
         if region != "cell":
             return

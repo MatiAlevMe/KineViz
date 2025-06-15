@@ -137,7 +137,7 @@ class MainView:
             return
 
         if messagebox.askyesno("Confirmar Eliminación",
-                               f"¿Está seguro de que desea eliminar los {len(selected_items)} estudios seleccionados?\n"
+                               "¿Está seguro de que desea eliminar los estudios seleccionados?\n"
                                "Esta acción también eliminará sus carpetas y todos los archivos asociados.",
                                icon='warning', parent=self.root):
             study_ids_to_delete = []
@@ -273,7 +273,7 @@ class MainView:
             "- Destacar hasta 5 estudios usando el icono '📌' para que aparezcan siempre al inicio de la lista.\n"
             "- Navegar entre páginas de estudios si hay muchos.\n"
             "- Crear un nuevo estudio usando el botón 'Crear Nuevo Estudio'.\n"
-            "- Eliminar TODOS los estudios existentes usando el botón 'Eliminar Todos los Estudios'.\n"
+            "- Eliminar TODOS los estudios existentes usando el botón 'Eliminar Todos los Estudios' (¡con precaución!).\n"
             "- Eliminar estudios SELECCIONADOS usando el botón 'Eliminar Seleccionado(s)' (¡con precaución!)."
         )
         messagebox.showinfo(help_title, help_message, parent=self.root)
