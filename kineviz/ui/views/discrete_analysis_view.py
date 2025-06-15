@@ -96,11 +96,10 @@ class DiscreteAnalysisView(ttk.Frame):
 
         # TODO: Añadir botón "Reporte General" (Fase 6)
 
-        # TODO: Añadir botón "Abrir Carpeta de Tablas"
-        # ttk.Button(
-        #     action_frame, text="Abrir Carpeta de Tablas Resumen",
-        #     command=self.open_summary_tables_folder
-        # ).pack(side=tk.LEFT, padx=5)
+        ttk.Button(
+            action_frame, text="Abrir Carpeta de Tablas Resumen",
+            command=self._open_summary_tables_folder
+        ).pack(side=tk.LEFT, padx=5)
 
         # --- Filtros y Búsqueda ---
         filter_frame = ttk.Frame(self)
@@ -246,25 +245,29 @@ class DiscreteAnalysisView(ttk.Frame):
         )
         self.next_button.pack(side=tk.LEFT, padx=5)
 
-        # --- Botones de Acción para Tablas ---
+        # Botón "Ver Tabla" movido a la derecha de la paginación
+        ttk.Button(pagination_frame, text="Ver Tabla",
+                   command=self.view_table).pack(side=tk.LEFT, padx=(10, 5))
+
+
+        # --- Botones de Acción para Tablas (solo Eliminar) ---
         table_action_frame = ttk.Frame(list_frame)
         # Mover abajo, añadir padding inferior
         table_action_frame.grid(row=3, column=0, columnspan=2, sticky='ew',
                                 pady=(0, 5))
 
-        ttk.Button(table_action_frame, text="Ver Tabla",
-                   command=self.view_table).pack(side=tk.LEFT, padx=5)
+        # "Eliminar Tabla" a la izquierda
         ttk.Button(table_action_frame, text="Eliminar Tabla",
                    command=self.delete_table).pack(side=tk.LEFT, padx=5)
         
-        # Botón Eliminar Todas las Tablas de Resumen (a la derecha de los otros botones de acción de tabla)
+        # "Eliminar Todas las Tablas de Resumen" a la derecha de "Eliminar Tabla"
         delete_all_tables_button = ttk.Button(
             table_action_frame,
             text="Eliminar Todas las Tablas de Resumen",
             command=self._confirm_delete_all_summary_tables,
             style="Danger.TButton"
         )
-        delete_all_tables_button.pack(side=tk.RIGHT, padx=5)
+        delete_all_tables_button.pack(side=tk.LEFT, padx=5) # Cambiado de side=tk.RIGHT
 
 
     def _confirm_delete_all_summary_tables(self):
@@ -699,23 +702,18 @@ class DiscreteAnalysisView(ttk.Frame):
 
     def view_table(self):
         """Abre la tabla CSV seleccionada con la aplicación predeterminada."""
-        selected_item = self.tables_tree.focus()  # Obtiene IID del item
-        if not selected_item:
-            messagebox.showwarning("Sin Selección",
-                                   "Seleccione una tabla para ver.",
+        selected_items = self.tables_tree.selection()
+        if not selected_items:
+            messagebox.showwarning("Sin Selección", "Seleccione una tabla para ver.", parent=self)
+            return
+        selected_item_iid = selected_items[0]
+
+        if not selected_item_iid or selected_item_iid == "NoMatch":
+            messagebox.showwarning("Sin Selección", "No hay una tabla válida seleccionada.",
                                    parent=self)
             return
 
-        # Recuperar la ruta completa guardada como 'text' (iid) en el item
-        file_path_str = selected_item # selected_item is the iid (path string)
-        
-        if not file_path_str or file_path_str == "NoMatch": # Check if it's the placeholder iid
-            messagebox.showwarning("Sin Selección",
-                                   "No hay una tabla válida seleccionada.",
-                                   parent=self)
-            return
-
-        file_path = Path(file_path_str)
+        file_path = Path(selected_item_iid) # Use the iid which is the path string
 
         if not file_path.exists():
             messagebox.showerror("Error",
@@ -761,33 +759,36 @@ class DiscreteAnalysisView(ttk.Frame):
 
     def delete_table(self):
         """Elimina la tabla CSV seleccionada."""
-        selected_item = self.tables_tree.focus()
-        if not selected_item:
-            messagebox.showwarning("Sin Selección",
-                                   "Seleccione una tabla para eliminar.",
-                                   parent=self)
+        selected_items = self.tables_tree.selection()
+        if not selected_items:
+            messagebox.showwarning("Sin Selección", "Seleccione una tabla para eliminar.", parent=self)
+            return
+        selected_item_iid = selected_items[0]
+
+        if not selected_item_iid or selected_item_iid == "NoMatch":
+            messagebox.showwarning("Sin Selección", "No hay una tabla válida seleccionada.", parent=self)
             return
 
-        file_path_str = selected_item # selected_item is the iid (path string)
-        if not file_path_str or file_path_str == "NoMatch": # Check if it's the placeholder iid
-            messagebox.showwarning("Sin Selección",
-                                   "No hay una tabla válida seleccionada.",
-                                   parent=self)
-            return
+        file_path = Path(selected_item_iid) # Use the iid which is the path string
+        
+        # Get the displayed filename from the tree values for the confirmation dialog
+        try:
+            item_values = self.tables_tree.item(selected_item_iid, "values")
+            displayed_file_name = item_values[0] if item_values else file_path.name
+        except tk.TclError: # If item somehow doesn't exist (should not happen if selection() worked)
+            displayed_file_name = file_path.name
 
-        file_path = Path(file_path_str)
-        file_name = file_path.name
 
         if not messagebox.askyesno(
                 "Confirmar Eliminación",
                 f"¿Está seguro de que desea eliminar permanentemente la tabla "
-                f"'{file_name}'?", parent=self):
+                f"'{displayed_file_name}'?", parent=self):
             return
 
         try:
             self.analysis_service.delete_discrete_summary_table(str(file_path))
             messagebox.showinfo("Eliminación Exitosa",
-                                f"La tabla '{file_name}' ha sido eliminada.",
+                                f"La tabla '{displayed_file_name}' ha sido eliminada.",
                                 parent=self)
             # Eliminar de la lista en memoria y recargar la vista actual
             self.all_tables_data = [f for f in self.all_tables_data
@@ -807,7 +808,7 @@ class DiscreteAnalysisView(ttk.Frame):
                          exc_info=True)
             messagebox.showerror(
                 "Error al Eliminar",
-                f"No se pudo eliminar la tabla '{file_name}'.\nError: {e}",
+                f"No se pudo eliminar la tabla '{displayed_file_name}'.\nError: {e}",
                 parent=self)
         except Exception as e:
             logger.error(f"Error inesperado al eliminar {file_path}: {e}",

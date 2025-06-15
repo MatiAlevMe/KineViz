@@ -201,22 +201,25 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.open_folder_button = ttk.Button(selection_action_frame, text="Abrir Carpeta", command=self.open_analysis_folder, state=tk.DISABLED)
         self.open_folder_button.pack(side=tk.LEFT, padx=5)
 
-        # Botón Eliminar Todos los Análisis Discretos (a la izquierda del botón Eliminar Análisis individual)
+        # Los botones de eliminar se moverán a un frame inferior.
+
+        # --- Bottom Action Frame (Delete and Close buttons) ---
+        bottom_action_frame = ttk.Frame(self.main_frame)
+        bottom_action_frame.grid(row=4, column=0, sticky="ew", pady=(10, 0)) # Adjusted row
+
         self.delete_all_button = ttk.Button(
-            selection_action_frame,
+            bottom_action_frame,
             text="Eliminar Todos los Análisis Discretos",
             command=self._confirm_delete_all_individual_analyses,
-            style="Danger.TButton" # Usar estilo de peligro
+            style="Danger.TButton"
         )
-        self.delete_all_button.pack(side=tk.RIGHT, padx=(0, 5)) # A la derecha, antes de "Eliminar Análisis"
+        self.delete_all_button.pack(side=tk.LEFT, padx=(0, 5))
         
-        self.delete_button = ttk.Button(selection_action_frame, text="Eliminar Análisis", command=self.delete_analysis, state=tk.DISABLED)
-        self.delete_button.pack(side=tk.RIGHT, padx=5) # Align to right
+        self.delete_button = ttk.Button(bottom_action_frame, text="Eliminar Análisis", command=self.delete_analysis, state=tk.DISABLED)
+        self.delete_button.pack(side=tk.LEFT, padx=5)
 
+        ttk.Button(bottom_action_frame, text="Cerrar", command=self.destroy).pack(side=tk.RIGHT, padx=5)
 
-        # --- Botón Cerrar ---
-        ttk.Button(self.main_frame, text="Cerrar", command=self.destroy) \
-            .grid(row=4, column=0, sticky="e", pady=(10, 0)) # Adjusted row
 
     def _confirm_delete_all_individual_analyses(self):
         """Muestra confirmación y luego elimina todos los análisis individuales."""

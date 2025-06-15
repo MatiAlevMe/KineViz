@@ -194,22 +194,24 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         self.open_folder_button = ttk.Button(action_frame, text="Abrir Carpeta", command=self._open_folder, state=tk.DISABLED)
         self.open_folder_button.pack(side=tk.LEFT, padx=5)
 
-        # Botón Eliminar Todos los Análisis Continuos (a la izquierda del botón Eliminar Análisis individual)
+        # Los botones de eliminar se moverán a un frame inferior.
+
+        # --- Bottom Action Frame (Delete and Close buttons) ---
+        bottom_action_frame = ttk.Frame(self.main_frame) # This frame will hold delete and close
+        bottom_action_frame.pack(fill=tk.X, pady=(10,0))
+
         self.delete_all_button = ttk.Button(
-            action_frame,
+            bottom_action_frame,
             text="Eliminar Todos los Análisis Continuos",
             command=self._confirm_delete_all_continuous_analyses,
-            style="Danger.TButton" # Usar estilo de peligro
+            style="Danger.TButton"
         )
-        self.delete_all_button.pack(side=tk.RIGHT, padx=(0, 5)) # A la derecha, antes de "Eliminar Análisis"
+        self.delete_all_button.pack(side=tk.LEFT, padx=(0, 5))
         
-        self.delete_button = ttk.Button(action_frame, text="Eliminar Análisis", command=self._delete_analysis, state=tk.DISABLED)
-        self.delete_button.pack(side=tk.RIGHT, padx=5) # Align to right
+        self.delete_button = ttk.Button(bottom_action_frame, text="Eliminar Análisis", command=self._delete_analysis, state=tk.DISABLED)
+        self.delete_button.pack(side=tk.LEFT, padx=5)
 
-        # --- Close Button ---
-        close_button_frame = ttk.Frame(self.main_frame) # Separate frame for close button
-        close_button_frame.pack(fill=tk.X, pady=(10,0))
-        ttk.Button(close_button_frame, text="Cerrar", command=self._on_close).pack(side=tk.RIGHT)
+        ttk.Button(bottom_action_frame, text="Cerrar", command=self._on_close).pack(side=tk.RIGHT, padx=5)
 
     def _confirm_delete_all_continuous_analyses(self):
         """Muestra confirmación y luego elimina todos los análisis continuos."""
