@@ -1483,31 +1483,45 @@ class AnalysisService:
 
     def delete_discrete_summary_table(self, table_path_str: str):
         """
-        Elimina un archivo de tabla de resumen discreto específico.
+        Elimina un archivo de tabla de resumen discreto específico (.xlsx) y su
+        correspondiente archivo .csv interno si existe.
 
-        :param table_path_str: Ruta completa (string) del archivo CSV a eliminar.
-        :raises FileNotFoundError: Si el archivo no existe.
-        :raises ValueError: Si la ruta no es un archivo.
+        :param table_path_str: Ruta completa (string) del archivo .xlsx a eliminar.
+        :raises FileNotFoundError: Si el archivo .xlsx no existe.
+        :raises ValueError: Si la ruta no es un archivo o no es .xlsx.
         :raises OSError: Si ocurre un error al eliminar.
         """
-        table_path = Path(table_path_str)
-        if not table_path.exists():
-            raise FileNotFoundError(f"El archivo de tabla no existe: "
-                                    f"{table_path}")
-        if not table_path.is_file():
-            raise ValueError(f"La ruta no es un archivo: {table_path}")
-        if not table_path.name.endswith('.csv'):
-            raise ValueError(f"El archivo no parece ser una tabla CSV: "
-                             f"{table_path}")
+        xlsx_path = Path(table_path_str)
+        if not xlsx_path.exists():
+            raise FileNotFoundError(f"El archivo de tabla .xlsx no existe: {xlsx_path}")
+        if not xlsx_path.is_file():
+            raise ValueError(f"La ruta no es un archivo: {xlsx_path}")
+        if xlsx_path.suffix.lower() != '.xlsx':
+            raise ValueError(f"El archivo no parece ser una tabla .xlsx: {xlsx_path}")
 
         try:
-            table_path.unlink()
-            logger.info(f"Tabla de resumen discreto eliminada: {table_path}")
+            # Eliminar el archivo .xlsx
+            xlsx_path.unlink()
+            logger.info(f"Tabla de resumen .xlsx eliminada: {xlsx_path}")
+
+            # Intentar eliminar el archivo .csv correspondiente
+            csv_path = xlsx_path.with_suffix('.csv')
+            if csv_path.exists() and csv_path.is_file():
+                try:
+                    csv_path.unlink()
+                    logger.info(f"Tabla interna .csv correspondiente eliminada: {csv_path}")
+                except OSError as e_csv:
+                    logger.warning(f"No se pudo eliminar el archivo .csv interno {csv_path}: {e_csv}", exc_info=True)
+            else:
+                logger.debug(f"No se encontró archivo .csv interno correspondiente para {xlsx_path.name} en {csv_path.parent}, o no es un archivo.")
+
             # Opcional: Limpiar directorios vacíos (Tipo de Dato, etc.)
-            # Requeriría lógica adicional para verificar si están vacíos.
+            # Esta lógica podría ser más compleja si se quiere asegurar que solo se borren
+            # carpetas relacionadas con "Analisis Discreto/Tablas".
+            # Por ahora, se omite para mantener el foco en la eliminación de archivos.
+
         except OSError as e:
-            logger.error(f"Error al eliminar la tabla {table_path}: {e}",
-                         exc_info=True)
+            logger.error(f"Error al eliminar la tabla {xlsx_path}: {e}", exc_info=True)
             raise
 
     def _extract_stats_from_processed_file(self, file_path: Path, calculation: str) -> list | None:
