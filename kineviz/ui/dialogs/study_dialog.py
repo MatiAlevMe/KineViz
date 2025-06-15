@@ -125,7 +125,8 @@ class StudyDialog(Toplevel):
         iv_title_frame = ttk.Frame(main_frame)
         iv_title_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", padx=5, pady=(10,0)) # pady top only
         
-        ttk.Label(iv_title_frame, text="Variable(s) Independientes (VIs)", font=('Helvetica', 10, 'bold')).pack(side=tk.LEFT, anchor="w")
+        # Use default TLabelframe.Label style for this title, which is scaled
+        ttk.Label(iv_title_frame, text="Variable(s) Independientes (VIs)", style="TLabelframe.Label").pack(side=tk.LEFT, anchor="w")
         ttk.Button(iv_title_frame, text="?", width=3, style="Help.TButton",
                    command=lambda: self._show_input_help("Ayuda: Variables Independientes (VIs)",
                                                          ("Las VIs definen las condiciones o factores que varían en su estudio.\n"

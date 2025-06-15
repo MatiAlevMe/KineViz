@@ -127,23 +127,24 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.filter_vi1_frame.grid_remove() # Hide VI1 frame initially
         self.filter_vi2_frame.grid_remove() # Hide VI2 frame initially
 
-        # Filter Action Buttons
-        filter_action_frame = ttk.Frame(search_filter_frame)
-        filter_action_frame.grid(row=3, column=2, columnspan=4, sticky="e", padx=5, pady=5) # Adjusted row
-        ttk.Button(filter_action_frame, text="Aplicar Filtros", command=self._apply_filters_and_search).pack(side=tk.LEFT, padx=5)
-        ttk.Button(filter_action_frame, text="Limpiar Filtros", command=self._clear_filters).pack(side=tk.LEFT, padx=(0,5))
-        ttk.Button(filter_action_frame, text="Refrescar Lista", command=self.load_analyses).pack(side=tk.LEFT, padx=5)
+        # Filter Action Buttons (moved to a new row)
+        filter_action_buttons_frame = ttk.Frame(search_filter_frame)
+        filter_action_buttons_frame.grid(row=6, column=0, columnspan=3, sticky="ew", pady=(5,0)) # New row for these buttons
+        ttk.Button(filter_action_buttons_frame, text="Aplicar Filtros", command=self._apply_filters_and_search).pack(side=tk.LEFT, padx=5)
+        ttk.Button(filter_action_buttons_frame, text="Limpiar Filtros", command=self._clear_filters).pack(side=tk.LEFT, padx=(0,5))
+        ttk.Button(filter_action_buttons_frame, text="Refrescar Lista", command=self.load_analyses).pack(side=tk.LEFT, padx=5)
 
 
         # --- Acciones (Nuevo Análisis) ---
         new_analysis_frame = ttk.Frame(self.main_frame)
         new_analysis_frame.grid(row=1, column=0, sticky="ew", pady=(5, 10))
         ttk.Button(new_analysis_frame, text="Nuevo Análisis...",
-                   command=self.open_new_analysis_dialog).pack(side=tk.LEFT, padx=0) # No padx needed if it's the only button on left
+                   command=self.open_new_analysis_dialog).pack(side=tk.LEFT, padx=0)
+        # Label "Análisis Guardados" will be part of the Treeview's LabelFrame
 
         # --- Lista de Análisis (Treeview) ---
-        tree_frame = ttk.LabelFrame(self.main_frame, text="Análisis Guardados")
-        tree_frame.grid(row=2, column=0, sticky="nsew") # Adjusted row
+        tree_frame = ttk.LabelFrame(self.main_frame, text="Análisis Guardados") # Text is fine here
+        tree_frame.grid(row=2, column=0, sticky="nsew")
         tree_frame.rowconfigure(0, weight=1)
         tree_frame.columnconfigure(0, weight=1)
 
@@ -186,34 +187,37 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.analysis_tree.bind("<<TreeviewSelect>>", self._on_selection_changed) # Bind selection event
         self.analysis_tree.bind("<Double-1>", lambda e: self.view_analysis_plot()) # Double click to view plot
 
-        # --- Botones de Acción para Selección ---
-        selection_action_frame = ttk.Frame(self.main_frame)
-        selection_action_frame.grid(row=3, column=0, sticky="ew", pady=(10,0))
+        # --- Action Buttons Frame (View actions) ---
+        view_action_frame = ttk.Frame(self.main_frame)
+        view_action_frame.grid(row=3, column=0, sticky="ew", pady=(10,0))
 
-        self.view_plot_button = ttk.Button(selection_action_frame, text="Ver/Abrir Gráfico", command=self.view_analysis_plot, state=tk.DISABLED)
+        self.view_plot_button = ttk.Button(view_action_frame, text="Ver/Abrir Gráfico", command=self.view_analysis_plot, state=tk.DISABLED)
         self.view_plot_button.pack(side=tk.LEFT, padx=5)
-
-        self.view_config_button = ttk.Button(selection_action_frame, text="Ver Configuración", command=self._view_config, state=tk.DISABLED)
-        self.view_config_button.pack(side=tk.LEFT, padx=5)
         
-        self.view_interactive_button = ttk.Button(selection_action_frame, text="Ver Gráfico Interactivo", command=self.view_interactive_plot, state=tk.DISABLED)
+        self.view_interactive_button = ttk.Button(view_action_frame, text="Ver Gráfico Interactivo", command=self.view_interactive_plot, state=tk.DISABLED)
         self.view_interactive_button.pack(side=tk.LEFT, padx=5)
 
-        self.open_folder_button = ttk.Button(selection_action_frame, text="Abrir Carpeta", command=self.open_analysis_folder, state=tk.DISABLED)
+        self.view_config_button = ttk.Button(view_action_frame, text="Ver Configuración", command=self._view_config, state=tk.DISABLED)
+        self.view_config_button.pack(side=tk.LEFT, padx=5)
+
+        # --- Action Buttons Frame (Folder actions) ---
+        folder_action_frame = ttk.Frame(self.main_frame)
+        folder_action_frame.grid(row=4, column=0, sticky="ew", pady=(5,0))
+
+        self.open_folder_button = ttk.Button(folder_action_frame, text="Abrir Carpeta de Análisis", command=self.open_analysis_folder, state=tk.DISABLED)
         self.open_folder_button.pack(side=tk.LEFT, padx=5)
 
         self.open_main_discrete_folder_button = ttk.Button(
-            selection_action_frame,
-            text="Abrir Carpeta de Análisis Discretos",
+            folder_action_frame,
+            text="Abrir Carpeta Principal de Análisis Discretos", # Slightly more descriptive
             command=self._open_main_discrete_analyses_folder
         )
         self.open_main_discrete_folder_button.pack(side=tk.LEFT, padx=5)
 
-        # Los botones de eliminar se moverán a un frame inferior.
 
         # --- Bottom Action Frame (Delete and Close buttons) ---
         bottom_action_frame = ttk.Frame(self.main_frame)
-        bottom_action_frame.grid(row=4, column=0, sticky="ew", pady=(10, 0)) # Adjusted row
+        bottom_action_frame.grid(row=5, column=0, sticky="ew", pady=(10, 0)) # Adjusted row
 
         self.delete_all_button = ttk.Button(
             bottom_action_frame,
