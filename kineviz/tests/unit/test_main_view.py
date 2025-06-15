@@ -22,7 +22,8 @@ class TestMainView(unittest.TestCase):
         self.mock_main_window.root = self.root
         self.mock_main_window.study_service = MagicMock(spec=StudyService)
         self.mock_main_window.settings = MagicMock(spec=AppSettings)
-        self.mock_main_window.settings.studies_per_page = 10 # Example value
+        # self.mock_main_window.settings.studies_per_page = 10 # This was for AppSettings mock
+        self.mock_main_window.estudios_por_pagina = 10 # Set directly on mock_main_window
         self.mock_main_window.style = ttk.Style() # Real style object for Danger.TButton
 
         # Mock methods that MainView might call on MainWindow
