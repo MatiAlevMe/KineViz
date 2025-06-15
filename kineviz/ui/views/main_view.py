@@ -83,11 +83,17 @@ class MainView:
         self.tree.column('Eliminar', width=80, anchor='center', stretch=tk.NO)
 
         # Scrollbar vertical
-        scrollbar = ttk.Scrollbar(table_frame, orient=tk.VERTICAL, command=self.tree.yview)
-        self.tree.configure(yscrollcommand=scrollbar.set)
+        v_scrollbar = ttk.Scrollbar(table_frame, orient=tk.VERTICAL, command=self.tree.yview)
+        self.tree.configure(yscrollcommand=v_scrollbar.set)
+
+        # Scrollbar horizontal
+        h_scrollbar = ttk.Scrollbar(table_frame, orient=tk.HORIZONTAL, command=self.tree.xview)
+        self.tree.configure(xscrollcommand=h_scrollbar.set)
 
         self.tree.grid(row=0, column=0, sticky='nsew')
-        scrollbar.grid(row=0, column=1, sticky='ns')
+        v_scrollbar.grid(row=0, column=1, sticky='ns')
+        h_scrollbar.grid(row=1, column=0, sticky='ew') # Grid the horizontal scrollbar
+
         table_frame.grid_rowconfigure(0, weight=1)
         table_frame.grid_columnconfigure(0, weight=1)
 
