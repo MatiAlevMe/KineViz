@@ -667,15 +667,15 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
     def _on_selection_changed(self, event=None):
         """Actualiza el estado de los botones de acción basado en la selección."""
-        selected_info = self.get_selected_analysis_info()
-        can_act = selected_info is not None
+        selected_info_list = self.get_selected_analyses_info() # Corrected method name
+        can_act_single = len(selected_info_list) == 1
+        can_act_multiple = len(selected_info_list) > 0
         
-        self.view_plot_button.config(state=tk.NORMAL if can_act and selected_info.get("plot_path") else tk.DISABLED)
-        self.view_config_button.config(state=tk.NORMAL if can_act and len(self.analysis_tree.selection()) == 1 and selected_info and selected_info[0].get("config") else tk.DISABLED)
-        self.view_interactive_button.config(state=tk.NORMAL if can_act and len(self.analysis_tree.selection()) == 1 and selected_info and selected_info[0].get("interactive_plot_path") else tk.DISABLED)
-        self.open_folder_button.config(state=tk.NORMAL if can_act and len(self.analysis_tree.selection()) == 1 and selected_info and selected_info[0].get("path") else tk.DISABLED)
-        # self.delete_button.config(state=tk.NORMAL if can_act else tk.DISABLED) # Botón individual eliminado
-        self.delete_selected_button.config(state=tk.NORMAL if can_act else tk.DISABLED)
+        self.view_plot_button.config(state=tk.NORMAL if can_act_single and selected_info_list[0].get("plot_path") else tk.DISABLED)
+        self.view_config_button.config(state=tk.NORMAL if can_act_single and selected_info_list[0].get("config") else tk.DISABLED)
+        self.view_interactive_button.config(state=tk.NORMAL if can_act_single and selected_info_list[0].get("interactive_plot_path") else tk.DISABLED)
+        self.open_folder_button.config(state=tk.NORMAL if can_act_single and selected_info_list[0].get("path") else tk.DISABLED)
+        self.delete_selected_button.config(state=tk.NORMAL if can_act_multiple else tk.DISABLED)
 
 
     def get_selected_analyses_info(self) -> list[dict]:
@@ -966,14 +966,10 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
             return
 
         num_selected = len(selected_analyses_info)
-        analysis_names = [info.get('name', 'Desconocido') for info in selected_analyses_info]
+        # analysis_names = [info.get('name', 'Desconocido') for info in selected_analyses_info] # No longer needed for message
         
-        confirm_message = (f"¿Está seguro de que desea eliminar los {num_selected} análisis seleccionados?\n\n"
-                           f"- {analysis_names[0]}" + (f" y {num_selected-1} más" if num_selected > 1 else "") +
-                           "\n\nEsta acción es IRREVERSIBLE.")
-        if num_selected > 3: # Si son muchos, no listar todos
-            confirm_message = (f"¿Está seguro de que desea eliminar los {num_selected} análisis seleccionados?\n"
-                               "Esta acción es IRREVERSIBLE.")
+        confirm_message = (f"¿Está seguro de que desea eliminar los {num_selected} análisis seleccionados?\n"
+                           "Esta acción es IRREVERSIBLE.")
 
 
         if messagebox.askyesno("Confirmar Eliminación Múltiple", confirm_message, icon='warning', parent=self):
