@@ -191,8 +191,7 @@ class StudyDialog(Toplevel):
 
         # Botón de Ayuda (?)
         # Usar un estilo para el color o configurar directamente
-        style = ttk.Style()
-        style.configure("Help.TButton", foreground="white", background="blue") # Ejemplo de estilo
+        # El estilo "Help.TButton" ahora se define globalmente en MainWindow
         help_button = ttk.Button(button_frame, text="?", width=3, style="Help.TButton", command=self.show_iv_help)
         help_button.pack(side=tk.LEFT, padx=(0, 10)) # A la izquierda de Cancelar
 
