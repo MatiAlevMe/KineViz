@@ -37,11 +37,18 @@ class StudyRepository:
                     cantidad_intentos_prueba INTEGER NOT NULL,
                     independent_variables TEXT, -- Almacenará JSON con estructura de VIs y Sub-valores
                     aliases TEXT, -- Almacenará JSON con mapeo descriptor -> alias para este estudio
-                    is_pinned INTEGER DEFAULT 0 NOT NULL -- 0 for not pinned, 1 for pinned
+                    is_pinned INTEGER DEFAULT 0 NOT NULL, -- 0 for not pinned, 1 for pinned
+                    comentario TEXT -- Comentario para el estudio, max 150 caracteres
                 )
             ''')
             # --- Migración Simple ---
             # Intentar añadir las nuevas columnas si no existen
+            try:
+                cursor.execute("ALTER TABLE estudios ADD COLUMN comentario TEXT")
+                logger.info("Columna 'comentario' añadida a la tabla 'estudios'.")
+            except sqlite3.OperationalError as e:
+                if "duplicate column name" in str(e): pass # Columna ya existe
+                else: raise
             try:
                 cursor.execute("ALTER TABLE estudios ADD COLUMN independent_variables TEXT")
                 logger.info("Columna 'independent_variables' añadida a la tabla 'estudios'.")
@@ -93,15 +100,16 @@ class StudyRepository:
             try:
                 cursor.execute('''
                     INSERT INTO estudios
-                    (nombre_estudio, num_sujetos, cantidad_intentos_prueba, independent_variables, aliases, is_pinned)
-                    VALUES (?, ?, ?, ?, ?, ?)
+                    (nombre_estudio, num_sujetos, cantidad_intentos_prueba, independent_variables, aliases, is_pinned, comentario)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
                 ''', (
                     study_data['name'],
                     int(study_data['num_subjects']),
                     int(study_data['attempts_count']),
                     study_data.get('independent_variables', '[]'), # Guardar JSON string
                     study_data.get('aliases', '{}'), # Guardar JSON string
-                    study_data.get('is_pinned', 0) # Default to not pinned
+                    study_data.get('is_pinned', 0), # Default to not pinned
+                    study_data.get('comentario', None) # Comentario opcional
                 ))
                 conn.commit()
                 study_id = cursor.lastrowid
@@ -155,7 +163,7 @@ class StudyRepository:
             # Seleccionar las columnas nuevas
             cursor.execute('''
                 SELECT id_estudio, nombre_estudio, num_sujetos, cantidad_intentos_prueba,
-                       independent_variables, aliases, is_pinned
+                       independent_variables, aliases, is_pinned, comentario
                 FROM estudios WHERE id_estudio = ?
             ''', (study_id,))
             row = cursor.fetchone()
@@ -171,7 +179,8 @@ class StudyRepository:
                 'attempts_count': row['cantidad_intentos_prueba'],
                 'independent_variables': row['independent_variables'], # Devolver como string JSON
                 'aliases': row['aliases'], # Devolver como string JSON
-                'is_pinned': row['is_pinned']
+                'is_pinned': row['is_pinned'],
+                'comentario': row['comentario'] # Devolver comentario
             }
 
     def delete_study(self, study_id):
@@ -294,14 +303,16 @@ class StudyRepository:
                         num_sujetos = ?,
                         cantidad_intentos_prueba = ?,
                         independent_variables = ?,
-                        aliases = ?
+                        aliases = ?,
+                        comentario = ?
                     WHERE id_estudio = ?
                 ''', (
                     study_data['name'],
                     int(study_data['num_subjects']),
                     int(study_data['attempts_count']),
-                    study_data.get('independent_variables', '[]'), # Guardar JSON string
-                    study_data.get('aliases', '{}'), # Guardar JSON string
+                    study_data.get('independent_variables', '[]'),
+                    study_data.get('aliases', '{}'),
+                    study_data.get('comentario', None), # Actualizar comentario
                     study_id
                 ))
                 conn.commit()
@@ -381,3 +392,29 @@ class StudyRepository:
         except sqlite3.Error as e:
             logger.error(f"Error al contar estudios pineados: {e}", exc_info=True)
             return 0
+
+    def update_study_comment(self, study_id: int, comment: str | None):
+        """
+        Actualiza solo el comentario de un estudio específico.
+
+        :param study_id: ID del estudio a actualizar.
+        :param comment: Nuevo comentario (puede ser None).
+        :raises ValueError: Si el estudio no se encuentra.
+        :raises sqlite3.Error: Para otros errores de base de datos.
+        """
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    UPDATE estudios
+                    SET comentario = ?
+                    WHERE id_estudio = ?
+                ''', (comment, study_id))
+                conn.commit()
+                if cursor.rowcount == 0:
+                    logger.warning(f"Intento de actualizar comentario para estudio ID {study_id} fallido (no encontrado).")
+                    raise ValueError(f"No se encontró estudio con ID {study_id} para actualizar comentario.")
+                logger.info(f"Comentario para estudio ID {study_id} actualizado.")
+        except sqlite3.Error as e:
+            logger.error(f"Error de DB al actualizar comentario para estudio ID {study_id}: {e}", exc_info=True)
+            raise
