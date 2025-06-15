@@ -37,6 +37,9 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         # Filter related StringVars
         self.search_term_var = tk.StringVar()
         self.filter_vi_count_var = tk.StringVar(value="No filtrar")
+        self.current_page = 1 # For pagination
+        self.total_pages = 1  # For pagination
+        self.items_per_page = parent.main_window.settings.analysis_items_per_page # Get from settings
         self.filter_vi1_name_var = tk.StringVar()
         self.filter_vi1_desc_var = tk.StringVar()
         self.filter_vi2_name_var = tk.StringVar()
@@ -147,15 +150,13 @@ class ContinuousAnalysisManagerDialog(Toplevel):
 
 
         # --- Header and New Analysis Button ---
-        list_header_frame = ttk.Frame(self.main_frame)
-        list_header_frame.grid(row=1, column=0, sticky="ew", pady=(5,10)) # Changed to grid
-        ttk.Button(list_header_frame, text="Nuevo Análisis...", command=self._open_new_analysis_dialog).pack(side=tk.LEFT, padx=(0,10)) # Moved to left, text changed
-        ttk.Label(list_header_frame, text="Análisis Guardados", style="TLabelframe.Label").pack(side=tk.LEFT) # Text changed, style applied
+        # list_header_frame no longer needed here as "Nuevo Análisis..." button moved
+        # and "Análisis Guardados" is now the LabelFrame title.
 
 
         # --- Treeview for listing analyses ---
-        tree_frame = ttk.LabelFrame(self.main_frame, text="") # LabelFrame without text, text is above
-        tree_frame.grid(row=2, column=0, sticky="nsew", pady=(0,10)) # Changed to grid, sticky nsew
+        tree_frame = ttk.LabelFrame(self.main_frame, text="Análisis Guardados") # Text is now the title of the LabelFrame
+        tree_frame.grid(row=1, column=0, sticky="nsew", pady=(0,10)) # Adjusted row to 1, sticky nsew
         tree_frame.columnconfigure(0, weight=1) # Allow tree to expand horizontally
         tree_frame.rowconfigure(0, weight=1)    # Allow tree to expand vertically
 
@@ -194,6 +195,11 @@ class ContinuousAnalysisManagerDialog(Toplevel):
 
         self.view_config_button = ttk.Button(view_action_frame, text="Ver Configuración", command=self._view_config, state=tk.DISABLED)
         self.view_config_button.pack(side=tk.LEFT, padx=5)
+        
+        # Spacer to push "Nuevo Análisis..." to the right
+        ttk.Frame(view_action_frame).pack(side=tk.LEFT, expand=True, fill=tk.X) 
+        ttk.Button(view_action_frame, text="Nuevo Análisis...", command=self._open_new_analysis_dialog).pack(side=tk.RIGHT, padx=5)
+
 
         # --- Action Buttons Frame (Folder actions) ---
         folder_action_frame = ttk.Frame(self.main_frame)
@@ -210,9 +216,13 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         self.open_main_continuous_folder_button.pack(side=tk.LEFT, padx=5)
 
 
+        # --- Pagination Controls ---
+        self.pagination_controls_frame = ttk.Frame(self.main_frame)
+        self.pagination_controls_frame.grid(row=6, column=0, sticky="ew", pady=(5,0)) # New row for pagination
+
         # --- Bottom Action Frame (Delete and Close buttons) ---
         bottom_action_frame = ttk.Frame(self.main_frame)
-        bottom_action_frame.grid(row=5, column=0, sticky="ew", pady=(10,0)) # Changed to grid
+        bottom_action_frame.grid(row=7, column=0, sticky="ew", pady=(10,0)) # Adjusted row
 
         self.delete_all_button = ttk.Button(
             bottom_action_frame,
@@ -476,8 +486,20 @@ class ContinuousAnalysisManagerDialog(Toplevel):
     def _populate_treeview(self, analyses_to_display):
         for item in self.tree.get_children():
             self.tree.delete(item)
+
+        # Pagination logic
+        start_index = (self.current_page - 1) * self.items_per_page
+        end_index = start_index + self.items_per_page
+        paginated_analyses = analyses_to_display[start_index:end_index]
+
+        if not paginated_analyses and analyses_to_display: # If current page is empty but there is data
+            # This can happen if filters reduce items such that current_page is too high
+            self.current_page = max(1, self.total_pages) # Go to last valid page or 1
+            start_index = (self.current_page - 1) * self.items_per_page
+            end_index = start_index + self.items_per_page
+            paginated_analyses = analyses_to_display[start_index:end_index]
         
-        for analysis_info in analyses_to_display:
+        for analysis_info in paginated_analyses:
             name = analysis_info.get('name', 'N/A')
             config = analysis_info.get('config', {})
             column = config.get('column', 'N/A')
@@ -511,6 +533,7 @@ class ContinuousAnalysisManagerDialog(Toplevel):
 
             self.tree.insert("", tk.END, values=(name, column, groups_str, date_str), iid=final_iid)
         
+        self._update_pagination_controls(len(analyses_to_display))
         self._on_analysis_selected() # Update button states
 
     def load_analyses(self):
@@ -533,6 +556,7 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         self.filter_variable_combo['values'] = ["Todos"] + variables
         
         self._apply_filters_and_search() # Populate tree with (initially unfiltered) data
+        self._update_pagination_controls(len(self.all_analyses_data)) # Initial pagination setup
 
 
     def get_selected_analyses_info(self) -> list[dict]:
@@ -1050,6 +1074,39 @@ class ContinuousAnalysisManagerDialog(Toplevel):
 
     def _on_close(self, event=None):
         self.destroy()
+
+    def _update_pagination_controls(self, total_items_in_filter):
+        """Actualiza los controles de paginación."""
+        for widget in self.pagination_controls_frame.winfo_children():
+            widget.destroy()
+
+        self.total_pages = (total_items_in_filter // self.items_per_page) + \
+                           (1 if total_items_in_filter % self.items_per_page else 0)
+        self.total_pages = max(1, self.total_pages)
+
+        if self.total_pages <= 1:
+            return # No mostrar controles si hay 1 página o menos
+
+        ttk.Button(self.pagination_controls_frame, text="<<", command=lambda: self._go_to_page(1),
+                   state=tk.DISABLED if self.current_page == 1 else tk.NORMAL).pack(side=tk.LEFT, padx=2)
+        ttk.Button(self.pagination_controls_frame, text="<", command=lambda: self._go_to_page(self.current_page - 1),
+                   state=tk.DISABLED if self.current_page == 1 else tk.NORMAL).pack(side=tk.LEFT, padx=2)
+
+        ttk.Label(self.pagination_controls_frame, text=f"Página {self.current_page} de {self.total_pages}").pack(side=tk.LEFT, padx=5)
+
+        ttk.Button(self.pagination_controls_frame, text=">", command=lambda: self._go_to_page(self.current_page + 1),
+                   state=tk.DISABLED if self.current_page == self.total_pages else tk.NORMAL).pack(side=tk.LEFT, padx=2)
+        ttk.Button(self.pagination_controls_frame, text=">>", command=lambda: self._go_to_page(self.total_pages),
+                   state=tk.DISABLED if self.current_page == self.total_pages else tk.NORMAL).pack(side=tk.LEFT, padx=2)
+
+    def _go_to_page(self, page_number):
+        """Navega a una página específica y repopula el treeview."""
+        if 1 <= page_number <= self.total_pages:
+            self.current_page = page_number
+            self._apply_filters_and_search() # This will repopulate based on current filters and new page
+        else:
+            logger.warning(f"Intento de ir a página inválida {page_number} (Total: {self.total_pages})")
+
 
 # Dummy main for testing
 if __name__ == '__main__':
