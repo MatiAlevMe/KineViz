@@ -202,6 +202,13 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.open_folder_button = ttk.Button(selection_action_frame, text="Abrir Carpeta", command=self.open_analysis_folder, state=tk.DISABLED)
         self.open_folder_button.pack(side=tk.LEFT, padx=5)
 
+        self.open_main_discrete_folder_button = ttk.Button(
+            selection_action_frame,
+            text="Abrir Carpeta Principal de Análisis Discretos",
+            command=self._open_main_discrete_analyses_folder
+        )
+        self.open_main_discrete_folder_button.pack(side=tk.LEFT, padx=5)
+
         # Los botones de eliminar se moverán a un frame inferior.
 
         # --- Bottom Action Frame (Delete and Close buttons) ---
@@ -1020,8 +1027,48 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
         try:
             logger.info(f"Intentando abrir carpeta: {analysis_dir}")
-            if sys.platform == "win32":
-                os.startfile(analysis_dir)
+            # Access main_window through parent (DiscreteAnalysisView)
+            if hasattr(self.parent, 'main_window') and hasattr(self.parent.main_window, 'open_folder'):
+                self.parent.main_window.open_folder(str(analysis_dir))
+            else: # Fallback if direct open_folder is not available
+                logger.warning("Fallback: self.parent.main_window.open_folder no disponible, usando os.startfile/open.")
+                if sys.platform == "win32":
+                    os.startfile(analysis_dir)
+                elif sys.platform == "darwin":  # macOS
+                    subprocess.run(["open", analysis_dir], check=True)
+                else:  # linux variants
+                    subprocess.run(["xdg-open", analysis_dir], check=True)
+        except Exception as e:
+            logger.error(f"Error abriendo carpeta para {analysis_info['name']}: "
+                         f"{e}", exc_info=True)
+            messagebox.showerror("Error al Abrir",
+                                   f"No se pudo abrir la carpeta:\n{e}",
+                                   parent=self)
+
+    def _open_main_discrete_analyses_folder(self):
+        """Abre la carpeta principal de todos los análisis discretos para el estudio."""
+        try:
+            # _get_individual_analysis_base_dir returns .../Analisis Discreto/Graficos
+            base_dir = self.analysis_service._get_individual_analysis_base_dir(self.study_id)
+            if base_dir and base_dir.exists():
+                if hasattr(self.parent, 'main_window') and hasattr(self.parent.main_window, 'open_folder'):
+                    self.parent.main_window.open_folder(str(base_dir))
+                else:
+                    logger.warning("Fallback: self.parent.main_window.open_folder no disponible para carpeta principal, usando os.startfile/open.")
+                    if sys.platform == "win32": os.startfile(base_dir)
+                    elif sys.platform == "darwin": subprocess.run(["open", base_dir], check=True)
+                    else: subprocess.run(["xdg-open", base_dir], check=True)
+            elif base_dir:
+                 messagebox.showinfo("Información", f"La carpeta principal de análisis discretos ({base_dir.name}) aún no ha sido creada o no contiene análisis.", parent=self)
+            else:
+                messagebox.showerror("Error", "No se pudo determinar la ruta de la carpeta principal de análisis discretos.", parent=self)
+        except Exception as e:
+            logger.error(f"Error al intentar abrir carpeta principal de análisis discretos para estudio {self.study_id}: {e}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudo abrir la carpeta principal de análisis discretos:\n{e}", parent=self)
+
+
+# Para pruebas rápidas
+if __name__ == '__main__':
             elif sys.platform == "darwin":  # macOS
                 subprocess.run(["open", analysis_dir], check=True)
             else:  # linux variants

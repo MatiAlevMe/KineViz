@@ -194,6 +194,14 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         self.open_folder_button = ttk.Button(action_frame, text="Abrir Carpeta", command=self._open_folder, state=tk.DISABLED)
         self.open_folder_button.pack(side=tk.LEFT, padx=5)
 
+        self.open_main_continuous_folder_button = ttk.Button(
+            action_frame,
+            text="Abrir Carpeta Principal de Análisis Continuos",
+            command=self._open_main_continuous_analyses_folder
+        )
+        self.open_main_continuous_folder_button.pack(side=tk.LEFT, padx=5)
+
+
         # Los botones de eliminar se moverán a un frame inferior.
 
         # --- Bottom Action Frame (Delete and Close buttons) ---
@@ -1012,6 +1020,27 @@ class ContinuousAnalysisManagerDialog(Toplevel):
             self.load_analyses()
 
     # _delete_analysis (singular) is removed.
+
+    def _open_main_continuous_analyses_folder(self):
+        """Abre la carpeta principal de todos los análisis continuos para el estudio."""
+        try:
+            # _get_continuous_analysis_base_dir returns .../Analisis Continuo
+            base_dir = self.analysis_service._get_continuous_analysis_base_dir(self.study_id)
+            if base_dir and base_dir.exists():
+                if hasattr(self.main_window, 'open_folder') and callable(self.main_window.open_folder):
+                    self.main_window.open_folder(str(base_dir))
+                else: # Fallback if main_window.open_folder is not available
+                    logger.warning("Fallback: self.main_window.open_folder no disponible para carpeta principal, usando os.startfile/open.")
+                    if sys.platform == "win32": os.startfile(base_dir)
+                    elif sys.platform == "darwin": subprocess.run(["open", base_dir], check=True)
+                    else: subprocess.run(["xdg-open", base_dir], check=True)
+            elif base_dir:
+                 messagebox.showinfo("Información", f"La carpeta principal de análisis continuos ({base_dir.name}) aún no ha sido creada o no contiene análisis.", parent=self)
+            else:
+                messagebox.showerror("Error", "No se pudo determinar la ruta de la carpeta principal de análisis continuos.", parent=self)
+        except Exception as e:
+            logger.error(f"Error al intentar abrir carpeta principal de análisis continuos para estudio {self.study_id}: {e}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudo abrir la carpeta principal de análisis continuos:\n{e}", parent=self)
 
     def _on_close(self, event=None):
         self.destroy()
