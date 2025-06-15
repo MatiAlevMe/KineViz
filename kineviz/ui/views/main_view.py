@@ -40,7 +40,7 @@ class MainView:
         action_button_frame = ttk.Frame(header_frame)
         action_button_frame.pack(side=tk.RIGHT)
 
-        ttk.Button(action_button_frame, text='Manual', command=self.main_window.open_user_manual).pack(side=tk.RIGHT, padx=5)
+        ttk.Button(action_button_frame, text='Manual', command=self.main_window.open_user_manual, style="Green.TButton").pack(side=tk.RIGHT, padx=5)
         ttk.Button(action_button_frame, text='Configuración', command=self.main_window.show_config_dialog).pack(side=tk.RIGHT, padx=5) # Placeholder
         ttk.Button(action_button_frame, text='Ayuda', command=self.main_window.show_welcome_message).pack(side=tk.RIGHT, padx=5)
         ttk.Button(action_button_frame, text='Abrir Carpeta Estudios',
@@ -64,7 +64,7 @@ class MainView:
         table_frame.pack(fill=tk.BOTH, expand=True)
 
         columns = ('Pin', 'Nombre', 'Comentar', 'Ver', 'Editar', 'Eliminar') # Añadir 'Comentar'
-        self.tree = ttk.Treeview(table_frame, columns=columns, show='headings', style='Treeview')
+        self.tree = ttk.Treeview(table_frame, columns=columns, show='headings', style='Treeview', selectmode="extended")
 
         # Configurar cabeceras
         self.tree.heading('Pin', text='Pin', anchor='center')
@@ -92,7 +92,8 @@ class MainView:
         table_frame.grid_columnconfigure(0, weight=1)
 
         # Evento de clic en la tabla
-        self.tree.bind('<ButtonRelease-1>', self.on_tree_click)
+        self.tree.bind('<ButtonRelease-1>', self.on_tree_click) # Para acciones de celda
+        self.tree.bind('<<TreeviewSelect>>', self._on_selection_change) # Para estado de botón
 
         # --- Paginación ---
         self.pagination_frame = ttk.Frame(self.frame)
@@ -106,8 +107,16 @@ class MainView:
         # Botón Eliminar Todos los Estudios (a la izquierda)
         delete_all_button = ttk.Button(bottom_buttons_frame, text='Eliminar Todos los Estudios',
                                        command=self._confirm_delete_all_studies, style="Danger.TButton")
-        delete_all_button.pack(side=tk.LEFT, padx=(0, 10))
+        delete_all_button.pack(side=tk.LEFT, padx=(0, 5)) # Ajustar padding
+
+        # Botón Eliminar Seleccionado(s)
+        self.delete_selected_button = ttk.Button(bottom_buttons_frame, text='Eliminar Seleccionado(s)',
+                                                 command=self._confirm_delete_selected_studies, style="Danger.TButton", state=tk.DISABLED)
+        self.delete_selected_button.pack(side=tk.LEFT, padx=(0, 10))
+
+
         # Configurar estilo para el botón de peligro (opcional, si no existe se usará TButton normal)
+        # Esto ya se hace en MainWindow, pero lo dejamos por si acaso o para especificidad.
         try:
             self.main_window.style.configure("Danger.TButton", foreground="white", background="red")
         except tk.TclError: # Si el estilo ya existe o hay otro problema
@@ -116,9 +125,41 @@ class MainView:
 
         # Botón Crear Nuevo Estudio (a la derecha)
         create_study_button = ttk.Button(bottom_buttons_frame, text='Crear Nuevo Estudio',
-                                         command=lambda: self.main_window.show_create_study_dialog(study_to_edit=None))
+                                         command=lambda: self.main_window.show_create_study_dialog(study_to_edit=None), style="Celeste.TButton")
         create_study_button.pack(side=tk.RIGHT)
 
+
+    def _confirm_delete_selected_studies(self):
+        """Muestra confirmación y luego elimina los estudios seleccionados."""
+        selected_items = self.tree.selection()
+        if not selected_items:
+            messagebox.showwarning("Sin Selección", "No hay estudios seleccionados para eliminar.", parent=self.root)
+            return
+
+        if messagebox.askyesno("Confirmar Eliminación",
+                               f"¿Está seguro de que desea eliminar los {len(selected_items)} estudios seleccionados?\n"
+                               "Esta acción también eliminará sus carpetas y todos los archivos asociados.",
+                               icon='warning', parent=self.root):
+            study_ids_to_delete = []
+            for item_id in selected_items:
+                item_tags = self.tree.item(item_id, "tags")
+                if item_tags:
+                    study_ids_to_delete.append(int(item_tags[0]))
+            
+            if not study_ids_to_delete:
+                messagebox.showerror("Error", "No se pudieron obtener los IDs de los estudios seleccionados.", parent=self.root)
+                return
+
+            try:
+                # Asumiendo que study_service tendrá un método para eliminar múltiples estudios
+                self.study_service.delete_studies_by_ids(study_ids_to_delete)
+                messagebox.showinfo("Éxito", f"{len(study_ids_to_delete)} estudio(s) eliminado(s) correctamente.", parent=self.root)
+                self.load_studies() # Recargar la lista
+                if not self.study_service.has_studies():
+                    self.main_window.show_landing_page()
+            except Exception as e:
+                logger.error(f"Error al eliminar estudios seleccionados: {e}", exc_info=True)
+                messagebox.showerror("Error al Eliminar", f"No se pudieron eliminar los estudios seleccionados:\n{e}", parent=self.root)
 
     def _confirm_delete_all_studies(self):
         """
@@ -232,7 +273,8 @@ class MainView:
             "- Destacar hasta 5 estudios usando el icono '📌' para que aparezcan siempre al inicio de la lista.\n"
             "- Navegar entre páginas de estudios si hay muchos.\n"
             "- Crear un nuevo estudio usando el botón 'Crear Nuevo Estudio'.\n"
-            "- Eliminar TODOS los estudios existentes usando el botón 'Eliminar Todos los Estudios' (¡con precaución!)."
+            "- Eliminar TODOS los estudios existentes usando el botón 'Eliminar Todos los Estudios'.\n"
+            "- Eliminar estudios SELECCIONADOS usando el botón 'Eliminar Seleccionado(s)' (¡con precaución!)."
         )
         messagebox.showinfo(help_title, help_message, parent=self.root)
 
@@ -248,15 +290,29 @@ class MainView:
         """Filtra los estudios basados en el término de búsqueda."""
         self.current_page = 1 # Resetear a la primera página al buscar
         self.load_studies()
+        self._on_selection_change() # Actualizar estado del botón
 
     def clear_search(self):
         """Limpia el campo de búsqueda y recarga todos los estudios."""
         self.search_term.set("")
         self.current_page = 1
         self.load_studies()
+        self._on_selection_change() # Actualizar estado del botón
+
+    def _on_selection_change(self, event=None):
+        """Actualiza el estado del botón 'Eliminar Seleccionado(s)'."""
+        if self.tree.selection():
+            self.delete_selected_button.config(state=tk.NORMAL)
+        else:
+            self.delete_selected_button.config(state=tk.DISABLED)
 
     def on_tree_click(self, event):
         """Maneja los clics en la tabla de estudios."""
+        # Si hay múltiples selecciones, no procesar clics de celda individuales
+        # para evitar acciones conflictivas.
+        if len(self.tree.selection()) > 1:
+            return
+
         region = self.tree.identify("region", event.x, event.y)
         if region != "cell":
             return
