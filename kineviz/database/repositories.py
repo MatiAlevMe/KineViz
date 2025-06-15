@@ -36,7 +36,8 @@ class StudyRepository:
                     num_sujetos INTEGER NOT NULL,
                     cantidad_intentos_prueba INTEGER NOT NULL,
                     independent_variables TEXT, -- Almacenará JSON con estructura de VIs y Sub-valores
-                    aliases TEXT -- Almacenará JSON con mapeo descriptor -> alias para este estudio
+                    aliases TEXT, -- Almacenará JSON con mapeo descriptor -> alias para este estudio
+                    is_pinned INTEGER DEFAULT 0 NOT NULL -- 0 for not pinned, 1 for pinned
                 )
             ''')
             # --- Migración Simple ---
@@ -52,6 +53,12 @@ class StudyRepository:
                 logger.info("Columna 'aliases' añadida a la tabla 'estudios'.")
             except sqlite3.OperationalError as e:
                 if "duplicate column name" in str(e): pass
+                else: raise
+            try:
+                cursor.execute("ALTER TABLE estudios ADD COLUMN is_pinned INTEGER DEFAULT 0 NOT NULL")
+                logger.info("Columna 'is_pinned' añadida a la tabla 'estudios'.")
+            except sqlite3.OperationalError as e:
+                if "duplicate column name" in str(e): pass # Columna ya existe
                 else: raise
 
             # Intentar eliminar las columnas antiguas si existen (ignorar errores)
@@ -86,14 +93,15 @@ class StudyRepository:
             try:
                 cursor.execute('''
                     INSERT INTO estudios
-                    (nombre_estudio, num_sujetos, cantidad_intentos_prueba, independent_variables, aliases)
-                    VALUES (?, ?, ?, ?, ?)
+                    (nombre_estudio, num_sujetos, cantidad_intentos_prueba, independent_variables, aliases, is_pinned)
+                    VALUES (?, ?, ?, ?, ?, ?)
                 ''', (
                     study_data['name'],
                     int(study_data['num_subjects']),
                     int(study_data['attempts_count']),
                     study_data.get('independent_variables', '[]'), # Guardar JSON string
-                    study_data.get('aliases', '{}') # Guardar JSON string
+                    study_data.get('aliases', '{}'), # Guardar JSON string
+                    study_data.get('is_pinned', 0) # Default to not pinned
                 ))
                 conn.commit()
                 study_id = cursor.lastrowid
@@ -127,9 +135,10 @@ class StudyRepository:
         """
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
-            cursor.execute('SELECT id_estudio, nombre_estudio FROM estudios')
+            # Order by is_pinned descending, then by name ascending
+            cursor.execute('SELECT id_estudio, nombre_estudio, is_pinned FROM estudios ORDER BY is_pinned DESC, nombre_estudio COLLATE NOCASE ASC')
             return [
-                {'id': row[0], 'name': row[1]} 
+                {'id': row[0], 'name': row[1], 'is_pinned': row[2]}
                 for row in cursor.fetchall()
             ]
     
@@ -146,7 +155,7 @@ class StudyRepository:
             # Seleccionar las columnas nuevas
             cursor.execute('''
                 SELECT id_estudio, nombre_estudio, num_sujetos, cantidad_intentos_prueba,
-                       independent_variables, aliases
+                       independent_variables, aliases, is_pinned
                 FROM estudios WHERE id_estudio = ?
             ''', (study_id,))
             row = cursor.fetchone()
@@ -161,7 +170,8 @@ class StudyRepository:
                 'num_subjects': row['num_sujetos'],
                 'attempts_count': row['cantidad_intentos_prueba'],
                 'independent_variables': row['independent_variables'], # Devolver como string JSON
-                'aliases': row['aliases'] # Devolver como string JSON
+                'aliases': row['aliases'], # Devolver como string JSON
+                'is_pinned': row['is_pinned']
             }
 
     def delete_study(self, study_id):
@@ -227,16 +237,17 @@ class StudyRepository:
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
-                query = 'SELECT id_estudio, nombre_estudio FROM estudios'
+                query = 'SELECT id_estudio, nombre_estudio, is_pinned FROM estudios'
                 params = []
                 if search_term:
                     query += ' WHERE nombre_estudio LIKE ?'
                     params.append(f'%{search_term}%')
-                query += ' ORDER BY nombre_estudio COLLATE NOCASE ASC LIMIT ? OFFSET ?'
+                # Order by is_pinned descending, then by name ascending
+                query += ' ORDER BY is_pinned DESC, nombre_estudio COLLATE NOCASE ASC LIMIT ? OFFSET ?'
                 params.extend([limit, offset])
 
                 cursor.execute(query, params)
-                return [{'id': row[0], 'name': row[1]} for row in cursor.fetchall()]
+                return [{'id': row[0], 'name': row[1], 'is_pinned': row[2]} for row in cursor.fetchall()]
         except sqlite3.Error as e:
             logger.error(f"Error al obtener estudios paginados: {e}", exc_info=True)
             return []
@@ -270,10 +281,13 @@ class StudyRepository:
 
         :param study_id: ID del estudio a actualizar.
         :param study_data: Diccionario con los nuevos datos.
+                           El campo 'is_pinned' no se actualiza aquí, usar update_study_pin_status.
         """
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
+                # is_pinned no se actualiza a través de este método general.
+                # Se maneja con update_study_pin_status.
                 cursor.execute('''
                     UPDATE estudios
                     SET nombre_estudio = ?,
@@ -327,3 +341,43 @@ class StudyRepository:
              logger.warning(f"Carpeta original '{old_name}' no encontrada para renombrar.")
              # Crear la nueva carpeta si no existe la original? Depende del flujo deseado.
              # new_path.mkdir(parents=True, exist_ok=True)
+
+    def update_study_pin_status(self, study_id: int, is_pinned: bool):
+        """
+        Actualiza el estado de 'pinned' de un estudio.
+
+        :param study_id: ID del estudio a actualizar.
+        :param is_pinned: True si el estudio debe ser pineado, False en caso contrario.
+        """
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    UPDATE estudios
+                    SET is_pinned = ?
+                    WHERE id_estudio = ?
+                ''', (1 if is_pinned else 0, study_id))
+                conn.commit()
+                if cursor.rowcount == 0:
+                    logger.warning(f"Intento de actualizar pin para estudio ID {study_id} fallido (no encontrado).")
+                    raise ValueError(f"No se encontró estudio con ID {study_id} para actualizar pin.")
+                logger.info(f"Estado de pin para estudio ID {study_id} actualizado a {is_pinned}.")
+        except sqlite3.Error as e:
+            logger.error(f"Error de DB al actualizar pin para estudio ID {study_id}: {e}", exc_info=True)
+            raise
+
+    def count_pinned_studies(self) -> int:
+        """
+        Cuenta el número total de estudios pineados.
+
+        :return: Número de estudios pineados.
+        """
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute('SELECT COUNT(*) FROM estudios WHERE is_pinned = 1')
+                count = cursor.fetchone()[0]
+                return count
+        except sqlite3.Error as e:
+            logger.error(f"Error al contar estudios pineados: {e}", exc_info=True)
+            return 0
