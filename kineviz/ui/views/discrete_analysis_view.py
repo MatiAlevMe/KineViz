@@ -91,7 +91,7 @@ class DiscreteAnalysisView(ttk.Frame):
 
         ttk.Button(
             action_frame, text="Gestor de Análisis Discretos", # Texto del botón cambiado
-            command=self.open_individual_analysis_manager
+            command=self.open_individual_analysis_manager, style="Green.TButton"
         ).pack(side=tk.LEFT, padx=5)
 
         # TODO: Añadir botón "Reporte General" (Fase 6)

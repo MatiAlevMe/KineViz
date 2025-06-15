@@ -85,6 +85,9 @@ class MainWindow:
         self.style.configure('TLabelframe.Label', font=('Helvetica', 12, 'bold')) # Estilo para títulos de LabelFrame
         self.style.configure('Treeview.Heading', font=('Helvetica', 10, 'bold')) # Estilo para cabeceras de Treeview
         self.style.configure("Help.TButton", foreground="white", background="blue") # Estilo para botones de ayuda
+        self.style.configure("Danger.TButton", foreground="white", background="red") # Asegurar que Danger exista
+        self.style.configure("Green.TButton", foreground="white", background="green")
+        self.style.configure("Celeste.TButton", foreground="black", background="#AFEEEE") # Light pale turquoise
         # Añadir más configuraciones de estilo según sea necesario
 
     def clear_window(self):

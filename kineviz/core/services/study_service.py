@@ -177,6 +177,32 @@ class StudyService:
         """
         self.repo.delete_study(study_id)
 
+    def delete_studies_by_ids(self, study_ids: list[int]):
+        """
+        Elimina múltiples estudios por sus IDs.
+        Itera y llama a delete_study para cada uno para asegurar que la lógica de
+        eliminación de carpetas también se ejecute.
+
+        :param study_ids: Lista de IDs de estudios a eliminar.
+        :raises Exception: Si ocurre un error durante la eliminación de alguno de los estudios.
+        """
+        if not study_ids:
+            return
+
+        errors = []
+        for study_id in study_ids:
+            try:
+                self.delete_study(study_id) # Esto ya maneja la eliminación de carpetas
+                logger.info(f"Estudio ID {study_id} eliminado como parte de una operación masiva.")
+            except Exception as e:
+                logger.error(f"Error eliminando estudio ID {study_id} en operación masiva: {e}", exc_info=True)
+                errors.append(f"Error eliminando estudio ID {study_id}: {e}")
+        
+        if errors:
+            # Podríamos acumular errores y lanzar una excepción agregada o solo loguear.
+            # Por ahora, lanzamos una excepción general si hubo algún error.
+            raise Exception("Ocurrieron errores durante la eliminación masiva de estudios:\n" + "\n".join(errors))
+
     def has_studies(self):
         """
         Verifica si existe al menos un estudio en la base de datos.
