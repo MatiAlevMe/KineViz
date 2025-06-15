@@ -62,19 +62,21 @@ class MainView:
         table_frame = ttk.Frame(self.frame)
         table_frame.pack(fill=tk.BOTH, expand=True)
 
-        columns = ('Pin', 'Nombre', 'Ver', 'Editar', 'Eliminar') # Añadir 'Pin'
+        columns = ('Pin', 'Nombre', 'Comentar', 'Ver', 'Editar', 'Eliminar') # Añadir 'Comentar'
         self.tree = ttk.Treeview(table_frame, columns=columns, show='headings', style='Treeview')
 
         # Configurar cabeceras
-        self.tree.heading('Pin', text='Pin', anchor='center') # Cabecera para Pin
+        self.tree.heading('Pin', text='Pin', anchor='center')
         self.tree.heading('Nombre', text='Nombre del Estudio')
+        self.tree.heading('Comentar', text='Comentar', anchor='center') # Cabecera para Comentar
         self.tree.heading('Ver', text='Ver', anchor='center')
         self.tree.heading('Editar', text='Editar', anchor='center')
         self.tree.heading('Eliminar', text='Eliminar', anchor='center')
 
         # Configurar ancho de columnas (ajustar según necesidad)
-        self.tree.column('Pin', width=50, anchor='center', stretch=tk.NO) # Ancho para Pin
-        self.tree.column('Nombre', width=350, stretch=tk.YES) # Ajustar ancho de Nombre
+        self.tree.column('Pin', width=50, anchor='center', stretch=tk.NO)
+        self.tree.column('Nombre', width=300, stretch=tk.YES) # Ajustar ancho de Nombre
+        self.tree.column('Comentar', width=90, anchor='center', stretch=tk.NO) # Ancho para Comentar
         self.tree.column('Ver', width=80, anchor='center', stretch=tk.NO)
         self.tree.column('Editar', width=80, anchor='center', stretch=tk.NO)
         self.tree.column('Eliminar', width=80, anchor='center', stretch=tk.NO)
@@ -134,9 +136,10 @@ class MainView:
                 self.tree.insert('', tk.END, values=(
                     pin_char,
                     study['name'],
-                    'Ver',      # Texto para el botón
-                    'Editar',   # Texto para el botón
-                    'Eliminar'  # Texto para el botón
+                    'Comentar', # Texto para el botón Comentar
+                    'Ver',      # Texto para el botón Ver
+                    'Editar',   # Texto para el botón Editar
+                    'Eliminar'  # Texto para el botón Eliminar
                 ), tags=(str(study['id']), study['name'], str(study.get('is_pinned', 0)))) # Guardar ID, nombre y estado de pin
 
             self.update_pagination_controls()
@@ -196,6 +199,7 @@ class MainView:
             "Esta ventana muestra una lista de todos los estudios creados.\n\n"
             "Funcionalidades:\n"
             "- Buscar estudios por su nombre.\n"
+            "- Añadir/editar un comentario para un estudio haciendo clic en 'Comentar'.\n"
             "- Ver detalles de un estudio haciendo clic en 'Ver'.\n"
             "- Editar un estudio haciendo clic en 'Editar'.\n"
             "- Eliminar un estudio haciendo clic en 'Eliminar'.\n"
@@ -249,17 +253,19 @@ class MainView:
         if column_index == 0: # Columna "Pin"
             logger.debug(f"Acción 'Pin' para estudio ID {study_id}")
             self.toggle_pin_study(study_id)
-        elif column_index == 1: # Columna "Nombre" - sin acción directa, pero podría tenerla
-            pass # O podrías querer abrir el estudio, similar a "Ver"
-        elif column_index == 2: # Columna "Ver"
+        elif column_index == 1: # Columna "Nombre" - sin acción directa
+            pass
+        elif column_index == 2: # Columna "Comentar"
+            logger.debug(f"Acción 'Comentar' para estudio ID {study_id}")
+            self.main_window.show_comment_dialog(study_id, study_name)
+        elif column_index == 3: # Columna "Ver"
             logger.debug(f"Acción 'Ver' para estudio ID {study_id}")
             self.main_window.show_study_view(study_id)
-        elif column_index == 3: # Columna "Editar"
+        elif column_index == 4: # Columna "Editar"
             logger.debug(f"Acción 'Editar' para estudio ID {study_id}")
-            # Pasar el diccionario del estudio para precargar el diálogo
-            study_details = {'id': study_id, 'name': study_name} # Info mínima necesaria
+            study_details = {'id': study_id, 'name': study_name}
             self.main_window.show_create_study_dialog(study_to_edit=study_details)
-        elif column_index == 4: # Columna "Eliminar"
+        elif column_index == 5: # Columna "Eliminar"
             logger.debug(f"Acción 'Eliminar' para estudio ID {study_id}")
             self.delete_study(study_id, study_name)
 

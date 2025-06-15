@@ -18,6 +18,7 @@ from kineviz.ui.dialogs.config_dialog import ConfigDialog
 # ContinuousAnalysisConfigDialog is now opened by ContinuousAnalysisManagerDialog
 # from kineviz.ui.dialogs.continuous_analysis_config_dialog import ContinuousAnalysisConfigDialog 
 from kineviz.ui.dialogs.continuous_analysis_manager_dialog import ContinuousAnalysisManagerDialog # Import new manager dialog
+from kineviz.ui.dialogs.comment_dialog import CommentDialog # Importar CommentDialog
 from kineviz.ui.views.discrete_analysis_view import DiscreteAnalysisView
 # ContinuousAnalysisView will be removed
 # from kineviz.ui.views.continuous_analysis_view import ContinuousAnalysisView 
@@ -144,6 +145,16 @@ class MainWindow:
         # y aceptar un callback
         # Pasar el callback como argumento nombrado
         StudyDialog(self.root, self.study_service, study_to_edit=study_to_edit, on_save_callback=self.refresh_main_view)
+
+    def show_comment_dialog(self, study_id: int, study_name: str):
+        """Muestra el diálogo para añadir/editar un comentario de estudio."""
+        try:
+            current_comment = self.study_service.get_study_comment(study_id)
+            CommentDialog(self.root, study_id, study_name, current_comment, self.study_service, on_save_callback=self.refresh_main_view)
+        except Exception as e:
+            logger.error(f"Error al preparar diálogo de comentario para estudio {study_id}: {e}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudo abrir el diálogo de comentarios:\n{e}", parent=self.root)
+
 
     def show_analysis_dialog(self, study_id: int):
         """Muestra el diálogo para realizar análisis en un estudio."""

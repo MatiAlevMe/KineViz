@@ -35,6 +35,9 @@ class StudyService:
             alias_data = study_data.get('aliases', {})
             data_for_repo['aliases'] = json.dumps(alias_data) if isinstance(alias_data, dict) else '{}'
 
+            # Comentario se pasa tal cual (ya es string o None)
+            data_for_repo['comentario'] = study_data.get('comentario', None)
+
         except (json.JSONDecodeError, TypeError) as e: # Capturar TypeError también
             logger.error(f"Error convirtiendo datos a JSON para nuevo estudio '{study_data.get('name', 'N/A')}': {e}", exc_info=True)
             raise ValueError(f"Error interno al procesar datos del estudio (JSON): {e}")
@@ -111,6 +114,9 @@ class StudyService:
                 logger.error(f"Error parseando JSON 'aliases' para estudio {study_id}: {e_al}. Usando dict vacío.", exc_info=True)
                 study_details['aliases'] = {}
 
+            # Comentario ya es string o None desde el repo
+            # study_details['comentario'] = study_details.get('comentario') # No es necesario, ya está
+
             # Convertir la fila (Row object) a un diccionario estándar antes de devolver
             return dict(study_details)
 
@@ -119,6 +125,49 @@ class StudyService:
         except Exception as e:
             logger.error(f"Error inesperado obteniendo detalles estudio {study_id}: {e}", exc_info=True)
             raise # Relanzar otros errores
+
+    def get_study_comment(self, study_id: int) -> str | None:
+        """
+        Obtiene el comentario de un estudio específico.
+
+        :param study_id: ID del estudio.
+        :return: El comentario como string, o None si no existe o hay error.
+        """
+        try:
+            study_details = self.get_study_details(study_id) # Lanza ValueError si no existe
+            return study_details.get('comentario')
+        except ValueError: # Estudio no encontrado
+            logger.warning(f"Estudio {study_id} no encontrado al obtener comentario.")
+            return None
+        except Exception as e: # Otros errores inesperados
+            logger.error(f"Error inesperado obteniendo comentario para estudio {study_id}: {e}", exc_info=True)
+            return None
+
+    def update_study_comment(self, study_id: int, comment: str | None):
+        """
+        Actualiza solo el comentario de un estudio específico.
+        Valida la longitud del comentario (máximo 150 caracteres).
+
+        :param study_id: ID del estudio.
+        :param comment: Nuevo comentario (string o None).
+        :raises ValueError: Si el comentario excede los 150 caracteres,
+                           o si el estudio no se encuentra.
+        :raises Exception: Para otros errores de base de datos.
+        """
+        if comment is not None and len(comment) > 150:
+            raise ValueError("El comentario no puede exceder los 150 caracteres.")
+
+        try:
+            # Validar que el estudio exista primero (get_study_by_id lo hace)
+            self.repo.get_study_by_id(study_id)
+            self.repo.update_study_comment(study_id, comment)
+            logger.info(f"Comentario actualizado para estudio {study_id}.")
+        except ValueError as ve: # Capturar error de estudio no encontrado
+            logger.error(f"Error al actualizar comentario para estudio {study_id}: {ve}", exc_info=True)
+            raise
+        except Exception as e: # Otros errores inesperados
+            logger.error(f"Error inesperado actualizando comentario para estudio {study_id}: {e}", exc_info=True)
+            raise
 
     def delete_study(self, study_id):
         """
@@ -187,6 +236,14 @@ class StudyService:
             # Convertir Aliases a JSON string. Asumir dict vacío si no existe o no es dict.
             alias_data = study_data.get('aliases', {})
             data_for_repo['aliases'] = json.dumps(alias_data) if isinstance(alias_data, dict) else '{}'
+
+            # Comentario se pasa tal cual (ya es string o None)
+            # Validar longitud del comentario si se está actualizando aquí
+            comment_data = study_data.get('comentario', None)
+            if comment_data is not None and len(comment_data) > 150:
+                raise ValueError("El comentario no puede exceder los 150 caracteres.")
+            data_for_repo['comentario'] = comment_data
+
 
         except (json.JSONDecodeError, TypeError) as e:
             logger.error(f"Error convirtiendo datos a JSON para actualizar estudio {study_id}: {e}", exc_info=True)
