@@ -270,33 +270,33 @@ Ventana de estudio, ventana de estudio especifico, ventana de tablas de analisis
 "paciente" a "participante", "Paciente" a "Participante"
 "pacientes" a "participantes", "Pacientes" a "Participantes"
 "sujeto de prueba" a "participante", "Sujetos de Prueba" a "Participantes"
-2. [Pendiente] Implementar "Full Two-Way ANOVA"
+2. [Omitido] Implementar "Full Two-Way ANOVA"
 Full Two-Way ANOVA: The current "2VIs" mode performs comparisons within a level of a fixed VI (simple main effects). A full two-way ANOVA (e.g., spm1d.stats.anova2 or spm1d.stats.anova2rm for repeated measures) would assess:
-2.1 [Pendiente] Main effect of VI1 (e.g., "Edad")
-2.2 [Pendiente] Main effect of VI2 (e.g., "Peso")
-2.3 [Pendiente] Interaction effect (VI1 x VI2) This would require a different UI setup (selecting both VIs and all their relevant levels) and significant changes in AnalysisService to  structure data for spm1d.stats.anova2 and interpret its multi-faceted results.
-2.4 [Pendiente] Post-hoc tests for ANOVA: If an ANOVA (either 1-way in 1VI mode or the simple main effect ANOVA in 2VI mode) is significant, post-hoc tests would be needed to determine which specific groups differ. spm1d offers functions for this (e.g., spm1d.stats.posthoc.ttest_paired, spm1d.stats.posthoc.anova1_ttest_paired).
-2.5 [Pendiente] Visualizations for 2VI: Specific plots for interactions (if a 2-way ANOVA was implemented) or more complex comparative plots for the "slicing" approach might be beneficial.
-3. [Pendiente] Funcionalidad Extra para Eliminar:
-3.1 [Pendiente] Botón para eliminar todos los archivos dentro de un estudio.
-3.2 [Pendiente] Botón para eliminar todas las pruebas para el analisis discreto y el analisis continuo.
-3.3 [Pendiente] Botón "Eliminación Masiva" para seleccionar los archivos que se deseen eliminar. Tanto en la ventana de estudio como en la ventana de pruebas de analisis discreto y pruebas analisis continuo.
-4. [Pendiente] Agregar las Siguiente Reglas a la Eliminación de Archivos Individuales o Eliminación Masiva:
-"Si no hay archivos o carpetas dentro del estudio elimina los archivos  carpetas locales dentro de ese estudio (sin incluir el propio estudio padre)"
+2.1 [Omitido] Main effect of VI1 (e.g., "Edad")
+2.2 [Omitido] Main effect of VI2 (e.g., "Peso")
+2.3 [Omitido] Interaction effect (VI1 x VI2) This would require a different UI setup (selecting both VIs and all their relevant levels) and significant changes in AnalysisService to  structure data for spm1d.stats.anova2 and interpret its multi-faceted results.
+2.4 [Omitido] Post-hoc tests for ANOVA: If an ANOVA (either 1-way in 1VI mode or the simple main effect ANOVA in 2VI mode) is significant, post-hoc tests would be needed to determine which specific groups differ. spm1d offers functions for this (e.g., spm1d.stats.posthoc.ttest_paired, spm1d.stats.posthoc.anova1_ttest_paired).
+2.5 [Omitido] Visualizations for 2VI: Specific plots for interactions (if a 2-way ANOVA was implemented) or more complex comparative plots for the "slicing" approach might be beneficial.
+3. [Omitido] Funcionalidad Extra para Eliminar:
+3.1 [Omitido] Botón para eliminar todos los archivos dentro de un estudio.
+3.2 [Omitido] Botón para eliminar todas las pruebas para el analisis discreto y el analisis continuo.
+3.3 [Omitido] Botón "Eliminación Masiva" para seleccionar los archivos que se deseen eliminar. Tanto en la ventana de estudio como en la ventana de pruebas de analisis discreto y pruebas analisis continuo.
+4. [Omitido] Agregar las Siguiente Reglas a la Eliminación de Archivos Individuales o Eliminación Masiva:
+"Si no hay archivos o carpetas dentro del estudio elimina los archivos carpetas locales dentro de ese estudio (sin incluir el propio estudio padre)"
 "Si no hay archivos para un participante en particular, elimina la carpeta con el nombre del participante"
-5. [Pendiente] Agregar Botón para Refrescar Archivos en Todas las Tablas:
+5. [Omitido] Agregar Botón para Refrescar Archivos en Todas las Tablas:
 Este botón mostrara los nuevos archivos en caso de por ejemplo el usuario modifique los archivos locales.
-6. [Pendiente] Manejo de Floats al Procesar Archivos en un Estudio:
+6. [Omitido] Manejo de Floats al Procesar Archivos en un Estudio:
 Que exista la posibilidad de manejar situaciones donde los archivos de entrada esten en float como "Pte03 CMJ 03.txt: could not convert string to float: '5,47567'" en cuyo caso se debería poder convertir al valor convencional de "5.47567".
-7. [Pendiente] Opción para Destacar Estudios (Hasta 5) en la Ventana Principal
+7. [Hecho] Opción para Destacar Estudios (Hasta 5) en la Ventana Principal
 Cosa de que esos estudios se mantengan sobre todos los demas estudios.
 Con un botón de chincheta y se mantengan fijos sobre los demas estudios.
-8. [Pendiente] Opción para Comentar Estudios en la Ventana del Estudio Especifico (Maximo 150 caracteres)
+8. [Hecho] Opción para Comentar Estudios en la Ventana del Estudio Especifico (Maximo 150 caracteres)
 Para que el usuario tenga la opción de escribir algún detalle que estime conveniente sobre el estudio especifico.
 Este comentario de estudio podrá ser modificado también
 9. [Pendiente] Opciones de Accesibilidad en la Configuración del Software:
 Como aumentar el tamaño de las letras, y cambiar el tema de KineViz de blanco a oscuro.
-10.  [Omitido] Mejoras en la UI
+10. [Omitido] Mejoras en la UI
 
 ## [Pendiente] Fase 7: Pruebas, Documentación y Despliegue
 1. [Omitido] Análisis Discreto

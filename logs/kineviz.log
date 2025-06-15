@@ -40577,3 +40577,28 @@ Traceback (most recent call last):
     raise Exception(
 Exception: In order to reference traces by row and column, you must first use plotly.tools.make_subplots to create the figure with a subplot grid.
 2025-06-14 04:12:35,907 - WARNING - [kineviz.ui.dialogs.continuous_analysis_config_dialog] - Grupo duplicado 'Edad: Joven' detectado, se ignorará en la lista final de claves.
+2025-06-15 00:36:59,554 - CRITICAL - [__main__] - Error crítico no capturado en la aplicación.
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/app.py", line 25, in main
+    app = MainWindow(root)
+          ^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/main_window.py", line 62, in __init__
+    self.show_main_view() # Mostrar vista principal si hay estudios
+    ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/main_window.py", line 113, in show_main_view
+    self.current_view = MainView(self.root, self)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/views/main_view.py", line 16, in __init__
+    self.MAX_PINNED_STUDIES = self.study_service.MAX_PINNED_STUDIES # Acceder a la constante
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'StudyService' object has no attribute 'MAX_PINNED_STUDIES'
+2025-06-15 00:39:29,678 - WARNING - [kineviz.core.services.study_service] - No se puede pinear estudio 14. Límite de 5 alcanzado.
+2025-06-15 00:39:29,679 - ERROR - [kineviz.ui.views.main_view] - Error inesperado al cambiar pin para estudio 14: 'StudyService' object has no attribute 'MAX_PINNED_STUDIES'
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/views/main_view.py", line 251, in toggle_pin_study
+    f"No se pudo pinear el estudio. Ya hay {self.study_service.MAX_PINNED_STUDIES} estudios pineados.",
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'StudyService' object has no attribute 'MAX_PINNED_STUDIES'
+2025-06-15 00:42:45,380 - WARNING - [kineviz.core.services.study_service] - No se puede pinear estudio 31. Límite de 5 alcanzado.
+2025-06-15 00:42:49,734 - WARNING - [kineviz.core.services.study_service] - No se puede pinear estudio 31. Límite de 5 alcanzado.
+2025-06-15 00:43:03,715 - WARNING - [kineviz.core.services.study_service] - No se puede pinear estudio 21. Límite de 5 alcanzado.
