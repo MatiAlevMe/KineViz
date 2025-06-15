@@ -68,9 +68,13 @@ def get_font_object(base_size: int, scale_factor: float, weight: str = "normal",
     return tkFont.Font(family=family, size=size, weight=weight_str)
 
 
-def apply_theme_and_font(style: ttk.Style, theme_name: str, font_scale: float):
+def apply_theme_and_font(root: tk.Tk, style: ttk.Style, theme_name: str, font_scale: float):
     """
     Applies the selected theme and font scaling to the ttk.Style object.
+    :param root: The root tk.Tk window, needed for some global style settings like Combobox list.
+    :param style: The ttk.Style object.
+    :param theme_name: Name of the theme to apply ('Light', 'Dark').
+    :param font_scale: Font scaling factor.
     """
     colors = THEMES.get(theme_name, THEMES["Light"]) # Default to Light if theme_name is invalid
 
@@ -164,11 +168,18 @@ def apply_theme_and_font(style: ttk.Style, theme_name: str, font_scale: float):
         # To theme the dropdown list itself (usually handled by OS or needs Toplevel theming)
         # 'popdown.background': [('!disabled', colors['widget_bg'])], # This might not work directly
     )
-    # For Combobox dropdown list (might need specific handling per OS or a Toplevel)
-    # root.option_add('*TCombobox*Listbox.background', colors['widget_bg'])
-    # root.option_add('*TCombobox*Listbox.foreground', colors['widget_fg'])
-    # root.option_add('*TCombobox*Listbox.selectBackground', colors['select_bg'])
-    # root.option_add('*TCombobox*Listbox.selectForeground', colors['select_fg'])
+    # For Combobox dropdown list. These are global settings.
+    # It's important that these are applied after the theme_use, as some themes might override them.
+    # Also, these settings apply to *all* Listbox widgets used by Comboboxes.
+    try:
+        scaled_listbox_font = get_scaled_font(DEFAULT_FONT_SIZE, font_scale) # Use the same scaled font
+        root.option_add('*TCombobox*Listbox.font', scaled_listbox_font)
+        root.option_add('*TCombobox*Listbox.background', colors['widget_bg'])
+        root.option_add('*TCombobox*Listbox.foreground', colors['widget_fg'])
+        root.option_add('*TCombobox*Listbox.selectBackground', colors['select_bg'])
+        root.option_add('*TCombobox*Listbox.selectForeground', colors['select_fg'])
+    except Exception as e:
+        logger.warning(f"Could not apply global TCombobox Listbox styles: {e}")
 
 
     # --- Treeview Style ---
