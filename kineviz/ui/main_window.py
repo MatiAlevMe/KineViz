@@ -62,11 +62,43 @@ class MainWindow:
         # Esto ahora debería ser manejado por el StudyRepository en su __init__
         # self.setup_database() # Ya no es necesario llamar explícitamente aquí
 
+        # --- Crear Menú ---
+        self._create_menubar()
+
         # --- Decidir Vista Inicial (Adaptado de __init__) ---
         if self.study_service.has_studies(): # Necesita método has_studies en StudyService
              self.show_main_view() # Mostrar vista principal si hay estudios
         else:
              self.show_landing_page() # Mostrar landing page si no hay estudios
+
+    def _create_menubar(self):
+        """Crea la barra de menú principal de la aplicación."""
+        menubar = tk.Menu(self.root)
+
+        # --- Menú Archivo ---
+        file_menu = tk.Menu(menubar, tearoff=0)
+        file_menu.add_command(label="Configuración...", command=self.show_config_dialog)
+        file_menu.add_separator()
+        file_menu.add_command(label="Salir", command=self.root.quit)
+        menubar.add_cascade(label="Archivo", menu=file_menu)
+
+        # --- Menú Ayuda ---
+        help_menu = tk.Menu(menubar, tearoff=0)
+        help_menu.add_command(label="Manual de Usuario", command=self.open_user_manual)
+        help_menu.add_command(label="Acerca de...", command=self._show_about_dialog)
+        menubar.add_cascade(label="Ayuda", menu=help_menu)
+
+        self.root.config(menu=menubar)
+
+    def _show_about_dialog(self):
+        """Muestra un diálogo simple 'Acerca de...'."""
+        messagebox.showinfo(
+            "Acerca de KineViz",
+            "KineViz - Aplicación para Gestión y Análisis Kinesiológico\n\n"
+            "Versión: 0.1.0 (Desarrollo)\n" # Puedes actualizar esto según sea necesario
+            "Desarrollado por: [Tu Nombre/Organización Aquí]",
+            parent=self.root
+        )
 
     def configure_styles(self):
         """Configura estilos globales para la aplicación."""
