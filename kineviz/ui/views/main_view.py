@@ -3,6 +3,7 @@ from tkinter import ttk, messagebox
 import os # Necesario para verificar existencia de carpetas
 import logging # Importar logging
 from pathlib import Path # Importar Path
+from kineviz.core.services.study_service import MAX_PINNED_STUDIES # Importar la constante
 
 logger = logging.getLogger(__name__) # Logger para este módulo
 
@@ -13,7 +14,7 @@ class MainView:
         self.main_window = main_window
         self.study_service = main_window.study_service
         # self.config = main_window.config # Ya no es necesario, se accede a través de main_window.settings o propiedades
-        self.MAX_PINNED_STUDIES = self.study_service.MAX_PINNED_STUDIES # Acceder a la constante
+        self.MAX_PINNED_STUDIES = MAX_PINNED_STUDIES # Usar la constante importada
 
         # Variables de estado
         self.current_page = 1
