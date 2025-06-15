@@ -1066,22 +1066,6 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
             logger.error(f"Error al intentar abrir carpeta principal de análisis discretos para estudio {self.study_id}: {e}", exc_info=True)
             messagebox.showerror("Error", f"No se pudo abrir la carpeta principal de análisis discretos:\n{e}", parent=self)
 
-
-# Para pruebas rápidas
-if __name__ == '__main__':
-            elif sys.platform == "darwin":  # macOS
-                subprocess.run(["open", analysis_dir], check=True)
-            else:  # linux variants
-                subprocess.run(["xdg-open", analysis_dir], check=True)
-        except Exception as e:
-            logger.error(f"Error abriendo carpeta para {analysis_info['name']}: "
-                         f"{e}", exc_info=True)
-            messagebox.showerror("Error al Abrir",
-                                   f"No se pudo abrir la carpeta:\n{e}",
-                                   parent=self)
-
-
-# Para pruebas rápidas
 if __name__ == '__main__':
     # Necesitamos Path para el dummy
     from pathlib import Path
