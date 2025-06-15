@@ -26,49 +26,44 @@ class StudyView:
         self.create_ui()
 
     def create_ui(self):
-        # --- Header ---
-        header_frame = ttk.Frame(self.frame)
-        header_frame.pack(fill=tk.X, pady=(0, 10)) # Añadir padding inferior
+        # --- Header Row 1 ---
+        header_frame_row1 = ttk.Frame(self.frame)
+        header_frame_row1.pack(fill=tk.X, pady=(0, 5))
 
-        # Botón Volver (podría ir a MainView si hay estudios, o LandingPage si no)
-        # Simplificado: siempre a main_view por ahora, refresh se encargará si no hay estudios
         back_command = self.main_window.show_main_view
-        # Opcional: decidir basado en si hay estudios (más complejo)
-        # back_command = self.main_window.show_main_view if self.main_window.study_service.has_studies() else self.main_window.show_landing_page
-        ttk.Button(header_frame, text="<< Volver a Estudios",
+        ttk.Button(header_frame_row1, text="<< Volver a Estudios",
                    command=back_command).pack(side=tk.LEFT, padx=(0, 10))
-
-        # Botón Agregar Archivos                                                                                                               
-        ttk.Button(header_frame, text="Agregar Archivo(s)",                                                                                      
+        
+        ttk.Button(header_frame_row1, text="Agregar Archivo(s)",                                                                                      
                    command=self.add_files_dialog, style="Celeste.TButton").pack(side=tk.LEFT, padx=(0, 10))
 
-        # Botón Abrir Carpeta Estudio (Movido desde interfaz.py)
-        ttk.Button(header_frame, text="Abrir Carpeta Estudio",
-                   command=self.open_study_folder).pack(side=tk.LEFT, padx=(0, 10))
-
-        # Botón Gestionar Alias
-        ttk.Button(header_frame, text="Gestionar Alias Sub-valores",
-                   command=self.manage_descriptor_aliases).pack(side=tk.LEFT, padx=(0, 10))
-
-        # Botón Análisis Discreto (Fase 6)
-        ttk.Button(header_frame, text="Análisis Discreto",
+        ttk.Button(header_frame_row1, text="Análisis Discreto",
                    command=lambda: self.main_window.show_discrete_analysis_view(self.study_id), style="Green.TButton").pack(side=tk.LEFT, padx=(0, 10))
 
-        # Botón Análisis Continuo (Fase 5)
-        ttk.Button(header_frame, text="Análisis Continuo",
+        ttk.Button(header_frame_row1, text="Análisis Continuo",
                    command=lambda: self.main_window.show_continuous_analysis_manager_dialog(self.study_id), style="Green.TButton").pack(side=tk.LEFT, padx=(0, 10))
 
-        # Botón Ayuda General (a la derecha)
-        style = ttk.Style() # Asegurar que style exista
-        style.configure("HelpView.TButton", foreground="white", background="green") # Estilo diferente para ayuda general
-        help_button_general = ttk.Button(header_frame, text="?", width=3, style="HelpView.TButton", command=self.show_study_view_help)
+        # Botón Ayuda General (a la derecha de la primera fila de header)
+        style = ttk.Style() 
+        style.configure("HelpView.TButton", foreground="white", background="green") 
+        help_button_general = ttk.Button(header_frame_row1, text="?", width=3, style="HelpView.TButton", command=self.show_study_view_help)
         help_button_general.pack(side=tk.RIGHT, padx=(10, 0))
+
+        # --- Header Row 2 ---
+        header_frame_row2 = ttk.Frame(self.frame)
+        header_frame_row2.pack(fill=tk.X, pady=(0, 10))
+
+        ttk.Button(header_frame_row2, text="Abrir Carpeta de Estudio", # Renamed
+                   command=self.open_study_folder).pack(side=tk.LEFT, padx=(0, 10))
+
+        ttk.Button(header_frame_row2, text="Gestionar Alias de Sub-valores", # Renamed
+                   command=self.manage_descriptor_aliases).pack(side=tk.LEFT, padx=(0, 10))
 
 
         # --- Detalles del estudio ---
         study_details = self.main_window.study_service.get_study_details(self.study_id)
         details_frame = ttk.LabelFrame(self.frame, text="Detalles del Estudio")
-        details_frame.pack(fill='x', padx=10, pady=10)
+        details_frame.pack(fill='x', padx=10, pady=10) # Keep pady for spacing from header_frame_row2
 
         # Corregido: Mostrar solo una vez el nombre
         ttk.Label(details_frame, text=f"Nombre del Estudio: {study_details.get('name', 'N/A')}").pack(anchor='w', padx=5, pady=2)
@@ -101,29 +96,22 @@ class StudyView:
         # Pasar la instancia de file_service y files_per_page desde main_window
         files_per_page = self.main_window.files_per_page # Obtener de main_window
         self.file_browser = FileBrowser(self.frame, self.file_service, self.study_id, files_per_page)
-        self.file_browser.pack(fill=tk.BOTH, expand=True, pady=(10, 0))
-        self.file_browser.bind("<<FileBrowserSelectionChanged>>", self._on_file_browser_selection_changed)
-
-
-        # Llamar a update_alias_display después de que todo esté creado
-        self.update_alias_display()
-
-        # --- Botón Eliminar Todos los Archivos ---
-        # Colocarlo después del FileBrowser y su paginación
+        # --- Botón Eliminar Todos los Archivos (y seleccionados) ---
+        # Empaquetar este frame al final (side=tk.BOTTOM) para que no sea empujado por FileBrowser
         delete_all_files_button_frame = ttk.Frame(self.frame)
-        delete_all_files_button_frame.pack(fill=tk.X, pady=(10, 0)) # Padding superior
+        delete_all_files_button_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(10, 0))
 
         delete_all_files_button = ttk.Button(
-            delete_all_files_button_frame,
+            delete_all_files_button_frame, # Parent is this new frame
             text="Eliminar Todos los Archivos del Estudio",
             command=self._confirm_delete_all_files,
-            style="Danger.TButton" # Usar estilo de peligro
+            style="Danger.TButton"
         )
-        delete_all_files_button.pack(side=tk.LEFT, padx=(0,5)) # Alinear a la izquierda
+        delete_all_files_button.pack(side=tk.LEFT, padx=(0,5))
 
         # Botón Eliminar Archivo(s) Seleccionado(s)
         self.delete_selected_files_button = ttk.Button(
-            delete_all_files_button_frame,
+            delete_all_files_button_frame, # Parent is this new frame
             text="Eliminar Archivo(s) Seleccionado(s)",
             command=self._confirm_delete_selected_files_from_browser,
             style="Danger.TButton",
@@ -131,8 +119,15 @@ class StudyView:
         )
         self.delete_selected_files_button.pack(side=tk.LEFT, padx=(0, 5))
 
-        # El estilo Danger.TButton se define en MainView, asumimos que está disponible
-        # o se puede definir globalmente en MainWindow si es necesario.
+        # FileBrowser se empaqueta después de los detalles y ANTES del frame de botones de eliminación
+        # para que los botones de eliminación queden fijos en la parte inferior.
+        files_per_page = self.main_window.files_per_page
+        self.file_browser = FileBrowser(self.frame, self.file_service, self.study_id, files_per_page)
+        self.file_browser.pack(fill=tk.BOTH, expand=True, pady=(10, 0)) # FileBrowser toma el espacio restante
+        self.file_browser.bind("<<FileBrowserSelectionChanged>>", self._on_file_browser_selection_changed)
+
+        # Llamar a update_alias_display después de que todo esté creado
+        self.update_alias_display()
 
     def _on_file_browser_selection_changed(self, event=None):
         """Actualiza el estado del botón 'Eliminar Archivo(s) Seleccionado(s)'."""

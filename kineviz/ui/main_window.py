@@ -42,7 +42,7 @@ class MainWindow:
         # Acceder a las configuraciones a través de las propiedades de AppSettings
         self.estudios_por_pagina = self.settings.studies_per_page
         self.files_per_page = self.settings.files_per_page
-        self.pdfs_per_page = self.settings.pdfs_per_page
+        self.analysis_items_per_page = self.settings.analysis_items_per_page # Renamed
         self.font_scale = self.settings.font_scale
         self.app_theme = self.settings.theme
         # Ya no necesitamos el objeto self.config ni el bloque try/except aquí
@@ -265,7 +265,7 @@ class MainWindow:
          # Solo actualizar las variables de MainWindow si es necesario.
          self.estudios_por_pagina = self.settings.studies_per_page
          self.files_per_page = self.settings.files_per_page
-         self.pdfs_per_page = self.settings.pdfs_per_page
+         self.analysis_items_per_page = self.settings.analysis_items_per_page # Renamed
          self.font_scale = self.settings.font_scale
          self.app_theme = self.settings.theme
          

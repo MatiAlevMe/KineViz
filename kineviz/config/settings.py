@@ -28,12 +28,12 @@ class AppSettings:
 
     DEFAULT_SETTINGS = {
         'SETTINGS': {
-            'estudios_por_pagina': '20',
+            'estudios_por_pagina': '10', # Changed default
             'files_per_page': '10',
-            'pdfs_per_page': '10',
-            'discrete_tables_per_page': '15', # Añadir valor por defecto
-            'font_scale': '1.0',  # Default font scale
-            'theme': 'Light'      # Default theme: Light or Dark
+            'analysis_items_per_page': '10', # Renamed from pdfs_per_page and changed default
+            'discrete_tables_per_page': '10', # Changed default
+            'font_scale': '1.0',
+            'theme': 'Light'
         }
         # DESCRIPTOR_ALIASES ya no se gestiona aquí
     }
@@ -155,12 +155,12 @@ class AppSettings:
         self.set_setting('files_per_page', str(value))
 
     @property
-    def pdfs_per_page(self) -> int:
-        return self.get_int_setting('pdfs_per_page', 10)
+    def analysis_items_per_page(self) -> int: # Renamed from pdfs_per_page
+        return self.get_int_setting('analysis_items_per_page', 10) # Renamed key
 
-    @pdfs_per_page.setter
-    def pdfs_per_page(self, value: int):
-        self.set_setting('pdfs_per_page', str(value))
+    @analysis_items_per_page.setter
+    def analysis_items_per_page(self, value: int): # Renamed from pdfs_per_page
+        self.set_setting('analysis_items_per_page', str(value)) # Renamed key
 
     @property
     def discrete_tables_per_page(self) -> int:
