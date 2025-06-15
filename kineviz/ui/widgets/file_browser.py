@@ -81,6 +81,12 @@ class FileBrowser(ttk.Frame):
         self.tree.grid(row=0, column=0, sticky='nsew')
         scrollbar.grid(row=0, column=1, sticky='ns')
 
+        # Scrollbar horizontal
+        h_scrollbar = ttk.Scrollbar(table_container, orient=tk.HORIZONTAL, command=self.tree.xview)
+        self.tree.configure(xscrollcommand=h_scrollbar.set)
+        h_scrollbar.grid(row=1, column=0, sticky='ew')
+
+
         # Configurar eventos
         self.tree.bind('<ButtonRelease-1>', self.on_tree_click)
         self.tree.bind('<<TreeviewSelect>>', self._on_fb_selection_change)
