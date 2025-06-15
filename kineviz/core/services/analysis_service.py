@@ -1717,10 +1717,10 @@ class AnalysisService:
                             output_csv_internal_path = output_base_dir / f"{calc}_{target_frequency}_{safe_group_key_part}.csv"
                             df_csv_internal.to_csv(output_csv_internal_path, sep=',', decimal='.',
                                                    encoding='utf-8', header=True, index=True)
-                            results['success'].append(str(output_csv_internal_path))
+                            # results['success'].append(str(output_csv_internal_path)) # CSV is internal, not counted for user
                             logger.info(f"Tabla CSV interna generada: {output_csv_internal_path}")
 
-                            # --- Preparar DataFrame para formatos de exportación (TSV, XLSX, SCSV) ---
+                            # --- Preparar DataFrame para formatos de exportación (XLSX) ---
                             # Usar los mismos datos numéricos pero con índice como columna 'ARCHIVO'
                             df_data_export = df_csv_internal.reset_index() # Mover índice 'ARCHIVO' a columna
 
@@ -1757,93 +1757,54 @@ class AnalysisService:
                             header_rows_list.append(row3)
 
                             # --- Guardar Formatos de Exportación (usando safe_group_key_part) ---
+                            # Solo se genera XLSX para el usuario. CSV es interno.
 
-                            # 1. Formato TSV (Tab Separated, Comma Decimal)
-                            output_tsv_path = output_base_dir / f"{calc}_{target_frequency}_{safe_group_key_part}.tsv"
-                            try:
-                                with open(output_tsv_path, 'w', encoding='utf-8') as f:
-                                    # Escribir las 4 filas de cabecera
-                                    for header_row_list in header_rows_list:
-                                        f.write('\t'.join(header_row_list) + '\n')
-                                    # Escribir datos, coma decimal
-                                    df_data_export.to_csv(f, sep='\t', decimal=',', header=False, index=False,
-                                                          encoding='utf-8', float_format='%.4f')
-                                results['success'].append(str(output_tsv_path))
-                                logger.info(f"Tabla TSV generada: {output_tsv_path}")
-                            except Exception as e_tsv:
-                                error_msg = f"Error guardando TSV {output_tsv_path.name}: {e_tsv}"
-                                logger.error(error_msg, exc_info=True)
-                                results['errors'].append(error_msg)
-
-                            # 2. Formato SCSV (Semicolon Separated, Comma Decimal)
-                            output_scsv_path = output_base_dir / f"{calc}_{target_frequency}_{safe_group_key_part}.scsv"
-                            try:
-                                with open(output_scsv_path, 'w', encoding='utf-8') as f:
-                                    # Escribir las 4 filas de cabecera
-                                    for header_row_list in header_rows_list:
-                                        f.write(';'.join(header_row_list) + '\n')
-                                    # Escribir datos, coma decimal
-                                    df_data_export.to_csv(f, sep=';', decimal=',', header=False, index=False,
-                                                          encoding='utf-8', float_format='%.4f')
-                                results['success'].append(str(output_scsv_path))
-                                logger.info(f"Tabla SCSV generada: {output_scsv_path}")
-                            except Exception as e_scsv:
-                                error_msg = f"Error guardando SCSV {output_scsv_path.name}: {e_scsv}"
-                                logger.error(error_msg, exc_info=True)
-                                results['errors'].append(error_msg)
-
-                            # 3. Formato XLSX (Excel, Comma Decimal via Locale?) - openpyxl requerido
+                            # Formato XLSX (Excel) - openpyxl requerido
                             if OPENPYXL_AVAILABLE:
                                 output_xlsx_path = output_base_dir / f"{calc}_{target_frequency}_{safe_group_key_part}.xlsx"
                                 try:
                                     # Usar ExcelWriter para acceder al objeto worksheet
                                     with pd.ExcelWriter(output_xlsx_path, engine='openpyxl') as writer:
                                         # Asegurar que la hoja 'Data' exista
-                                        # Si el libro está vacío, crea una hoja activa
                                         if not writer.book.sheetnames:
                                             ws = writer.book.create_sheet(title='Data')
                                         else:
-                                            # Si ya hay hojas, intenta obtener 'Data' o la activa
                                             ws = writer.book.get_sheet_by_name('Data') \
                                                  if 'Data' in writer.book.sheetnames \
                                                  else writer.book.active
-                                            ws.title = 'Data' # Asegurar nombre
+                                            ws.title = 'Data'
 
                                         # Escribir las 4 filas de cabecera manualmente
                                         for header_row_list in header_rows_list:
-                                            # openpyxl es 1-based index
                                             ws.append(header_row_list)
 
-                                        # --- Aplanar columnas para evitar error de pandas ---
-                                        # Crear copia para no modificar el original usado en TSV/SCSV
+                                        # Aplanar columnas para evitar error de pandas con MultiIndex en to_excel
                                         df_data_export_flat = df_data_export.copy()
-                                        # Crear nombres simples: 'ARCHIVO' y 'Attr/Col/Unit'
-                                        flat_column_names = [df_data_export_flat.columns[0]] # Mantener 'ARCHIVO'
+                                        flat_column_names = [df_data_export_flat.columns[0]] # 'ARCHIVO'
                                         flat_column_names.extend([
                                             '/'.join(map(str, col_tuple))
-                                            for col_tuple in df_data_export_flat.columns[1:] # Iterar sobre el MultiIndex
+                                            for col_tuple in df_data_export_flat.columns[1:]
                                         ])
                                         df_data_export_flat.columns = flat_column_names
 
-                                        # --- Escribir datos con columnas aplanadas ---
-                                        # Empezar desde la fila después de las cabeceras
+                                        # Escribir datos con columnas aplanadas
                                         df_data_export_flat.to_excel(
                                             writer,
                                             sheet_name='Data',
-                                            startrow=len(header_rows_list), # Fila donde empiezan los datos (0-based)
-                                            header=False, # No escribir cabecera de pandas
-                                            index=False   # No escribir índice de pandas
+                                            startrow=len(header_rows_list),
+                                            header=False,
+                                            index=False,
+                                            float_format='%.4f' # Asegurar formato de float
                                         )
-                                    results['success'].append(str(output_xlsx_path))
+                                    results['success'].append(str(output_xlsx_path)) # Contar solo XLSX para el usuario
                                     logger.info(f"Tabla XLSX generada: {output_xlsx_path}")
                                 except Exception as e_xlsx:
-                                    # Capturar el error específico si aún ocurre, o errores generales
                                     error_msg = f"Error guardando XLSX {output_xlsx_path.name}: {e_xlsx}"
                                     logger.error(error_msg, exc_info=True)
                                     results['errors'].append(error_msg)
                             else:
                                 logger.warning(f"Omitiendo generación XLSX para {group_key}/{calc} (openpyxl no disponible).")
-
+                                results['errors'].append(f"openpyxl no disponible para generar {calc}_{target_frequency}_{safe_group_key_part}.xlsx")
 
                         except Exception as e_df:
                             # Error general al procesar este cálculo/grupo

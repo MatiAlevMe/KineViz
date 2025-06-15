@@ -482,7 +482,7 @@ class DiscreteAnalysisView(ttk.Frame):
                 date_str = datetime.fromtimestamp(table_info["mtime"]).strftime('%Y-%m-%d %H:%M')
                 
                 # Updated values for new column order
-                self.tables_tree.insert("", tk.END, text=str(table_info['path']), # Store path as iid
+                self.tables_tree.insert("", tk.END, iid=str(table_info['path']), # Explicitly set iid to path string
                                         values=(filename, calc_type, 
                                                 sub_values_str_formatted, date_str))
         
@@ -804,14 +804,10 @@ class DiscreteAnalysisView(ttk.Frame):
 
         num_selected = len(selected_paths_str)
         # Obtener nombres de archivo para el mensaje de confirmación
-        file_names_to_confirm = [Path(p_str).name for p_str in selected_paths_str]
+        # file_names_to_confirm = [Path(p_str).name for p_str in selected_paths_str] # No longer needed for message
 
-        confirm_message = (f"¿Está seguro de que desea eliminar las {num_selected} tablas seleccionadas?\n\n"
-                           f"- {file_names_to_confirm[0]}" + (f" y {num_selected-1} más" if num_selected > 1 else "") +
-                           "\n\nEsta acción es IRREVERSIBLE.")
-        if num_selected > 3:
-             confirm_message = (f"¿Está seguro de que desea eliminar las {num_selected} tablas seleccionadas?\n"
-                                "Esta acción es IRREVERSIBLE.")
+        confirm_message = (f"¿Está seguro de que desea eliminar las {num_selected} tablas seleccionadas?\n"
+                           "Esta acción es IRREVERSIBLE.")
 
         if messagebox.askyesno("Confirmar Eliminación Múltiple", confirm_message, icon='warning', parent=self):
             success_count, errors = self.analysis_service.delete_selected_discrete_summary_tables(selected_paths_str)
