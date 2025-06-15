@@ -28,7 +28,7 @@ class AppSettings:
 
     DEFAULT_SETTINGS = {
         'SETTINGS': {
-            'estudios_por_pagina': '10',
+            'estudios_por_pagina': '20',
             'files_per_page': '10',
             'pdfs_per_page': '10',
             'discrete_tables_per_page': '15', # Añadir valor por defecto

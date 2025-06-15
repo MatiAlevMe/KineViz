@@ -6,11 +6,14 @@ from kineviz.ui.utils.style import get_font_object, DEFAULT_FONT_SIZE # Import f
 
 logger = logging.getLogger(__name__)
 
+from kineviz.config.settings import AppSettings # Import AppSettings for type hinting
+
 MAX_COMMENT_LENGTH = 150
 
 class CommentDialog(Toplevel):
-    def __init__(self, parent, study_id: int, study_name: str, current_comment: str | None, study_service, on_save_callback=None):
+    def __init__(self, parent, settings: AppSettings, study_id: int, study_name: str, current_comment: str | None, study_service, on_save_callback=None):
         super().__init__(parent)
+        self.settings = settings # Store AppSettings instance
         self.study_id = study_id
         self.study_name = study_name
         self.study_service = study_service
@@ -45,10 +48,7 @@ class CommentDialog(Toplevel):
         main_frame.pack(fill=tk.BOTH, expand=True)
         main_frame.columnconfigure(0, weight=1) # Allow content to expand
 
-        # Attempt to get font_scale from parent (MainWindow typically)
-        font_scale = 1.0 # Default
-        if hasattr(self.master, 'settings') and hasattr(self.master.settings, 'font_scale'):
-            font_scale = self.master.settings.font_scale
+        font_scale = self.settings.font_scale # Get font_scale from AppSettings
         
         scaled_font = get_font_object(DEFAULT_FONT_SIZE, font_scale)
         # For labels, ttk styles handle scaling. For tk.Text, we set it directly.

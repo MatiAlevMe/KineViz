@@ -136,7 +136,7 @@ class MainWindow:
     def apply_application_styles(self):
         """Aplica el tema y la escala de fuente a toda la aplicación."""
         logger.info(f"Applying theme: {self.app_theme}, font scale: {self.font_scale}")
-        app_style.apply_theme_and_font(self.style, self.app_theme, self.font_scale)
+        app_style.apply_theme_and_font(self.root, self.style, self.app_theme, self.font_scale)
         # Call the original configure_styles if it contains additional specific styles
         # not covered by the global theme application.
         # self.configure_styles() # Or integrate its contents into apply_theme_and_font
@@ -212,7 +212,7 @@ class MainWindow:
         """Muestra el diálogo para añadir/editar un comentario de estudio."""
         try:
             current_comment = self.study_service.get_study_comment(study_id)
-            CommentDialog(self.root, study_id, study_name, current_comment, self.study_service, on_save_callback=self.refresh_main_view)
+            CommentDialog(self.root, self.settings, study_id, study_name, current_comment, self.study_service, on_save_callback=self.refresh_main_view)
         except Exception as e:
             logger.error(f"Error al preparar diálogo de comentario para estudio {study_id}: {e}", exc_info=True)
             messagebox.showerror("Error", f"No se pudo abrir el diálogo de comentarios:\n{e}", parent=self.root)
