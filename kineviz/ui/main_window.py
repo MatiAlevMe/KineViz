@@ -27,6 +27,7 @@ from kineviz.core.services.study_service import StudyService
 from kineviz.core.services.file_service import FileService
 from kineviz.core.services.analysis_service import AnalysisService
 from kineviz.config.settings import AppSettings # Importar AppSettings
+from kineviz.ui.utils import style as app_style # Import the style utility
 
 logger = logging.getLogger(__name__) # Logger para este módulo
 
@@ -42,6 +43,8 @@ class MainWindow:
         self.estudios_por_pagina = self.settings.studies_per_page
         self.files_per_page = self.settings.files_per_page
         self.pdfs_per_page = self.settings.pdfs_per_page
+        self.font_scale = self.settings.font_scale
+        self.app_theme = self.settings.theme
         # Ya no necesitamos el objeto self.config ni el bloque try/except aquí
 
         # --- Instanciación de Servicios ---
@@ -52,7 +55,8 @@ class MainWindow:
 
         self.current_view = None
         self.style = ttk.Style()
-        self.configure_styles()
+        # self.configure_styles() # Will be called by apply_application_styles
+        self.apply_application_styles() # Apply theme and font scale on init
 
         # --- Configuración Inicial de DB (Adaptado de setup_database) ---
         # Esto ahora debería ser manejado por el StudyRepository en su __init__
@@ -89,6 +93,29 @@ class MainWindow:
         self.style.configure("Green.TButton", foreground="white", background="green")
         self.style.configure("Celeste.TButton", foreground="black", background="#AFEEEE") # Light pale turquoise
         # Añadir más configuraciones de estilo según sea necesario
+
+        # The core styling is now handled by app_style.apply_theme_and_font
+        # This method can be kept for very specific MainWindow-only tweaks if needed,
+        # or eventually removed if all styling is centralized in style.py.
+        # For now, ensure it's called correctly by apply_application_styles.
+        pass
+
+
+    def apply_application_styles(self):
+        """Aplica el tema y la escala de fuente a toda la aplicación."""
+        logger.info(f"Applying theme: {self.app_theme}, font scale: {self.font_scale}")
+        app_style.apply_theme_and_font(self.style, self.app_theme, self.font_scale)
+        # Call the original configure_styles if it contains additional specific styles
+        # not covered by the global theme application.
+        # self.configure_styles() # Or integrate its contents into apply_theme_and_font
+
+        # For Tkinter non-ttk widgets, one might need to apply settings directly,
+        # e.g. self.root.configure(bg=app_style.THEMES[self.app_theme]['bg'])
+        # However, KineViz primarily uses ttk.
+
+        # Force UI update if necessary, though usually Tkinter handles this.
+        # self.root.update_idletasks()
+
 
     def clear_window(self):
         """Limpia la ventana principal antes de mostrar una nueva vista."""
@@ -205,8 +232,44 @@ class MainWindow:
          self.estudios_por_pagina = self.settings.studies_per_page
          self.files_per_page = self.settings.files_per_page
          self.pdfs_per_page = self.settings.pdfs_per_page
+         self.font_scale = self.settings.font_scale
+         self.app_theme = self.settings.theme
+         
+         self.apply_application_styles() # Re-apply styles
+         
          # Podríamos necesitar refrescar la vista actual si la paginación cambió
-         # self.refresh_main_view() # O la vista activa
+         # o si el cambio de tema/fuente requiere recrear widgets.
+         # For now, a full refresh of the current view might be the simplest
+         # way to ensure changes are visible, though it's a bit heavy.
+         self.refresh_current_view_after_settings_change()
+
+
+    def refresh_current_view_after_settings_change(self):
+        """Refreshes the current view to apply style changes."""
+        if self.current_view:
+            if isinstance(self.current_view, MainView):
+                self.show_main_view()
+            elif isinstance(self.current_view, StudyView):
+                # StudyView needs study_id. Assume it's stored if we need to refresh it.
+                # This might require self.current_study_id to be tracked.
+                if hasattr(self.current_view, 'study_id'):
+                    self.show_study_view(self.current_view.study_id)
+                else:
+                    logger.warning("Cannot refresh StudyView: study_id not found on current_view.")
+                    self.show_main_view() # Fallback
+            elif isinstance(self.current_view, DiscreteAnalysisView):
+                if hasattr(self.current_view, 'study_id'):
+                    self.show_discrete_analysis_view(self.current_view.study_id)
+                else:
+                    logger.warning("Cannot refresh DiscreteAnalysisView: study_id not found on current_view.")
+                    self.show_main_view() # Fallback
+            elif isinstance(self.current_view, LandingPage):
+                self.show_landing_page()
+            else:
+                # For other views, or if a generic refresh is preferred:
+                logger.info(f"Refreshing view of type: {type(self.current_view)}. Defaulting to main view if no specific refresh path.")
+                self.show_main_view() # Fallback, or implement more specific refreshes
+
 
     def refresh_main_view(self):
         """

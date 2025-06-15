@@ -27,6 +27,8 @@ class ConfigDialog(Toplevel):
         self.var_studies_per_page = StringVar()
         self.var_files_per_page = StringVar()
         self.var_pdfs_per_page = StringVar()
+        self.var_font_scale = StringVar()
+        self.var_theme = StringVar()
 
         self.load_current_settings()
 
@@ -51,6 +53,8 @@ class ConfigDialog(Toplevel):
         self.var_studies_per_page.set(str(self.settings.studies_per_page))
         self.var_files_per_page.set(str(self.settings.files_per_page))
         self.var_pdfs_per_page.set(str(self.settings.pdfs_per_page))
+        self.var_font_scale.set(str(self.settings.font_scale))
+        self.var_theme.set(self.settings.theme)
 
     def create_widgets(self):
         """Crea los widgets del diálogo."""
@@ -96,6 +100,36 @@ class ConfigDialog(Toplevel):
                   ).pack(side=tk.LEFT)
         row_idx += 1
 
+        # --- Tamaño de Fuente ---
+        ttk.Label(main_frame, text="Tamaño de Fuente (escala):").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        font_scale_frame = ttk.Frame(main_frame)
+        font_scale_frame.grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5) # Use ew for combobox
+        font_scale_options = ["0.8", "0.9", "1.0", "1.1", "1.2", "1.3", "1.5", "1.75", "2.0"]
+        font_scale_combo = ttk.Combobox(font_scale_frame, textvariable=self.var_font_scale, values=font_scale_options, width=5, state="readonly")
+        font_scale_combo.pack(side=tk.LEFT, padx=(0,5))
+        ttk.Button(font_scale_frame, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Tamaño de Fuente",
+                                                         "Ajusta el tamaño general del texto en la aplicación.\n"
+                                                         "1.0 es el tamaño normal. Valores mayores agrandan el texto, menores lo achican.")
+                  ).pack(side=tk.LEFT)
+        row_idx += 1
+
+        # --- Tema de Aplicación ---
+        ttk.Label(main_frame, text="Tema de Aplicación:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        theme_frame = ttk.Frame(main_frame)
+        theme_frame.grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5) # Use ew for combobox
+        theme_options = ["Light", "Dark"] # Add more themes as they are defined
+        theme_combo = ttk.Combobox(theme_frame, textvariable=self.var_theme, values=theme_options, width=10, state="readonly")
+        theme_combo.pack(side=tk.LEFT, padx=(0,5))
+        ttk.Button(theme_frame, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Tema de Aplicación",
+                                                         "Cambia la apariencia visual de la aplicación (colores).\n"
+                                                         "Light: Tema claro (predeterminado).\n"
+                                                         "Dark: Tema oscuro.")
+                  ).pack(side=tk.LEFT)
+        row_idx += 1
+
+
         # --- Botón Restablecer ---
         reset_frame = ttk.Frame(main_frame)
         reset_frame.grid(row=row_idx, column=0, columnspan=2, pady=(20, 5))
@@ -124,12 +158,12 @@ class ConfigDialog(Toplevel):
 
     def validate_input(self) -> bool:
         """Valida que los valores ingresados sean enteros positivos."""
-        inputs = {
+        inputs_int = {
             "Estudios por página": self.var_studies_per_page.get(),
             "Archivos por página": self.var_files_per_page.get(),
             "Reportes PDF por página": self.var_pdfs_per_page.get()
         }
-        for label, value_str in inputs.items():
+        for label, value_str in inputs_int.items():
             try:
                 value_int = int(value_str)
                 if value_int <= 0:
@@ -138,6 +172,18 @@ class ConfigDialog(Toplevel):
             except ValueError:
                 messagebox.showerror("Valor Inválido", f"'{label}' debe ser un número entero válido.", parent=self)
                 return False
+
+        # Validar Escala de Fuente
+        try:
+            font_scale_val = float(self.var_font_scale.get())
+            if font_scale_val <= 0:
+                messagebox.showerror("Valor Inválido", "'Tamaño de Fuente (escala)' debe ser un número positivo.", parent=self)
+                return False
+        except ValueError:
+            messagebox.showerror("Valor Inválido", "'Tamaño de Fuente (escala)' debe ser un número válido.", parent=self)
+            return False
+        
+        # Tema no necesita validación si se usa Combobox con state="readonly"
         return True
 
     def save_settings(self):
@@ -150,10 +196,12 @@ class ConfigDialog(Toplevel):
             self.settings.studies_per_page = int(self.var_studies_per_page.get())
             self.settings.files_per_page = int(self.var_files_per_page.get())
             self.settings.pdfs_per_page = int(self.var_pdfs_per_page.get())
+            self.settings.font_scale = float(self.var_font_scale.get())
+            self.settings.theme = self.var_theme.get()
 
             # Guardar en el archivo config.ini
             self.settings.save_settings()
-            messagebox.showinfo("Éxito", "Configuraciones guardadas correctamente.\nAlgunos cambios pueden requerir reiniciar la aplicación.", parent=self)
+            messagebox.showinfo("Éxito", "Configuraciones guardadas correctamente.\nAlgunos cambios pueden requerir reiniciar la aplicación para verlos reflejados.", parent=self)
             self.destroy() # Cerrar diálogo después de guardar
 
         except Exception as e:

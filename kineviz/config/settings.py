@@ -31,7 +31,9 @@ class AppSettings:
             'estudios_por_pagina': '10',
             'files_per_page': '10',
             'pdfs_per_page': '10',
-            'discrete_tables_per_page': '15' # Añadir valor por defecto
+            'discrete_tables_per_page': '15', # Añadir valor por defecto
+            'font_scale': '1.0',  # Default font scale
+            'theme': 'Light'      # Default theme: Light or Dark
         }
         # DESCRIPTOR_ALIASES ya no se gestiona aquí
     }
@@ -168,6 +170,28 @@ class AppSettings:
     @discrete_tables_per_page.setter
     def discrete_tables_per_page(self, value: int):
         self.set_setting('discrete_tables_per_page', str(value))
+
+    @property
+    def font_scale(self) -> float:
+        """Factor de escala de la fuente."""
+        try:
+            return float(self.get_setting('font_scale', '1.0'))
+        except ValueError:
+            logger.warning(f"Valor inválido para 'font_scale' en config.ini. Usando fallback: 1.0")
+            return 1.0
+
+    @font_scale.setter
+    def font_scale(self, value: float):
+        self.set_setting('font_scale', str(value))
+
+    @property
+    def theme(self) -> str:
+        """Tema de la aplicación (ej: 'Light', 'Dark')."""
+        return self.get_setting('theme', 'Light')
+
+    @theme.setter
+    def theme(self, value: str):
+        self.set_setting('theme', value)
 
     def reset_to_defaults(self):
          """Restablece las configuraciones en memoria a los valores por defecto."""
