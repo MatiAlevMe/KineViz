@@ -76,6 +76,10 @@ class CommentDialog(Toplevel):
         current_text = self.comment_text.get("1.0", tk.END).strip() # strip() para quitar newline final
         self.comment_var.set(current_text) # Actualizar la variable de control
         self._update_char_count()
+        # Explicitly reset the modified flag of the Text widget after processing the change.
+        # This ensures that the <<Modified>> event can be triggered for subsequent changes.
+        if self.comment_text.winfo_exists():
+            self.comment_text.edit_modified(False)
 
 
     def _update_char_count(self):
@@ -85,7 +89,18 @@ class CommentDialog(Toplevel):
             self.char_count_label.config(foreground="red")
             self.save_button.config(state=tk.DISABLED)
         else:
-            self.char_count_label.config(foreground="") # Color por defecto
+            # Reset to default foreground color for the label
+            # Using ttk.Style().lookup can be problematic if styles are complex or widget is themed.
+            # An empty string often resets to the default inherited color.
+            # If this doesn't work reliably across themes, store original color or use a specific default.
+            try:
+                # Attempt to get the default style for TLabelframe.Label (or TtkLabel if more generic)
+                style = ttk.Style()
+                default_fg = style.lookup('TLabel', 'foreground')
+                self.char_count_label.config(foreground=default_fg)
+            except tk.TclError:
+                 # Fallback if style lookup fails (e.g. during theming edge cases or shutdown)
+                self.char_count_label.config(foreground="black") # Or system default text color
             self.save_button.config(state=tk.NORMAL)
 
 
