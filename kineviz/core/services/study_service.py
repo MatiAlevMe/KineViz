@@ -288,7 +288,7 @@ class StudyService:
             if new_is_pinned: # Si se va a pinear
                 pinned_count = self.repo.count_pinned_studies()
                 if pinned_count >= MAX_PINNED_STUDIES:
-                    logger.warning(f"No se puede pinear estudio {study_id}. Límite de {MAX_PINNED_STUDIES} alcanzado.")
+                    logger.info(f"Intento de pinear estudio {study_id} denegado. Límite de {MAX_PINNED_STUDIES} pineados alcanzado.")
                     return False # Límite alcanzado
 
             self.repo.update_study_pin_status(study_id, new_is_pinned)

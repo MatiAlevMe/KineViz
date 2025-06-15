@@ -114,11 +114,23 @@ class MainView:
         action_button_frame = ttk.Frame(header_frame)
         action_button_frame.pack(side=tk.RIGHT)
 
+        # General Help Tooltip for MainView
+        info_label = ttk.Label(action_button_frame, text=" (?)", style="TooltipReference.TLabel") # Use a style if you have one, or just text
+        info_label.pack(side=tk.RIGHT, padx=5)
+        Tooltip(info_label, 
+                "Ventana Principal de Estudios:\n\n"
+                "- Muestra una lista de todos los estudios creados.\n"
+                "- Permite buscar estudios por su nombre.\n"
+                "- Ofrece acciones para ver detalles, editar o eliminar cada estudio.\n"
+                "- Puede destacar hasta 5 estudios usando el icono '📌'\n"
+                "  para que aparezcan siempre al inicio de la lista.")
+
         ttk.Button(action_button_frame, text='Manual', command=self.main_window.open_user_manual).pack(side=tk.RIGHT, padx=5)
         ttk.Button(action_button_frame, text='Configuración', command=self.main_window.show_config_dialog).pack(side=tk.RIGHT, padx=5) # Placeholder
         ttk.Button(action_button_frame, text='Ayuda', command=self.main_window.show_welcome_message).pack(side=tk.RIGHT, padx=5)
         ttk.Button(action_button_frame, text='Abrir Carpeta Estudios',
                   command=lambda: self.main_window.open_folder("estudios")).pack(side=tk.RIGHT, padx=5)
+
 
         # --- Búsqueda ---
         search_frame = ttk.Frame(self.frame)
@@ -255,22 +267,6 @@ class MainView:
         last_btn.pack(side=tk.LEFT, padx=2)
         if self.current_page == self.total_pages:
             last_btn.config(state=tk.DISABLED)
-
-        # --- Pin Count Display ---
-        # Spacer
-        ttk.Label(self.pagination_frame, text="  |  ").pack(side=tk.LEFT, padx=5)
-        
-        try:
-            current_pinned_count = self.study_service.repo.count_pinned_studies()
-        except Exception as e:
-            logger.error(f"Error al obtener el conteo de estudios pineados: {e}")
-            current_pinned_count = "Error"
-
-        pin_count_text = f"Destacados: {current_pinned_count}/{self.MAX_PINNED_STUDIES}"
-        pin_count_label = ttk.Label(self.pagination_frame, text=pin_count_text)
-        pin_count_label.pack(side=tk.LEFT, padx=5)
-        Tooltip(pin_count_label, f"Estudios destacados actualmente.\nMáximo permitido: {self.MAX_PINNED_STUDIES}.")
-
 
     def go_to_page(self, page_number):
         """Navega a una página específica."""
