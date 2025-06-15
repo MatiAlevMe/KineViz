@@ -39,8 +39,8 @@ class StudyView:
                    command=back_command).pack(side=tk.LEFT, padx=(0, 10))
 
         # Botón Agregar Archivos                                                                                                               
-        ttk.Button(header_frame, text="Agregar Archivos",                                                                                      
-                   command=self.add_files_dialog).pack(side=tk.LEFT, padx=(0, 10))
+        ttk.Button(header_frame, text="Agregar Archivo(s)",                                                                                      
+                   command=self.add_files_dialog, style="Celeste.TButton").pack(side=tk.LEFT, padx=(0, 10))
 
         # Botón Abrir Carpeta Estudio (Movido desde interfaz.py)
         ttk.Button(header_frame, text="Abrir Carpeta Estudio",
@@ -52,11 +52,11 @@ class StudyView:
 
         # Botón Análisis Discreto (Fase 6)
         ttk.Button(header_frame, text="Análisis Discreto",
-                   command=lambda: self.main_window.show_discrete_analysis_view(self.study_id)).pack(side=tk.LEFT, padx=(0, 10))
+                   command=lambda: self.main_window.show_discrete_analysis_view(self.study_id), style="Green.TButton").pack(side=tk.LEFT, padx=(0, 10))
 
         # Botón Análisis Continuo (Fase 5)
         ttk.Button(header_frame, text="Análisis Continuo",
-                   command=lambda: self.main_window.show_continuous_analysis_manager_dialog(self.study_id)).pack(side=tk.LEFT, padx=(0, 10))
+                   command=lambda: self.main_window.show_continuous_analysis_manager_dialog(self.study_id), style="Green.TButton").pack(side=tk.LEFT, padx=(0, 10))
 
         # Botón Ayuda General (a la derecha)
         style = ttk.Style() # Asegurar que style exista
