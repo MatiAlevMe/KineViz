@@ -21,8 +21,11 @@ class TestMainView(unittest.TestCase):
         self.mock_main_window = MagicMock(spec=MainWindow)
         self.mock_main_window.root = self.root
         self.mock_main_window.study_service = MagicMock(spec=StudyService)
+        # Configure return values for methods called during MainView.__init__ -> load_studies()
+        self.mock_main_window.study_service.get_studies_paginated.return_value = [] 
+        self.mock_main_window.study_service.get_total_studies_count.return_value = 0
+        
         self.mock_main_window.settings = MagicMock(spec=AppSettings)
-        # self.mock_main_window.settings.studies_per_page = 10 # This was for AppSettings mock
         self.mock_main_window.estudios_por_pagina = 10 # Set directly on mock_main_window
         self.mock_main_window.style = ttk.Style() # Real style object for Danger.TButton
 
