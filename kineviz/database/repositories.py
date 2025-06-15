@@ -2,6 +2,7 @@ import sqlite3
 import os
 import logging
 import json # Importar json
+import shutil
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
