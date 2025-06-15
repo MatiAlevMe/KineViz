@@ -2804,6 +2804,32 @@ class AnalysisService:
         logger.info(f"Eliminación de análisis individuales completada. Total eliminados: {deleted_count}.")
         return deleted_count
 
+    def delete_selected_individual_analyses(self, analysis_paths: list[Path]) -> tuple[int, list[str]]:
+        """
+        Elimina una lista de análisis individuales específicos.
+
+        :param analysis_paths: Lista de objetos Path de las carpetas de análisis a eliminar.
+        :return: Tupla (número de eliminaciones exitosas, lista de mensajes de error).
+        """
+        if not analysis_paths:
+            return 0, []
+
+        success_count = 0
+        errors = []
+        for analysis_path in analysis_paths:
+            try:
+                self.delete_individual_analysis(analysis_path)
+                success_count += 1
+                logger.info(f"Análisis individual {analysis_path.name} eliminado como parte de una operación masiva.")
+            except Exception as e:
+                error_msg = f"Error eliminando análisis individual {analysis_path.name}: {e}"
+                logger.error(error_msg, exc_info=True)
+                errors.append(error_msg)
+        
+        if errors:
+            logger.warning(f"Se encontraron errores durante la eliminación masiva de análisis individuales: {errors}")
+        return success_count, errors
+
     def delete_all_continuous_analyses(self, study_id: int):
         """
         Elimina todos los análisis continuos guardados para un estudio.
@@ -2846,3 +2872,56 @@ class AnalysisService:
 
         logger.info(f"Eliminación de análisis continuos completada. Total eliminados: {deleted_count}.")
         return deleted_count
+
+    def delete_selected_continuous_analyses(self, analysis_paths: list[Path]) -> tuple[int, list[str]]:
+        """
+        Elimina una lista de análisis continuos específicos.
+
+        :param analysis_paths: Lista de objetos Path de las carpetas de análisis a eliminar.
+        :return: Tupla (número de eliminaciones exitosas, lista de mensajes de error).
+        """
+        if not analysis_paths:
+            return 0, []
+
+        success_count = 0
+        errors = []
+        for analysis_path in analysis_paths:
+            try:
+                self.delete_continuous_analysis(analysis_path)
+                success_count += 1
+                logger.info(f"Análisis continuo {analysis_path.name} eliminado como parte de una operación masiva.")
+            except Exception as e:
+                error_msg = f"Error eliminando análisis continuo {analysis_path.name}: {e}"
+                logger.error(error_msg, exc_info=True)
+                errors.append(error_msg)
+
+        if errors:
+            logger.warning(f"Se encontraron errores durante la eliminación masiva de análisis continuos: {errors}")
+        return success_count, errors
+
+    def delete_selected_discrete_summary_tables(self, table_paths: list[str]) -> tuple[int, list[str]]:
+        """
+        Elimina una lista de tablas de resumen discretas específicas.
+
+        :param table_paths: Lista de strings de rutas a las tablas .xlsx a eliminar.
+        :return: Tupla (número de eliminaciones exitosas, lista de mensajes de error).
+        """
+        if not table_paths:
+            return 0, []
+
+        success_count = 0
+        errors = []
+        for table_path_str in table_paths:
+            try:
+                # delete_discrete_summary_table espera un string
+                self.delete_discrete_summary_table(table_path_str)
+                success_count += 1
+                logger.info(f"Tabla de resumen {Path(table_path_str).name} eliminada como parte de una operación masiva.")
+            except Exception as e:
+                error_msg = f"Error eliminando tabla de resumen {Path(table_path_str).name}: {e}"
+                logger.error(error_msg, exc_info=True)
+                errors.append(error_msg)
+        
+        if errors:
+            logger.warning(f"Se encontraron errores durante la eliminación masiva de tablas de resumen: {errors}")
+        return success_count, errors
