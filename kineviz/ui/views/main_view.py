@@ -184,11 +184,9 @@ class MainView:
             last_btn.config(state=tk.DISABLED)
 
         # Botón de ayuda para la vista principal
-        # Usar un estilo similar a StudyDialog si se define globalmente, o un botón estándar.
-        # Aquí se usa un botón estándar ttk.Button.
-        # El estilo "Help.TButton" de StudyDialog es local a ese diálogo.
+        # El estilo "Help.TButton" ahora se define globalmente en MainWindow.
         main_view_help_button = ttk.Button(self.pagination_frame, text="?", width=3,
-                                           command=self._show_main_view_help)
+                                           style="Help.TButton", command=self._show_main_view_help)
         main_view_help_button.pack(side=tk.LEFT, padx=(10, 2))
 
     def _show_main_view_help(self):
