@@ -8,80 +8,6 @@ from kineviz.core.services.study_service import MAX_PINNED_STUDIES # Importar la
 logger = logging.getLogger(__name__) # Logger para este módulo
 
 
-# Helper class for tooltips
-class Tooltip:
-    def __init__(self, widget, text):
-        self.widget = widget
-        self.text = text
-        self.tooltip_window = None
-        self.widget.bind("<Enter>", self.show_tooltip)
-        self.widget.bind("<Leave>", self.hide_tooltip)
-        self._id = None
-        self._after_id = None
-
-    def show_tooltip(self, event=None):
-        # Cancel any pending hide operations
-        if self._after_id:
-            self.widget.after_cancel(self._after_id)
-            self._after_id = None
-
-        # Schedule to show tooltip after a small delay
-        self._id = self.widget.after(500, self._show) # 500ms delay
-
-    def _show(self):
-        if self.tooltip_window or not self.widget.winfo_exists(): # Check if widget still exists
-            return
-        
-        # Get widget position relative to the screen
-        x = self.widget.winfo_rootx() + self.widget.winfo_width() // 2
-        y = self.widget.winfo_rooty() + self.widget.winfo_height() + 5 # Position below the widget
-
-        self.tooltip_window = tk.Toplevel(self.widget)
-        self.tooltip_window.wm_overrideredirect(True) # No window decorations
-        
-        label = ttk.Label(self.tooltip_window, text=self.text, justify=tk.LEFT,
-                          background="#ffffe0", relief=tk.SOLID, borderwidth=1,
-                          font=("tahoma", "8", "normal"), padding=2)
-        label.pack(ipadx=1)
-        
-        # Position tooltip: try to center it under the widget if possible
-        self.tooltip_window.update_idletasks() # Ensure window size is calculated
-        tooltip_width = self.tooltip_window.winfo_width()
-        tooltip_height = self.tooltip_window.winfo_height()
-
-        final_x = x - tooltip_width // 2
-        # Ensure it's within screen bounds (simple check)
-        screen_width = self.widget.winfo_screenwidth()
-        if final_x + tooltip_width > screen_width:
-            final_x = screen_width - tooltip_width
-        if final_x < 0:
-            final_x = 0
-        
-        self.tooltip_window.wm_geometry(f"+{final_x}+{y}")
-
-    def hide_tooltip(self, event=None):
-        # Cancel any pending show operations
-        if self._id:
-            self.widget.after_cancel(self._id)
-            self._id = None
-        
-        # Schedule to hide tooltip after a small delay to allow mouse movement to tooltip
-        self._after_id = self.widget.after(100, self._hide)
-
-    def _hide(self):
-        if self.tooltip_window:
-            if self.tooltip_window.winfo_exists(): # Check if window still exists
-                 # Check if mouse is over the tooltip itself
-                tooltip_x, tooltip_y = self.tooltip_window.winfo_rootx(), self.tooltip_window.winfo_rooty()
-                tooltip_width, tooltip_height = self.tooltip_window.winfo_width(), self.tooltip_window.winfo_height()
-                mouse_x, mouse_y = self.widget.winfo_pointerxy()
-
-                if not (tooltip_x <= mouse_x <= tooltip_x + tooltip_width and \
-                        tooltip_y <= mouse_y <= tooltip_y + tooltip_height):
-                    self.tooltip_window.destroy()
-            self.tooltip_window = None
-
-
 class MainView:
     """Vista principal que muestra la lista de estudios."""
     def __init__(self, root, main_window):
@@ -257,16 +183,29 @@ class MainView:
         if self.current_page == self.total_pages:
             last_btn.config(state=tk.DISABLED)
 
-        # Tooltip de ayuda para la vista principal, al lado de la paginación
-        main_view_help_label = ttk.Label(self.pagination_frame, text=" (?)", style="TooltipReference.TLabel") # Puede usar un estilo si lo tiene
-        main_view_help_label.pack(side=tk.LEFT, padx=(10, 2)) # Añadir padding a la izquierda
-        Tooltip(main_view_help_label,
-                "Ventana Principal de Estudios:\n\n"
-                "- Muestra una lista de todos los estudios creados.\n"
-                "- Permite buscar estudios por su nombre.\n"
-                "- Ofrece acciones para ver detalles, editar o eliminar cada estudio.\n"
-                "- Puede destacar hasta 5 estudios usando el icono '📌'\n"
-                "  para que aparezcan siempre al inicio de la lista.")
+        # Botón de ayuda para la vista principal
+        # Usar un estilo similar a StudyDialog si se define globalmente, o un botón estándar.
+        # Aquí se usa un botón estándar ttk.Button.
+        # El estilo "Help.TButton" de StudyDialog es local a ese diálogo.
+        main_view_help_button = ttk.Button(self.pagination_frame, text="?", width=3,
+                                           command=self._show_main_view_help)
+        main_view_help_button.pack(side=tk.LEFT, padx=(10, 2))
+
+    def _show_main_view_help(self):
+        """Muestra un popup de ayuda para la Vista Principal."""
+        help_title = "Ayuda: Ventana Principal de Estudios"
+        help_message = (
+            "Esta ventana muestra una lista de todos los estudios creados.\n\n"
+            "Funcionalidades:\n"
+            "- Buscar estudios por su nombre.\n"
+            "- Ver detalles de un estudio haciendo clic en 'Ver'.\n"
+            "- Editar un estudio haciendo clic en 'Editar'.\n"
+            "- Eliminar un estudio haciendo clic en 'Eliminar'.\n"
+            "- Destacar hasta 5 estudios usando el icono '📌' para que aparezcan siempre al inicio de la lista.\n"
+            "- Navegar entre páginas de estudios si hay muchos.\n"
+            "- Crear un nuevo estudio usando el botón 'Crear Nuevo Estudio'."
+        )
+        messagebox.showinfo(help_title, help_message, parent=self.root)
 
     def go_to_page(self, page_number):
         """Navega a una página específica."""
