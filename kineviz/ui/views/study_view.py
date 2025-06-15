@@ -102,6 +102,8 @@ class StudyView:
         files_per_page = self.main_window.files_per_page # Obtener de main_window
         self.file_browser = FileBrowser(self.frame, self.file_service, self.study_id, files_per_page)
         self.file_browser.pack(fill=tk.BOTH, expand=True, pady=(10, 0))
+        self.file_browser.bind("<<FileBrowserSelectionChanged>>", self._on_file_browser_selection_changed)
+
 
         # Llamar a update_alias_display después de que todo esté creado
         self.update_alias_display()
@@ -118,9 +120,49 @@ class StudyView:
             style="Danger.TButton" # Usar estilo de peligro
         )
         delete_all_files_button.pack(side=tk.LEFT, padx=(0,5)) # Alinear a la izquierda
+
+        # Botón Eliminar Archivo(s) Seleccionado(s)
+        self.delete_selected_files_button = ttk.Button(
+            delete_all_files_button_frame,
+            text="Eliminar Archivo(s) Seleccionado(s)",
+            command=self._confirm_delete_selected_files_from_browser,
+            style="Danger.TButton",
+            state=tk.DISABLED
+        )
+        self.delete_selected_files_button.pack(side=tk.LEFT, padx=(0, 5))
+
         # El estilo Danger.TButton se define en MainView, asumimos que está disponible
         # o se puede definir globalmente en MainWindow si es necesario.
 
+    def _on_file_browser_selection_changed(self, event=None):
+        """Actualiza el estado del botón 'Eliminar Archivo(s) Seleccionado(s)'."""
+        if self.file_browser and self.file_browser.get_selected_file_paths():
+            self.delete_selected_files_button.config(state=tk.NORMAL)
+        else:
+            self.delete_selected_files_button.config(state=tk.DISABLED)
+
+    def _confirm_delete_selected_files_from_browser(self):
+        """Muestra confirmación y elimina los archivos seleccionados en FileBrowser."""
+        if not self.file_browser:
+            return
+
+        selected_file_paths = self.file_browser.get_selected_file_paths()
+        if not selected_file_paths:
+            messagebox.showwarning("Sin Selección", "No hay archivos seleccionados para eliminar.", parent=self.frame)
+            return
+
+        if messagebox.askyesno("Confirmar Eliminación",
+                               "¿Está seguro de que desea eliminar los archivos seleccionados?\n"
+                               "Esta acción es IRREVERSIBLE.",
+                               icon='warning', parent=self.frame):
+            try:
+                self.file_service.delete_selected_files(self.study_id, selected_file_paths)
+                messagebox.showinfo("Éxito", f"{len(selected_file_paths)} archivo(s) eliminado(s) correctamente.", parent=self.frame)
+                self.refresh_file_list() # Recargar la lista de archivos
+            except Exception as e:
+                logger.error(f"Error al eliminar archivos seleccionados del estudio {self.study_id}: {e}", exc_info=True)
+                messagebox.showerror("Error al Eliminar", f"No se pudieron eliminar los archivos seleccionados:\n{e}", parent=self.frame)
+                self.refresh_file_list() # Recargar también en caso de error parcial
 
     def _confirm_delete_all_files(self):
         """Muestra confirmación y luego elimina todos los archivos del estudio."""
