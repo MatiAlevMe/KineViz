@@ -156,7 +156,7 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         tree_frame.pack(fill=tk.BOTH, expand=True, pady=(0,10))
 
         columns = ("name", "column", "groups", "date")
-        self.tree = ttk.Treeview(tree_frame, columns=columns, show="headings", selectmode="browse")
+        self.tree = ttk.Treeview(tree_frame, columns=columns, show="headings", selectmode="extended") # Allow multi-select
 
         self.tree.heading("name", text="Nombre Análisis")
         self.tree.heading("column", text="Variable Analizada")
@@ -208,8 +208,18 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         )
         self.delete_all_button.pack(side=tk.LEFT, padx=(0, 5))
         
-        self.delete_button = ttk.Button(bottom_action_frame, text="Eliminar Análisis", command=self._delete_analysis, state=tk.DISABLED)
-        self.delete_button.pack(side=tk.LEFT, padx=5)
+        self.delete_selected_button = ttk.Button(
+            bottom_action_frame,
+            text="Eliminar Seleccionado(s)",
+            command=self._confirm_delete_selected_analyses, # Nuevo método
+            state=tk.DISABLED,
+            style="Danger.TButton"
+        )
+        self.delete_selected_button.pack(side=tk.LEFT, padx=5)
+
+        # El botón individual "Eliminar Análisis" ya no es necesario
+        # self.delete_button = ttk.Button(bottom_action_frame, text="Eliminar Análisis", command=self._delete_analysis, state=tk.DISABLED)
+        # self.delete_button.pack(side=tk.LEFT, padx=5)
 
         ttk.Button(bottom_action_frame, text="Cerrar", command=self._on_close).pack(side=tk.RIGHT, padx=5)
 
@@ -511,37 +521,57 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         self._apply_filters_and_search() # Populate tree with (initially unfiltered) data
 
 
-    def get_selected_analysis_info(self) -> dict | None:
-        selected_items = self.tree.selection()
-        if not selected_items:
-            return None
+    def get_selected_analyses_info(self) -> list[dict]:
+        """
+        Obtiene una lista de diccionarios de información para los análisis seleccionados.
+        Retorna lista vacía si no hay selección válida.
+        """
+        selected_analyses = []
+        selected_item_iids = self.tree.selection()
+
+        if not selected_item_iids:
+            return []
+
+        for selected_item_iid in selected_item_iids:
+            found_info = None
+            for analysis_info in self.all_analyses_data:
+                analysis_path_str = str(analysis_info.get('path', ''))
+                if selected_item_iid == analysis_path_str or selected_item_iid.startswith(f"{analysis_path_str}_"):
+                    found_info = analysis_info
+                    break
+            
+            if not found_info: # Fallback por nombre
+                for analysis_info in self.all_analyses_data:
+                    # Assuming 'name' is stored in tree.item(iid, "values")[0] or similar if iid is not path
+                    # However, iid IS the path string or path_counter, so this fallback might be less critical
+                    # but kept for robustness if iid generation changes.
+                    # For now, this fallback is less likely to be hit if iid is path.
+                    if analysis_info.get('name') == selected_item_iid: # This fallback is weak if iid is path
+                        logger.warning(f"Selected iid '{selected_item_iid}' matched by name (fallback). Path might be missing for this item.")
+                        found_info = analysis_info
+                        break
+            
+            if found_info:
+                selected_analyses.append(found_info)
+            else:
+                logger.warning(f"Análisis seleccionado con iid '{selected_item_iid}' no encontrado en self.all_analyses_data.")
         
-        selected_iid = selected_items[0] # This is the iid (now the path string or path_counter)
-        
-        # Find the analysis in the master list by comparing the iid to the stringified path
-        # or by checking if the iid starts with the stringified path (for the _counter case)
-        for analysis_info in self.all_analyses_data:
-            analysis_path_str = str(analysis_info.get('path', ''))
-            if selected_iid == analysis_path_str or selected_iid.startswith(f"{analysis_path_str}_"):
-                return analysis_info
-        
-        # Fallback: if iid was a name due to missing path (less likely now)
-        for analysis_info in self.all_analyses_data:
-            if analysis_info.get('name') == selected_iid:
-                logger.warning(f"Selected iid '{selected_iid}' matched by name (fallback). Path might be missing for this item.")
-                return analysis_info
-                
-        logger.warning(f"Análisis seleccionado con iid '{selected_iid}' no encontrado en self.all_analyses_data.")
-        return None
+        return selected_analyses
 
     def _on_analysis_selected(self, event=None):
-        selected_info = self.get_selected_analysis_info()
-        can_act = selected_info is not None
-        self.view_plot_button.config(state=tk.NORMAL if can_act and selected_info.get("plot_path") else tk.DISABLED)
-        self.view_interactive_plot_button.config(state=tk.NORMAL if can_act and selected_info.get("interactive_plot_path") else tk.DISABLED)
-        self.view_config_button.config(state=tk.NORMAL if can_act and selected_info.get("config_path") else tk.DISABLED)
-        self.open_folder_button.config(state=tk.NORMAL if can_act and selected_info.get("path") else tk.DISABLED)
-        self.delete_button.config(state=tk.NORMAL if can_act else tk.DISABLED)
+        selected_info_list = self.get_selected_analyses_info()
+        can_act_single = len(selected_info_list) == 1
+        can_act_multiple = len(selected_info_list) > 0
+
+        # Buttons requiring single selection
+        self.view_plot_button.config(state=tk.NORMAL if can_act_single and selected_info_list[0].get("plot_path") else tk.DISABLED)
+        self.view_interactive_plot_button.config(state=tk.NORMAL if can_act_single and selected_info_list[0].get("interactive_plot_path") else tk.DISABLED)
+        self.view_config_button.config(state=tk.NORMAL if can_act_single and selected_info_list[0].get("config_path") else tk.DISABLED)
+        self.open_folder_button.config(state=tk.NORMAL if can_act_single and selected_info_list[0].get("path") else tk.DISABLED)
+        
+        # Button for multiple (or single) selection
+        self.delete_selected_button.config(state=tk.NORMAL if can_act_multiple else tk.DISABLED)
+        # self.delete_button.config(state=tk.NORMAL if can_act_single else tk.DISABLED) # Old single delete button
 
     def _open_new_analysis_dialog(self):
         # This is where ContinuousAnalysisConfigDialog is launched
@@ -639,7 +669,19 @@ class ContinuousAnalysisManagerDialog(Toplevel):
 
 
     def _view_plot(self, event=None): # Add event=None for double-click binding
-        selected_info = self.get_selected_analysis_info()
+        selected_items = self.tree.selection()
+        if not selected_items or len(selected_items) > 1:
+            if not event: # Only show warning if called by button, not double-click
+                messagebox.showwarning("Selección Múltiple", "Por favor, seleccione un único análisis para ver su gráfico.", parent=self)
+            return
+
+        selected_info_list = self.get_selected_analyses_info()
+        if not selected_info_list:
+            if not event:
+                 messagebox.showwarning("Sin Selección", "Por favor, seleccione un análisis para ver su gráfico.", parent=self)
+            return
+        selected_info = selected_info_list[0]
+
         if selected_info and selected_info.get("plot_path"):
             plot_path = Path(selected_info["plot_path"])
             if plot_path.exists():
@@ -658,7 +700,17 @@ class ContinuousAnalysisManagerDialog(Toplevel):
             messagebox.showinfo("Información", "No hay gráfico SPM (PNG) para el análisis seleccionado o el análisis no está seleccionado.", parent=self)
 
     def _view_interactive_plot(self):
-        selected_info = self.get_selected_analysis_info()
+        selected_items = self.tree.selection()
+        if not selected_items or len(selected_items) > 1:
+            messagebox.showwarning("Selección Múltiple", "Por favor, seleccione un único análisis para ver su gráfico interactivo.", parent=self)
+            return
+
+        selected_info_list = self.get_selected_analyses_info()
+        if not selected_info_list:
+            messagebox.showwarning("Sin Selección", "Por favor, seleccione un análisis para ver su gráfico interactivo.", parent=self)
+            return
+        selected_info = selected_info_list[0]
+
         if selected_info and selected_info.get("interactive_plot_path"):
             plot_path = Path(selected_info["interactive_plot_path"])
             if plot_path.exists():
@@ -675,7 +727,17 @@ class ContinuousAnalysisManagerDialog(Toplevel):
             messagebox.showinfo("Información", "No hay gráfico interactivo SPM para el análisis seleccionado o el análisis no está seleccionado.", parent=self)
 
     def _view_config(self):
-        selected_info = self.get_selected_analysis_info()
+        selected_items = self.tree.selection()
+        if not selected_items or len(selected_items) > 1:
+            messagebox.showwarning("Selección Múltiple", "Por favor, seleccione un único análisis para ver su configuración.", parent=self)
+            return
+
+        selected_info_list = self.get_selected_analyses_info()
+        if not selected_info_list:
+            messagebox.showwarning("Sin Selección", "Por favor, seleccione un análisis para ver su configuración.", parent=self)
+            return
+        selected_info = selected_info_list[0]
+
         if selected_info and selected_info.get("config_path"):
             config_path = Path(selected_info["config_path"])
             if config_path.exists():
@@ -883,7 +945,17 @@ class ContinuousAnalysisManagerDialog(Toplevel):
             messagebox.showinfo("Información", "No hay archivo de configuración para el análisis seleccionado o el análisis no está seleccionado.", parent=self)
 
     def _open_folder(self):
-        selected_info = self.get_selected_analysis_info()
+        selected_items = self.tree.selection()
+        if not selected_items or len(selected_items) > 1:
+            messagebox.showwarning("Selección Múltiple", "Por favor, seleccione un único análisis para abrir su carpeta.", parent=self)
+            return
+
+        selected_info_list = self.get_selected_analyses_info()
+        if not selected_info_list:
+            messagebox.showwarning("Sin Selección", "Por favor, seleccione un análisis para abrir su carpeta.", parent=self)
+            return
+        selected_info = selected_info_list[0]
+
         if selected_info and selected_info.get("path"):
             folder_path = Path(selected_info["path"])
             if folder_path.exists() and folder_path.is_dir():
@@ -903,43 +975,47 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         else:
             messagebox.showinfo("Información", "No hay carpeta para el análisis seleccionado o el análisis no está seleccionado.", parent=self)
 
-    def _delete_analysis(self):
-        selected_info = self.get_selected_analysis_info()
-        if not selected_info:
-            messagebox.showinfo("Información", "Seleccione un análisis para eliminar.", parent=self)
+    def _confirm_delete_selected_analyses(self):
+        """Muestra confirmación y elimina los análisis continuos seleccionados."""
+        selected_analyses_info = self.get_selected_analyses_info()
+        if not selected_analyses_info:
+            messagebox.showwarning("Sin Selección", "No hay análisis seleccionados para eliminar.", parent=self)
             return
 
-        analysis_name = selected_info.get('name')
-        if messagebox.askyesno("Confirmar Eliminación",
-                               f"¿Está seguro de que desea eliminar el análisis continuo '{analysis_name}'?\n"
-                               "Esta acción no se puede deshacer.",
-                               parent=self, icon='warning'):
-            try:
-                # selected_info is defined a few lines above, before the messagebox.askyesno
-                # analysis_name is also defined from selected_info.get('name')
-                analysis_path_to_delete = selected_info.get('path') # Get the full Path object
+        num_selected = len(selected_analyses_info)
+        analysis_names = [info.get('name', 'Desconocido') for info in selected_analyses_info]
+        
+        confirm_message = (f"¿Está seguro de que desea eliminar los {num_selected} análisis continuos seleccionados?\n\n"
+                           f"- {analysis_names[0]}" + (f" y {num_selected-1} más" if num_selected > 1 else "") +
+                           "\n\nEsta acción es IRREVERSIBLE.")
+        if num_selected > 3:
+            confirm_message = (f"¿Está seguro de que desea eliminar los {num_selected} análisis continuos seleccionados?\n"
+                               "Esta acción es IRREVERSIBLE.")
 
-                if not analysis_path_to_delete or not isinstance(analysis_path_to_delete, Path):
-                    messagebox.showerror("Error Interno", "No se pudo determinar la ruta del análisis para eliminar.", parent=self)
-                    logger.error(f"Intento de eliminar análisis continuo '{analysis_name}' sin una ruta válida: {analysis_path_to_delete}")
-                    return # Exit if path is not valid
+        if messagebox.askyesno("Confirmar Eliminación Múltiple", confirm_message, icon='warning', parent=self):
+            paths_to_delete = [info['path'] for info in selected_analyses_info if 'path' in info and isinstance(info['path'], Path)]
+            
+            if not paths_to_delete:
+                messagebox.showerror("Error", "No se pudieron obtener las rutas de los análisis seleccionados.", parent=self)
+                return
 
-                self.analysis_service.delete_continuous_analysis(analysis_path_to_delete) # Pass the Path object
-                messagebox.showinfo("Éxito", f"Análisis '{analysis_name}' eliminado correctamente.", parent=self)
-                self.load_analyses()
-            except FileNotFoundError:
-                # If analysis_path_to_delete was attempted, use its value in the message
-                path_info_for_error = selected_info.get('path', 'desconocida') if selected_info else 'desconocida'
-                messagebox.showerror("Error", f"No se encontró el análisis '{analysis_name}' para eliminar (ruta: {path_info_for_error}).", parent=self)
-                self.load_analyses() # Refresh list even on error
-            except ValueError as ve: # Catch specific ValueError if path is not a dir, etc.
-                messagebox.showerror("Error de Ruta", f"Error con la ruta del análisis '{analysis_name}':\n{ve}", parent=self)
-                logger.error(f"Error de valor/ruta eliminando análisis continuo '{analysis_name}': {ve}", exc_info=True)
-                self.load_analyses() # Refresh list
-            except Exception as e: # General exception
-                logger.error(f"Error eliminando análisis continuo '{analysis_name}': {e}", exc_info=True)
-                messagebox.showerror("Error", f"No se pudo eliminar el análisis '{analysis_name}':\n{e}", parent=self)
-                self.load_analyses() # Refresh list
+            success_count, errors = self.analysis_service.delete_selected_continuous_analyses(paths_to_delete)
+
+            if errors:
+                error_details = "\n".join(errors[:3])
+                if len(errors) > 3:
+                    error_details += f"\n... y {len(errors) - 3} más."
+                messagebox.showerror("Errores en Eliminación",
+                                     f"Se eliminaron {success_count} análisis, pero ocurrieron errores con {len(errors)} análisis:\n{error_details}",
+                                     parent=self)
+            elif success_count > 0:
+                messagebox.showinfo("Éxito", f"{success_count} análisis eliminado(s) correctamente.", parent=self)
+            else:
+                messagebox.showinfo("Información", "No se eliminó ningún análisis.", parent=self)
+            
+            self.load_analyses()
+
+    # _delete_analysis (singular) is removed.
 
     def _on_close(self, event=None):
         self.destroy()
