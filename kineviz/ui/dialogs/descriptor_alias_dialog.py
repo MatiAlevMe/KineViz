@@ -35,17 +35,31 @@ class DescriptorAliasDialog(Toplevel):
         # --- Frame principal con scroll ---
         container_frame = ttk.Frame(self)
         container_frame.pack(fill=tk.BOTH, expand=True)
-        self.canvas = tk.Canvas(container_frame)
-        scrollbar = ttk.Scrollbar(container_frame, orient="vertical", command=self.canvas.yview)
+        self.canvas = tk.Canvas(container_frame, highlightthickness=0) # Remove border
+        v_scrollbar = ttk.Scrollbar(container_frame, orient="vertical", command=self.canvas.yview)
+        h_scrollbar = ttk.Scrollbar(container_frame, orient="horizontal", command=self.canvas.xview)
         self.scrollable_frame = ttk.Frame(self.canvas)
+
         self.scrollable_frame.bind(
             "<Configure>",
             lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
         )
-        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
-        self.canvas.configure(yscrollcommand=scrollbar.set)
-        self.canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
+        # Bind canvas configure to adjust scrollable_frame width for horizontal scroll
+        self.canvas.bind(
+            "<Configure>",
+            lambda e: self.canvas.itemconfig(self.canvas.nametowidget(e.widget).interior_id, width=e.width) if hasattr(self.canvas, 'interior_id') else None
+        )
+
+        self.canvas.interior_id = self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
+
+        # Grid layout for canvas and scrollbars
+        container_frame.grid_rowconfigure(0, weight=1)
+        container_frame.grid_columnconfigure(0, weight=1)
+        
+        self.canvas.grid(row=0, column=0, sticky="nsew")
+        v_scrollbar.grid(row=0, column=1, sticky="ns")
+        h_scrollbar.grid(row=1, column=0, sticky="ew")
         # --- Fin frame principal con scroll ---
 
         # Crear widgets dentro del frame desplazable
@@ -77,9 +91,9 @@ class DescriptorAliasDialog(Toplevel):
         self.alias_grid_frame.pack(fill=tk.BOTH, expand=True)
         self.alias_grid_frame.columnconfigure(1, weight=1) # Columna de alias expandible
 
-        # Cabeceras (remove explicit font to use scaled style)
-        ttk.Label(self.alias_grid_frame, text="Sub-valor Definido", style="TLabelframe.Label").grid(row=0, column=0, padx=5, pady=5, sticky='w')
-        ttk.Label(self.alias_grid_frame, text="Alias Asignado", style="TLabelframe.Label").grid(row=0, column=1, padx=5, pady=5, sticky='w')
+        # Cabeceras (revert to default TLabel style or previously explicit font if any)
+        ttk.Label(self.alias_grid_frame, text="Sub-valor Definido", font=('Helvetica', 10, 'bold')).grid(row=0, column=0, padx=5, pady=5, sticky='w')
+        ttk.Label(self.alias_grid_frame, text="Alias Asignado", font=('Helvetica', 10, 'bold')).grid(row=0, column=1, padx=5, pady=5, sticky='w')
 
         # Los sub-valores se añadirán dinámicamente en load_descriptors_and_aliases
 

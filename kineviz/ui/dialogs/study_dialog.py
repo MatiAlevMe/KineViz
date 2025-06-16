@@ -28,7 +28,7 @@ class StudyDialog(Toplevel):
 
         self.title("Editar Estudio" if self.is_editing else "Nuevo Estudio")
         # Aumentar altura para VIs/sub-valores
-        self.geometry("600x550")
+        # self.geometry("600x550") # Initial size will be determined by content or set after widgets are created
         self.resizable(True, True) # Permitir redimensionar
 
         # Variables para campos fijos
@@ -80,9 +80,43 @@ class StudyDialog(Toplevel):
 
 
     def create_form(self):
-        # Usar un Frame normal, el scroll no parece necesario para esta cantidad de campos
-        main_frame = ttk.Frame(self, padding="20")
-        main_frame.pack(fill=tk.BOTH, expand=True)
+        # --- Setup for scrollable area ---
+        # Outer container that holds canvas and scrollbars
+        dialog_content_container = ttk.Frame(self)
+        dialog_content_container.pack(fill=tk.BOTH, expand=True)
+
+        canvas = tk.Canvas(dialog_content_container, highlightthickness=0)
+        v_scrollbar = ttk.Scrollbar(dialog_content_container, orient="vertical", command=canvas.yview)
+        h_scrollbar = ttk.Scrollbar(dialog_content_container, orient="horizontal", command=canvas.xview)
+        
+        # This is the frame where all original dialog content will go
+        scrollable_main_frame = ttk.Frame(canvas, padding="20")
+
+        scrollable_main_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        # Bind canvas configure to adjust scrollable_main_frame width for horizontal scroll
+        canvas.bind(
+            "<Configure>",
+            lambda e: canvas.itemconfig(canvas.nametowidget(e.widget).interior_id, width=e.width) if hasattr(canvas, 'interior_id') else None
+        )
+
+
+        canvas.interior_id = canvas.create_window((0, 0), window=scrollable_main_frame, anchor="nw")
+        canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
+
+        # Grid layout for canvas and scrollbars within dialog_content_container
+        dialog_content_container.grid_rowconfigure(0, weight=1)
+        dialog_content_container.grid_columnconfigure(0, weight=1)
+
+        canvas.grid(row=0, column=0, sticky="nsew")
+        v_scrollbar.grid(row=0, column=1, sticky="ns")
+        h_scrollbar.grid(row=1, column=0, sticky="ew")
+        # --- End scrollable area setup ---
+
+        # All original content now goes into scrollable_main_frame
+        main_frame = scrollable_main_frame
 
         # Configurar grid layout para mejor alineación
         main_frame.columnconfigure(1, weight=1) # Columna de Entries expandible
@@ -198,6 +232,18 @@ class StudyDialog(Toplevel):
 
         ttk.Button(button_frame, text="Guardar", command=self.save).pack(side=tk.RIGHT, padx=5)
         ttk.Button(button_frame, text="Cancelar", command=self.destroy).pack(side=tk.RIGHT)
+
+        # Set minsize after widgets are created in scrollable_main_frame
+        self.update_idletasks() # Process pending operations
+        # Ensure canvas and scrollable_main_frame have their sizes computed
+        scrollable_main_frame.update_idletasks() 
+        canvas.update_idletasks()
+        
+        # Set a minimum size for the Toplevel dialog based on content
+        # Add some padding to the requested size
+        req_width = scrollable_main_frame.winfo_reqwidth() + v_scrollbar.winfo_reqwidth() + 40 # padding + scrollbar
+        req_height = scrollable_main_frame.winfo_reqheight() + h_scrollbar.winfo_reqheight() + 40 # padding + scrollbar
+        self.minsize(max(400, req_width), max(300, req_height)) # Ensure a reasonable base minsize
 
 
     def add_independent_variable_ui(self, name_value="", descriptors_values=None, allows_combination_value=False, is_mandatory_value=False):

@@ -83,7 +83,14 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         self.main_frame = ttk.Frame(self, padding="10")
         self.main_frame.pack(fill=tk.BOTH, expand=True)
         self.main_frame.columnconfigure(0, weight=1) # Allow content to expand horizontally
-        self.main_frame.rowconfigure(2, weight=1) # Allow tree_frame to expand vertically
+        # Configure row for tree_frame (row 1) to expand, others not.
+        self.main_frame.rowconfigure(1, weight=1) # Treeview's row
+        self.main_frame.rowconfigure(0, weight=0) # Search/Filter
+        self.main_frame.rowconfigure(3, weight=0) # View actions
+        self.main_frame.rowconfigure(4, weight=0) # Folder actions
+        self.main_frame.rowconfigure(6, weight=0) # Pagination
+        self.main_frame.rowconfigure(7, weight=0) # Bottom actions (Delete/Close)
+
 
         # --- Search and Filter Frame ---
         search_filter_frame = ttk.LabelFrame(self.main_frame, text="Buscar y Filtrar Análisis", padding="10")
