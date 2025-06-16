@@ -186,7 +186,15 @@ if __name__ == '__main__':
     # Create dummy files and directories for testing
     # root is already defined above
     (root / TEST_DB_FILENAME).write_text("dummy db content for testing")
-    (root / TEST_CONFIG_FILENAME).write_text(f"[SETTINGS]\ndummy_setting=1\nmax_automatic_backups = 2\nmax_manual_backups = 2") # Ensure config for test
+    
+    # Create a more complete dummy config.ini for testing
+    default_settings_for_test = AppSettings.DEFAULT_SETTINGS['SETTINGS']
+    config_content_for_test = "[SETTINGS]\n"
+    for key, value in default_settings_for_test.items():
+        config_content_for_test += f"{key} = {value}\n"
+    # Override specific values for test if needed, e.g., max_automatic_backups for the test logic
+    config_content_for_test += "dummy_test_specific_setting = True\n" # Example if needed
+    (root / TEST_CONFIG_FILENAME).write_text(config_content_for_test)
         
     # Temporarily override global constants for the scope of this test
     # The 'global DB_FILENAME, CONFIG_FILENAME' declaration was moved to the top 
