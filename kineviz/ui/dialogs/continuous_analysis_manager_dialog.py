@@ -216,8 +216,8 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         # --- Treeview for listing analyses (inside self.scrollable_main_frame) ---
         tree_frame = ttk.LabelFrame(self.scrollable_main_frame, text="Análisis Guardados")
         tree_frame.pack(fill=tk.BOTH, expand=True) # Pack it to fill the scrollable area
-        tree_frame.columnconfigure(0, weight=1) 
-        tree_frame.rowconfigure(0, weight=1)    
+        # tree_frame.rowconfigure(0, weight=1) # Removed to respect treeview height
+        tree_frame.columnconfigure(0, weight=1)
 
         columns = ("name", "column", "groups", "date")
         self.tree = ttk.Treeview(tree_frame, columns=columns, show="headings", selectmode="extended", height=self.items_per_page)
