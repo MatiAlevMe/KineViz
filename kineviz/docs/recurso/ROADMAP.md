@@ -258,11 +258,14 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
 ## [En Progreso] Fase 5: Funcionalidades Adicionales
 1. [En Progreso] Gestión de Copias de Seguridad y Restauración del Sistema.
     1.1 [En Progreso] Implementar lógica central de copias de seguridad y almacenamiento.
-        - Componentes del sistema a respaldar: "kineviz.db", directorio "estudios/", archivo "config.ini".
+        - Componentes del sistema a respaldar ("Todo el Sistema"):
+            - Base de datos: `kineviz.db`
+            - Directorio de estudios: `estudios/` (completo, con todos sus subdirectorios y archivos)
+            - Archivo de configuración: `config.ini`
         - Rutas de almacenamiento: "kineviz/backups/automatic/" para automáticas, "kineviz/backups/manuales/" para manuales.
-        - Formato: Archivos ZIP con marca de tiempo ("timestamped ZIP archives").
+        - Formato de las copias de seguridad: Archivos ZIP individuales con marca de tiempo en el nombre (ej: `backup_20250616_103000.zip`).
         - Crear módulo `kineviz.core.backup_manager` para encapsular la funcionalidad de respaldo.
-        - Funcionalidad del `backup_manager`: Crear una copia de seguridad completa de los componentes definidos.
+        - Funcionalidad del `backup_manager`: Crear una copia de seguridad completa de los componentes definidos ("Todo el Sistema").
         - Funcionalidad del `backup_manager`: Gestionar el mecanismo de respaldo rotativo para copias automáticas (listar existentes, eliminar la más antigua si se excede el límite configurado al crear una nueva).
         - Disparadores para copias automáticas: Operaciones de agregar, restaurar o eliminar archivos, carpetas, estudios, o resultados de análisis.
         - Puntos de activación para copias automáticas: `MainWindow` (ej. al eliminar estudios), `StudyView` (ej. al agregar/eliminar archivos), `IndividualAnalysisManagerDialog` (ej. al eliminar análisis), `ContinuousAnalysisManagerDialog` (ej. al eliminar análisis).
