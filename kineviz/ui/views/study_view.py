@@ -92,33 +92,42 @@ class StudyView:
         header_frame_row1.pack(fill=tk.X, pady=(0, 5))
 
         back_command = self.main_window.show_main_view
-        ttk.Button(header_frame_row1, text="<< Volver a Estudios",
-                   command=back_command).pack(side=tk.LEFT, padx=(0, 10))
+        back_button = ttk.Button(header_frame_row1, text="<< Volver a Estudios", command=back_command)
+        back_button.pack(side=tk.LEFT, padx=(0, 10))
+        Tooltip(back_button, text="Regresar a la lista principal de estudios.", short_text="Volver.", enabled=self.main_window.settings.enable_hover_tooltips)
         
-        ttk.Button(header_frame_row1, text="Agregar Archivo(s)",                                                                                      
-                   command=self.add_files_dialog, style="Celeste.TButton").pack(side=tk.LEFT, padx=(0, 10))
+        add_files_button = ttk.Button(header_frame_row1, text="Agregar Archivo(s)", command=self.add_files_dialog, style="Celeste.TButton")
+        add_files_button.pack(side=tk.LEFT, padx=(0, 10))
+        Tooltip(add_files_button, text="Abrir diálogo para agregar archivos de datos a este estudio.", short_text="Agregar archivos.", enabled=self.main_window.settings.enable_hover_tooltips)
 
-        ttk.Button(header_frame_row1, text="Análisis Discreto",
-                   command=lambda: self.main_window.show_discrete_analysis_view(self.study_id), style="Green.TButton").pack(side=tk.LEFT, padx=(0, 10))
+        discrete_analysis_button = ttk.Button(header_frame_row1, text="Análisis Discreto", command=lambda: self.main_window.show_discrete_analysis_view(self.study_id), style="Green.TButton")
+        discrete_analysis_button.pack(side=tk.LEFT, padx=(0, 10))
+        Tooltip(discrete_analysis_button, text="Abrir la interfaz de gestión y generación de análisis discretos (tablas resumen, boxplots).", short_text="Análisis discreto.", enabled=self.main_window.settings.enable_hover_tooltips)
 
-        ttk.Button(header_frame_row1, text="Análisis Continuo",
-                   command=lambda: self.main_window.show_continuous_analysis_manager_dialog(self.study_id), style="Green.TButton").pack(side=tk.LEFT, padx=(0, 10))
+        continuous_analysis_button = ttk.Button(header_frame_row1, text="Análisis Continuo", command=lambda: self.main_window.show_continuous_analysis_manager_dialog(self.study_id), style="Green.TButton")
+        continuous_analysis_button.pack(side=tk.LEFT, padx=(0, 10))
+        Tooltip(continuous_analysis_button, text="Abrir la interfaz de gestión y generación de análisis continuos (SPM).", short_text="Análisis continuo.", enabled=self.main_window.settings.enable_hover_tooltips)
 
         # Botón Ayuda General (a la derecha de la primera fila de header)
         style = ttk.Style() 
         style.configure("HelpView.TButton", foreground="white", background="green") 
         help_button_general = ttk.Button(header_frame_row1, text="?", width=3, style="HelpView.TButton", command=self.show_study_view_help)
         help_button_general.pack(side=tk.RIGHT, padx=(10, 0))
+        Tooltip(help_button_general, text="Abrir el manual de ayuda específico para la vista de estudio.", short_text="Ayuda vista estudio.", enabled=self.main_window.settings.enable_hover_tooltips)
+
 
         # --- Header Row 2 (also in top_fixed_header_actions_frame) ---
         header_frame_row2 = ttk.Frame(self.top_fixed_header_actions_frame)
         header_frame_row2.pack(fill=tk.X, pady=(0, 10))
 
-        ttk.Button(header_frame_row2, text="Abrir Carpeta de Estudio",
-                   command=self.open_study_folder).pack(side=tk.LEFT, padx=(0, 10))
+        open_study_folder_button = ttk.Button(header_frame_row2, text="Abrir Carpeta de Estudio", command=self.open_study_folder)
+        open_study_folder_button.pack(side=tk.LEFT, padx=(0, 10))
+        Tooltip(open_study_folder_button, text="Abrir la carpeta de este estudio en el explorador de archivos.", short_text="Abrir carpeta estudio.", enabled=self.main_window.settings.enable_hover_tooltips)
 
-        ttk.Button(header_frame_row2, text="Gestionar Alias de Sub-valores",
-                   command=self.manage_descriptor_aliases).pack(side=tk.LEFT, padx=(0, 10))
+        manage_aliases_button = ttk.Button(header_frame_row2, text="Gestionar Alias de Sub-valores", command=self.manage_descriptor_aliases)
+        manage_aliases_button.pack(side=tk.LEFT, padx=(0, 10))
+        Tooltip(manage_aliases_button, text="Abrir diálogo para asignar alias a los sub-valores de las VIs de este estudio.", short_text="Gestionar alias.", enabled=self.main_window.settings.enable_hover_tooltips)
+
 
         # --- Populate Top Fixed Study Details Frame ---
         study_details = self.main_window.study_service.get_study_details(self.study_id)
@@ -158,10 +167,12 @@ class StudyView:
         # --- FileBrowser (Treeview part goes into scrollable_frame_content) ---
         files_per_page = self.main_window.files_per_page
         # Pass self.bottom_fixed_pagination_frame as the parent for pagination controls
-        self.file_browser = FileBrowser(self.scrollable_frame_content, 
-                                        self.file_service, 
-                                        self.study_id, 
+        # Also pass main_window.settings to FileBrowser
+        self.file_browser = FileBrowser(self.scrollable_frame_content,
+                                        self.file_service,
+                                        self.study_id,
                                         files_per_page,
+                                        self.main_window.settings, # Pass settings
                                         pagination_parent=self.bottom_fixed_pagination_frame)
         self.file_browser.pack(fill=tk.BOTH, expand=True) # FileBrowser itself fills the scrollable area
         self.file_browser.bind("<<FileBrowserSelectionChanged>>", self._on_file_browser_selection_changed)
@@ -174,6 +185,7 @@ class StudyView:
             style="Danger.TButton"
         )
         delete_all_files_button.pack(side=tk.LEFT, padx=(0,5))
+        Tooltip(delete_all_files_button, text="Eliminar TODOS los archivos (originales y procesados) de este estudio. ¡Acción irreversible!", short_text="Eliminar todos los archivos.", enabled=self.main_window.settings.enable_hover_tooltips)
 
         self.delete_selected_files_button = ttk.Button(
             self.bottom_fixed_delete_buttons_frame,
@@ -183,6 +195,7 @@ class StudyView:
             state=tk.DISABLED
         )
         self.delete_selected_files_button.pack(side=tk.LEFT, padx=(0, 5))
+        Tooltip(self.delete_selected_files_button, text="Eliminar los archivos seleccionados en la lista.", short_text="Eliminar seleccionados.", enabled=self.main_window.settings.enable_hover_tooltips)
         
         # Llamar a update_alias_display después de que todo esté creado
         self.update_alias_display()
