@@ -289,20 +289,20 @@ class ContinuousAnalysisManagerDialog(Toplevel):
 
         # self.delete_all_button = ttk.Button( # OLD
         #     bottom_action_frame,
-            text="Eliminar Todos los Análisis Continuos",
-            command=self._confirm_delete_all_continuous_analyses,
-            style="Danger.TButton"
-        )
-        self.delete_all_button.pack(side=tk.LEFT, padx=(0, 5))
+        # text="Eliminar Todos los Análisis Continuos", # REMOVED ORPHANED LINES
+        # command=self._confirm_delete_all_continuous_analyses, # REMOVED ORPHANED LINES
+        # style="Danger.TButton" # REMOVED ORPHANED LINES
+        # ) # REMOVED ORPHANED LINES
+        # self.delete_all_button.pack(side=tk.LEFT, padx=(0, 5)) # REMOVED ORPHANED LINES
         
-        self.delete_selected_button = ttk.Button(
-            bottom_action_frame,
-            text="Eliminar Seleccionado(s)",
-            command=self._confirm_delete_selected_analyses, # Nuevo método
-            state=tk.DISABLED,
-            style="Danger.TButton"
-        )
-        self.delete_selected_button.pack(side=tk.LEFT, padx=5)
+        # self.delete_selected_button = ttk.Button( # OLD
+        # bottom_action_frame, # OLD
+        # text="Eliminar Seleccionado(s)", # REMOVED ORPHANED LINES
+        # command=self._confirm_delete_selected_analyses, # Nuevo método # REMOVED ORPHANED LINES
+        # state=tk.DISABLED, # REMOVED ORPHANED LINES
+        # style="Danger.TButton" # REMOVED ORPHANED LINES
+        # ) # REMOVED ORPHANED LINES
+        # self.delete_selected_button.pack(side=tk.LEFT, padx=5) # REMOVED ORPHANED LINES
 
         # El botón individual "Eliminar Análisis" ya no es necesario
         # self.delete_button = ttk.Button(bottom_action_frame, text="Eliminar Análisis", command=self._delete_analysis, state=tk.DISABLED) # OLD
