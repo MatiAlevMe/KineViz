@@ -209,12 +209,12 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         folder_action_frame = ttk.Frame(self.main_frame)
         folder_action_frame.grid(row=4, column=0, sticky="ew", pady=(5,0))
 
-        self.open_folder_button = ttk.Button(folder_action_frame, text="Abrir Carpeta de Análisis", command=self.open_analysis_folder, state=tk.DISABLED)
+        self.open_folder_button = ttk.Button(folder_action_frame, text="Abrir Carpeta", command=self.open_analysis_folder, state=tk.DISABLED)
         self.open_folder_button.pack(side=tk.LEFT, padx=5)
 
         self.open_main_discrete_folder_button = ttk.Button(
             folder_action_frame,
-            text="Abrir Carpeta Principal de Análisis Discretos", # Slightly more descriptive
+            text="Abrir Carpeta de Análisis Discretos", # Renamed
             command=self._open_main_discrete_analyses_folder
         )
         self.open_main_discrete_folder_button.pack(side=tk.LEFT, padx=5)
@@ -1176,6 +1176,38 @@ if __name__ == '__main__':
             print(f"Dummy: delete_individual_analysis({study_id}, "
                   f"{analysis_name})")
             # Simular éxito
+
+    def _update_pagination_controls(self, total_items_in_filter):
+        """Actualiza los controles de paginación."""
+        for widget in self.pagination_controls_frame.winfo_children():
+            widget.destroy()
+
+        self.total_pages = (total_items_in_filter // self.items_per_page) + \
+                           (1 if total_items_in_filter % self.items_per_page else 0)
+        self.total_pages = max(1, self.total_pages)
+
+        if self.total_pages <= 1:
+            return
+
+        ttk.Button(self.pagination_controls_frame, text="<<", command=lambda: self._go_to_page(1),
+                   state=tk.DISABLED if self.current_page == 1 else tk.NORMAL).pack(side=tk.LEFT, padx=2)
+        ttk.Button(self.pagination_controls_frame, text="<", command=lambda: self._go_to_page(self.current_page - 1),
+                   state=tk.DISABLED if self.current_page == 1 else tk.NORMAL).pack(side=tk.LEFT, padx=2)
+
+        ttk.Label(self.pagination_controls_frame, text=f"Página {self.current_page} de {self.total_pages}").pack(side=tk.LEFT, padx=5)
+
+        ttk.Button(self.pagination_controls_frame, text=">", command=lambda: self._go_to_page(self.current_page + 1),
+                   state=tk.DISABLED if self.current_page == self.total_pages else tk.NORMAL).pack(side=tk.LEFT, padx=2)
+        ttk.Button(self.pagination_controls_frame, text=">>", command=lambda: self._go_to_page(self.total_pages),
+                   state=tk.DISABLED if self.current_page == self.total_pages else tk.NORMAL).pack(side=tk.LEFT, padx=2)
+
+    def _go_to_page(self, page_number):
+        """Navega a una página específica y repopula el treeview."""
+        if 1 <= page_number <= self.total_pages:
+            self.current_page = page_number
+            self._apply_filters_and_search() # This will repopulate based on current filters and new page
+        else:
+            logger.warning(f"Intento de ir a página inválida {page_number} (Total: {self.total_pages})")
 
     def _update_pagination_controls(self, total_items_in_filter):
         """Actualiza los controles de paginación."""
