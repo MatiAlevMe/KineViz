@@ -1172,7 +1172,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
     def set_vi_grouping_mode(self, mode):
         """Configura la UI según se elija agrupar por 1 o 2 VIs."""
         # ... (existing code for set_vi_grouping_mode) ...
-        super_set_vi_grouping_mode_result = super().set_vi_grouping_mode(mode) if hasattr(super(), 'set_vi_grouping_mode') else None
+        # super_set_vi_grouping_mode_result = super().set_vi_grouping_mode(mode) if hasattr(super(), 'set_vi_grouping_mode') else None
 
 
         self.vi_grouping_mode.set(mode)
