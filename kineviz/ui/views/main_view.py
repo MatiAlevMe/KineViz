@@ -135,12 +135,18 @@ class MainView:
         Tooltip(main_view_help_button, text=main_view_tooltip_text, short_text=main_view_tooltip_text, enabled=self.main_window.settings.enable_hover_tooltips)
 
         # Corrected packing order for search elements:
-        # Left side:
-        search_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0,5)) 
-        search_button.pack(side=tk.LEFT, padx=(0,10)) # Add some space after search button
+        # Left side (fixed width for search_entry):
+        search_entry.config(width=30) # Set a fixed width for the search entry
+        search_entry.pack(side=tk.LEFT, padx=(0,5)) # Removed fill=tk.X, expand=True
+        search_button.pack(side=tk.LEFT, padx=(0,10))
         
-        # Right side (packed in reverse visual order):
-        main_view_help_button.pack(side=tk.RIGHT, padx=(0,0)) # Rightmost
+        # Spacer to push right-aligned buttons to the right
+        spacer_frame = ttk.Frame(self.search_content_frame)
+        spacer_frame.pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+        # Right side (packed in reverse visual order for right alignment)
+        # "?" button is packed first to be the rightmost
+        main_view_help_button.pack(side=tk.RIGHT, padx=(0,0)) 
         refresh_button.pack(side=tk.RIGHT, padx=(0,5)) 
         clear_button.pack(side=tk.RIGHT, padx=(0,5))
 
