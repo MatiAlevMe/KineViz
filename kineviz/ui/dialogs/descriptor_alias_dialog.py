@@ -77,9 +77,9 @@ class DescriptorAliasDialog(Toplevel):
         self.alias_grid_frame.pack(fill=tk.BOTH, expand=True)
         self.alias_grid_frame.columnconfigure(1, weight=1) # Columna de alias expandible
 
-        # Cabeceras
-        ttk.Label(self.alias_grid_frame, text="Sub-valor Definido", font=('Helvetica', 10, 'bold')).grid(row=0, column=0, padx=5, pady=5, sticky='w')
-        ttk.Label(self.alias_grid_frame, text="Alias Asignado", font=('Helvetica', 10, 'bold')).grid(row=0, column=1, padx=5, pady=5, sticky='w')
+        # Cabeceras (remove explicit font to use scaled style)
+        ttk.Label(self.alias_grid_frame, text="Sub-valor Definido", style="TLabelframe.Label").grid(row=0, column=0, padx=5, pady=5, sticky='w')
+        ttk.Label(self.alias_grid_frame, text="Alias Asignado", style="TLabelframe.Label").grid(row=0, column=1, padx=5, pady=5, sticky='w')
 
         # Los sub-valores se añadirán dinámicamente en load_descriptors_and_aliases
 
@@ -88,6 +88,10 @@ class DescriptorAliasDialog(Toplevel):
         button_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(10, 0))
         ttk.Button(button_frame, text="Guardar Alias", command=self.save_aliases).pack(side=tk.RIGHT, padx=5)
         ttk.Button(button_frame, text="Cancelar", command=self.destroy).pack(side=tk.RIGHT)
+
+        # Set minsize after widgets are created
+        self.update_idletasks()
+        self.minsize(self.winfo_reqwidth() + 20, self.winfo_reqheight() + 20)
 
     def load_descriptors_and_aliases(self):
         """Carga los sub-valores definidos en el estudio y sus alias actuales."""
