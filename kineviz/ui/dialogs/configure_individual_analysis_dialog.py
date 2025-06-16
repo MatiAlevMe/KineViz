@@ -113,8 +113,9 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.transient(self.parent_window)
         self.bind("<Configure>", self._on_manual_resize)
 
-    def _on_manual_resize(self, event):
-        if event.widget != self or self._is_adjusting_size:
+
+    def _on_manual_resize(self, event): # Renamed from _on_configure_event
+        if event.widget != self or self._is_adjusting_size: # Check if event is for Toplevel and not recursing
             return
         self._is_adjusting_size = True
 
@@ -140,7 +141,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self._update_scrollbars_and_region()
         self._is_adjusting_size = False
 
-    def _resize_to_content(self):
+    def _resize_to_content(self): # Renamed from _adjust_dialog_layout
         if self._is_adjusting_size:
             return
         self._is_adjusting_size = True
@@ -541,7 +542,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             self._clear_group_selectors(update_columns=False) # No actualizar columnas aún
             self.group_selection_outer_frame.grid_remove() # Ocultar frame de grupos
             logger.debug("Limpiando grupos: falta información previa.")
-            self._adjust_dialog_layout()
+            self._resize_to_content()
             return
 
         # Obtener el descriptor original si hay alias
@@ -598,7 +599,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             self.available_groups_filtered = {}
             self._clear_group_selectors(update_columns=False) # No actualizar columnas
             self.group_selection_outer_frame.grid_remove()
-        self._adjust_dialog_layout()
+        self._resize_to_content()
 
     def _load_and_fix_frequency(self) -> bool:
         """Verifica la disponibilidad de 'Cinematica' y la fija como Tipo de Dato. Retorna True si exitoso."""
