@@ -54,7 +54,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
 
         # Variable para el nombre del análisis (reutilizada)
         self.analysis_name_var = tk.StringVar()
-        self.group_selector_tooltips = [] # Store tooltips for dynamic help buttons
+        # self.group_selector_tooltips = [] # REMOVE: No longer storing these tooltips in a list
 
         self.result = None # Initialize result attribute
 
@@ -566,8 +566,8 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         group_select_help_button = ttk.Button(group_combo_frame, text="?", width=3, style="Help.TButton",
                                               command=lambda: self._show_input_help("Ayuda: Selección de Grupo", group_select_help_long_text))
         group_select_help_button.pack(side=tk.LEFT)
-        tooltip_instance = Tooltip(group_select_help_button, text=group_select_help_long_text, short_text=group_select_help_short_text, enabled=self.settings.enable_hover_tooltips)
-        self.group_selector_tooltips.append(tooltip_instance) # Store the tooltip instance
+        Tooltip(group_select_help_button, text=group_select_help_long_text, short_text=group_select_help_short_text, enabled=self.settings.enable_hover_tooltips)
+        # tooltip_instance is created and bound, but not stored in a list by self
 
         # Botón para eliminar este selector (icono basura)
         remove_button = ttk.Button(selector_frame, text="🗑️", width=3, # Usar icono
@@ -703,7 +703,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             frame.destroy()
         self.group_selector_frames.clear() # Use clear() for lists
         self.group_selector_vars.clear()
-        self.group_selector_tooltips.clear() # Clear tooltips list
+        # No need to manage self.group_selector_tooltips.clear()
 
         if update_columns:
             self.update_available_columns() # Columnas dependen de grupos
@@ -1204,8 +1204,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             index = self.group_selector_frames.index(frame_to_remove)
             self.group_selector_vars.pop(index)
             self.group_selector_frames.pop(index)
-            if index < len(self.group_selector_tooltips): # Ensure index is valid for tooltips list
-                self.group_selector_tooltips.pop(index) # Remove corresponding tooltip
+            # No need to manage self.group_selector_tooltips.pop(index)
             frame_to_remove.destroy()
 
             # Update all remove buttons
