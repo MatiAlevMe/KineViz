@@ -137,7 +137,7 @@ class StudyDialog(Toplevel):
                                         command=lambda: self._show_input_help("Ayuda: Nombre del Estudio",
                                                                               "Nombre descriptivo para el estudio.\nEj: Estudio Piloto Marcha, Análisis Comparativo CMJ"))
         nombre_help_button.pack(side=tk.LEFT)
-        Tooltip(nombre_help_button, "Nombre descriptivo para el estudio.\nEj: Estudio Piloto Marcha, Análisis Comparativo CMJ")
+        Tooltip(nombre_help_button, "Nombre descriptivo para el estudio.\nEj: Estudio Piloto Marcha, Análisis Comparativo CMJ", enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         ttk.Label(main_frame, text="Cantidad de Participantes:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
@@ -148,7 +148,7 @@ class StudyDialog(Toplevel):
                                              command=lambda: self._show_input_help("Ayuda: Cantidad de Participantes",
                                                                                    "Número entero positivo que representa la cantidad máxima de participantes en el estudio.\nEj: 15"))
         num_sujetos_help_button.pack(side=tk.LEFT)
-        Tooltip(num_sujetos_help_button, "Número entero positivo que representa la cantidad máxima de participantes en el estudio.\nEj: 15")
+        Tooltip(num_sujetos_help_button, "Número entero positivo que representa la cantidad máxima de participantes en el estudio.\nEj: 15", enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         ttk.Label(main_frame, text="Cantidad de Intento(s) de Prueba:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
@@ -159,7 +159,7 @@ class StudyDialog(Toplevel):
                                           command=lambda: self._show_input_help("Ayuda: Cantidad de Intento(s)",
                                                                                 "Número entero positivo que representa la cantidad máxima de intentos por cada combinación de sub-valores de VIs para cada participante.\nEj: 3"))
         intentos_help_button.pack(side=tk.LEFT)
-        Tooltip(intentos_help_button, "Número entero positivo que representa la cantidad máxima de intentos por cada combinación de sub-valores de VIs para cada participante.\nEj: 3")
+        Tooltip(intentos_help_button, "Número entero positivo que representa la cantidad máxima de intentos por cada combinación de sub-valores de VIs para cada participante.\nEj: 3", enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         # --- Sección de Variables Independientes Dinámicas ---
@@ -179,7 +179,7 @@ class StudyDialog(Toplevel):
         Tooltip(iv_title_help_button, ("Las VIs definen las condiciones o factores que varían en su estudio.\n"
                                        "Cada VI tiene 'sub-valores' (niveles o categorías).\n"
                                        "Ej: VI 'Condicion' con sub-valores 'PRE', 'POST'.\n"
-                                       "Los nombres de archivo deben reflejar estos sub-valores en el orden definido aquí."))
+                                       "Los nombres de archivo deben reflejar estos sub-valores en el orden definido aquí."), enabled=self.settings.enable_hover_tooltips)
         row_idx += 1 # Incrementar fila para el contenedor de VIs
 
         iv_frame = ttk.Frame(main_frame, relief="groove", borderwidth=1) # Contenedor para el canvas de VIs
@@ -283,7 +283,7 @@ class StudyDialog(Toplevel):
                                               command=lambda: self._show_input_help("Ayuda: Nombre de VI",
                                                                                     "Nombre corto y descriptivo para la Variable Independiente.\nEvite espacios y caracteres especiales.\nEj: Condicion, Grupo, TipoSalto"))
             vi_name_help_button.pack(side=tk.LEFT, padx=(2,5), pady=5)
-            Tooltip(vi_name_help_button, "Nombre corto y descriptivo para la Variable Independiente.\nEvite espacios y caracteres especiales.\nEj: Condicion, Grupo, TipoSalto")
+            Tooltip(vi_name_help_button, "Nombre corto y descriptivo para la Variable Independiente.\nEvite espacios y caracteres especiales.\nEj: Condicion, Grupo, TipoSalto", enabled=self.settings.enable_hover_tooltips)
 
 
         # Botón para añadir sub-valor a ESTA VI
@@ -335,7 +335,7 @@ class StudyDialog(Toplevel):
                                        "Si 'Equipamiento' es Múltiple, un archivo podría ser:\n"
                                        "  `P01 Zapatillas 01.txt` y `P01 Zapatillas 01.txt` (P01 usa Zapatillas Y Canilleras).\n" # Note: Example filename seems duplicated, kept as is.
                                        "Si NO es Múltiple, un archivo solo puede tener UN sub-valor de 'Equipamiento':\n"
-                                       "  `P01 Zapatillas 01.txt` O `P01 Canilleras 01.txt`, pero no ambos para la misma VI."))
+                                       "  `P01 Zapatillas 01.txt` O `P01 Canilleras 01.txt`, pero no ambos para la misma VI."), enabled=self.settings.enable_hover_tooltips)
 
 
         # Checkbox "¿Obligatorio?" (se empaquetará/desempaquetará dinámicamente)
@@ -439,7 +439,7 @@ class StudyDialog(Toplevel):
                                            command=lambda: self._show_input_help("Ayuda: Sub-valor de VI",
                                                                                  "Valor o nivel específico de la Variable Independiente.\nEvite espacios y caracteres especiales. No usar 'Nulo'.\nEj: PRE, POST, Control, Experimental, CMJ, SJ"))
             desc_help_button.pack(side=tk.LEFT, padx=(2,0))
-            Tooltip(desc_help_button, "Valor o nivel específico de la Variable Independiente.\nEvite espacios y caracteres especiales. No usar 'Nulo'.\nEj: PRE, POST, Control, Experimental, CMJ, SJ")
+            Tooltip(desc_help_button, "Valor o nivel específico de la Variable Independiente.\nEvite espacios y caracteres especiales. No usar 'Nulo'.\nEj: PRE, POST, Control, Experimental, CMJ, SJ", enabled=self.settings.enable_hover_tooltips)
 
 
         # Botón para eliminar este sub-valor
@@ -535,7 +535,7 @@ class StudyDialog(Toplevel):
                                             "  Ej: VI 'Equipamiento' (Múltiple, Obligatoria). Archivo `P01 Zapatillas 01.txt` es válido. `P01 Nulo 01.txt` NO es válido para 'Equipamiento'.\n\n"
                                             "Si una VI es Múltiple pero NO Obligatoria:\n"
                                             "  Se PUEDE usar 'Nulo' para esta VI si no aplica ningún sub-valor.\n"
-                                            "  Ej: VI 'Equipamiento' (Múltiple, No Obligatoria). Archivo `P01 Nulo VI2 01.txt` es válido para 'Equipamiento' siempre que exista al menos una VI no nula en el nombre del archivo."))
+                                            "  Ej: VI 'Equipamiento' (Múltiple, No Obligatoria). Archivo `P01 Nulo VI2 01.txt` es válido para 'Equipamiento' siempre que exista al menos una VI no nula en el nombre del archivo."), enabled=self.settings.enable_hover_tooltips)
 
             current_state = tk.NORMAL if not self.is_editing else tk.DISABLED
             is_mandatory_cb_widget.config(state=current_state)

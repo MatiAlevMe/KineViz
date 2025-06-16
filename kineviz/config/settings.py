@@ -34,7 +34,8 @@ class AppSettings:
             'discrete_tables_per_page': '10', # Changed default
             'font_scale': '1.0',
             'theme': 'Light',
-            'show_factory_reset_button': 'False' # New setting
+            'show_factory_reset_button': 'False', # New setting
+            'enable_hover_tooltips': 'False' # New setting for hover tooltips
         }
         # DESCRIPTOR_ALIASES ya no se gestiona aquí
     }
@@ -214,6 +215,15 @@ class AppSettings:
     @show_factory_reset_button.setter
     def show_factory_reset_button(self, value: bool):
         self.set_setting('show_factory_reset_button', str(value))
+
+    @property
+    def enable_hover_tooltips(self) -> bool:
+        """Controla si los tooltips por hover están habilitados."""
+        return self.get_bool_setting('enable_hover_tooltips', False)
+
+    @enable_hover_tooltips.setter
+    def enable_hover_tooltips(self, value: bool):
+        self.set_setting('enable_hover_tooltips', str(value))
 
     def reset_to_defaults(self):
          """Restablece las configuraciones en memoria a los valores por defecto."""
