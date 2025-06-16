@@ -789,6 +789,8 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         """Añade un nuevo selector de grupo (Combobox + botón eliminar)."""
         if not self.groups_inner_frame.winfo_exists(): return # Prevenir error si el frame no existe
 
+        scaled_font = get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale)
+
         selector_frame = ttk.Frame(self.groups_inner_frame)
         selector_frame.pack(fill=tk.X, pady=2, padx=(0,0)) # Ajustar padding
 
