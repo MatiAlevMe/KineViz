@@ -54,7 +54,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
 
         # Variable para el nombre del análisis (reutilizada)
         self.analysis_name_var = tk.StringVar()
-        # self.group_selector_tooltips = [] # REMOVE: No longer storing these tooltips in a list
+        self.group_selector_tooltips = [] # NUEVO: Para almacenar instancias de Tooltip
 
         self.result = None # Initialize result attribute
 
@@ -564,8 +564,8 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         group_select_help_button = ttk.Button(group_combo_frame, text="?", width=3, style="Help.TButton",
                                               command=lambda: self._show_input_help("Ayuda: Selección de Grupo", group_select_help_long_text))
         group_select_help_button.pack(side=tk.LEFT)
-        Tooltip(group_select_help_button, text=group_select_help_long_text, short_text=group_select_help_short_text, enabled=self.settings.enable_hover_tooltips)
-        # tooltip_instance is created and bound, but not stored in a list by self
+        help_tooltip = Tooltip(group_select_help_button, text=group_select_help_long_text, short_text=group_select_help_short_text, enabled=self.settings.enable_hover_tooltips)
+        
 
         # Botón para eliminar este selector (icono basura)
         remove_button = ttk.Button(selector_frame, text="🗑️", width=3, # Usar icono
@@ -574,19 +574,24 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         Tooltip(remove_button, text="Quitar este grupo de la comparación.", short_text="Quitar grupo.", enabled=self.settings.enable_hover_tooltips)
 
         # Deshabilitar botón si solo quedan 2 selectores
+        # Note: This logic for remove_button state is complex and might be better handled by a dedicated _update_remove_button_states method
         if len(self.group_selector_vars) < 2:
              remove_button.config(state=tk.DISABLED)
         # Habilitar botones de los anteriores si ahora hay más de 2
         elif len(self.group_selector_vars) == 2:
              # Habilitar botón del segundo selector (índice 1)
-             if len(self.group_selector_frames) > 1:
+             if len(self.group_selector_frames) > 1 and self.group_selector_frames[1].winfo_exists(): # Check frame exists
                  second_frame = self.group_selector_frames[1]
-                 if len(second_frame.winfo_children()) > 1:
-                     second_frame.winfo_children()[1].config(state=tk.NORMAL)
+                 if len(second_frame.winfo_children()) > 1: # Check button exists
+                     # Assuming the second child is the remove button
+                     btn_widget = second_frame.winfo_children()[1]
+                     if isinstance(btn_widget, ttk.Button):
+                        btn_widget.config(state=tk.NORMAL)
 
 
         self.group_selector_vars.append(group_var)
         self.group_selector_frames.append(selector_frame) # Guardar frame
+        self.group_selector_tooltips.append(help_tooltip) # Store the help button's tooltip
         self._refresh_group_combobox_options() # Actualizar opciones de todos los combos
 
     def remove_group_selector(self, frame_to_remove, var_to_remove):
@@ -599,13 +604,20 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             index = self.group_selector_frames.index(frame_to_remove)
             self.group_selector_vars.pop(index)
             self.group_selector_frames.pop(index)
+            if index < len(self.group_selector_tooltips): # Ensure index is valid before popping
+                self.group_selector_tooltips.pop(index)
             frame_to_remove.destroy()
 
             # Deshabilitar botón de eliminar si solo quedan 2
+            # Note: This logic for remove_button state is complex and might be better handled by a dedicated _update_remove_button_states method
             if len(self.group_selector_vars) == 2:
-                 for i in range(2):
-                     if len(self.group_selector_frames[i].winfo_children()) > 1:
-                         self.group_selector_frames[i].winfo_children()[1].config(state=tk.DISABLED)
+                 for i in range(min(2, len(self.group_selector_frames))): # Iterate safely
+                     if self.group_selector_frames[i].winfo_exists() and \
+                        len(self.group_selector_frames[i].winfo_children()) > 1:
+                         # Assuming the second child is the remove button
+                         button_widget = self.group_selector_frames[i].winfo_children()[1]
+                         if isinstance(button_widget, ttk.Button):
+                            button_widget.config(state=tk.DISABLED)
 
 
             self.update_available_columns()
@@ -695,7 +707,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             frame.destroy()
         self.group_selector_frames.clear() # Use clear() for lists
         self.group_selector_vars.clear()
-        # No need to manage self.group_selector_tooltips.clear()
+        self.group_selector_tooltips.clear() # Clear stored tooltips
 
         if update_columns:
             self.update_available_columns() # Columnas dependen de grupos
