@@ -1066,7 +1066,6 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
              self.one_vi_button.state(['!pressed', '!disabled'])
              self.two_vi_button.state(['!pressed', '!disabled'])
         
-        self._update_dialog_size_and_scrollbar()
         if hasattr(super(), 'set_vi_grouping_mode'): return super_set_vi_grouping_mode_result
 
 
