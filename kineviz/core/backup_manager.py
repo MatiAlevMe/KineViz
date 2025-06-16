@@ -159,10 +159,9 @@ def create_backup(backup_type: str) -> Optional[pathlib.Path]:
         return None
 
 if __name__ == '__main__':
-    # Declare global variables that will be modified in this block at the very top.
-    # This is to ensure the declaration precedes any use or assignment if there's
-    # a subtle parsing order issue causing the SyntaxError.
-    global DB_FILENAME, CONFIG_FILENAME
+    # DB_FILENAME and CONFIG_FILENAME are module-level globals.
+    # The 'global' keyword is not needed here and was causing a SyntaxError.
+    # Assignments within this block will directly modify the module-level variables.
 
     import sys # For sys.path modification
     # shutil is already imported at the top if needed for cleanup
