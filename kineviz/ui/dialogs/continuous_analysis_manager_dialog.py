@@ -673,7 +673,7 @@ class ContinuousAnalysisManagerDialog(Toplevel):
 
     def _open_new_analysis_dialog(self):
         # This is where ContinuousAnalysisConfigDialog is launched
-        dialog = ContinuousAnalysisConfigDialog(self, self.analysis_service, self.study_id) # self (this Toplevel) is the parent
+        dialog = ContinuousAnalysisConfigDialog(self, self.analysis_service, self.study_id, self.main_window.settings) # Pass settings
         self.wait_window(dialog) # Ensure manager waits for config dialog to close
 
         if dialog.result: # This will be checked after dialog closes

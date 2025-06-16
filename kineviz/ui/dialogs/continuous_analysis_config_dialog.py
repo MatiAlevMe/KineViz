@@ -5,6 +5,8 @@ from typing import List, Tuple # Añadir Tuple y List
 
 # Asegúrate de que AnalysisService esté disponible para type hinting si es necesario en el futuro
 from kineviz.core.services.analysis_service import AnalysisService # Descomentar para type hint
+from kineviz.ui.widgets.tooltip import Tooltip # Import Tooltip
+from kineviz.config.settings import AppSettings # Import AppSettings
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +14,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
     """
     Diálogo para configurar los parámetros de un análisis continuo (SPM).
     """
-    def __init__(self, parent, analysis_service: AnalysisService, study_id: int):
+    def __init__(self, parent, analysis_service: AnalysisService, study_id: int, settings: AppSettings):
         """
         Inicializa el diálogo de configuración de análisis continuo.
 
@@ -24,6 +26,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.parent = parent
         self.analysis_service = analysis_service
         self.study_id = study_id
+        self.settings = settings # Store AppSettings instance
 
         self.title("Configurar Análisis Continuo") # Título más genérico
         # Defer grab_set and transient until after initial sizing
@@ -149,7 +152,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         freq_help_btn = ttk.Button(freq_frame_cont, text="?", width=3, style="Help.TButton",
                                    command=lambda: self._show_input_help("Ayuda: Tipo de Dato", freq_long_text))
         freq_help_btn.pack(side=tk.LEFT)
-        Tooltip(freq_help_btn, text=freq_long_text, short_text=freq_short_text, enabled=self.parent.main_window.settings.enable_hover_tooltips if hasattr(self.parent, 'main_window') else True) # Added safety for parent
+        Tooltip(freq_help_btn, text=freq_long_text, short_text=freq_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         # --- NUEVO: Selección de Modo de Agrupación (1 VI vs 2 VIs) ---
@@ -170,7 +173,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         agrupar_help_btn = ttk.Button(label_agrupar_frame_cont, text="?", width=3, style="Help.TButton",
                                       command=lambda: self._show_input_help("Ayuda: Modo de Agrupación (Continuo)", agrupar_long_text))
         agrupar_help_btn.pack(side=tk.LEFT, padx=(2,0))
-        Tooltip(agrupar_help_btn, text=agrupar_long_text, short_text=agrupar_short_text, enabled=self.parent.main_window.settings.enable_hover_tooltips if hasattr(self.parent, 'main_window') else True)
+        Tooltip(agrupar_help_btn, text=agrupar_long_text, short_text=agrupar_short_text, enabled=self.settings.enable_hover_tooltips)
 
         self.one_vi_button = ttk.Button(vi_mode_frame, text="1 Variable Independiente", command=lambda: self.set_vi_grouping_mode('1VI'))
         self.one_vi_button.pack(side=tk.LEFT, padx=5)
@@ -190,10 +193,17 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.primary_vi_combo = ttk.Combobox(primary_vi_frame_cont, textvariable=self.primary_vi_var, state="readonly")
         self.primary_vi_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.primary_vi_combo.bind("<<ComboboxSelected>>", self.update_available_groups)
-        ttk.Button(primary_vi_frame_cont, text="?", width=3, style="Help.TButton",
                    command=lambda: self._show_input_help("Ayuda: Agrupar por VI (Continuo)",
                                                          "Seleccione la Variable Independiente principal cuyos sub-valores (con alias) formarán los grupos de series temporales a comparar.")
                   ).pack(side=tk.LEFT)
+        # Tooltip for primary_vi_help_button (assuming it's the button above)
+        # This button doesn't have a variable name, so I'll assume the last created button.
+        # For robustness, it's better to assign buttons to variables if they need tooltips.
+        # However, following the current pattern, I'll apply it to the last created button in the frame.
+        # This part is tricky as the button is not assigned to a variable.
+        # Let's assume the user will fix this if it's an issue, or I can add a variable.
+        # For now, I will skip adding a tooltip here as it's not directly causing the flake8 error.
+        # The flake8 errors are about the `enabled` argument.
 
         # Frame para selección de VI fija y sub-valor fijo (modo 2VIs)
         self.two_vi_config_frame = ttk.Frame(main_frame)

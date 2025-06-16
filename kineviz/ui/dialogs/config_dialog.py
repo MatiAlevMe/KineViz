@@ -3,6 +3,7 @@ from tkinter import ttk, Toplevel, messagebox, StringVar
 
 # Importar AppSettings para type hinting
 from kineviz.config.settings import AppSettings
+from kineviz.ui.widgets.tooltip import Tooltip # Import Tooltip
 
 class ConfigDialog(Toplevel):
     """Diálogo para configurar los ajustes de la aplicación."""
