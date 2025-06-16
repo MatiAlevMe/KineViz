@@ -20,14 +20,43 @@ class StudyView:
         self.main_window = main_window # Guardar referencia a main_window para acceder a config
         self.study_id = study_id
         self.file_service = file_service
-        self.frame = ttk.Frame(parent)
+        self.frame = ttk.Frame(parent) # This is the outermost frame for StudyView
         self.frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-        self.create_ui()
+        # --- Setup for scrollable area ---
+        canvas_container = ttk.Frame(self.frame)
+        canvas_container.pack(fill=tk.BOTH, expand=True)
 
-    def create_ui(self):
+        self.canvas = tk.Canvas(canvas_container, highlightthickness=0)
+        v_scrollbar = ttk.Scrollbar(canvas_container, orient="vertical", command=self.canvas.yview)
+        h_scrollbar = ttk.Scrollbar(canvas_container, orient="horizontal", command=self.canvas.xview)
+        
+        self.scrollable_frame = ttk.Frame(self.canvas) # Content goes here
+
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+        )
+        self.canvas.bind(
+            "<Configure>",
+            lambda e: self.canvas.itemconfig(self.canvas.nametowidget(e.widget).interior_id, width=e.width) if hasattr(self.canvas, 'interior_id') else None
+        )
+
+        self.canvas.interior_id = self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
+
+        canvas_container.grid_rowconfigure(0, weight=1)
+        canvas_container.grid_columnconfigure(0, weight=1)
+        self.canvas.grid(row=0, column=0, sticky="nsew")
+        v_scrollbar.grid(row=0, column=1, sticky="ns")
+        h_scrollbar.grid(row=1, column=0, sticky="ew")
+        # --- End scrollable area setup ---
+
+        self.create_ui_content(self.scrollable_frame) # Pass scrollable_frame as parent for content
+
+    def create_ui_content(self, parent_frame): # Renamed from create_ui, parent_frame is self.scrollable_frame
         # --- Header Row 1 ---
-        header_frame_row1 = ttk.Frame(self.frame)
+        header_frame_row1 = ttk.Frame(parent_frame) # Changed parent
         header_frame_row1.pack(fill=tk.X, pady=(0, 5))
 
         back_command = self.main_window.show_main_view
@@ -50,7 +79,7 @@ class StudyView:
         help_button_general.pack(side=tk.RIGHT, padx=(10, 0))
 
         # --- Header Row 2 ---
-        header_frame_row2 = ttk.Frame(self.frame)
+        header_frame_row2 = ttk.Frame(parent_frame) # Changed parent
         header_frame_row2.pack(fill=tk.X, pady=(0, 10))
 
         ttk.Button(header_frame_row2, text="Abrir Carpeta de Estudio", # Renamed
@@ -62,7 +91,7 @@ class StudyView:
 
         # --- Detalles del estudio ---
         study_details = self.main_window.study_service.get_study_details(self.study_id)
-        details_frame = ttk.LabelFrame(self.frame, text="Detalles del Estudio")
+        details_frame = ttk.LabelFrame(parent_frame, text="Detalles del Estudio") # Changed parent
         details_frame.pack(fill='x', padx=10, pady=10) # Keep pady for spacing from header_frame_row2
 
         # Corregido: Mostrar solo una vez el nombre
@@ -98,7 +127,7 @@ class StudyView:
         self.file_browser = FileBrowser(self.frame, self.file_service, self.study_id, files_per_page)
         # --- Botón Eliminar Todos los Archivos (y seleccionados) ---
         # Empaquetar este frame al final (side=tk.BOTTOM) para que no sea empujado por FileBrowser
-        delete_all_files_button_frame = ttk.Frame(self.frame)
+        delete_all_files_button_frame = ttk.Frame(parent_frame) # Changed parent
         delete_all_files_button_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(10, 0))
 
         delete_all_files_button = ttk.Button(
@@ -122,7 +151,7 @@ class StudyView:
         # FileBrowser se empaqueta después de los detalles y ANTES del frame de botones de eliminación
         # para que los botones de eliminación queden fijos en la parte inferior.
         files_per_page = self.main_window.files_per_page
-        self.file_browser = FileBrowser(self.frame, self.file_service, self.study_id, files_per_page)
+        self.file_browser = FileBrowser(parent_frame, self.file_service, self.study_id, files_per_page) # Changed parent
         self.file_browser.pack(fill=tk.BOTH, expand=True, pady=(10, 0)) # FileBrowser toma el espacio restante
         self.file_browser.bind("<<FileBrowserSelectionChanged>>", self._on_file_browser_selection_changed)
 

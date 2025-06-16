@@ -59,13 +59,47 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
     def create_widgets(self):
         """Crea los widgets del diálogo."""
-        self.main_frame = ttk.Frame(self, padding="10")
-        self.main_frame.pack(fill=tk.BOTH, expand=True)
-        self.main_frame.rowconfigure(2, weight=1)  # Adjust row for treeview expansion
-        self.main_frame.columnconfigure(0, weight=1)
+        # self.main_frame was the original content holder. Now, content goes into scrollable_frame.
+        # The canvas mechanism will be placed directly in self (the Toplevel).
+
+        # --- Setup for scrollable area ---
+        canvas_container = ttk.Frame(self) # Container for canvas and scrollbars
+        canvas_container.pack(fill=tk.BOTH, expand=True)
+
+        self.canvas = tk.Canvas(canvas_container, highlightthickness=0)
+        v_scrollbar = ttk.Scrollbar(canvas_container, orient="vertical", command=self.canvas.yview)
+        h_scrollbar = ttk.Scrollbar(canvas_container, orient="horizontal", command=self.canvas.xview)
+        
+        # This scrollable_frame will act as the new self.main_frame
+        self.scrollable_main_frame = ttk.Frame(self.canvas, padding="10") 
+
+        self.scrollable_main_frame.bind(
+            "<Configure>",
+            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+        )
+        self.canvas.bind(
+            "<Configure>",
+            lambda e: self.canvas.itemconfig(self.canvas.nametowidget(e.widget).interior_id, width=e.width) if hasattr(self.canvas, 'interior_id') else None
+        )
+
+        self.canvas.interior_id = self.canvas.create_window((0, 0), window=self.scrollable_main_frame, anchor="nw")
+        self.canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
+
+        canvas_container.grid_rowconfigure(0, weight=1)
+        canvas_container.grid_columnconfigure(0, weight=1)
+        self.canvas.grid(row=0, column=0, sticky="nsew")
+        v_scrollbar.grid(row=0, column=1, sticky="ns")
+        h_scrollbar.grid(row=1, column=0, sticky="ew")
+        # --- End scrollable area setup ---
+
+        # All original content of self.main_frame now goes into self.scrollable_main_frame
+        # Let's call it main_content_parent for clarity in this method
+        main_content_parent = self.scrollable_main_frame
+        main_content_parent.rowconfigure(2, weight=1)  # Treeview's row
+        main_content_parent.columnconfigure(0, weight=1) # Main column
 
         # --- Search and Filter Frame ---
-        search_filter_frame = ttk.LabelFrame(self.main_frame, text="Buscar y Filtrar Análisis", padding="10")
+        search_filter_frame = ttk.LabelFrame(main_content_parent, text="Buscar y Filtrar Análisis", padding="10") # Changed parent
         search_filter_frame.grid(row=0, column=0, sticky="ew", pady=(0,10))
         search_filter_frame.columnconfigure(1, weight=1)
         search_filter_frame.columnconfigure(3, weight=1)
@@ -142,7 +176,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         # new_analysis_frame no longer needed here
 
         # --- Lista de Análisis (Treeview) ---
-        tree_frame = ttk.LabelFrame(self.main_frame, text="Análisis Guardados") # Text is fine here
+        tree_frame = ttk.LabelFrame(main_content_parent, text="Análisis Guardados") # Changed parent
         tree_frame.grid(row=2, column=0, sticky="nsew")
         tree_frame.rowconfigure(0, weight=1)
         tree_frame.columnconfigure(0, weight=1)
@@ -187,7 +221,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.analysis_tree.bind("<Double-1>", lambda e: self.view_analysis_plot()) # Double click to view plot
 
         # --- Action Buttons Frame (View actions) ---
-        view_action_frame = ttk.Frame(self.main_frame)
+        view_action_frame = ttk.Frame(main_content_parent) # Changed parent
         view_action_frame.grid(row=3, column=0, sticky="ew", pady=(10,0))
 
         self.view_plot_button = ttk.Button(view_action_frame, text="Ver/Abrir Gráfico", command=self.view_analysis_plot, state=tk.DISABLED)
@@ -206,7 +240,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
 
         # --- Action Buttons Frame (Folder actions) ---
-        folder_action_frame = ttk.Frame(self.main_frame)
+        folder_action_frame = ttk.Frame(main_content_parent) # Changed parent
         folder_action_frame.grid(row=4, column=0, sticky="ew", pady=(5,0))
 
         self.open_folder_button = ttk.Button(folder_action_frame, text="Abrir Carpeta", command=self.open_analysis_folder, state=tk.DISABLED)
@@ -221,11 +255,11 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
 
         # --- Pagination Controls ---
-        self.pagination_controls_frame = ttk.Frame(self.main_frame)
+        self.pagination_controls_frame = ttk.Frame(main_content_parent) # Changed parent
         self.pagination_controls_frame.grid(row=6, column=0, sticky="ew", pady=(5,0)) # New row for pagination
 
         # --- Bottom Action Frame (Delete and Close buttons) ---
-        bottom_action_frame = ttk.Frame(self.main_frame)
+        bottom_action_frame = ttk.Frame(main_content_parent) # Changed parent
         bottom_action_frame.grid(row=7, column=0, sticky="ew", pady=(10, 0)) # Adjusted row
 
         self.delete_all_button = ttk.Button(
@@ -250,6 +284,14 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         # self.delete_button.pack(side=tk.LEFT, padx=5)
 
         ttk.Button(bottom_action_frame, text="Cerrar", command=self.destroy).pack(side=tk.RIGHT, padx=5)
+
+        # Set minsize after widgets are created
+        self.update_idletasks()
+        self.scrollable_main_frame.update_idletasks()
+        self.canvas.update_idletasks()
+        req_width = self.scrollable_main_frame.winfo_reqwidth() + v_scrollbar.winfo_reqwidth() + 20
+        req_height = self.scrollable_main_frame.winfo_reqheight() + h_scrollbar.winfo_reqheight() + 20
+        self.minsize(max(600, req_width), max(400, req_height))
 
 
     def _confirm_delete_all_individual_analyses(self):
