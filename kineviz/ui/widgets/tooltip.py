@@ -7,16 +7,18 @@ class Tooltip:
     The tooltip uses a ttk.Label styled with 'Tooltip.TLabel',
     which should be pre-configured with font scaling and colors.
     """
-    def __init__(self, widget, text: str, wraplength: int = 350): # Increased default wraplength
+    def __init__(self, widget, text: str, wraplength: int = 350, enabled: bool = True): # Added enabled flag
         self.widget = widget
         self.text = text
         self.wraplength = wraplength
+        self.enabled = enabled # Store enabled state
         self.tooltip_window = None
         self._id_show = None # For delayed show
         self._id_hide = None # For delayed hide
 
-        self.widget.bind("<Enter>", self._schedule_show_tooltip)
-        self.widget.bind("<Leave>", self._schedule_hide_tooltip)
+        if self.enabled:
+            self.widget.bind("<Enter>", self._schedule_show_tooltip)
+            self.widget.bind("<Leave>", self._schedule_hide_tooltip)
         # Removing the ButtonPress binding on the widget to allow its own command to fire.
         # self.widget.bind("<ButtonPress>", self._hide_tooltip_now) 
 

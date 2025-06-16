@@ -4,6 +4,7 @@ import os # Necesario para verificar existencia de carpetas
 import logging # Importar logging
 from pathlib import Path # Importar Path
 from kineviz.core.services.study_service import MAX_PINNED_STUDIES # Importar la constante
+from kineviz.ui.widgets.tooltip import Tooltip # Import Tooltip
 
 logger = logging.getLogger(__name__) # Logger para este módulo
 
@@ -80,11 +81,23 @@ class MainView:
         ttk.Label(self.header_content_frame, text="KineViz", style='Header.TLabel').pack(side=tk.LEFT, padx=(0, 20))
         action_button_frame = ttk.Frame(self.header_content_frame)
         action_button_frame.pack(side=tk.RIGHT)
-        ttk.Button(action_button_frame, text='Manual', command=self.main_window.open_user_manual, style="Green.TButton").pack(side=tk.RIGHT, padx=5)
-        ttk.Button(action_button_frame, text='Configuración', command=self.main_window.show_config_dialog).pack(side=tk.RIGHT, padx=5)
-        ttk.Button(action_button_frame, text='Ayuda', command=self.main_window.show_welcome_message).pack(side=tk.RIGHT, padx=5)
-        ttk.Button(action_button_frame, text='Abrir Carpeta Estudios',
-                  command=lambda: self.main_window.open_folder("estudios")).pack(side=tk.RIGHT, padx=5)
+
+        manual_btn = ttk.Button(action_button_frame, text='Manual', command=self.main_window.open_user_manual, style="Green.TButton")
+        manual_btn.pack(side=tk.RIGHT, padx=5)
+        Tooltip(manual_btn, "Abrir el manual de usuario de KineViz.", enabled=self.main_window.settings.enable_hover_tooltips)
+
+        config_btn = ttk.Button(action_button_frame, text='Configuración', command=self.main_window.show_config_dialog)
+        config_btn.pack(side=tk.RIGHT, padx=5)
+        Tooltip(config_btn, "Abrir el diálogo de configuración de la aplicación.", enabled=self.main_window.settings.enable_hover_tooltips)
+        
+        help_btn = ttk.Button(action_button_frame, text='Ayuda', command=self.main_window.show_welcome_message)
+        help_btn.pack(side=tk.RIGHT, padx=5)
+        Tooltip(help_btn, "Mostrar mensaje de bienvenida e introducción.", enabled=self.main_window.settings.enable_hover_tooltips)
+
+        open_folder_btn = ttk.Button(action_button_frame, text='Abrir Carpeta Estudios',
+                                     command=lambda: self.main_window.open_folder("estudios"))
+        open_folder_btn.pack(side=tk.RIGHT, padx=5)
+        Tooltip(open_folder_btn, "Abrir la carpeta principal donde se guardan todos los estudios.", enabled=self.main_window.settings.enable_hover_tooltips)
 
         # --- Búsqueda ---
         # Populate self.search_content_frame
@@ -278,6 +291,7 @@ class MainView:
         main_view_help_button = ttk.Button(self.pagination_container, text="?", width=3,
                                            style="Help.TButton", command=self._show_main_view_help)
         main_view_help_button.pack(side=tk.LEFT, padx=(10, 2))
+        Tooltip(main_view_help_button, "Mostrar ayuda para la ventana principal de estudios.", enabled=self.main_window.settings.enable_hover_tooltips)
 
     def _show_main_view_help(self):
         """Muestra un popup de ayuda para la Vista Principal."""

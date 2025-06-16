@@ -31,6 +31,7 @@ class ConfigDialog(Toplevel):
         self.var_font_scale = StringVar()
         self.var_theme = StringVar()
         self.var_show_factory_reset = tk.BooleanVar() # New variable for the switch
+        self.var_enable_hover_tooltips = tk.BooleanVar() # New variable for hover tooltips
 
         self.load_current_settings()
         
@@ -56,6 +57,7 @@ class ConfigDialog(Toplevel):
         self.var_font_scale.set(str(self.settings.font_scale))
         self.var_theme.set(self.settings.theme)
         self.var_show_factory_reset.set(self.settings.show_factory_reset_button) # Load new setting
+        self.var_enable_hover_tooltips.set(self.settings.enable_hover_tooltips) # Load new setting
 
     def create_widgets(self):
         """Crea los widgets del diálogo."""
@@ -139,6 +141,24 @@ class ConfigDialog(Toplevel):
                                                          "Cambia la apariencia visual de la aplicación (colores).\n"
                                                          "Light: Tema claro (predeterminado).\n"
                                                          "Dark: Tema oscuro.")
+                  ).pack(side=tk.LEFT)
+        row_idx += 1
+
+        # --- Switch para habilitar/deshabilitar tooltips por hover ---
+        enable_tooltips_frame = ttk.Frame(main_frame)
+        enable_tooltips_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10, 5), sticky="w")
+        
+        enable_tooltips_cb = ttk.Checkbutton(
+            enable_tooltips_frame,
+            text="Habilitar Tooltips por Hover (Accesibilidad)",
+            variable=self.var_enable_hover_tooltips
+        )
+        enable_tooltips_cb.pack(side=tk.LEFT, padx=(0,5))
+        ttk.Button(enable_tooltips_frame, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Habilitar Tooltips por Hover",
+                                                         "Activa o desactiva los tooltips que aparecen al pasar el cursor sobre ciertos elementos.\n"
+                                                         "Estos tooltips respetan la configuración de tamaño de fuente.\n"
+                                                         "Los popups de ayuda por clic seguirán funcionando independientemente de esta opción.")
                   ).pack(side=tk.LEFT)
         row_idx += 1
 
@@ -251,6 +271,7 @@ class ConfigDialog(Toplevel):
             self.settings.font_scale = float(self.var_font_scale.get())
             self.settings.theme = self.var_theme.get()
             self.settings.show_factory_reset_button = self.var_show_factory_reset.get() # Save new setting
+            self.settings.enable_hover_tooltips = self.var_enable_hover_tooltips.get() # Save new setting
 
             # Guardar en el archivo config.ini
             self.settings.save_settings()
