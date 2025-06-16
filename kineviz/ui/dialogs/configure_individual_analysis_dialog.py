@@ -152,16 +152,18 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         label_agrupar_frame = ttk.Frame(vi_mode_frame)
         label_agrupar_frame.pack(side=tk.LEFT, padx=(0,5))
         ttk.Label(label_agrupar_frame, text="Agrupar por:").pack(side=tk.LEFT)
-        ttk.Button(label_agrupar_frame, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Modo de Agrupación",
-                                                         ("Define cómo se formarán los grupos para la comparación:\n\n"
-                                                          "1 Variable Independiente (1VI):\n"
-                                                          "  Compara los diferentes sub-valores de UNA ÚNICA VI.\n"
-                                                          "  Ej: Comparar 'PRE' vs 'POST' de la VI 'Condicion'.\n\n"
-                                                          "2 Variables Independientes (2VIs):\n"
-                                                          "  Compara los sub-valores de una VI, MANTENIENDO FIJO un sub-valor de OTRA VI.\n"
-                                                          "  Ej: Comparar 'CMJ' vs 'SJ' de la VI 'TipoSalto', pero solo para la condición 'PRE' de la VI 'Condicion'."))
-                  ).pack(side=tk.LEFT, padx=(2,0))
+        agrupar_long_text = ("Define cómo se formarán los grupos para la comparación:\n\n"
+                             "1 Variable Independiente (1VI):\n"
+                             "  Compara los diferentes sub-valores de UNA ÚNICA VI.\n"
+                             "  Ej: Comparar 'PRE' vs 'POST' de la VI 'Condicion'.\n\n"
+                             "2 Variables Independientes (2VIs):\n"
+                             "  Compara los sub-valores de una VI, MANTENIENDO FIJO un sub-valor de OTRA VI.\n"
+                             "  Ej: Comparar 'CMJ' vs 'SJ' de la VI 'TipoSalto', pero solo para la condición 'PRE' de la VI 'Condicion'.")
+        agrupar_short_text = "Modo de agrupar datos (1VI o 2VIs)."
+        agrupar_help_btn = ttk.Button(label_agrupar_frame, text="?", width=3, style="Help.TButton",
+                                      command=lambda: self._show_input_help("Ayuda: Modo de Agrupación", agrupar_long_text))
+        agrupar_help_btn.pack(side=tk.LEFT, padx=(2,0))
+        Tooltip(agrupar_help_btn, text=agrupar_long_text, short_text=agrupar_short_text, enabled=self.settings.enable_hover_tooltips)
         
         self.one_vi_button = ttk.Button(vi_mode_frame, text="1 Variable Independiente", command=lambda: self.set_vi_grouping_mode('1VI'))
         self.one_vi_button.pack(side=tk.LEFT, padx=5)
@@ -342,6 +344,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
                  self.vi_grouping_mode.set("") # Resetear modo
                  self.one_vi_button.state(['!pressed', '!disabled']) # Resetear botones
                  self.two_vi_button.state(['!pressed', '!disabled'])
+                 # self._update_dialog_size_and_scrollbar() # Removed call
                  return
             self.two_vi_config_frame.grid()
             self.fixed_vi_combo['values'] = self.all_vi_names
@@ -352,6 +355,8 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         else: # Si se resetea
              self.one_vi_button.state(['!pressed', '!disabled'])
              self.two_vi_button.state(['!pressed', '!disabled'])
+        
+        # self._update_dialog_size_and_scrollbar() # Removed call
 
 
     def _update_fixed_descriptor_options(self, event=None):
@@ -419,6 +424,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             self._clear_group_selectors(update_columns=False) # No actualizar columnas aún
             self.group_selection_outer_frame.grid_remove() # Ocultar frame de grupos
             logger.debug("Limpiando grupos: falta información previa.")
+            # self._update_dialog_size_and_scrollbar() # Removed call
             return
 
         # Obtener el descriptor original si hay alias
@@ -780,6 +786,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.analysis_name_frame.grid()
         self.button_frame.grid()
         self.save_button.config(state=tk.NORMAL) # Habilitar botón de guardar
+        # self._update_dialog_size_and_scrollbar() # Removed call
 
     def _hide_final_steps(self):
         """Oculta los frames de supuestos, nombre y botones."""
@@ -787,6 +794,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.analysis_name_frame.grid_remove()
         self.button_frame.grid_remove()
         self.save_button.config(state=tk.DISABLED) # Deshabilitar botón de guardar
+        # self._update_dialog_size_and_scrollbar() # Removed call
 
 
     def _save_configuration_and_close(self):
