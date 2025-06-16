@@ -84,16 +84,10 @@ class MainView:
         action_button_frame.pack(side=tk.RIGHT)
 
         # Packing order is reversed for side=tk.RIGHT to achieve visual L-R order
-        # Desired visual L-R: "Abrir Carpeta" | "Ayuda" | "Configuración" | "Manual" | "?" (MainView Help)
+        # Desired visual L-R: "Abrir Carpeta" | "Ayuda" | "Configuración" | "Manual"
+        # "?" (MainView Help) button is moved to the search_content_frame (second row).
         
-        # 0. MainView Help Button (packed first, appears rightmost)
-        main_view_help_button = ttk.Button(action_button_frame, text="?", width=3,
-                                           style="Help.TButton", command=self._show_main_view_help)
-        main_view_help_button.pack(side=tk.RIGHT, padx=5)
-        main_view_tooltip_text = "Mostrar ayuda para la ventana principal de estudios."
-        Tooltip(main_view_help_button, text=main_view_tooltip_text, short_text=main_view_tooltip_text, enabled=self.main_window.settings.enable_hover_tooltips)
-        
-        # 1. Manual (packed second, appears second from right)
+        # 1. Manual (packed first, appears rightmost)
         manual_btn = ttk.Button(action_button_frame, text='Manual', command=self.main_window.open_user_manual, style="Green.TButton")
         manual_btn.pack(side=tk.RIGHT, padx=5)
         manual_tooltip_text = "Abrir el manual de usuario de KineViz."
@@ -133,17 +127,22 @@ class MainView:
 
         refresh_button = ttk.Button(self.search_content_frame, text="Refrescar", command=self.load_studies)
         Tooltip(refresh_button, text="Recargar la lista de estudios desde la base de datos.", short_text="Recargar lista.", enabled=self.main_window.settings.enable_hover_tooltips)
-
-        # New packing order for search elements:
-        refresh_button.pack(side=tk.LEFT, padx=(0,5)) 
-        clear_button.pack(side=tk.LEFT, padx=(0,5))
         
-        # Search button and entry are packed to the RIGHT.
-        # To have [Search Button][Search Entry] on the right, pack entry last with expand=True.
-        search_button.pack(side=tk.RIGHT, padx=(5,0)) # padx for spacing from entry
-        search_entry.pack(side=tk.RIGHT, fill=tk.X, expand=True, padx=(0,5)) # padx for spacing from window edge
+        # "?" (MainView Help) button, moved back to this row.
+        main_view_help_button = ttk.Button(self.search_content_frame, text="?", width=3,
+                                           style="Help.TButton", command=self._show_main_view_help)
+        main_view_tooltip_text = "Mostrar ayuda para la ventana principal de estudios."
+        Tooltip(main_view_help_button, text=main_view_tooltip_text, short_text=main_view_tooltip_text, enabled=self.main_window.settings.enable_hover_tooltips)
 
-        # The "?" (MainView Help) button has been moved to the header_content_frame.
+        # Corrected packing order for search elements:
+        # Left side:
+        search_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0,5)) 
+        search_button.pack(side=tk.LEFT, padx=(0,10)) # Add some space after search button
+        
+        # Right side (packed in reverse visual order):
+        main_view_help_button.pack(side=tk.RIGHT, padx=(0,0)) # Rightmost
+        refresh_button.pack(side=tk.RIGHT, padx=(0,5)) 
+        clear_button.pack(side=tk.RIGHT, padx=(0,5))
 
         # --- Tabla de Estudios (inside self.scrollable_frame_content) ---
         table_frame = ttk.Frame(self.scrollable_frame_content)
