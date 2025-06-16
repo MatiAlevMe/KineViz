@@ -77,10 +77,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
             "<Configure>",
             lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
         )
-        self.canvas.bind(
-            "<Configure>",
-            lambda e: self.canvas.itemconfig(self.canvas.nametowidget(e.widget).interior_id, width=e.width) if hasattr(self.canvas, 'interior_id') else None
-        )
+        # Removed problematic canvas.bind("<Configure>") that forced inner frame width
 
         self.canvas.interior_id = self.canvas.create_window((0, 0), window=self.scrollable_main_frame, anchor="nw")
         self.canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
@@ -287,11 +284,9 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
         # Set minsize after widgets are created
         self.update_idletasks()
-        self.scrollable_main_frame.update_idletasks()
-        self.canvas.update_idletasks()
-        req_width = self.scrollable_main_frame.winfo_reqwidth() + v_scrollbar.winfo_reqwidth() + 20
-        req_height = self.scrollable_main_frame.winfo_reqheight() + h_scrollbar.winfo_reqheight() + 20
-        self.minsize(max(600, req_width), max(400, req_height))
+        # Simplified minsize - set a reasonable fixed minimum
+        self.minsize(600, 400) 
+        # Initial geometry can also be set here if desired, e.g., self.geometry("950x700")
 
 
     def _confirm_delete_all_individual_analyses(self):
