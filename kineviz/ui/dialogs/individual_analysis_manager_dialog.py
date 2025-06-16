@@ -96,19 +96,9 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         h_scrollbar.grid(row=1, column=0, sticky="ew")
         # --- End Scrollable Area Setup ---
         
-        self.filter_vi2_name_var = tk.StringVar()
-        self.filter_vi2_desc_var = tk.StringVar()
-        self.filter_variable_var = tk.StringVar(value="Todos") # For Variable Analizada filter
-        self.filter_calc_var = tk.StringVar(value="Todos") # For Cálculo filter
-
-        # Column definitions - Updated for new display
-        self.columns = ("Nombre Análisis", "Cálculo", "Variable Analizada", "Grupos Comparados",
-                        "Valores Clave", "Fecha Creación/Modif.")
-
-        self._load_study_vi_data() # Load VIs and aliases for filters
-        self.create_widgets()
-        self._populate_filter_vi_comboboxes() # Populate VI comboboxes after widgets are created
-        self.load_analyses() # This will now fetch all and then apply current (empty) filters
+        self.create_widgets() # Populates fixed and scrollable frames
+        self._populate_filter_vi_comboboxes() 
+        self.load_analyses() 
 
     def _update_pagination_controls(self, total_items_in_filter):
         """Actualiza los controles de paginación en self.bottom_fixed_pagination_frame."""
