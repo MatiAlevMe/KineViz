@@ -23,26 +23,40 @@ class MainView:
         self.total_pages = 1
 
         # Crear la interfaz de usuario
-        self.frame = ttk.Frame(root, padding="10") # This is the outermost frame for MainView
+        self.frame = ttk.Frame(root, padding="10") # Main container for the view
         self.frame.pack(fill=tk.BOTH, expand=True)
-        
-        # --- Setup for scrollable area ---
-        canvas_container = ttk.Frame(self.frame)
-        canvas_container.pack(fill=tk.BOTH, expand=True)
+
+        # --- Top Fixed Frames (created here, populated by create_ui_content) ---
+        self.header_content_frame = ttk.Frame(self.frame) # For header elements
+        self.header_content_frame.pack(side=tk.TOP, fill=tk.X, pady=(0, 5)) # pady for spacing
+
+        self.search_content_frame = ttk.Frame(self.frame) # For search elements
+        self.search_content_frame.pack(side=tk.TOP, fill=tk.X, pady=(0, 10))
+
+        # --- Bottom Fixed Frames (created here, populated by create_ui_content or methods) ---
+        # Order of packing matters for side=tk.BOTTOM
+        self.bottom_buttons_container = ttk.Frame(self.frame) # For "Eliminar Todos", "Eliminar Seleccionados", "Crear Nuevo"
+        self.bottom_buttons_container.pack(side=tk.BOTTOM, fill=tk.X, pady=(10, 0)) # pady top
+
+        self.pagination_container = ttk.Frame(self.frame) # For pagination controls
+        self.pagination_container.pack(side=tk.BOTTOM, fill=tk.X, pady=(5,0))
+
+
+        # --- Scrollable Area (Canvas in between top and bottom fixed frames) ---
+        canvas_container = ttk.Frame(self.frame) # This will take the remaining space
+        canvas_container.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
         self.canvas = tk.Canvas(canvas_container, highlightthickness=0)
-        v_scrollbar = ttk.Scrollbar(canvas_container, orient="vertical", command=self.canvas.yview)
-        h_scrollbar = ttk.Scrollbar(canvas_container, orient="horizontal", command=self.canvas.xview)
+        v_scrollbar = ttk.Scrollbar(canvas_container, orient=tk.VERTICAL, command=self.canvas.yview)
+        h_scrollbar = ttk.Scrollbar(canvas_container, orient=tk.HORIZONTAL, command=self.canvas.xview)
         
-        self.scrollable_frame = ttk.Frame(self.canvas) # Content goes here
+        self.scrollable_frame_content = ttk.Frame(self.canvas, padding="2") # Add small padding for scrollable content
 
-        self.scrollable_frame.bind(
+        self.scrollable_frame_content.bind(
             "<Configure>",
             lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
         )
-        # Removed problematic canvas.bind("<Configure>") that forced inner frame width
-
-        self.canvas.interior_id = self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.canvas.create_window((0, 0), window=self.scrollable_frame_content, anchor="nw")
         self.canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
 
         canvas_container.grid_rowconfigure(0, weight=1)
@@ -50,47 +64,39 @@ class MainView:
         self.canvas.grid(row=0, column=0, sticky="nsew")
         v_scrollbar.grid(row=0, column=1, sticky="ns")
         h_scrollbar.grid(row=1, column=0, sticky="ew")
-        # --- End scrollable area setup ---
-
-        self.create_ui_content(self.scrollable_frame) # Pass scrollable_frame as parent for content
+        
+        # Call create_ui_content to populate the frames
+        self.create_ui_content()
         self.load_studies() # Carga inicial
 
-    def create_ui_content(self, parent_frame): # Renamed from create_ui, parent_frame is self.scrollable_frame
-        """Crea los widgets de la interfaz de usuario dentro del frame desplazable."""
+    def create_ui_content(self): # Removed parent_frame argument
+        """Crea los widgets de la interfaz de usuario dentro de los frames predefinidos."""
         # --- Cabecera ---
-        header_frame = ttk.Frame(parent_frame) # Changed parent
-        header_frame.pack(fill=tk.X, pady=(0, 10))
-
-        ttk.Label(header_frame, text="KineViz", style='Header.TLabel').pack(side=tk.LEFT, padx=(0, 20))
-
-        # Botones de acción rápida (derecha)
-        action_button_frame = ttk.Frame(header_frame)
+        # Populate self.header_content_frame
+        ttk.Label(self.header_content_frame, text="KineViz", style='Header.TLabel').pack(side=tk.LEFT, padx=(0, 20))
+        action_button_frame = ttk.Frame(self.header_content_frame)
         action_button_frame.pack(side=tk.RIGHT)
-
         ttk.Button(action_button_frame, text='Manual', command=self.main_window.open_user_manual, style="Green.TButton").pack(side=tk.RIGHT, padx=5)
-        ttk.Button(action_button_frame, text='Configuración', command=self.main_window.show_config_dialog).pack(side=tk.RIGHT, padx=5) # Placeholder
+        ttk.Button(action_button_frame, text='Configuración', command=self.main_window.show_config_dialog).pack(side=tk.RIGHT, padx=5)
         ttk.Button(action_button_frame, text='Ayuda', command=self.main_window.show_welcome_message).pack(side=tk.RIGHT, padx=5)
         ttk.Button(action_button_frame, text='Abrir Carpeta Estudios',
                   command=lambda: self.main_window.open_folder("estudios")).pack(side=tk.RIGHT, padx=5)
 
-
         # --- Búsqueda ---
-        search_frame = ttk.Frame(parent_frame) # Changed parent
-        search_frame.pack(fill=tk.X, pady=(0, 10))
-
-        ttk.Label(search_frame, text="Buscar estudio:").pack(side=tk.LEFT, padx=(0, 5))
-        search_entry = ttk.Entry(search_frame, textvariable=self.search_term)
+        # Populate self.search_content_frame
+        ttk.Label(self.search_content_frame, text="Buscar estudio:").pack(side=tk.LEFT, padx=(0, 5))
+        search_entry = ttk.Entry(self.search_content_frame, textvariable=self.search_term)
         search_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
-        search_entry.bind("<Return>", lambda event: self.search_studies()) # Buscar al presionar Enter
-        ttk.Button(search_frame, text="Buscar", command=self.search_studies).pack(side=tk.LEFT, padx=5)
-        ttk.Button(search_frame, text="Limpiar", command=self.clear_search).pack(side=tk.LEFT, padx=(0,5))
-        ttk.Button(search_frame, text="Refrescar", command=self.load_studies).pack(side=tk.LEFT)
+        search_entry.bind("<Return>", lambda event: self.search_studies())
+        ttk.Button(self.search_content_frame, text="Buscar", command=self.search_studies).pack(side=tk.LEFT, padx=5)
+        ttk.Button(self.search_content_frame, text="Limpiar", command=self.clear_search).pack(side=tk.LEFT, padx=(0,5))
+        ttk.Button(self.search_content_frame, text="Refrescar", command=self.load_studies).pack(side=tk.LEFT)
 
-        # --- Tabla de Estudios ---
-        table_frame = ttk.Frame(parent_frame) # Changed parent
+        # --- Tabla de Estudios (inside self.scrollable_frame_content) ---
+        table_frame = ttk.Frame(self.scrollable_frame_content)
         table_frame.pack(fill=tk.BOTH, expand=True)
 
-        columns = ('Pin', 'Nombre', 'Comentar', 'Ver', 'Editar', 'Eliminar') # Añadir 'Comentar'
+        columns = ('Pin', 'Nombre', 'Comentar', 'Ver', 'Editar', 'Eliminar')
         self.tree = ttk.Treeview(table_frame, columns=columns, show='headings', style='Treeview', selectmode="extended")
 
         # Configurar cabeceras
@@ -125,44 +131,25 @@ class MainView:
         table_frame.grid_columnconfigure(0, weight=1)
 
         # Evento de clic en la tabla
-        self.tree.bind('<ButtonRelease-1>', self.on_tree_click) # Para acciones de celda
-        self.tree.bind('<<TreeviewSelect>>', self._on_selection_change) # Para estado de botón
+        self.tree.bind('<ButtonRelease-1>', self.on_tree_click)
+        self.tree.bind('<<TreeviewSelect>>', self._on_selection_change)
 
-        # --- Paginación & Bottom Buttons (now direct children of self.frame, outside scrollable_frame) ---
-        # These are packed into self.frame AFTER the canvas_container
-        # Order matters: pagination above bottom_buttons
-        self.pagination_frame = ttk.Frame(self.frame) # Parent is self.frame
-        self.pagination_frame.pack(side=tk.BOTTOM, pady=(5, 0), fill=tk.X)
+        # --- Paginación (widgets go into self.pagination_container) ---
+        # This is populated by self.update_pagination_controls()
 
-        bottom_buttons_frame = ttk.Frame(self.frame) # Parent is self.frame
-        bottom_buttons_frame.pack(side=tk.BOTTOM, pady=10, fill=tk.X)
-
-        # Botón Eliminar Todos los Estudios (a la izquierda)
-        delete_all_button = ttk.Button(bottom_buttons_frame, text='Eliminar Todos los Estudios',
+        # --- Bottom Buttons (widgets go into self.bottom_buttons_container) ---
+        delete_all_button = ttk.Button(self.bottom_buttons_container, text='Eliminar Todos los Estudios',
                                        command=self._confirm_delete_all_studies, style="Danger.TButton")
         delete_all_button.pack(side=tk.LEFT, padx=(0, 5))
 
-        # Botón Eliminar Seleccionado(s)
-        self.delete_selected_button = ttk.Button(bottom_buttons_frame, text='Eliminar Seleccionado(s)',
+        self.delete_selected_button = ttk.Button(self.bottom_buttons_container, text='Eliminar Seleccionado(s)',
                                                  command=self._confirm_delete_selected_studies, style="Danger.TButton", state=tk.DISABLED)
         self.delete_selected_button.pack(side=tk.LEFT, padx=(0, 10))
 
-
-        # Configurar estilo para el botón de peligro (opcional, si no existe se usará TButton normal)
-        # Esto ya se hace en MainWindow, pero lo dejamos por si acaso o para especificidad.
-        try:
-            self.main_window.style.configure("Danger.TButton", foreground="white", background="red")
-        except tk.TclError: # Si el estilo ya existe o hay otro problema
-            logger.warning("No se pudo configurar el estilo Danger.TButton. Usando estilo por defecto.")
-
-
-        # Botón Crear Nuevo Estudio (a la derecha)
-        create_study_button = ttk.Button(bottom_buttons_frame, text='Crear Nuevo Estudio',
+        # Estilo Danger.TButton se asume configurado globalmente
+        create_study_button = ttk.Button(self.bottom_buttons_container, text='Crear Nuevo Estudio',
                                          command=lambda: self.main_window.show_create_study_dialog(study_to_edit=None), style="Celeste.TButton")
         create_study_button.pack(side=tk.RIGHT)
-        
-        # Pagination frame is now created and packed above this method in create_ui_content
-
 
     def _confirm_delete_selected_studies(self):
         """Muestra confirmación y luego elimina los estudios seleccionados."""
@@ -254,43 +241,42 @@ class MainView:
 
     def update_pagination_controls(self):
         """Actualiza los botones de paginación."""
-        # Limpiar controles existentes
-        for widget in self.pagination_frame.winfo_children():
+        # Limpiar controles existentes en self.pagination_container
+        for widget in self.pagination_container.winfo_children():
             widget.destroy()
 
         if self.total_pages <= 1:
             return # No mostrar controles si hay 1 página o menos
 
         # Botón Primera Página
-        first_btn = ttk.Button(self.pagination_frame, text="<<", command=lambda: self.go_to_page(1))
+        first_btn = ttk.Button(self.pagination_container, text="<<", command=lambda: self.go_to_page(1))
         first_btn.pack(side=tk.LEFT, padx=2)
         if self.current_page == 1:
             first_btn.config(state=tk.DISABLED)
 
         # Botón Anterior
-        prev_btn = ttk.Button(self.pagination_frame, text="<", command=lambda: self.go_to_page(self.current_page - 1))
+        prev_btn = ttk.Button(self.pagination_container, text="<", command=lambda: self.go_to_page(self.current_page - 1))
         prev_btn.pack(side=tk.LEFT, padx=2)
         if self.current_page == 1:
             prev_btn.config(state=tk.DISABLED)
 
         # Etiqueta de Página Actual
-        ttk.Label(self.pagination_frame, text=f"Página {self.current_page} de {self.total_pages}").pack(side=tk.LEFT, padx=5)
+        ttk.Label(self.pagination_container, text=f"Página {self.current_page} de {self.total_pages}").pack(side=tk.LEFT, padx=5)
 
         # Botón Siguiente
-        next_btn = ttk.Button(self.pagination_frame, text=">", command=lambda: self.go_to_page(self.current_page + 1))
+        next_btn = ttk.Button(self.pagination_container, text=">", command=lambda: self.go_to_page(self.current_page + 1))
         next_btn.pack(side=tk.LEFT, padx=2)
         if self.current_page == self.total_pages:
             next_btn.config(state=tk.DISABLED)
 
         # Botón Última Página
-        last_btn = ttk.Button(self.pagination_frame, text=">>", command=lambda: self.go_to_page(self.total_pages))
+        last_btn = ttk.Button(self.pagination_container, text=">>", command=lambda: self.go_to_page(self.total_pages))
         last_btn.pack(side=tk.LEFT, padx=2)
         if self.current_page == self.total_pages:
             last_btn.config(state=tk.DISABLED)
 
         # Botón de ayuda para la vista principal
-        # El estilo "Help.TButton" ahora se define globalmente en MainWindow.
-        main_view_help_button = ttk.Button(self.pagination_frame, text="?", width=3,
+        main_view_help_button = ttk.Button(self.pagination_container, text="?", width=3,
                                            style="Help.TButton", command=self._show_main_view_help)
         main_view_help_button.pack(side=tk.LEFT, padx=(10, 2))
 
