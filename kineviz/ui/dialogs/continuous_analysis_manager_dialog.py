@@ -68,7 +68,11 @@ class ContinuousAnalysisManagerDialog(Toplevel):
 
         # Set minsize after widgets are created
         self.update_idletasks()
-        self.minsize(self.winfo_reqwidth() + 20, self.winfo_reqheight() + 20)
+        self.scrollable_main_frame.update_idletasks()
+        self.canvas.update_idletasks()
+        req_width = self.scrollable_main_frame.winfo_reqwidth() + v_scrollbar.winfo_reqwidth() + 20
+        req_height = self.scrollable_main_frame.winfo_reqheight() + h_scrollbar.winfo_reqheight() + 20
+        self.minsize(max(600, req_width), max(400, req_height))
 
 
     # _show_input_help was already added in the previous commit, this block is to ensure it's present.
@@ -80,21 +84,48 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         messagebox.showinfo(title, message, parent=self)
 
     def create_widgets(self):
-        self.main_frame = ttk.Frame(self, padding="10")
-        self.main_frame.pack(fill=tk.BOTH, expand=True)
-        self.main_frame.columnconfigure(0, weight=1) # Allow content to expand horizontally
-        # Configure row for tree_frame (row 1) to expand, others not.
-        self.main_frame.rowconfigure(1, weight=1) # Treeview's row
-        self.main_frame.rowconfigure(0, weight=0) # Search/Filter
-        self.main_frame.rowconfigure(3, weight=0) # View actions
-        self.main_frame.rowconfigure(4, weight=0) # Folder actions
-        self.main_frame.rowconfigure(6, weight=0) # Pagination
-        self.main_frame.rowconfigure(7, weight=0) # Bottom actions (Delete/Close)
+        # --- Setup for scrollable area ---
+        canvas_container = ttk.Frame(self) # Container for canvas and scrollbars
+        canvas_container.pack(fill=tk.BOTH, expand=True)
+
+        self.canvas = tk.Canvas(canvas_container, highlightthickness=0)
+        v_scrollbar = ttk.Scrollbar(canvas_container, orient="vertical", command=self.canvas.yview)
+        h_scrollbar = ttk.Scrollbar(canvas_container, orient="horizontal", command=self.canvas.xview)
+        
+        self.scrollable_main_frame = ttk.Frame(self.canvas, padding="10") 
+
+        self.scrollable_main_frame.bind(
+            "<Configure>",
+            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+        )
+        self.canvas.bind(
+            "<Configure>",
+            lambda e: self.canvas.itemconfig(self.canvas.nametowidget(e.widget).interior_id, width=e.width) if hasattr(self.canvas, 'interior_id') else None
+        )
+
+        self.canvas.interior_id = self.canvas.create_window((0, 0), window=self.scrollable_main_frame, anchor="nw")
+        self.canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
+
+        canvas_container.grid_rowconfigure(0, weight=1)
+        canvas_container.grid_columnconfigure(0, weight=1)
+        self.canvas.grid(row=0, column=0, sticky="nsew")
+        v_scrollbar.grid(row=0, column=1, sticky="ns")
+        h_scrollbar.grid(row=1, column=0, sticky="ew")
+        # --- End scrollable area setup ---
+
+        main_content_parent = self.scrollable_main_frame
+        main_content_parent.columnconfigure(0, weight=1) 
+        main_content_parent.rowconfigure(1, weight=1) # Treeview's row (was row 2, now 1 in this parent)
+        main_content_parent.rowconfigure(0, weight=0) 
+        main_content_parent.rowconfigure(3, weight=0) 
+        main_content_parent.rowconfigure(4, weight=0) 
+        main_content_parent.rowconfigure(6, weight=0) 
+        main_content_parent.rowconfigure(7, weight=0) 
 
 
         # --- Search and Filter Frame ---
-        search_filter_frame = ttk.LabelFrame(self.main_frame, text="Buscar y Filtrar Análisis", padding="10")
-        search_filter_frame.grid(row=0, column=0, sticky="ew", pady=(0,10)) # Changed to grid
+        search_filter_frame = ttk.LabelFrame(main_content_parent, text="Buscar y Filtrar Análisis", padding="10") # Changed parent
+        search_filter_frame.grid(row=0, column=0, sticky="ew", pady=(0,10))
         search_filter_frame.columnconfigure(1, weight=1) # Allow search entry to expand
         search_filter_frame.columnconfigure(3, weight=1)
         search_filter_frame.columnconfigure(5, weight=1)
@@ -167,8 +198,8 @@ class ContinuousAnalysisManagerDialog(Toplevel):
 
 
         # --- Treeview for listing analyses ---
-        tree_frame = ttk.LabelFrame(self.main_frame, text="Análisis Guardados") # Text is now the title of the LabelFrame
-        tree_frame.grid(row=1, column=0, sticky="nsew", pady=(0,10)) # Adjusted row to 1, sticky nsew
+        tree_frame = ttk.LabelFrame(main_content_parent, text="Análisis Guardados") # Changed parent
+        tree_frame.grid(row=1, column=0, sticky="nsew", pady=(0,10)) 
         tree_frame.columnconfigure(0, weight=1) # Allow tree to expand horizontally
         tree_frame.rowconfigure(0, weight=1)    # Allow tree to expand vertically
 
@@ -196,8 +227,8 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         self.tree.bind("<Double-1>", self._view_plot) # Double click to view plot
 
         # --- Action Buttons Frame (View actions) ---
-        view_action_frame = ttk.Frame(self.main_frame)
-        view_action_frame.grid(row=3, column=0, sticky="ew", pady=(5,0)) # Changed to grid
+        view_action_frame = ttk.Frame(main_content_parent) # Changed parent
+        view_action_frame.grid(row=3, column=0, sticky="ew", pady=(5,0)) 
 
         self.view_plot_button = ttk.Button(view_action_frame, text="Ver Gráfico SPM (PNG)", command=self._view_plot, state=tk.DISABLED)
         self.view_plot_button.pack(side=tk.LEFT, padx=5)
@@ -214,8 +245,8 @@ class ContinuousAnalysisManagerDialog(Toplevel):
 
 
         # --- Action Buttons Frame (Folder actions) ---
-        folder_action_frame = ttk.Frame(self.main_frame)
-        folder_action_frame.grid(row=4, column=0, sticky="ew", pady=(5,0)) # Changed to grid
+        folder_action_frame = ttk.Frame(main_content_parent) # Changed parent
+        folder_action_frame.grid(row=4, column=0, sticky="ew", pady=(5,0)) 
 
         self.open_folder_button = ttk.Button(folder_action_frame, text="Abrir Carpeta", command=self._open_folder, state=tk.DISABLED)
         self.open_folder_button.pack(side=tk.LEFT, padx=5)
@@ -229,12 +260,12 @@ class ContinuousAnalysisManagerDialog(Toplevel):
 
 
         # --- Pagination Controls ---
-        self.pagination_controls_frame = ttk.Frame(self.main_frame)
-        self.pagination_controls_frame.grid(row=6, column=0, sticky="ew", pady=(5,0)) # New row for pagination
+        self.pagination_controls_frame = ttk.Frame(main_content_parent) # Changed parent
+        self.pagination_controls_frame.grid(row=6, column=0, sticky="ew", pady=(5,0)) 
 
         # --- Bottom Action Frame (Delete and Close buttons) ---
-        bottom_action_frame = ttk.Frame(self.main_frame)
-        bottom_action_frame.grid(row=7, column=0, sticky="ew", pady=(10,0)) # Adjusted row
+        bottom_action_frame = ttk.Frame(main_content_parent) # Changed parent
+        bottom_action_frame.grid(row=7, column=0, sticky="ew", pady=(10,0)) 
 
         self.delete_all_button = ttk.Button(
             bottom_action_frame,
