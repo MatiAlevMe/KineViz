@@ -306,36 +306,36 @@ class MainView:
         if self.total_pages <= 1:
             return # No mostrar controles si hay 1 página o menos
 
-        # Botón Primera Página
+        # --- Left-aligned buttons ---
         first_btn = ttk.Button(self.pagination_container, text="<<", command=lambda: self.go_to_page(1))
         first_btn.pack(side=tk.LEFT, padx=2)
         Tooltip(first_btn, text="Ir a la primera página.", short_text="Primera página.", enabled=self.main_window.settings.enable_hover_tooltips)
         if self.current_page == 1:
             first_btn.config(state=tk.DISABLED)
 
-        # Botón Anterior
         prev_btn = ttk.Button(self.pagination_container, text="<", command=lambda: self.go_to_page(self.current_page - 1))
         prev_btn.pack(side=tk.LEFT, padx=2)
         Tooltip(prev_btn, text="Ir a la página anterior.", short_text="Página anterior.", enabled=self.main_window.settings.enable_hover_tooltips)
         if self.current_page == 1:
             prev_btn.config(state=tk.DISABLED)
 
-        # Etiqueta de Página Actual
-        ttk.Label(self.pagination_container, text=f"Página {self.current_page} de {self.total_pages}").pack(side=tk.LEFT, padx=5)
+        # --- Right-aligned buttons (packed in reverse visual order) ---
+        last_btn = ttk.Button(self.pagination_container, text=">>", command=lambda: self.go_to_page(self.total_pages))
+        last_btn.pack(side=tk.RIGHT, padx=2)
+        Tooltip(last_btn, text="Ir a la última página.", short_text="Última página.", enabled=self.main_window.settings.enable_hover_tooltips)
+        if self.current_page == self.total_pages:
+            last_btn.config(state=tk.DISABLED)
 
-        # Botón Siguiente
         next_btn = ttk.Button(self.pagination_container, text=">", command=lambda: self.go_to_page(self.current_page + 1))
-        next_btn.pack(side=tk.LEFT, padx=2)
+        next_btn.pack(side=tk.RIGHT, padx=2)
         Tooltip(next_btn, text="Ir a la página siguiente.", short_text="Página siguiente.", enabled=self.main_window.settings.enable_hover_tooltips)
         if self.current_page == self.total_pages:
             next_btn.config(state=tk.DISABLED)
 
-        # Botón Última Página
-        last_btn = ttk.Button(self.pagination_container, text=">>", command=lambda: self.go_to_page(self.total_pages))
-        last_btn.pack(side=tk.LEFT, padx=2)
-        Tooltip(last_btn, text="Ir a la última página.", short_text="Última página.", enabled=self.main_window.settings.enable_hover_tooltips)
-        if self.current_page == self.total_pages:
-            last_btn.config(state=tk.DISABLED)
+        # --- Center-aligned label (fills remaining space) ---
+        page_info_label = ttk.Label(self.pagination_container, text=f"Página {self.current_page} de {self.total_pages}")
+        page_info_label.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+
 
     def _show_main_view_help(self):
         """Muestra un popup de ayuda para la Vista Principal."""
