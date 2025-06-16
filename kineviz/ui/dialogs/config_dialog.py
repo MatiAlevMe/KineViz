@@ -98,18 +98,7 @@ class ConfigDialog(Toplevel):
         Tooltip(files_help_btn, text=files_long_text, short_text=files_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
-        ttk.Label(main_frame, text="Elementos por página (gestores análisis):").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5) # Changed label
-        analysis_items_frame = ttk.Frame(main_frame) # Renamed frame
-        analysis_items_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
-        analysis_items_entry = ttk.Entry(analysis_items_frame, textvariable=self.var_analysis_items_per_page, width=7) # Changed variable
-        analysis_items_entry.pack(side=tk.LEFT, padx=(0,5))
-        analysis_items_long_text = "Número de elementos (análisis guardados) a mostrar por página en los gestores de análisis discreto y continuo."
-        analysis_items_short_text = "Elementos por página (gestores análisis)."
-        analysis_items_help_btn = ttk.Button(analysis_items_frame, text="?", width=3, style="Help.TButton",
-                                             command=lambda: self._show_input_help("Ayuda: Elementos por Página (Gestores de Análisis)", analysis_items_long_text))
-        analysis_items_help_btn.pack(side=tk.LEFT)
-        Tooltip(analysis_items_help_btn, text=analysis_items_long_text, short_text=analysis_items_short_text, enabled=self.settings.enable_hover_tooltips)
-        row_idx += 1
+        # "Elementos por página (gestores análisis)" block is moved from here.
 
         ttk.Label(main_frame, text="Tablas resumen discreto por página:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
         discrete_tables_frame = ttk.Frame(main_frame)
@@ -124,6 +113,24 @@ class ConfigDialog(Toplevel):
         Tooltip(discrete_tables_help_btn, text=discrete_tables_long_text, short_text=discrete_tables_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
+        # Moved "Elementos por página (gestores análisis)" to be after "Tablas resumen discreto por página"
+        # This was previously before "Tamaño de Fuente" and after "Archivos por página"
+        # The original block for "Elementos por página (gestores análisis)" is removed from its old position
+        # and re-inserted here.
+
+        ttk.Label(main_frame, text="Elementos por página (gestores análisis):").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5) # Changed label
+        analysis_items_frame = ttk.Frame(main_frame) # Renamed frame
+        analysis_items_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
+        analysis_items_entry = ttk.Entry(analysis_items_frame, textvariable=self.var_analysis_items_per_page, width=7) # Changed variable
+        analysis_items_entry.pack(side=tk.LEFT, padx=(0,5))
+        analysis_items_long_text = "Número de elementos (análisis guardados) a mostrar por página en los gestores de análisis discreto y continuo."
+        analysis_items_short_text = "Elementos por página (gestores análisis)."
+        analysis_items_help_btn = ttk.Button(analysis_items_frame, text="?", width=3, style="Help.TButton",
+                                             command=lambda: self._show_input_help("Ayuda: Elementos por Página (Gestores de Análisis)", analysis_items_long_text))
+        analysis_items_help_btn.pack(side=tk.LEFT)
+        Tooltip(analysis_items_help_btn, text=analysis_items_long_text, short_text=analysis_items_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+        
         # --- Tamaño de Fuente ---
         ttk.Label(main_frame, text="Tamaño de Fuente (escala):").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
         font_scale_frame = ttk.Frame(main_frame)

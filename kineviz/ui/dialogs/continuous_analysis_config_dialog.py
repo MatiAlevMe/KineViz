@@ -177,8 +177,10 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
 
         self.one_vi_button = ttk.Button(vi_mode_frame, text="1 Variable Independiente", command=lambda: self.set_vi_grouping_mode('1VI'))
         self.one_vi_button.pack(side=tk.LEFT, padx=5)
+        Tooltip(self.one_vi_button, text="Agrupar datos comparando los sub-valores de una única Variable Independiente.", short_text="Agrupar por 1 VI.", enabled=self.settings.enable_hover_tooltips)
         self.two_vi_button = ttk.Button(vi_mode_frame, text="2 Variables Independientes", command=lambda: self.set_vi_grouping_mode('2VIs'))
         self.two_vi_button.pack(side=tk.LEFT, padx=5)
+        Tooltip(self.two_vi_button, text="Agrupar datos comparando sub-valores de una VI, manteniendo fijo un sub-valor de otra VI.", short_text="Agrupar por 2 VIs.", enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         # --- Contenedores para los pasos siguientes (inicialmente ocultos) ---
@@ -258,6 +260,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         
         self.add_group_button = ttk.Button(self.group_selection_outer_frame, text="+ Añadir Grupo", command=self.add_group_selector)
         self.add_group_button.pack(pady=5, anchor='w', padx=5)
+        Tooltip(self.add_group_button, text="Añadir otro grupo a la comparación SPM. Se requieren al menos dos grupos.", short_text="Añadir grupo.", enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         # --- Selección de Columna (Variable a Analizar) ---
@@ -364,7 +367,10 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.button_frame.grid_remove()
         self.save_button = ttk.Button(self.button_frame, text="Generar Gráfico y Guardar", command=self._on_accept, state=tk.DISABLED)
         self.save_button.pack(side=tk.RIGHT, padx=5)
-        ttk.Button(self.button_frame, text="Cancelar", command=self._on_cancel).pack(side=tk.RIGHT)
+        Tooltip(self.save_button, text="Generar el gráfico SPM y guardar la configuración del análisis.", short_text="Generar y guardar.", enabled=self.settings.enable_hover_tooltips)
+        cancel_button_continuous = ttk.Button(self.button_frame, text="Cancelar", command=self._on_cancel)
+        cancel_button_continuous.pack(side=tk.RIGHT)
+        Tooltip(cancel_button_continuous, text="Cerrar este diálogo sin generar ni guardar el análisis.", short_text="Cancelar.", enabled=self.settings.enable_hover_tooltips)
 
         # Crear widgets de delimitación de tiempo (inicialmente no empaquetados)
         self._create_time_delimitation_widgets()
@@ -796,6 +802,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         remove_button = ttk.Button(selector_frame, text="🗑️", width=3,
                                    command=lambda f=selector_frame, v=group_var: self.remove_group_selector(f, v))
         remove_button.pack(side=tk.LEFT)
+        Tooltip(remove_button, text="Quitar este grupo de la comparación SPM.", short_text="Quitar grupo.", enabled=self.settings.enable_hover_tooltips)
 
         self.group_selector_vars.append(group_var)
         self.group_selector_frames.append(selector_frame)
