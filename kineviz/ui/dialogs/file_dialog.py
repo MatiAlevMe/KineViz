@@ -99,7 +99,7 @@ class FileDialog(Toplevel):
         remove_button_frame.pack(side=tk.TOP, fill=tk.X, pady=(0, 5)) # Add some padding below this row
 
         remove_button = ttk.Button(remove_button_frame, text="Quitar Archivo(s) Seleccionado(s)", command=self.remove_selected)
-        remove_button.pack(side=tk.LEFT) # Align to the left
+        remove_button.pack(side=tk.RIGHT) # Align to the left
 
         # Row 2 for "Procesar Archivo(s) Seleccionado(s)" and "Cancelar"
         process_cancel_frame = ttk.Frame(bottom_fixed_frame)
