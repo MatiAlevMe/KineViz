@@ -123,8 +123,8 @@ class StudyView:
         files_per_page = self.main_window.files_per_page # Obtener de main_window
         self.file_browser = FileBrowser(self.frame, self.file_service, self.study_id, files_per_page)
         # --- Botón Eliminar Todos los Archivos (y seleccionados) ---
-        # Empaquetar este frame al final (side=tk.BOTTOM) para que no sea empujado por FileBrowser
-        delete_all_files_button_frame = ttk.Frame(parent_frame) # Changed parent
+        # This frame is now a direct child of self.frame, packed after canvas_container
+        delete_all_files_button_frame = ttk.Frame(self.frame) # Parent is self.frame
         delete_all_files_button_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(10, 0))
 
         delete_all_files_button = ttk.Button(
