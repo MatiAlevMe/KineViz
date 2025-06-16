@@ -14,11 +14,12 @@ logger = logging.getLogger(__name__)
 class ConfigureIndividualAnalysisDialog(tk.Toplevel):
     """Diálogo para configurar los parámetros de un análisis individual."""
 
-    def __init__(self, parent, analysis_service: AnalysisService, study_id: int):
+    def __init__(self, parent, analysis_service: AnalysisService, study_id: int, settings: AppSettings):
         super().__init__(parent)
         self.parent = parent
         self.analysis_service = analysis_service
         self.study_id = study_id
+        self.settings = settings # Store AppSettings instance
 
         self.title("Configurar Nuevo Análisis Individual")
         # Defer grab_set until after initial sizing
@@ -124,7 +125,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         freq_help_btn_discrete = ttk.Button(freq_frame, text="?", width=3, style="Help.TButton",
                                             command=lambda: self._show_input_help("Ayuda: Tipo de Dato", freq_long_text_discrete))
         freq_help_btn_discrete.pack(side=tk.LEFT)
-        Tooltip(freq_help_btn_discrete, text=freq_long_text_discrete, short_text=freq_short_text_discrete, enabled=self.parent.main_window.settings.enable_hover_tooltips if hasattr(self.parent, 'main_window') else True) # Added safety for parent
+        Tooltip(freq_help_btn_discrete, text=freq_long_text_discrete, short_text=freq_short_text_discrete, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         ttk.Label(main_frame, text="Cálculo:").grid(row=row_idx, column=0, sticky="w", padx=5, pady=5)
@@ -138,7 +139,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         calc_help_btn = ttk.Button(calc_frame, text="?", width=3, style="Help.TButton",
                                    command=lambda: self._show_input_help("Ayuda: Cálculo", calc_long_text))
         calc_help_btn.pack(side=tk.LEFT)
-        Tooltip(calc_help_btn, text=calc_long_text, short_text=calc_short_text, enabled=self.parent.main_window.settings.enable_hover_tooltips if hasattr(self.parent, 'main_window') else True)
+        Tooltip(calc_help_btn, text=calc_long_text, short_text=calc_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         # --- NUEVO: Selección de Modo de Agrupación (1 VI vs 2 VIs) ---
