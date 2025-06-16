@@ -136,19 +136,6 @@ class FileDialog(Toplevel):
         v_scrollbar.grid(row=0, column=1, sticky="ns")
         h_scrollbar.grid(row=1, column=0, sticky="ew") # Span across listbox width
         self.listbox.grid(row=0, column=0, sticky="nsew")
-        remove_button_frame.pack(side=tk.TOP, fill=tk.X, pady=(0, 5)) # Add some padding below this row
-
-        remove_button = ttk.Button(remove_button_frame, text="Quitar Archivo(s) Seleccionado(s)", command=self.remove_selected)
-        remove_button.pack(side=tk.LEFT) # Align to the left
-
-        # Row 2 for "Procesar Archivo(s) Seleccionado(s)" and "Cancelar"
-        process_cancel_frame = ttk.Frame(bottom_fixed_frame)
-        process_cancel_frame.pack(side=tk.TOP, fill=tk.X)
-        
-        # Pack Cancelar primero para que quede a la derecha de Procesar
-        ttk.Button(process_cancel_frame, text="Cancelar", command=self.destroy).pack(side=tk.RIGHT)
-        self.process_button = ttk.Button(process_cancel_frame, text="Procesar Archivo(s) Seleccionado(s)", command=self.process_files, state=tk.DISABLED)
-        self.process_button.pack(side=tk.RIGHT, padx=5)
         
         # Set minsize after widgets are created
         self.update_idletasks()
