@@ -10,6 +10,7 @@ from kineviz.core.services.file_service import FileService
 # Importar diálogos necesarios
 from kineviz.ui.dialogs.file_dialog import FileDialog
 from kineviz.ui.dialogs.descriptor_alias_dialog import DescriptorAliasDialog
+from kineviz.ui.widgets.tooltip import Tooltip # Import Tooltip
 
 logger = logging.getLogger(__name__) # Logger para este módulo
 
@@ -140,7 +141,7 @@ class StudyView:
 
         # Botón Info (si hay VIs)
         if vi_names:
-            info_button = ttk.Button(vi_frame, text="ℹ️", width=3, command=self.show_vi_descriptor_info)
+            info_button = ttk.Button(vi_frame, text="?", width=3, command=self.show_vi_descriptor_info, style="Help.TButton") # Changed text and added style
             info_button.pack(side=tk.LEFT, padx=(5, 0))
             # Add Tooltip for info_button
             info_tooltip_short_text = "Ver detalle de VIs, sub-valores y alias."
