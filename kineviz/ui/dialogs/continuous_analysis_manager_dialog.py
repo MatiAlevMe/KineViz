@@ -220,7 +220,7 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         tree_frame.rowconfigure(0, weight=1)    
 
         columns = ("name", "column", "groups", "date")
-        self.tree = ttk.Treeview(tree_frame, columns=columns, show="headings", selectmode="extended")
+        self.tree = ttk.Treeview(tree_frame, columns=columns, show="headings", selectmode="extended", height=self.items_per_page)
 
         self.tree.heading("name", text="Nombre Análisis")
         self.tree.heading("column", text="Variable Analizada")
@@ -233,7 +233,8 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         self.tree.column("date", width=150, anchor=tk.CENTER)
 
         # Treeview's own scrollbars are removed. Main canvas scrollbars will be used.
-        self.tree.pack(fill=tk.BOTH, expand=True) # Pack treeview inside its LabelFrame
+        # Pack to fill horizontally, but let height be determined by items_per_page
+        self.tree.pack(fill=tk.X, expand=True) 
 
         self.tree.bind("<<TreeviewSelect>>", self._on_analysis_selected)
         self.tree.bind("<Double-1>", self._view_plot)
