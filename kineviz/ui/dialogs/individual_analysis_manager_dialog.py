@@ -53,13 +53,66 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
                         "Valores Clave", "Fecha Creación/Modif.")
 
         self._load_study_vi_data() # Load VIs and aliases for filters
+
+        # --- Fixed Panes Setup ---
+        self.top_fixed_filters_frame = ttk.Frame(self, padding=(10,10,10,0))
+        self.top_fixed_filters_frame.pack(side=tk.TOP, fill=tk.X)
+
+        self.bottom_fixed_delete_actions_frame = ttk.Frame(self, padding=(10,5,10,10))
+        self.bottom_fixed_delete_actions_frame.pack(side=tk.BOTTOM, fill=tk.X)
+        
+        self.bottom_fixed_pagination_frame = ttk.Frame(self, padding=(10,5,10,0))
+        self.bottom_fixed_pagination_frame.pack(side=tk.BOTTOM, fill=tk.X)
+
+        self.bottom_fixed_folder_actions_frame = ttk.Frame(self, padding=(10,5,10,0))
+        self.bottom_fixed_folder_actions_frame.pack(side=tk.BOTTOM, fill=tk.X)
+
+        self.bottom_fixed_view_actions_frame = ttk.Frame(self, padding=(10,10,10,0))
+        self.bottom_fixed_view_actions_frame.pack(side=tk.BOTTOM, fill=tk.X)
+
+        # --- Scrollable Middle Area (Canvas) ---
+        canvas_container = ttk.Frame(self)
+        canvas_container.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=0)
+
+        self.canvas = tk.Canvas(canvas_container, highlightthickness=0)
+        v_scrollbar = ttk.Scrollbar(canvas_container, orient="vertical", command=self.canvas.yview)
+        h_scrollbar = ttk.Scrollbar(canvas_container, orient="horizontal", command=self.canvas.xview)
+        
+        self.scrollable_main_frame = ttk.Frame(self.canvas, padding="10")
+
+        self.scrollable_main_frame.bind(
+            "<Configure>",
+            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")) if hasattr(self, 'canvas') and self.canvas.winfo_exists() else None
+        )
+        
+        self.canvas_interior_id = self.canvas.create_window((0, 0), window=self.scrollable_main_frame, anchor="nw")
+        self.canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
+        self.canvas.bind("<Configure>", self._dynamic_canvas_item_width_configure)
+
+        canvas_container.grid_rowconfigure(0, weight=1)
+        canvas_container.grid_columnconfigure(0, weight=1)
+        self.canvas.grid(row=0, column=0, sticky="nsew")
+        v_scrollbar.grid(row=0, column=1, sticky="ns")
+        h_scrollbar.grid(row=1, column=0, sticky="ew")
+        # --- End Scrollable Area Setup ---
+        
+        self.filter_vi2_name_var = tk.StringVar()
+        self.filter_vi2_desc_var = tk.StringVar()
+        self.filter_variable_var = tk.StringVar(value="Todos") # For Variable Analizada filter
+        self.filter_calc_var = tk.StringVar(value="Todos") # For Cálculo filter
+
+        # Column definitions - Updated for new display
+        self.columns = ("Nombre Análisis", "Cálculo", "Variable Analizada", "Grupos Comparados",
+                        "Valores Clave", "Fecha Creación/Modif.")
+
+        self._load_study_vi_data() # Load VIs and aliases for filters
         self.create_widgets()
         self._populate_filter_vi_comboboxes() # Populate VI comboboxes after widgets are created
         self.load_analyses() # This will now fetch all and then apply current (empty) filters
 
     def _update_pagination_controls(self, total_items_in_filter):
-        """Actualiza los controles de paginación."""
-        for widget in self.pagination_controls_frame.winfo_children():
+        """Actualiza los controles de paginación en self.bottom_fixed_pagination_frame."""
+        for widget in self.bottom_fixed_pagination_frame.winfo_children(): # Target new frame
             widget.destroy()
 
         self.total_pages = (total_items_in_filter // self.items_per_page) + \
@@ -71,88 +124,44 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
         ttk.Button(self.pagination_controls_frame, text="<<", command=lambda: self._go_to_page(1),
                    state=tk.DISABLED if self.current_page == 1 else tk.NORMAL).pack(side=tk.LEFT, padx=2)
-        ttk.Button(self.pagination_controls_frame, text="<", command=lambda: self._go_to_page(self.current_page - 1),
+        ttk.Button(self.bottom_fixed_pagination_frame, text="<", command=lambda: self._go_to_page(self.current_page - 1), # Target new frame
                    state=tk.DISABLED if self.current_page == 1 else tk.NORMAL).pack(side=tk.LEFT, padx=2)
 
-        ttk.Label(self.pagination_controls_frame, text=f"Página {self.current_page} de {self.total_pages}").pack(side=tk.LEFT, padx=5)
+        ttk.Label(self.bottom_fixed_pagination_frame, text=f"Página {self.current_page} de {self.total_pages}").pack(side=tk.LEFT, padx=5) # Target new frame
 
-        ttk.Button(self.pagination_controls_frame, text=">", command=lambda: self._go_to_page(self.current_page + 1),
+        ttk.Button(self.bottom_fixed_pagination_frame, text=">", command=lambda: self._go_to_page(self.current_page + 1), # Target new frame
                    state=tk.DISABLED if self.current_page == self.total_pages else tk.NORMAL).pack(side=tk.LEFT, padx=2)
-        ttk.Button(self.pagination_controls_frame, text=">>", command=lambda: self._go_to_page(self.total_pages),
+        ttk.Button(self.bottom_fixed_pagination_frame, text=">>", command=lambda: self._go_to_page(self.total_pages), # Target new frame
                    state=tk.DISABLED if self.current_page == self.total_pages else tk.NORMAL).pack(side=tk.LEFT, padx=2)
 
     def _go_to_page(self, page_number):
         """Navega a una página específica y repopula el treeview."""
         if 1 <= page_number <= self.total_pages:
             self.current_page = page_number
-            self._apply_filters_and_search() # This will repopulate based on current filters and new page
+            self._apply_filters_and_search() 
         else:
             logger.warning(f"Intento de ir a página inválida {page_number} (Total: {self.total_pages})")
 
+    def _dynamic_canvas_item_width_configure(self, event):
+        """Adjusts the width of the scrollable_frame_content to match the canvas width or content width."""
+        canvas_width = event.width
+        if hasattr(self, 'scrollable_main_frame') and self.scrollable_main_frame.winfo_exists():
+            self.scrollable_main_frame.update_idletasks()
+            content_natural_width = self.scrollable_main_frame.winfo_reqwidth()
+        else:
+            content_natural_width = canvas_width
+            
+        effective_width = max(content_natural_width, canvas_width)
+        
+        if hasattr(self, 'canvas_interior_id') and self.canvas_interior_id and \
+           hasattr(self, 'canvas') and self.canvas.winfo_exists():
+            self.canvas.itemconfig(self.canvas_interior_id, width=effective_width)
+
     def create_widgets(self):
-        """Crea los widgets del diálogo."""
-        # self.main_frame was the original content holder. Now, content goes into scrollable_frame.
-        # The canvas mechanism will be placed directly in self (the Toplevel).
-
-        # --- Setup for scrollable area ---
-        canvas_container = ttk.Frame(self) 
-        canvas_container.pack(side=tk.TOP, fill=tk.BOTH, expand=True) # Ensure this expands
-
-        self.canvas = tk.Canvas(canvas_container, highlightthickness=0)
-        v_scrollbar = ttk.Scrollbar(canvas_container, orient="vertical", command=self.canvas.yview)
-        h_scrollbar = ttk.Scrollbar(canvas_container, orient="horizontal", command=self.canvas.xview)
-        
-        # This scrollable_frame will act as the new self.main_frame
-        self.scrollable_main_frame = ttk.Frame(self.canvas, padding="10") 
-
-        self.scrollable_main_frame.bind(
-            "<Configure>",
-            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
-        )
-        # Removed problematic canvas.bind("<Configure>") that forced inner frame width
-
-        self.canvas.interior_id = self.canvas.create_window((0, 0), window=self.scrollable_main_frame, anchor="nw")
-        self.canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
-
-        canvas_container.grid_rowconfigure(0, weight=1)
-        canvas_container.grid_columnconfigure(0, weight=1)
-        self.canvas.grid(row=0, column=0, sticky="nsew")
-        v_scrollbar.grid(row=0, column=1, sticky="ns")
-        h_scrollbar.grid(row=1, column=0, sticky="ew")
-        # --- End scrollable area setup ---
-
-        # All original content of self.main_frame now goes into self.scrollable_main_frame
-        main_content_parent = self.scrollable_main_frame
-        main_content_parent.rowconfigure(2, weight=1)  # Treeview's row
-        main_content_parent.columnconfigure(0, weight=1) 
-
-        # --- Fixed Bottom Action Buttons (children of self, Toplevel) ---
-        fixed_bottom_actions = ttk.Frame(self) # Parent is self (Toplevel)
-        fixed_bottom_actions.pack(side=tk.BOTTOM, fill=tk.X, pady=(10,5), padx=10)
-
-        self.delete_all_button = ttk.Button(
-            fixed_bottom_actions,
-            text="Eliminar Todos los Análisis Discretos",
-            command=self._confirm_delete_all_individual_analyses,
-            style="Danger.TButton"
-        )
-        self.delete_all_button.pack(side=tk.LEFT, padx=(0, 5))
-        
-        self.delete_selected_button = ttk.Button(
-            fixed_bottom_actions,
-            text="Eliminar Seleccionado(s)",
-            command=self._confirm_delete_selected_analyses,
-            state=tk.DISABLED,
-            style="Danger.TButton"
-        )
-        self.delete_selected_button.pack(side=tk.LEFT, padx=5)
-
-        ttk.Button(fixed_bottom_actions, text="Cerrar", command=self.destroy).pack(side=tk.RIGHT, padx=5)
-        # --- End Fixed Bottom Buttons ---
-
-        # --- Search and Filter Frame ---
-        search_filter_frame = ttk.LabelFrame(main_content_parent, text="Buscar y Filtrar Análisis", padding="10") # Changed parent
-        search_filter_frame.grid(row=0, column=0, sticky="ew", pady=(0,10))
+        """Populates the fixed and scrollable frames."""
+        # --- Populate Top Fixed Filters Frame ---
+        search_filter_frame = ttk.LabelFrame(self.top_fixed_filters_frame, text="Buscar y Filtrar Análisis", padding="10")
+        search_filter_frame.pack(fill=tk.X, expand=True)
         search_filter_frame.columnconfigure(1, weight=1)
         search_filter_frame.columnconfigure(3, weight=1)
         search_filter_frame.columnconfigure(5, weight=1)
@@ -224,12 +233,9 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         ttk.Button(filter_action_buttons_frame, text="Refrescar Lista", command=self.load_analyses).pack(side=tk.LEFT, padx=5)
 
 
-        # --- Acciones (Nuevo Análisis) - Button moved to view_action_frame ---
-        # new_analysis_frame no longer needed here
-
-        # --- Lista de Análisis (Treeview) ---
-        tree_frame = ttk.LabelFrame(main_content_parent, text="Análisis Guardados") # Changed parent
-        tree_frame.grid(row=2, column=0, sticky="nsew")
+        # --- Lista de Análisis (Treeview) - Goes into self.scrollable_main_frame ---
+        tree_frame = ttk.LabelFrame(self.scrollable_main_frame, text="Análisis Guardados")
+        tree_frame.pack(fill=tk.BOTH, expand=True) # Pack it to fill the scrollable area
         tree_frame.rowconfigure(0, weight=1)
         tree_frame.columnconfigure(0, weight=1)
 
@@ -259,65 +265,52 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.analysis_tree.column("Valores Clave", width=120, anchor=tk.W)
         self.analysis_tree.column("Fecha Creación/Modif.", width=130, anchor=tk.CENTER)
 
-        # Scrollbars
-        vsb = ttk.Scrollbar(tree_frame, orient="vertical",
-                            command=self.analysis_tree.yview)
-        vsb.grid(row=0, column=1, sticky='ns')
-        self.analysis_tree.configure(yscrollcommand=vsb.set)
-
-        hsb = ttk.Scrollbar(tree_frame, orient="horizontal", command=self.analysis_tree.xview)
-        hsb.grid(row=1, column=0, sticky='ew', padx=5) # Añadir padx
-        self.analysis_tree.configure(xscrollcommand=hsb.set)
+        # Treeview's own scrollbars are removed. Main canvas scrollbars will be used.
         
-        self.analysis_tree.bind("<<TreeviewSelect>>", self._on_selection_changed) # Bind selection event
-        self.analysis_tree.bind("<Double-1>", lambda e: self.view_analysis_plot()) # Double click to view plot
+        self.analysis_tree.bind("<<TreeviewSelect>>", self._on_selection_changed) 
+        self.analysis_tree.bind("<Double-1>", lambda e: self.view_analysis_plot()) 
 
-        # --- Action Buttons Frame (View actions) ---
-        view_action_frame = ttk.Frame(main_content_parent) # Changed parent
-        view_action_frame.grid(row=3, column=0, sticky="ew", pady=(10,0))
-
-        self.view_plot_button = ttk.Button(view_action_frame, text="Ver/Abrir Gráfico", command=self.view_analysis_plot, state=tk.DISABLED)
+        # --- Populate Bottom Fixed View Actions Frame ---
+        self.view_plot_button = ttk.Button(self.bottom_fixed_view_actions_frame, text="Ver/Abrir Gráfico", command=self.view_analysis_plot, state=tk.DISABLED)
         self.view_plot_button.pack(side=tk.LEFT, padx=5)
-        
-        self.view_interactive_button = ttk.Button(view_action_frame, text="Ver Gráfico Interactivo", command=self.view_interactive_plot, state=tk.DISABLED)
+        self.view_interactive_button = ttk.Button(self.bottom_fixed_view_actions_frame, text="Ver Gráfico Interactivo", command=self.view_interactive_plot, state=tk.DISABLED)
         self.view_interactive_button.pack(side=tk.LEFT, padx=5)
-
-        self.view_config_button = ttk.Button(view_action_frame, text="Ver Configuración", command=self._view_config, state=tk.DISABLED)
+        self.view_config_button = ttk.Button(self.bottom_fixed_view_actions_frame, text="Ver Configuración", command=self._view_config, state=tk.DISABLED)
         self.view_config_button.pack(side=tk.LEFT, padx=5)
+        ttk.Frame(self.bottom_fixed_view_actions_frame).pack(side=tk.LEFT, expand=True, fill=tk.X) # Spacer
+        ttk.Button(self.bottom_fixed_view_actions_frame, text="Nuevo Análisis...", command=self.open_new_analysis_dialog).pack(side=tk.RIGHT, padx=5)
 
-        # Spacer to push "Nuevo Análisis..." to the right
-        ttk.Frame(view_action_frame).pack(side=tk.LEFT, expand=True, fill=tk.X)
-        ttk.Button(view_action_frame, text="Nuevo Análisis...",
-                   command=self.open_new_analysis_dialog).pack(side=tk.RIGHT, padx=5)
-
-
-        # --- Action Buttons Frame (Folder actions) ---
-        folder_action_frame = ttk.Frame(main_content_parent) # Changed parent
-        folder_action_frame.grid(row=4, column=0, sticky="ew", pady=(5,0))
-
-        self.open_folder_button = ttk.Button(folder_action_frame, text="Abrir Carpeta", command=self.open_analysis_folder, state=tk.DISABLED)
+        # --- Populate Bottom Fixed Folder Actions Frame ---
+        self.open_folder_button = ttk.Button(self.bottom_fixed_folder_actions_frame, text="Abrir Carpeta", command=self.open_analysis_folder, state=tk.DISABLED)
         self.open_folder_button.pack(side=tk.LEFT, padx=5)
-
         self.open_main_discrete_folder_button = ttk.Button(
-            folder_action_frame,
-            text="Abrir Carpeta de Análisis Discretos", # Renamed
+            self.bottom_fixed_folder_actions_frame,
+            text="Abrir Carpeta de Análisis Discretos",
             command=self._open_main_discrete_analyses_folder
         )
         self.open_main_discrete_folder_button.pack(side=tk.LEFT, padx=5)
 
+        # --- Populate Bottom Fixed Pagination Frame ---
+        # This is done by _update_pagination_controls, which now needs to target self.bottom_fixed_pagination_frame
+        # self.pagination_controls_frame is now self.bottom_fixed_pagination_frame
 
-        # --- Pagination Controls ---
-        self.pagination_controls_frame = ttk.Frame(main_content_parent) # Changed parent
-        self.pagination_controls_frame.grid(row=6, column=0, sticky="ew", pady=(5,0)) # New row for pagination
-
-        # --- Bottom Action Frame (Delete and Close buttons) ---
-        # This frame will now be a direct child of self (Toplevel)
-        # and packed/gridded AFTER canvas_container.
-        # The widgets below will be parented to this new frame.
-        # This SEARCH/REPLACE block removes them from main_content_parent.
-        # A subsequent block will add them to the new fixed bottom frame.
-        # bottom_action_frame = ttk.Frame(main_content_parent) # OLD
-        # bottom_action_frame.grid(row=7, column=0, sticky="ew", pady=(10, 0)) # OLD
+        # --- Populate Bottom Fixed Delete Actions Frame ---
+        self.delete_all_button = ttk.Button(
+            self.bottom_fixed_delete_actions_frame,
+            text="Eliminar Todos los Análisis Discretos",
+            command=self._confirm_delete_all_individual_analyses,
+            style="Danger.TButton"
+        )
+        self.delete_all_button.pack(side=tk.LEFT, padx=(0, 5))
+        self.delete_selected_button = ttk.Button(
+            self.bottom_fixed_delete_actions_frame,
+            text="Eliminar Seleccionado(s)",
+            command=self._confirm_delete_selected_analyses,
+            state=tk.DISABLED,
+            style="Danger.TButton"
+        )
+        self.delete_selected_button.pack(side=tk.LEFT, padx=5)
+        ttk.Button(self.bottom_fixed_delete_actions_frame, text="Cerrar", command=self.destroy).pack(side=tk.RIGHT, padx=5)
 
         # self.delete_all_button = ttk.Button( # OLD
         #     bottom_action_frame,
