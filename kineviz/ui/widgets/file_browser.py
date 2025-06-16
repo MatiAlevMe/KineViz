@@ -11,11 +11,12 @@ from kineviz.core.services.file_service import FileService
 logger = logging.getLogger(__name__) # Logger para este módulo
 
 class FileBrowser(ttk.Frame):
-    def __init__(self, parent, file_service: FileService, study_id: int, files_per_page: int = 10):
+    def __init__(self, parent, file_service: FileService, study_id: int, files_per_page: int = 10, pagination_parent=None):
         super().__init__(parent)
         self.file_service = file_service
         self.study_id = study_id
         self.files_per_page = files_per_page
+        self.pagination_parent = pagination_parent # Store the custom parent for pagination
 
         # Estado de paginación y filtros
         self.current_page = 1
@@ -93,8 +94,13 @@ class FileBrowser(ttk.Frame):
 
 
         # --- Frame para Paginación ---
-        self.pagination_frame = ttk.Frame(self)
-        self.pagination_frame.pack(fill=tk.X, pady=(5, 0))
+        # If a custom parent is provided for pagination, use it. Otherwise, pack locally.
+        if self.pagination_parent:
+            self.pagination_frame = ttk.Frame(self.pagination_parent)
+            self.pagination_frame.pack(fill=tk.X, pady=(5, 0)) # Or grid, depending on parent's layout
+        else:
+            self.pagination_frame = ttk.Frame(self)
+            self.pagination_frame.pack(fill=tk.X, pady=(5, 0))
 
     def load_files(self):
         """Carga los archivos filtrados y paginados usando FileService."""
