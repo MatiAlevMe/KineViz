@@ -7,6 +7,7 @@ from typing import List, Tuple # Añadir Tuple y List
 from kineviz.core.services.analysis_service import AnalysisService # Descomentar para type hint
 from kineviz.ui.widgets.tooltip import Tooltip # Import Tooltip
 from kineviz.config.settings import AppSettings # Import AppSettings
+from kineviz.ui.utils.style import get_scaled_font, DEFAULT_FONT_SIZE # Import font utilities
 
 logger = logging.getLogger(__name__)
 
@@ -140,12 +141,13 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         main_frame.columnconfigure(1, weight=1)
 
         row_idx = 0
+        scaled_font = get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale)
 
         # --- Tipo de Dato (Frecuencia) ---
         ttk.Label(main_frame, text="Tipo de Dato:").grid(row=row_idx, column=0, sticky="w", padx=5, pady=5)
         freq_frame_cont = ttk.Frame(main_frame)
         freq_frame_cont.grid(row=row_idx, column=1, sticky="ew")
-        self.freq_combo = ttk.Combobox(freq_frame_cont, textvariable=self.frequency_var, state="disabled")
+        self.freq_combo = ttk.Combobox(freq_frame_cont, textvariable=self.frequency_var, state="disabled", font=scaled_font)
         self.freq_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         freq_long_text = "Tipo de datos a analizar.\nPara análisis continuo (SPM), actualmente solo 'Cinematica' está soportado y se selecciona automáticamente."
         freq_short_text = "Tipo de datos (fijo a 'Cinematica' para SPM)."
@@ -192,7 +194,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         ttk.Label(self.one_vi_config_frame, text="Agrupar por VI:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
         primary_vi_frame_cont = ttk.Frame(self.one_vi_config_frame)
         primary_vi_frame_cont.grid(row=0, column=1, sticky="ew")
-        self.primary_vi_combo = ttk.Combobox(primary_vi_frame_cont, textvariable=self.primary_vi_var, state="readonly")
+        self.primary_vi_combo = ttk.Combobox(primary_vi_frame_cont, textvariable=self.primary_vi_var, state="readonly", font=scaled_font)
         self.primary_vi_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.primary_vi_combo.bind("<<ComboboxSelected>>", self.update_available_groups)
         
@@ -212,7 +214,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         ttk.Label(self.two_vi_config_frame, text="VI a Fijar:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
         fixed_vi_frame_cont = ttk.Frame(self.two_vi_config_frame)
         fixed_vi_frame_cont.grid(row=0, column=1, sticky="ew")
-        self.fixed_vi_combo = ttk.Combobox(fixed_vi_frame_cont, textvariable=self.fixed_vi_var, state="readonly")
+        self.fixed_vi_combo = ttk.Combobox(fixed_vi_frame_cont, textvariable=self.fixed_vi_var, state="readonly", font=scaled_font)
         self.fixed_vi_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.fixed_vi_combo.bind("<<ComboboxSelected>>", self._update_fixed_descriptor_options)
         ttk.Button(fixed_vi_frame_cont, text="?", width=3, style="Help.TButton",
@@ -224,7 +226,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.fixed_descriptor_label.grid(row=1, column=0, sticky="w", padx=5, pady=5)
         fixed_desc_frame_cont = ttk.Frame(self.two_vi_config_frame)
         fixed_desc_frame_cont.grid(row=1, column=1, sticky="ew")
-        self.fixed_descriptor_combo = ttk.Combobox(fixed_desc_frame_cont, textvariable=self.fixed_descriptor_var, state="readonly")
+        self.fixed_descriptor_combo = ttk.Combobox(fixed_desc_frame_cont, textvariable=self.fixed_descriptor_var, state="readonly", font=scaled_font)
         self.fixed_descriptor_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.fixed_descriptor_combo.bind("<<ComboboxSelected>>", self.update_available_groups)
         ttk.Button(fixed_desc_frame_cont, text="?", width=3, style="Help.TButton",
@@ -271,7 +273,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         ttk.Label(self.column_frame, text="Columna:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
         column_combo_frame_cont = ttk.Frame(self.column_frame)
         column_combo_frame_cont.grid(row=0, column=1, sticky="ew")
-        self.column_combo = ttk.Combobox(column_combo_frame_cont, textvariable=self.column_var, state="readonly", width=45)
+        self.column_combo = ttk.Combobox(column_combo_frame_cont, textvariable=self.column_var, state="readonly", width=45, font=scaled_font)
         self.column_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.column_combo.bind("<<ComboboxSelected>>", self._on_column_selected)
         ttk.Button(column_combo_frame_cont, text="?", width=3, style="Help.TButton",
@@ -354,7 +356,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         ttk.Label(self.analysis_name_frame, text="Nombre:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
         analysis_name_entry_frame_cont = ttk.Frame(self.analysis_name_frame)
         analysis_name_entry_frame_cont.grid(row=0, column=1, sticky="ew")
-        ttk.Entry(analysis_name_entry_frame_cont, textvariable=self.analysis_name_var).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
+        ttk.Entry(analysis_name_entry_frame_cont, textvariable=self.analysis_name_var, font=scaled_font).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         ttk.Button(analysis_name_entry_frame_cont, text="?", width=3, style="Help.TButton",
                    command=lambda: self._show_input_help("Ayuda: Nombre del Análisis (Continuo)",
                                                          "Ingrese un nombre descriptivo para guardar este análisis continuo (SPM).\nEvite caracteres especiales como / \\ : * ? \" < > |")
@@ -790,7 +792,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         group_combo_frame_cont.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
 
         group_combo = ttk.Combobox(group_combo_frame_cont, textvariable=group_var, state="readonly",
-                                   values=sorted(list(self.available_groups_filtered.keys())), width=30) # Ajustar width
+                                   values=sorted(list(self.available_groups_filtered.keys())), width=30, font=scaled_font) # Ajustar width
         group_combo.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0,5))
         group_combo.bind("<<ComboboxSelected>>", self._on_group_selection_change) # Cargar columnas al cambiar grupo
         

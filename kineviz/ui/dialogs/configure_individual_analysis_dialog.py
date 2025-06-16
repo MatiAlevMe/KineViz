@@ -8,6 +8,7 @@ from kineviz.core.services.analysis_service import AnalysisService
 from kineviz.ui.utils.validators import validate_filename_for_study_criteria
 from kineviz.ui.widgets.tooltip import Tooltip # Import Tooltip
 from kineviz.config.settings import AppSettings # Import AppSettings
+from kineviz.ui.utils.style import get_scaled_font, DEFAULT_FONT_SIZE # Import font utilities
 
 logger = logging.getLogger(__name__)
 
@@ -240,7 +241,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         ttk.Label(self.column_frame, text="Columna:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
         column_combo_frame = ttk.Frame(self.column_frame)
         column_combo_frame.grid(row=0, column=1, sticky="ew")
-        self.column_combo = ttk.Combobox(column_combo_frame, textvariable=self.column_var, state="readonly", width=45) # Ajustar width si es necesario
+        self.column_combo = ttk.Combobox(column_combo_frame, textvariable=self.column_var, state="readonly", width=45, font=scaled_font) # Ajustar width si es necesario
         self.column_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.column_combo.bind("<<ComboboxSelected>>", self._on_column_selected) # Llamar al seleccionar columna
         ttk.Button(column_combo_frame, text="?", width=3, style="Help.TButton",
@@ -284,7 +285,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         ttk.Label(self.analysis_name_frame, text="Nombre:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
         analysis_name_entry_frame = ttk.Frame(self.analysis_name_frame)
         analysis_name_entry_frame.grid(row=0, column=1, sticky="ew")
-        ttk.Entry(analysis_name_entry_frame, textvariable=self.analysis_name_var).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
+        ttk.Entry(analysis_name_entry_frame, textvariable=self.analysis_name_var, font=scaled_font).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         ttk.Button(analysis_name_entry_frame, text="?", width=3, style="Help.TButton",
                    command=lambda: self._show_input_help("Ayuda: Nombre del Análisis",
                                                          "Ingrese un nombre descriptivo para guardar este análisis.\nEvite caracteres especiales como / \\ : * ? \" < > |")
@@ -530,7 +531,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         group_combo_frame.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
 
         group_combo = ttk.Combobox(group_combo_frame, textvariable=group_var, state="readonly",
-                                   values=sorted(list(self.available_groups_filtered.keys())))
+                                   values=sorted(list(self.available_groups_filtered.keys())), font=scaled_font)
         group_combo.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0,5))
         group_combo.bind("<<ComboboxSelected>>", self.update_available_columns)
         
