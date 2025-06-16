@@ -541,8 +541,6 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         return True # Indicar éxito
 
     def add_group_selector(self, initial_value=""):
-        """Añade una nueva fila para seleccionar un grupo."""
-    def add_group_selector(self, initial_value=""):
         """Añade un nuevo selector de grupo (Combobox + botón eliminar)."""
         if not self.group_selectors_frame: return
 
