@@ -42,7 +42,7 @@ class DescriptorAliasDialog(Toplevel):
 
         self.scrollable_frame.bind(
             "<Configure>",
-            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")) if hasattr(self, 'canvas') and self.canvas.winfo_exists() else None
         )
         # Removed problematic canvas.bind("<Configure>") that forced inner frame width
 

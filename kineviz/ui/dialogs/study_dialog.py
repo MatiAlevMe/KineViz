@@ -94,7 +94,7 @@ class StudyDialog(Toplevel):
 
         scrollable_main_frame.bind(
             "<Configure>",
-            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+            lambda e, c=canvas: c.configure(scrollregion=c.bbox("all")) if c.winfo_exists() else None
         )
         # Removed problematic canvas.bind("<Configure>") that forced inner frame width
 
