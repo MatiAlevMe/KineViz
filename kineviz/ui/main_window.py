@@ -158,9 +158,9 @@ class MainWindow:
             except tk.TclError:
                 # Ignorar error si el widget ya fue destruido (puede pasar en refrescos rápidos)
                 pass
-        # Limpiar widgets hijos directos de root
-        for widget in self.root.winfo_children():
-            widget.destroy()
+        # La línea "for widget in self.root.winfo_children(): widget.destroy()"
+        # fue eliminada porque destruía el menú y otros elementos persistentes.
+        # Se asume que self.current_view.destroy() limpia adecuadamente su propio frame.
         self.current_view = None
 
     def show_landing_page(self):

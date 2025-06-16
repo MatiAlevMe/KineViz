@@ -336,7 +336,8 @@ class MainView:
             
         effective_width = max(content_natural_width, canvas_width)
         
-        if hasattr(self, 'canvas_interior_id') and self.canvas_interior_id:
+        if hasattr(self, 'canvas_interior_id') and self.canvas_interior_id and \
+           hasattr(self, 'canvas') and self.canvas.winfo_exists(): # Check canvas existence
             self.canvas.itemconfig(self.canvas_interior_id, width=effective_width)
             # Height is managed by content and scrollregion (via scrollable_frame_content's own Configure binding)
 

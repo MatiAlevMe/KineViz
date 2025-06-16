@@ -243,7 +243,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.groups_canvas.pack(side="left", fill="both", expand=True, padx=(5,0), pady=5) # Ajustar padding
         self.canvas_window = self.groups_canvas.create_window((0, 0), window=self.groups_inner_frame, anchor="nw")
 
-        self.groups_inner_frame.bind("<Configure>", lambda e: self.groups_canvas.configure(scrollregion=self.groups_canvas.bbox("all")))
+        self.groups_inner_frame.bind("<Configure>", lambda e: self.groups_canvas.configure(scrollregion=self.groups_canvas.bbox("all")) if hasattr(self, 'groups_canvas') and self.groups_canvas.winfo_exists() else None)
         # Removed: self.groups_canvas.bind('<Configure>', self._on_canvas_configure)
         
         self.add_group_button = ttk.Button(self.group_selection_outer_frame, text="+ Añadir Grupo", command=self.add_group_selector)
