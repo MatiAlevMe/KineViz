@@ -27,6 +27,7 @@ class ConfigDialog(Toplevel):
         self.var_studies_per_page = StringVar()
         self.var_files_per_page = StringVar()
         self.var_analysis_items_per_page = StringVar() # Renamed from var_pdfs_per_page
+        self.var_discrete_tables_per_page = StringVar() # New variable
         self.var_font_scale = StringVar()
         self.var_theme = StringVar()
 
@@ -49,6 +50,7 @@ class ConfigDialog(Toplevel):
         self.var_studies_per_page.set(str(self.settings.studies_per_page))
         self.var_files_per_page.set(str(self.settings.files_per_page))
         self.var_analysis_items_per_page.set(str(self.settings.analysis_items_per_page)) # Renamed
+        self.var_discrete_tables_per_page.set(str(self.settings.discrete_tables_per_page)) # Load new setting
         self.var_font_scale.set(str(self.settings.font_scale))
         self.var_theme.set(self.settings.theme)
 
@@ -94,6 +96,17 @@ class ConfigDialog(Toplevel):
         ttk.Button(analysis_items_frame, text="?", width=3, style="Help.TButton",
                    command=lambda: self._show_input_help("Ayuda: Elementos por Página (Gestores de Análisis)", # Changed help title
                                                          "Número de elementos (análisis guardados) a mostrar por página en los gestores de análisis discreto y continuo.") # Changed help text
+                  ).pack(side=tk.LEFT)
+        row_idx += 1
+
+        ttk.Label(main_frame, text="Tablas resumen discreto por página:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        discrete_tables_frame = ttk.Frame(main_frame)
+        discrete_tables_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
+        discrete_tables_entry = ttk.Entry(discrete_tables_frame, textvariable=self.var_discrete_tables_per_page, width=7)
+        discrete_tables_entry.pack(side=tk.LEFT, padx=(0,5))
+        ttk.Button(discrete_tables_frame, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Tablas de Resumen Discreto por Página",
+                                                         "Número de tablas de resumen (ej. Maximo_Cinematica_...) a mostrar por página en la vista de 'Análisis Discreto'.")
                   ).pack(side=tk.LEFT)
         row_idx += 1
 
@@ -178,7 +191,8 @@ class ConfigDialog(Toplevel):
         inputs_int = {
             "Estudios por página": self.var_studies_per_page.get(),
             "Archivos por página": self.var_files_per_page.get(),
-            "Elementos por página (gestores análisis)": self.var_analysis_items_per_page.get() # Changed label
+            "Elementos por página (gestores análisis)": self.var_analysis_items_per_page.get(), # Changed label
+            "Tablas resumen discreto por página": self.var_discrete_tables_per_page.get() # New field
         }
         for label, value_str in inputs_int.items():
             try:
@@ -213,6 +227,7 @@ class ConfigDialog(Toplevel):
             self.settings.studies_per_page = int(self.var_studies_per_page.get())
             self.settings.files_per_page = int(self.var_files_per_page.get())
             self.settings.analysis_items_per_page = int(self.var_analysis_items_per_page.get()) # Renamed
+            self.settings.discrete_tables_per_page = int(self.var_discrete_tables_per_page.get()) # Save new setting
             self.settings.font_scale = float(self.var_font_scale.get())
             self.settings.theme = self.var_theme.get()
 
