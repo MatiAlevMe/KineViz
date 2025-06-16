@@ -84,7 +84,7 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 │
 ├── backups/              # NUEVO: Copias de seguridad
 │   ├── automatic/        # Copias de seguridad automáticas
-│   └── manuales/         # Copias de seguridad manuales
+│   └── manual/           # Copias de seguridad manuales
 │
 ├── docs/                 # Documentación
 │   └── help/             # Documentación de ayuda del software
@@ -262,7 +262,7 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
             - Base de datos: `kineviz.db`
             - Directorio de estudios: `estudios/` (completo, con todos sus subdirectorios y archivos)
             - Archivo de configuración: `config.ini`
-        - Rutas de almacenamiento: "kineviz/backups/automatic/" para automáticas, "kineviz/backups/manuales/" para manuales.
+        - Rutas de almacenamiento: "kineviz/backups/automatic/" para automáticas, "kineviz/backups/manual/" para manuales.
         - Formato de las copias de seguridad: Archivos ZIP individuales con marca de tiempo en el nombre (ej: `backup_20250616_103000.zip`).
         - Crear módulo `kineviz.core.backup_manager` para encapsular la funcionalidad de respaldo.
         - Funcionalidad del `backup_manager`: Crear una copia de seguridad completa de los componentes definidos ("Todo el Sistema").
