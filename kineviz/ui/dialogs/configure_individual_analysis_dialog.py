@@ -163,8 +163,10 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         
         self.one_vi_button = ttk.Button(vi_mode_frame, text="1 Variable Independiente", command=lambda: self.set_vi_grouping_mode('1VI'))
         self.one_vi_button.pack(side=tk.LEFT, padx=5)
+        Tooltip(self.one_vi_button, text="Agrupar datos comparando los sub-valores de una única Variable Independiente.", short_text="Agrupar por 1 VI.", enabled=self.settings.enable_hover_tooltips)
         self.two_vi_button = ttk.Button(vi_mode_frame, text="2 Variables Independientes", command=lambda: self.set_vi_grouping_mode('2VIs'))
         self.two_vi_button.pack(side=tk.LEFT, padx=5)
+        Tooltip(self.two_vi_button, text="Agrupar datos comparando sub-valores de una VI, manteniendo fijo un sub-valor de otra VI.", short_text="Agrupar por 2 VIs.", enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         # --- Contenedores para los pasos siguientes (inicialmente ocultos) ---
@@ -227,6 +229,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         add_group_button = ttk.Button(self.group_selection_outer_frame, text="+ Añadir Grupo",
                                       command=self.add_group_selector)
         add_group_button.pack(pady=5, anchor='w', padx=5) # Anclar a la izquierda
+        Tooltip(add_group_button, text="Añadir otro grupo a la comparación. Se requieren al menos dos grupos.", short_text="Añadir grupo.", enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         # --- Selección de Columna (En su propio frame) ---
@@ -294,7 +297,10 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.button_frame.grid_remove() # Ocultar inicialmente
         self.save_button = ttk.Button(self.button_frame, text="Aceptar y Guardar Configuración", command=self._save_configuration_and_close, state=tk.DISABLED) # Actualizado comando
         self.save_button.pack(side=tk.RIGHT, padx=5)
-        ttk.Button(self.button_frame, text="Cancelar", command=self.destroy).pack(side=tk.RIGHT)
+        Tooltip(self.save_button, text="Guardar la configuración actual del análisis y cerrar este diálogo.", short_text="Guardar config.", enabled=self.settings.enable_hover_tooltips)
+        cancel_button_individual = ttk.Button(self.button_frame, text="Cancelar", command=self.destroy)
+        cancel_button_individual.pack(side=tk.RIGHT)
+        Tooltip(cancel_button_individual, text="Cerrar este diálogo sin guardar la configuración.", short_text="Cancelar.", enabled=self.settings.enable_hover_tooltips)
 
 
     def set_vi_grouping_mode(self, mode):
@@ -537,6 +543,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         remove_button = ttk.Button(selector_frame, text="🗑️", width=3, # Usar icono
                                    command=lambda f=selector_frame, v=group_var: self.remove_group_selector(f, v))
         remove_button.pack(side=tk.LEFT)
+        Tooltip(remove_button, text="Quitar este grupo de la comparación.", short_text="Quitar grupo.", enabled=self.settings.enable_hover_tooltips)
 
         # Deshabilitar botón si solo quedan 2 selectores
         if len(self.group_selector_vars) < 2:

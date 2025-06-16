@@ -11,6 +11,7 @@ from kineviz.core.services.analysis_service import AnalysisService
 # Importar AppSettings para leer configuración
 from kineviz.config.settings import AppSettings
 from kineviz.ui.widgets.tooltip import Tooltip # Import Tooltip
+from kineviz.ui.utils.style import get_scaled_font, DEFAULT_FONT_SIZE # Import font utilities
 
 
 logger = logging.getLogger(__name__)
@@ -182,15 +183,17 @@ class DiscreteAnalysisView(ttk.Frame):
         # Row 0: Search and main non-VI filters (Tipo de Dato, Cálculo)
         top_filter_row = ttk.Frame(filter_frame)
         top_filter_row.grid(row=0, column=0, columnspan=4, sticky="ew", pady=(0,5))
+        
+        scaled_font_tuple = get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale)
 
         ttk.Label(top_filter_row, text="Buscar:").pack(side=tk.LEFT, padx=(0, 5))
-        search_entry = ttk.Entry(top_filter_row, textvariable=self.search_var, width=25)
+        search_entry = ttk.Entry(top_filter_row, textvariable=self.search_var, width=25, font=scaled_font_tuple)
         search_entry.pack(side=tk.LEFT, padx=5)
         search_entry.bind("<Return>", lambda e: self.apply_filters())
 
         # Re-add Tipo de Dato filter
         ttk.Label(top_filter_row, text="Tipo de Dato:").pack(side=tk.LEFT, padx=(10, 5))
-        self.type_combo = ttk.Combobox(top_filter_row, textvariable=self.filter_type_var, state="readonly", width=12)
+        self.type_combo = ttk.Combobox(top_filter_row, textvariable=self.filter_type_var, state="readonly", width=12, font=scaled_font_tuple)
         self.type_combo.pack(side=tk.LEFT, padx=5)
         self.type_combo.bind("<<ComboboxSelected>>", self.apply_filters)
         
@@ -198,7 +201,7 @@ class DiscreteAnalysisView(ttk.Frame):
         self.calc_filter_combo = ttk.Combobox(
             top_filter_row, textvariable=self.calc_filter_var,
             values=["Todos", "Maximo", "Minimo", "Rango"],
-            state="readonly", width=10
+            state="readonly", width=10, font=scaled_font_tuple
         )
         self.calc_filter_combo.set("Todos") # Default value
         self.calc_filter_combo.pack(side=tk.LEFT, padx=5)
@@ -210,7 +213,7 @@ class DiscreteAnalysisView(ttk.Frame):
 
         ttk.Label(vi_controls_row, text="Filtrar por VIs:").pack(side=tk.LEFT, padx=(0,5))
         self.filter_vi_count_combo = ttk.Combobox(vi_controls_row, textvariable=self.filter_vi_count_var,
-                                                  values=["No filtrar", "1 VI", "2 VIs"], state="readonly", width=12)
+                                                  values=["No filtrar", "1 VI", "2 VIs"], state="readonly", width=12, font=scaled_font_tuple)
         self.filter_vi_count_combo.pack(side=tk.LEFT, padx=(0,10))
         self.filter_vi_count_combo.bind("<<ComboboxSelected>>", self._on_filter_vi_count_change)
         
@@ -235,12 +238,13 @@ class DiscreteAnalysisView(ttk.Frame):
         self.filter_vi1_frame.grid(row=2, column=0, columnspan=4, sticky="ew", padx=5, pady=(5,0))
         # self.filter_vi1_frame.columnconfigure(1, weight=1) # Optional: if combos need to expand more
         # self.filter_vi1_frame.columnconfigure(3, weight=1)
+        scaled_font_tuple = get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale) # Re-get for this scope if needed
         ttk.Label(self.filter_vi1_frame, text="VI 1:").grid(row=0, column=0, padx=(0,2), pady=2, sticky="w")
-        self.filter_vi1_name_combo = ttk.Combobox(self.filter_vi1_frame, textvariable=self.filter_vi1_name_var, state="readonly", width=15)
+        self.filter_vi1_name_combo = ttk.Combobox(self.filter_vi1_frame, textvariable=self.filter_vi1_name_var, state="readonly", width=15, font=scaled_font_tuple)
         self.filter_vi1_name_combo.grid(row=0, column=1, padx=(0,5), pady=2, sticky="ew")
         self.filter_vi1_name_combo.bind("<<ComboboxSelected>>", lambda e: self._update_filter_descriptor_combobox(1))
         ttk.Label(self.filter_vi1_frame, text="Sub-valor:").grid(row=0, column=2, padx=(5,2), pady=2, sticky="w")
-        self.filter_vi1_desc_combo = ttk.Combobox(self.filter_vi1_frame, textvariable=self.filter_vi1_desc_var, state="readonly", width=15)
+        self.filter_vi1_desc_combo = ttk.Combobox(self.filter_vi1_frame, textvariable=self.filter_vi1_desc_var, state="readonly", width=15, font=scaled_font_tuple)
         self.filter_vi1_desc_combo.grid(row=0, column=3, padx=(0,5), pady=2, sticky="ew")
         self.filter_vi1_frame.grid_remove() # Initially hidden
 
@@ -250,11 +254,11 @@ class DiscreteAnalysisView(ttk.Frame):
         # self.filter_vi2_frame.columnconfigure(1, weight=1)
         # self.filter_vi2_frame.columnconfigure(3, weight=1)
         ttk.Label(self.filter_vi2_frame, text="VI 2:").grid(row=0, column=0, padx=(0,2), pady=2, sticky="w")
-        self.filter_vi2_name_combo = ttk.Combobox(self.filter_vi2_frame, textvariable=self.filter_vi2_name_var, state="readonly", width=15)
+        self.filter_vi2_name_combo = ttk.Combobox(self.filter_vi2_frame, textvariable=self.filter_vi2_name_var, state="readonly", width=15, font=scaled_font_tuple)
         self.filter_vi2_name_combo.grid(row=0, column=1, padx=(0,5), pady=2, sticky="ew")
         self.filter_vi2_name_combo.bind("<<ComboboxSelected>>", lambda e: self._update_filter_descriptor_combobox(2))
         ttk.Label(self.filter_vi2_frame, text="Sub-valor:").grid(row=0, column=2, padx=(5,2), pady=2, sticky="w")
-        self.filter_vi2_desc_combo = ttk.Combobox(self.filter_vi2_frame, textvariable=self.filter_vi2_desc_var, state="readonly", width=15)
+        self.filter_vi2_desc_combo = ttk.Combobox(self.filter_vi2_frame, textvariable=self.filter_vi2_desc_var, state="readonly", width=15, font=scaled_font_tuple)
         self.filter_vi2_desc_combo.grid(row=0, column=3, padx=(0,5), pady=2, sticky="ew")
         self.filter_vi2_frame.grid_remove() # Initially hidden
 

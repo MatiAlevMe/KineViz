@@ -158,9 +158,7 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         search_entry = ttk.Entry(search_filter_frame, textvariable=self.search_term_var, width=30)
         search_entry.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
         search_entry.bind("<Return>", lambda event: self._apply_filters_and_search())
-        search_button = ttk.Button(search_filter_frame, text="Buscar", command=self._apply_filters_and_search)
-        search_button.grid(row=0, column=2, padx=5, pady=5, sticky="e")
-        Tooltip(search_button, text="Buscar análisis por nombre o variable analizada.", short_text="Buscar.", enabled=self.main_window.settings.enable_hover_tooltips)
+        # Search button is moved to filter_action_buttons_frame
 
         # Filter by Variable Analizada
         ttk.Label(search_filter_frame, text="Variable Analizada:").grid(row=1, column=0, padx=(0,5), pady=5, sticky="w")
@@ -211,17 +209,25 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         # Filter Action Buttons (moved to a new row)
         filter_action_buttons_frame = ttk.Frame(search_filter_frame)
         filter_action_buttons_frame.grid(row=5, column=0, columnspan=3, sticky="ew", pady=(5,0)) # New row for these buttons
+        
         apply_button_filters = ttk.Button(filter_action_buttons_frame, text="Aplicar Filtros", command=self._apply_filters_and_search)
-        apply_button_filters.pack(side=tk.LEFT, padx=5)
+        apply_button_filters.pack(side=tk.LEFT, padx=(0,5)) # Adjusted padding
         Tooltip(apply_button_filters, text="Aplicar todos los filtros seleccionados.", short_text="Aplicar filtros.", enabled=self.main_window.settings.enable_hover_tooltips)
 
         clear_button_filters = ttk.Button(filter_action_buttons_frame, text="Limpiar Filtros", command=self._clear_filters)
         clear_button_filters.pack(side=tk.LEFT, padx=(0,5))
         Tooltip(clear_button_filters, text="Limpiar todos los filtros y mostrar todos los análisis.", short_text="Limpiar filtros.", enabled=self.main_window.settings.enable_hover_tooltips)
 
+        # Spacer to push subsequent buttons to the right
+        ttk.Frame(filter_action_buttons_frame).pack(side=tk.LEFT, expand=True, fill=tk.X)
+
         refresh_button_list = ttk.Button(filter_action_buttons_frame, text="Refrescar Lista", command=self.load_analyses)
-        refresh_button_list.pack(side=tk.LEFT, padx=5)
+        refresh_button_list.pack(side=tk.RIGHT, padx=(0,5)) # Pack right, before search
         Tooltip(refresh_button_list, text="Recargar la lista de análisis guardados.", short_text="Refrescar lista.", enabled=self.main_window.settings.enable_hover_tooltips)
+
+        search_button_moved_cont = ttk.Button(filter_action_buttons_frame, text="Buscar", command=self._apply_filters_and_search)
+        search_button_moved_cont.pack(side=tk.RIGHT, padx=(0,0)) # Pack right, rightmost
+        Tooltip(search_button_moved_cont, text="Buscar análisis por nombre o variable analizada.", short_text="Buscar.", enabled=self.main_window.settings.enable_hover_tooltips)
 
 
         # --- Treeview for listing analyses (inside self.scrollable_main_frame) ---
