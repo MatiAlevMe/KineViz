@@ -120,9 +120,16 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
             return 
 
         self.update_idletasks()
-        self.minsize(500, 400) # Set a reasonable fixed minimum
+        # Set a very small minsize initially to allow shrink-wrapping to content
+        self.minsize(1, 1) 
         
         self._adjust_dialog_layout() # Set initial size based on content
+        
+        # Now set a practical minimum size for user manual resizing and future content changes
+        # This prevents the dialog from becoming too small.
+        # You can adjust these values (e.g., 300, 200) if needed.
+        self.minsize(400, 300) 
+
         self._center_dialog() # Center after initial size is set
 
         self.grab_set()
