@@ -8,7 +8,7 @@ from typing import Optional
 # Configure logger for this module
 logger = logging.getLogger(__name__)
 
-from kineviz.config.settings import AppSettings # Import AppSettings
+# AppSettings will be imported locally where needed
 
 # Constants for backup configuration
 BACKUPS_DIR_NAME = "backups"
@@ -63,6 +63,8 @@ def create_backup(backup_type: str) -> Optional[pathlib.Path]:
     Returns:
         The Path object to the created backup ZIP file, or None if an error occurred.
     """
+    from kineviz.config.settings import AppSettings # Import AppSettings locally
+
     if backup_type not in SUPPORTED_BACKUP_TYPES:
         logger.error(f"Invalid backup_type: '{backup_type}'. Must be one of {SUPPORTED_BACKUP_TYPES}.")
         return None
@@ -157,14 +159,24 @@ def create_backup(backup_type: str) -> Optional[pathlib.Path]:
         return None
 
 if __name__ == '__main__':
+    import sys # For sys.path modification
+    # shutil is already imported at the top if needed for cleanup
+
     # Example usage (for testing purposes)
     # Ensure logger is configured to see output
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    
+    # Adjust sys.path to allow finding the 'kineviz' package for AppSettings
+    root = get_project_root()
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+
+    from kineviz.config.settings import AppSettings # Import AppSettings locally for the test block
 
     # Create dummy files and directories for testing
-    root = get_project_root()
+    # root is already defined above
     (root / DB_FILENAME).write_text("dummy db content")
-    (root / CONFIG_FILENAME).write_text("[SETTINGS]\ndummy_setting=1")
+    (root / CONFIG_FILENAME).write_text("[SETTINGS]\ndummy_setting=1\nmax_automatic_backups = 2") # Ensure config for test
     
     dummy_studies_dir = root / STUDIES_DIR_NAME
     dummy_studies_dir.mkdir(exist_ok=True)
