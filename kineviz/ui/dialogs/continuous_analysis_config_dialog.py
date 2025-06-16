@@ -32,6 +32,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.title("Configurar Análisis Continuo") # Título más genérico
         # Defer grab_set and transient until after initial sizing
         self.parent_window = parent # Store parent for transient and centering
+        self._is_adjusting_size = False # Flag to prevent recursion in size adjustment
 
         self.result = None # Para almacenar la configuración si se guarda
 
@@ -108,8 +109,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.container_frame.grid_columnconfigure(0, weight=1)
         
         self.canvas.grid(row=0, column=0, sticky="nsew")
-        self.scrollbar.grid(row=0, column=1, sticky="ns") # Vertical
-        self.h_scrollbar.grid(row=1, column=0, sticky="ew") # Horizontal
+        # Scrollbars are created but not gridded initially
         
         self.container_frame.pack(fill=tk.BOTH, expand=True)
         
@@ -119,17 +119,104 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         if not should_continue_init:
             return 
 
-        # Simplified sizing and centering
         self.update_idletasks()
         self.minsize(500, 400) # Set a reasonable fixed minimum
-        self.geometry("700x550") # Set a reasonable initial size
-        self._center_dialog() # Center after setting initial size
+        
+        self._adjust_dialog_layout() # Set initial size based on content
+        self._center_dialog() # Center after initial size is set
 
         self.grab_set()
         self.transient(self.parent_window)
 
         self.protocol("WM_DELETE_WINDOW", self._on_cancel)
         self.bind("<Escape>", self._on_cancel)
+        self.bind("<Configure>", self._on_configure_event)
+
+    def _on_configure_event(self, event):
+        # Triggered by manual resize or self.geometry()
+        if event.widget == self: # Ensure event is for the Toplevel window itself
+            self._adjust_dialog_layout()
+
+    def _adjust_dialog_layout(self):
+        if self._is_adjusting_size:
+            return
+        self._is_adjusting_size = True
+
+        self.update_idletasks()
+
+        min_dialog_width, min_dialog_height = self.wm_minsize()
+
+        content_req_width = self.scrollable_frame.winfo_reqwidth()
+        content_req_height = self.scrollable_frame.winfo_reqheight()
+
+        # Padding for scrollable_frame is "15"
+        # This means 15px on all 4 sides (left, top, right, bottom)
+        padding_val = 15 
+        h_padding = padding_val * 2 # 15 left + 15 right
+        v_padding = padding_val * 2 # 15 top + 15 bottom
+
+        content_req_width += h_padding
+        content_req_height += v_padding
+        
+        # Ensure content_req respects the dialog's own minsize (intrinsic size of Toplevel)
+        content_req_width = max(content_req_width, min_dialog_width)
+        content_req_height = max(content_req_height, min_dialog_height)
+
+        max_screen_width = int(self.winfo_screenwidth() * 0.9)
+        max_screen_height = int(self.winfo_screenheight() * 0.9)
+
+        target_dialog_width = min(max(content_req_width, min_dialog_width), max_screen_width)
+        target_dialog_height = min(max(content_req_height, min_dialog_height), max_screen_height)
+        
+        current_dialog_width = self.winfo_width()
+        current_dialog_height = self.winfo_height()
+
+        if target_dialog_width != current_dialog_width or \
+           target_dialog_height != current_dialog_height:
+            self.geometry(f"{target_dialog_width}x{target_dialog_height}")
+            self.update_idletasks() # Allow geometry change to apply
+            # Update current dimensions after resize
+            current_dialog_width = self.winfo_width()
+            current_dialog_height = self.winfo_height()
+
+        # Scrollbar visibility
+        v_scroll_needed = content_req_height > current_dialog_height
+        h_scroll_needed = content_req_width > current_dialog_width
+        
+        # Tentatively show/hide scrollbars
+        if v_scroll_needed:
+            if not self.scrollbar.winfo_ismapped():
+                self.scrollbar.grid(row=0, column=1, sticky="ns")
+        elif self.scrollbar.winfo_ismapped():
+            self.scrollbar.grid_remove()
+
+        if h_scroll_needed:
+            if not self.h_scrollbar.winfo_ismapped():
+                self.h_scrollbar.grid(row=1, column=0, sticky="ew")
+        elif self.h_scrollbar.winfo_ismapped():
+            self.h_scrollbar.grid_remove()
+        
+        self.update_idletasks() # Allow scrollbar grid changes to apply
+
+        # Re-evaluate if scrollbars take up space and cause the other to be needed
+        actual_canvas_width = current_dialog_width
+        if self.scrollbar.winfo_ismapped():
+            actual_canvas_width -= self.scrollbar.winfo_reqwidth()
+        
+        actual_canvas_height = current_dialog_height
+        if self.h_scrollbar.winfo_ismapped():
+            actual_canvas_height -= self.h_scrollbar.winfo_reqheight()
+
+        if not h_scroll_needed and content_req_width > actual_canvas_width : # if h_scroll wasn't needed, but now is
+            if not self.h_scrollbar.winfo_ismapped():
+                self.h_scrollbar.grid(row=1, column=0, sticky="ew")
+        
+        if not v_scroll_needed and content_req_height > actual_canvas_height: # if v_scroll wasn't needed, but now is
+            if not self.scrollbar.winfo_ismapped():
+                 self.scrollbar.grid(row=0, column=1, sticky="ns")
+
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+        self._is_adjusting_size = False
 
     def _show_input_help(self, title: str, message: str):
         """Muestra un popup de ayuda simple."""
@@ -420,6 +507,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
 
 
     # Removed: def _on_canvas_configure(self, event):
+    # Removed _update_dialog_size_and_scrollbar method as per user request implicitly by new system
 
     def _on_accept(self):
         """Valida la config y guarda el resultado."""
@@ -1111,34 +1199,31 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
 
         if mode == '1VI':
             self.one_vi_config_frame.grid()
-            self.primary_vi_combo['values'] = self.all_vi_names
-            self.one_vi_button.state(['pressed', 'disabled'])
-            self.two_vi_button.state(['!pressed', '!disabled'])
+            if hasattr(self, 'primary_vi_combo'): self.primary_vi_combo['values'] = self.all_vi_names
+            if hasattr(self, 'one_vi_button'): self.one_vi_button.state(['pressed', 'disabled'])
+            if hasattr(self, 'two_vi_button'): self.two_vi_button.state(['!pressed', '!disabled'])
         elif mode == '2VIs':
             if len(self.all_vi_names) < 2:
                  messagebox.showwarning("No disponible", "Se requieren al menos 2 Variables Independientes definidas en el estudio para agrupar por 2 VIs.", parent=self)
                  self.vi_grouping_mode.set("")
-                 self.one_vi_button.state(['!pressed', '!disabled'])
-                 self.two_vi_button.state(['!pressed', '!disabled'])
-                 self._update_dialog_size_and_scrollbar() # Update size even on warning
+                 if hasattr(self, 'one_vi_button'): self.one_vi_button.state(['!pressed', '!disabled'])
+                 if hasattr(self, 'two_vi_button'): self.two_vi_button.state(['!pressed', '!disabled'])
+                 self._adjust_dialog_layout() 
                  return
             self.two_vi_config_frame.grid()
-            self.fixed_vi_combo['values'] = self.all_vi_names
-            self.fixed_descriptor_combo['values'] = []
-            self.one_vi_button.state(['!pressed', '!disabled'])
-            self.two_vi_button.state(['pressed', 'disabled'])
+            if hasattr(self, 'fixed_vi_combo'): self.fixed_vi_combo['values'] = self.all_vi_names
+            if hasattr(self, 'fixed_descriptor_combo'): self.fixed_descriptor_combo['values'] = []
+            if hasattr(self, 'one_vi_button'): self.one_vi_button.state(['!pressed', '!disabled'])
+            if hasattr(self, 'two_vi_button'): self.two_vi_button.state(['pressed', 'disabled'])
         else: # Reset mode
-             self.one_vi_button.state(['!pressed', '!disabled'])
-             self.two_vi_button.state(['!pressed', '!disabled'])
+             if hasattr(self, 'one_vi_button'): self.one_vi_button.state(['!pressed', '!disabled'])
+             if hasattr(self, 'two_vi_button'): self.two_vi_button.state(['!pressed', '!disabled'])
         
-        if hasattr(super(), 'set_vi_grouping_mode'): return super_set_vi_grouping_mode_result
+        self._adjust_dialog_layout()
 
 
     def _update_fixed_descriptor_options(self, event=None):
         """Actualiza el combobox de sub-valores fijos basado en la VI fija seleccionada."""
-        # ... (existing code for _update_fixed_descriptor_options) ...
-        super_update_fixed_descriptor_options_result = super()._update_fixed_descriptor_options(event) if hasattr(super(), '_update_fixed_descriptor_options') else None
-        
         fixed_vi_name = self.fixed_vi_var.get()
         self.fixed_descriptor_var.set("")
         if hasattr(self, 'fixed_descriptor_combo'): self.fixed_descriptor_combo['values'] = [] # Check attribute existence
@@ -1161,13 +1246,10 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.button_frame.grid_remove()
         if hasattr(self, 'save_button'): self.save_button.config(state=tk.DISABLED)
         
-        if hasattr(super(), '_update_fixed_descriptor_options'): return super_update_fixed_descriptor_options_result
+        self._adjust_dialog_layout()
 
     def update_available_groups(self, event=None):
         """Actualiza la lista de grupos FILTRADOS basados en las selecciones previas."""
-        # ... (existing code for update_available_groups) ...
-        super_update_available_groups_result = super().update_available_groups(event) if hasattr(super(), 'update_available_groups') else None
-
         frequency = "Cinematica" # Fixed for continuous
         mode = self.vi_grouping_mode.get()
         primary_vi = self.primary_vi_var.get() if mode == '1VI' else None
@@ -1186,10 +1268,8 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
             self.analysis_name_frame.grid_remove()
             self.button_frame.grid_remove()
             logger.debug("Limpiando grupos: falta información previa.")
-            self._update_dialog_size_and_scrollbar()
-            if hasattr(super(), 'update_available_groups'): return super_update_available_groups_result
+            self._adjust_dialog_layout()
             return
-
 
         fixed_descriptor = None
         if fixed_descriptor_display:
@@ -1233,62 +1313,50 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
             self._clear_group_selectors(update_columns=False)
             self.group_selection_outer_frame.grid_remove()
         
-        if hasattr(super(), 'update_available_groups'): return super_update_available_groups_result
+        self._adjust_dialog_layout()
 
     def _show_final_steps(self):
         """Muestra los frames de opciones de visualización, anotación, nombre y botones."""
-        # ... (existing code for _show_final_steps) ...
-        super_show_final_steps_result = super()._show_final_steps() if hasattr(super(), '_show_final_steps') else None
         self.plot_options_frame.grid()
         self.annotation_options_frame.grid() 
         self._toggle_time_delimitation_widgets() 
         self.analysis_name_frame.grid()
         self.button_frame.grid()
         if hasattr(self, 'save_button'): self.save_button.config(state=tk.NORMAL)
-        if hasattr(super(), '_show_final_steps'): return super_show_final_steps_result
+        self._adjust_dialog_layout()
 
     def _hide_final_steps(self):
         """Oculta los frames de opciones de visualización, anotación, nombre y botones."""
-        # ... (existing code for _hide_final_steps) ...
-        super_hide_final_steps_result = super()._hide_final_steps() if hasattr(super(), '_hide_final_steps') else None
         self.plot_options_frame.grid_remove()
         self.annotation_options_frame.grid_remove() 
         self.analysis_name_frame.grid_remove()
         self.button_frame.grid_remove()
         if hasattr(self, 'save_button'): self.save_button.config(state=tk.DISABLED)
-        if hasattr(super(), '_hide_final_steps'): return super_hide_final_steps_result
+        self._adjust_dialog_layout()
 
     def _toggle_time_delimitation_widgets(self):
         """Muestra u oculta los widgets de delimitación de tiempo."""
-        # ... (existing code for _toggle_time_delimitation_widgets) ...
-        super_toggle_time_delimitation_widgets_result = super()._toggle_time_delimitation_widgets() if hasattr(super(), '_toggle_time_delimitation_widgets') else None
         if self.delimit_time_range_var.get():
             self.time_delimitation_subframe.pack(fill=tk.X, expand=True)
             self._toggle_time_label_entry()
         else:
             self.time_delimitation_subframe.pack_forget()
-        # self._update_dialog_size_and_scrollbar() # Removed call
-        if hasattr(super(), '_toggle_time_delimitation_widgets'): return super_toggle_time_delimitation_widgets_result
+        self._adjust_dialog_layout()
 
     def _toggle_time_label_entry(self):
         """Muestra u oculta el campo de entrada para la etiqueta de rango de tiempo."""
-        # ... (existing code for _toggle_time_label_entry) ...
-        super_toggle_time_label_entry_result = super()._toggle_time_label_entry() if hasattr(super(), '_toggle_time_label_entry') else None
         if self.delimit_time_range_var.get() and self.add_time_range_label_var.get():
             if hasattr(self, 'time_label_entry_frame'): self.time_label_entry_frame.grid() 
         else:
             if hasattr(self, 'time_label_entry_frame'): self.time_label_entry_frame.grid_remove()
-        # No need to call _update_dialog_size_and_scrollbar here if parent's visibility change calls it
-        if hasattr(super(), '_toggle_time_label_entry'): return super_toggle_time_label_entry_result
+        self._adjust_dialog_layout()
 
     def add_group_selector(self, initial_value=""):
         """Añade un nuevo selector de grupo (Combobox + botón eliminar)."""
-        # ... (existing code for add_group_selector) ...
-        super_add_group_selector_result = super().add_group_selector(initial_value) if hasattr(super(), 'add_group_selector') else None
         if not self.groups_inner_frame.winfo_exists(): 
-            if hasattr(super(), 'add_group_selector'): return super_add_group_selector_result
             return 
 
+        scaled_font = get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale)
         selector_frame = ttk.Frame(self.groups_inner_frame)
         selector_frame.pack(fill=tk.X, pady=2, padx=(0,0)) 
 
@@ -1298,55 +1366,59 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         group_combo_frame_cont.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
 
         group_combo = ttk.Combobox(group_combo_frame_cont, textvariable=group_var, state="readonly",
-                                   values=sorted(list(self.available_groups_filtered.keys())), width=30) 
+                                   values=sorted(list(self.available_groups_filtered.keys())), width=30, font=scaled_font) 
         group_combo.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0,5))
         group_combo.bind("<<ComboboxSelected>>", self._on_group_selection_change) 
         
-        ttk.Button(group_combo_frame_cont, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Selección de Grupo (Continuo)",
-                                                         "Seleccione un grupo (sub-valor o combinación de sub-valores con alias) para incluir en la comparación de series temporales.\nDebe seleccionar al menos dos grupos distintos.")
-                  ).pack(side=tk.LEFT)
+        group_select_help_long_text_cont = ("Seleccione un grupo (sub-valor o combinación de sub-valores con alias) para incluir en la comparación de series temporales.\n"
+                                            "Debe seleccionar al menos dos grupos distintos.")
+        group_select_help_short_text_cont = "Seleccionar grupo para comparar (SPM)."
+        group_select_help_button_cont = ttk.Button(group_combo_frame_cont, text="?", width=3, style="Help.TButton",
+                                                   command=lambda: self._show_input_help("Ayuda: Selección de Grupo (Continuo)", group_select_help_long_text_cont))
+        group_select_help_button_cont.pack(side=tk.LEFT)
+        help_tooltip = Tooltip(group_select_help_button_cont, text=group_select_help_long_text_cont, short_text=group_select_help_short_text_cont, enabled=self.settings.enable_hover_tooltips)
+        
 
         remove_button = ttk.Button(selector_frame, text="🗑️", width=3,
                                    command=lambda f=selector_frame, v=group_var: self.remove_group_selector(f, v))
         remove_button.pack(side=tk.LEFT)
+        Tooltip(remove_button, text="Quitar este grupo de la comparación SPM.", short_text="Quitar grupo.", enabled=self.settings.enable_hover_tooltips)
 
         self.group_selector_vars.append(group_var)
         self.group_selector_frames.append(selector_frame)
+        self.group_selector_tooltips.append(help_tooltip)
         self._update_remove_button_states()
 
         self.groups_inner_frame.update_idletasks()
-        self.groups_canvas.config(scrollregion=self.groups_canvas.bbox("all"))
+        # self.groups_canvas.config(scrollregion=self.groups_canvas.bbox("all")) # Done by _adjust_dialog_layout
         
         self._on_group_selection_change() 
         self._refresh_group_combobox_options() 
-        if hasattr(super(), 'add_group_selector'): return super_add_group_selector_result
+        self._adjust_dialog_layout()
 
     def remove_group_selector(self, frame_to_remove, var_to_remove):
         """Elimina un selector de grupo."""
-        # ... (existing code for remove_group_selector) ...
-        super_remove_group_selector_result = super().remove_group_selector(frame_to_remove, var_to_remove) if hasattr(super(), 'remove_group_selector') else None
-
         if len(self.group_selector_vars) <= 2: 
             messagebox.showwarning("Acción no permitida", "Se requieren al menos dos grupos para comparar.", parent=self)
-            if hasattr(super(), 'remove_group_selector'): return super_remove_group_selector_result
             return
 
         try:
             index = self.group_selector_frames.index(frame_to_remove)
             self.group_selector_vars.pop(index)
             self.group_selector_frames.pop(index)
+            if index < len(self.group_selector_tooltips):
+                self.group_selector_tooltips.pop(index)
             frame_to_remove.destroy()
             self._update_remove_button_states()
             
             self.groups_inner_frame.update_idletasks()
-            self.groups_canvas.config(scrollregion=self.groups_canvas.bbox("all"))
+            # self.groups_canvas.config(scrollregion=self.groups_canvas.bbox("all")) # Done by _adjust_dialog_layout
 
             self._on_group_selection_change() 
             self._refresh_group_combobox_options() 
         except (ValueError, IndexError):
             logger.warning("Intento de eliminar un selector de grupo que ya no existe o índice inválido.")
-        if hasattr(super(), 'remove_group_selector'): return super_remove_group_selector_result
+        self._adjust_dialog_layout()
 
 if __name__ == '__main__':
     root = tk.Tk()

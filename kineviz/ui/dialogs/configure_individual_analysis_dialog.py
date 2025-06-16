@@ -26,6 +26,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.title("Configurar Nuevo Análisis Individual")
         # Defer grab_set until after initial sizing
         self.parent_window = parent # Store parent for transient and centering
+        self._is_adjusting_size = False # Flag to prevent recursion
 
         # --- Nuevas variables de estado para el flujo ---
         self.vi_grouping_mode = tk.StringVar(value="") # '1VI' o '2VIs'
@@ -85,8 +86,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.container_frame.grid_columnconfigure(0, weight=1)
         
         self.canvas.grid(row=0, column=0, sticky="nsew")
-        self.scrollbar.grid(row=0, column=1, sticky="ns") # Vertical
-        self.h_scrollbar.grid(row=1, column=0, sticky="ew") # Horizontal
+        # Scrollbars are created but not gridded initially
 
         self.container_frame.pack(fill=tk.BOTH, expand=True)
 
@@ -96,14 +96,94 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         if not should_continue_init:
             return 
 
-        # Simplified sizing and centering
         self.update_idletasks()
         self.minsize(500, 400) # Set a reasonable fixed minimum
-        self.geometry("700x550") # Set a reasonable initial size
-        self._center_dialog()
+        
+        self._adjust_dialog_layout() # Set initial size
+        self._center_dialog() # Center after initial size
         
         self.grab_set()
         self.transient(self.parent_window)
+        self.bind("<Configure>", self._on_configure_event)
+
+
+    def _on_configure_event(self, event):
+        if event.widget == self:
+            self._adjust_dialog_layout()
+
+    def _adjust_dialog_layout(self):
+        if self._is_adjusting_size:
+            return
+        self._is_adjusting_size = True
+
+        self.update_idletasks()
+
+        min_dialog_width, min_dialog_height = self.wm_minsize()
+
+        content_req_width = self.scrollable_frame.winfo_reqwidth()
+        content_req_height = self.scrollable_frame.winfo_reqheight()
+        
+        padding_val = 15 
+        h_padding = padding_val * 2
+        v_padding = padding_val * 2
+
+        content_req_width += h_padding
+        content_req_height += v_padding
+        
+        content_req_width = max(content_req_width, min_dialog_width)
+        content_req_height = max(content_req_height, min_dialog_height)
+
+        max_screen_width = int(self.winfo_screenwidth() * 0.9)
+        max_screen_height = int(self.winfo_screenheight() * 0.9)
+
+        target_dialog_width = min(max(content_req_width, min_dialog_width), max_screen_width)
+        target_dialog_height = min(max(content_req_height, min_dialog_height), max_screen_height)
+        
+        current_dialog_width = self.winfo_width()
+        current_dialog_height = self.winfo_height()
+
+        if target_dialog_width != current_dialog_width or \
+           target_dialog_height != current_dialog_height:
+            self.geometry(f"{target_dialog_width}x{target_dialog_height}")
+            self.update_idletasks()
+            current_dialog_width = self.winfo_width()
+            current_dialog_height = self.winfo_height()
+
+        v_scroll_needed = content_req_height > current_dialog_height
+        h_scroll_needed = content_req_width > current_dialog_width
+        
+        if v_scroll_needed:
+            if not self.scrollbar.winfo_ismapped():
+                self.scrollbar.grid(row=0, column=1, sticky="ns")
+        elif self.scrollbar.winfo_ismapped():
+            self.scrollbar.grid_remove()
+
+        if h_scroll_needed:
+            if not self.h_scrollbar.winfo_ismapped():
+                self.h_scrollbar.grid(row=1, column=0, sticky="ew")
+        elif self.h_scrollbar.winfo_ismapped():
+            self.h_scrollbar.grid_remove()
+        
+        self.update_idletasks()
+
+        actual_canvas_width = current_dialog_width
+        if self.scrollbar.winfo_ismapped():
+            actual_canvas_width -= self.scrollbar.winfo_reqwidth()
+        
+        actual_canvas_height = current_dialog_height
+        if self.h_scrollbar.winfo_ismapped():
+            actual_canvas_height -= self.h_scrollbar.winfo_reqheight()
+
+        if not h_scroll_needed and content_req_width > actual_canvas_width:
+            if not self.h_scrollbar.winfo_ismapped():
+                self.h_scrollbar.grid(row=1, column=0, sticky="ew")
+        
+        if not v_scroll_needed and content_req_height > actual_canvas_height:
+            if not self.scrollbar.winfo_ismapped():
+                 self.scrollbar.grid(row=0, column=1, sticky="ns")
+
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+        self._is_adjusting_size = False
 
     def _show_input_help(self, title: str, message: str):
         """Muestra un popup de ayuda simple."""
@@ -359,21 +439,20 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             if len(self.all_vi_names) < 2:
                  messagebox.showwarning("No disponible", "Se requieren al menos 2 Variables Independientes definidas en el estudio para agrupar por 2 VIs.", parent=self)
                  self.vi_grouping_mode.set("") # Resetear modo
-                 self.one_vi_button.state(['!pressed', '!disabled']) # Resetear botones
-                 self.two_vi_button.state(['!pressed', '!disabled'])
-                 # self._update_dialog_size_and_scrollbar() # Removed call
+                 if hasattr(self, 'one_vi_button'): self.one_vi_button.state(['!pressed', '!disabled']) 
+                 if hasattr(self, 'two_vi_button'): self.two_vi_button.state(['!pressed', '!disabled'])
+                 self._adjust_dialog_layout()
                  return
             self.two_vi_config_frame.grid()
-            self.fixed_vi_combo['values'] = self.all_vi_names
-            self.fixed_descriptor_combo['values'] = [] # Limpiar sub-valores fijos
-            # Habilitar/deshabilitar botón 1VI
-            self.one_vi_button.state(['!pressed', '!disabled'])
-            self.two_vi_button.state(['pressed', 'disabled'])
-        else: # Si se resetea
-             self.one_vi_button.state(['!pressed', '!disabled'])
-             self.two_vi_button.state(['!pressed', '!disabled'])
+            if hasattr(self, 'fixed_vi_combo'): self.fixed_vi_combo['values'] = self.all_vi_names
+            if hasattr(self, 'fixed_descriptor_combo'): self.fixed_descriptor_combo['values'] = [] 
+            if hasattr(self, 'one_vi_button'): self.one_vi_button.state(['!pressed', '!disabled'])
+            if hasattr(self, 'two_vi_button'): self.two_vi_button.state(['pressed', 'disabled'])
+        else: 
+             if hasattr(self, 'one_vi_button'): self.one_vi_button.state(['!pressed', '!disabled'])
+             if hasattr(self, 'two_vi_button'): self.two_vi_button.state(['!pressed', '!disabled'])
         
-        # self._update_dialog_size_and_scrollbar() # Removed call
+        self._adjust_dialog_layout()
 
 
     def _update_fixed_descriptor_options(self, event=None):
@@ -399,7 +478,8 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.assumptions_frame.grid_remove()
         self.analysis_name_frame.grid_remove()
         self.button_frame.grid_remove()
-        self.save_button.config(state=tk.DISABLED)
+        if hasattr(self, 'save_button'): self.save_button.config(state=tk.DISABLED)
+        self._adjust_dialog_layout()
 
 
     def load_initial_data(self):
@@ -441,7 +521,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             self._clear_group_selectors(update_columns=False) # No actualizar columnas aún
             self.group_selection_outer_frame.grid_remove() # Ocultar frame de grupos
             logger.debug("Limpiando grupos: falta información previa.")
-            # self._update_dialog_size_and_scrollbar() # Removed call
+            self._adjust_dialog_layout()
             return
 
         # Obtener el descriptor original si hay alias
@@ -498,6 +578,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             self.available_groups_filtered = {}
             self._clear_group_selectors(update_columns=False) # No actualizar columnas
             self.group_selection_outer_frame.grid_remove()
+        self._adjust_dialog_layout()
 
     def _load_and_fix_frequency(self) -> bool:
         """Verifica la disponibilidad de 'Cinematica' y la fija como Tipo de Dato. Retorna True si exitoso."""
@@ -762,8 +843,9 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             self.assumptions_frame.grid_remove()
             self.analysis_name_frame.grid_remove()
             self.button_frame.grid_remove()
-            self.save_button.config(state=tk.DISABLED)
+            if hasattr(self, 'save_button'): self.save_button.config(state=tk.DISABLED)
             logger.debug("Limpiando columnas y ocultando pasos: falta info o grupos.")
+            self._adjust_dialog_layout()
             return
 
         try:
@@ -801,6 +883,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             self.column_combo['values'] = []
             self.column_var.set("")
             self._hide_final_steps() # Ocultar pasos finales en caso de error
+        self._adjust_dialog_layout()
 
 
     def _on_column_selected(self, event=None):
@@ -815,16 +898,16 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.assumptions_frame.grid()
         self.analysis_name_frame.grid()
         self.button_frame.grid()
-        self.save_button.config(state=tk.NORMAL) # Habilitar botón de guardar
-        # self._update_dialog_size_and_scrollbar() # Removed call
+        if hasattr(self, 'save_button'): self.save_button.config(state=tk.NORMAL) 
+        self._adjust_dialog_layout()
 
     def _hide_final_steps(self):
         """Oculta los frames de supuestos, nombre y botones."""
         self.assumptions_frame.grid_remove()
         self.analysis_name_frame.grid_remove()
         self.button_frame.grid_remove()
-        self.save_button.config(state=tk.DISABLED) # Deshabilitar botón de guardar
-        # self._update_dialog_size_and_scrollbar() # Removed call
+        if hasattr(self, 'save_button'): self.save_button.config(state=tk.DISABLED) 
+        self._adjust_dialog_layout()
 
 
     def _save_configuration_and_close(self):
@@ -941,8 +1024,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         logger.info(f"Configuración de análisis individual lista para ser devuelta: {self.result}")
         self.destroy() # Cerrar el diálogo de configuración
 
-    # Removed _update_dialog_size_and_scrollbar method
-    # Sizing is now simplified in __init__
+    # Removed _update_dialog_size_and_scrollbar method (implicitly by new system)
 
     def _center_dialog(self):
         self.update_idletasks()
@@ -993,34 +1075,30 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
 
         if mode == '1VI':
             self.one_vi_config_frame.grid()
-            self.primary_vi_combo['values'] = self.all_vi_names
-            self.one_vi_button.state(['pressed', 'disabled'])
-            self.two_vi_button.state(['!pressed', '!disabled'])
+            if hasattr(self, 'primary_vi_combo'): self.primary_vi_combo['values'] = self.all_vi_names
+            if hasattr(self, 'one_vi_button'): self.one_vi_button.state(['pressed', 'disabled'])
+            if hasattr(self, 'two_vi_button'): self.two_vi_button.state(['!pressed', '!disabled'])
         elif mode == '2VIs':
             if len(self.all_vi_names) < 2:
                  messagebox.showwarning("No disponible", "Se requieren al menos 2 Variables Independientes definidas en el estudio para agrupar por 2 VIs.", parent=self)
                  self.vi_grouping_mode.set("") 
-                 self.one_vi_button.state(['!pressed', '!disabled']) 
-                 self.two_vi_button.state(['!pressed', '!disabled'])
-                 # self._update_dialog_size_and_scrollbar() # Removed call
-                 if hasattr(super(), 'set_vi_grouping_mode'): return super_set_vi_grouping_mode_result
+                 if hasattr(self, 'one_vi_button'): self.one_vi_button.state(['!pressed', '!disabled']) 
+                 if hasattr(self, 'two_vi_button'): self.two_vi_button.state(['!pressed', '!disabled'])
+                 self._adjust_dialog_layout()
                  return
             self.two_vi_config_frame.grid()
-            self.fixed_vi_combo['values'] = self.all_vi_names
+            if hasattr(self, 'fixed_vi_combo'): self.fixed_vi_combo['values'] = self.all_vi_names
             if hasattr(self, 'fixed_descriptor_combo'): self.fixed_descriptor_combo['values'] = []
-            self.one_vi_button.state(['!pressed', '!disabled'])
-            self.two_vi_button.state(['pressed', 'disabled'])
+            if hasattr(self, 'one_vi_button'): self.one_vi_button.state(['!pressed', '!disabled'])
+            if hasattr(self, 'two_vi_button'): self.two_vi_button.state(['pressed', 'disabled'])
         else: 
-             self.one_vi_button.state(['!pressed', '!disabled'])
-             self.two_vi_button.state(['!pressed', '!disabled'])
+             if hasattr(self, 'one_vi_button'): self.one_vi_button.state(['!pressed', '!disabled'])
+             if hasattr(self, 'two_vi_button'): self.two_vi_button.state(['!pressed', '!disabled'])
         
-        # self._update_dialog_size_and_scrollbar() # Removed call
-        if hasattr(super(), 'set_vi_grouping_mode'): return super_set_vi_grouping_mode_result
+        self._adjust_dialog_layout()
 
     def _update_fixed_descriptor_options(self, event=None):
         """Actualiza el combobox de sub-valores fijos basado en la VI fija seleccionada."""
-        # ... (existing code for _update_fixed_descriptor_options) ...
-        super_update_fixed_descriptor_options_result = super()._update_fixed_descriptor_options(event) if hasattr(super(), '_update_fixed_descriptor_options') else None
         fixed_vi_name = self.fixed_vi_var.get()
         self.fixed_descriptor_var.set("") 
         if hasattr(self, 'fixed_descriptor_combo'): self.fixed_descriptor_combo['values'] = []
@@ -1042,13 +1120,10 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.button_frame.grid_remove()
         if hasattr(self, 'save_button'): self.save_button.config(state=tk.DISABLED)
         
-        # self._update_dialog_size_and_scrollbar() # Removed call
-        if hasattr(super(), '_update_fixed_descriptor_options'): return super_update_fixed_descriptor_options_result
+        self._adjust_dialog_layout()
 
     def update_available_groups(self, event=None):
         """Actualiza la lista de grupos FILTRADOS basados en las selecciones previas."""
-        # ... (existing code for update_available_groups) ...
-        super_update_available_groups_result = super().update_available_groups(event) if hasattr(super(), 'update_available_groups') else None
         frequency = self.frequency_var.get()
         mode = self.vi_grouping_mode.get()
         primary_vi = self.primary_vi_var.get() if mode == '1VI' else None
@@ -1066,8 +1141,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             self.analysis_name_frame.grid_remove()
             self.button_frame.grid_remove()
             logger.debug("Limpiando grupos: falta información previa.")
-            # self._update_dialog_size_and_scrollbar() # Removed call
-            if hasattr(super(), 'update_available_groups'): return super_update_available_groups_result
+            self._adjust_dialog_layout()
             return
 
         fixed_descriptor = None
@@ -1112,44 +1186,30 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             self._clear_group_selectors(update_columns=False) 
             self.group_selection_outer_frame.grid_remove()
         
-        # self._update_dialog_size_and_scrollbar() # Removed call
-        if hasattr(super(), 'update_available_groups'): return super_update_available_groups_result
+        self._adjust_dialog_layout()
 
     def _show_final_steps(self):
         """Muestra los frames de supuestos, nombre y botones."""
-        # ... (existing code for _show_final_steps) ...
-        super_show_final_steps_result = super()._show_final_steps() if hasattr(super(), '_show_final_steps') else None
         self.assumptions_frame.grid()
         self.analysis_name_frame.grid()
         self.button_frame.grid()
         if hasattr(self, 'save_button'): self.save_button.config(state=tk.NORMAL) 
-        # self._update_dialog_size_and_scrollbar() # Removed call
-        if hasattr(super(), '_show_final_steps'): return super_show_final_steps_result
+        self._adjust_dialog_layout()
 
     def _hide_final_steps(self):
         """Oculta los frames de supuestos, nombre y botones."""
-        # ... (existing code for _hide_final_steps) ...
-        super_hide_final_steps_result = super()._hide_final_steps() if hasattr(super(), '_hide_final_steps') else None
         self.assumptions_frame.grid_remove()
         self.analysis_name_frame.grid_remove()
         self.button_frame.grid_remove()
         if hasattr(self, 'save_button'): self.save_button.config(state=tk.DISABLED) 
-        # self._update_dialog_size_and_scrollbar() # Removed call
-        if hasattr(super(), '_hide_final_steps'): return super_hide_final_steps_result
+        self._adjust_dialog_layout()
 
     def add_group_selector(self, initial_value=""):
         """Añade una nueva fila para seleccionar un grupo."""
-        # ... (existing code for add_group_selector) ...
-        # Note: The original add_group_selector had duplicate definitions. Using the second one.
-        super_add_group_selector_result = None # Placeholder as original had duplicates
-        if hasattr(super(), 'add_group_selector') and callable(super().add_group_selector):
-             super_add_group_selector_result = super().add_group_selector(initial_value)
-
-
         if not self.group_selectors_frame: 
-            if hasattr(super(), 'add_group_selector'): return super_add_group_selector_result
             return
 
+        scaled_font = get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale)
         selector_frame = ttk.Frame(self.group_selectors_frame)
         selector_frame.pack(fill=tk.X, pady=2)
 
@@ -1159,71 +1219,66 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         group_combo_frame.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
 
         group_combo = ttk.Combobox(group_combo_frame, textvariable=group_var, state="readonly",
-                                   values=sorted(list(self.available_groups_filtered.keys())))
+                                   values=sorted(list(self.available_groups_filtered.keys())), font=scaled_font)
         group_combo.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0,5))
         group_combo.bind("<<ComboboxSelected>>", self.update_available_columns)
         
-        ttk.Button(group_combo_frame, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Selección de Grupo",
-                                                         "Seleccione un grupo (sub-valor o combinación de sub-valores con alias) para incluir en la comparación.\nDebe seleccionar al menos dos grupos distintos.")
-                  ).pack(side=tk.LEFT)
+        group_select_help_long_text = ("Seleccione un grupo (sub-valor o combinación de sub-valores con alias) para incluir en la comparación.\n"
+                                       "Debe seleccionar al menos dos grupos distintos.")
+        group_select_help_short_text = "Seleccionar grupo para comparar."
+        group_select_help_button = ttk.Button(group_combo_frame, text="?", width=3, style="Help.TButton",
+                                              command=lambda: self._show_input_help("Ayuda: Selección de Grupo", group_select_help_long_text))
+        group_select_help_button.pack(side=tk.LEFT)
+        help_tooltip = Tooltip(group_select_help_button, text=group_select_help_long_text, short_text=group_select_help_short_text, enabled=self.settings.enable_hover_tooltips)
+        
 
         remove_button = ttk.Button(selector_frame, text="🗑️", width=3, 
                                    command=lambda f=selector_frame, v=group_var: self.remove_group_selector(f, v))
         remove_button.pack(side=tk.LEFT)
-
-        # Logic for disabling remove button
-        can_remove = len(self.group_selector_vars) >= 2 # Can remove if this new one makes it >2, or if already >2
+        Tooltip(remove_button, text="Quitar este grupo de la comparación.", short_text="Quitar grupo.", enabled=self.settings.enable_hover_tooltips)
         
         self.group_selector_vars.append(group_var)
         self.group_selector_frames.append(selector_frame) 
+        self.group_selector_tooltips.append(help_tooltip)
 
         # Update all remove buttons
         for idx, frame_item in enumerate(self.group_selector_frames):
-            if len(frame_item.winfo_children()) > 1:
-                btn = frame_item.winfo_children()[1]
-                if isinstance(btn, ttk.Button): # Ensure it's the remove button
+            if frame_item.winfo_exists() and len(frame_item.winfo_children()) > 1:
+                btn = frame_item.winfo_children()[1] # Assuming remove button is the second child
+                if isinstance(btn, ttk.Button): 
                     btn.config(state=tk.NORMAL if len(self.group_selector_vars) > 2 else tk.DISABLED)
         
         self._refresh_group_combobox_options() 
-        self.update_available_columns() # Call after adding, to reflect new state
-        # self._update_dialog_size_and_scrollbar() # Removed call
-        if hasattr(super(), 'add_group_selector'): return super_add_group_selector_result
+        self.update_available_columns() 
+        self._adjust_dialog_layout()
 
 
     def remove_group_selector(self, frame_to_remove, var_to_remove):
         """Elimina una fila de selector de grupo."""
-        # ... (existing code for remove_group_selector) ...
-        # Note: The original remove_group_selector had duplicate definitions. Using the second one.
-        super_remove_group_selector_result = None # Placeholder
-        if hasattr(super(), 'remove_group_selector') and callable(super().remove_group_selector):
-            super_remove_group_selector_result = super().remove_group_selector(frame_to_remove, var_to_remove)
-
         if len(self.group_selector_vars) <= 2:
             messagebox.showwarning("Acción no permitida", "Debe seleccionar al menos dos grupos para comparar.", parent=self)
-            if hasattr(super(), 'remove_group_selector'): return super_remove_group_selector_result
             return
 
         try:
             index = self.group_selector_frames.index(frame_to_remove)
             self.group_selector_vars.pop(index)
             self.group_selector_frames.pop(index)
-            # No need to manage self.group_selector_tooltips.pop(index)
+            if index < len(self.group_selector_tooltips):
+                self.group_selector_tooltips.pop(index)
             frame_to_remove.destroy()
 
             # Update all remove buttons
             for idx, frame_item in enumerate(self.group_selector_frames):
-                 if len(frame_item.winfo_children()) > 1:
-                    btn = frame_item.winfo_children()[1]
+                 if frame_item.winfo_exists() and len(frame_item.winfo_children()) > 1:
+                    btn = frame_item.winfo_children()[1] # Assuming remove button is the second child
                     if isinstance(btn, ttk.Button):
                         btn.config(state=tk.NORMAL if len(self.group_selector_vars) > 2 else tk.DISABLED)
 
             self.update_available_columns()
             self._refresh_group_combobox_options() 
-            # self._update_dialog_size_and_scrollbar() # Removed call
+            self._adjust_dialog_layout()
         except (ValueError, IndexError):
             logger.warning("Intento de eliminar un selector de grupo que ya no existe o índice inválido.")
-        if hasattr(super(), 'remove_group_selector'): return super_remove_group_selector_result
 
 
 # Para pruebas rápidas
