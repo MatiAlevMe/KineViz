@@ -1197,7 +1197,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
             self._toggle_time_label_entry()
         else:
             self.time_delimitation_subframe.pack_forget()
-        self._update_dialog_size_and_scrollbar()
+        # self._update_dialog_size_and_scrollbar() # Removed call
         if hasattr(super(), '_toggle_time_delimitation_widgets'): return super_toggle_time_delimitation_widgets_result
 
     def _toggle_time_label_entry(self):

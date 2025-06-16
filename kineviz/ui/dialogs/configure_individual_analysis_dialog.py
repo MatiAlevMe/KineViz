@@ -984,7 +984,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
              self.one_vi_button.state(['!pressed', '!disabled'])
              self.two_vi_button.state(['!pressed', '!disabled'])
         
-        self._update_dialog_size_and_scrollbar()
+        # self._update_dialog_size_and_scrollbar() # Removed call
         if hasattr(super(), 'set_vi_grouping_mode'): return super_set_vi_grouping_mode_result
 
     def _update_fixed_descriptor_options(self, event=None):
@@ -1012,7 +1012,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.button_frame.grid_remove()
         if hasattr(self, 'save_button'): self.save_button.config(state=tk.DISABLED)
         
-        self._update_dialog_size_and_scrollbar()
+        # self._update_dialog_size_and_scrollbar() # Removed call
         if hasattr(super(), '_update_fixed_descriptor_options'): return super_update_fixed_descriptor_options_result
 
     def update_available_groups(self, event=None):
@@ -1036,7 +1036,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             self.analysis_name_frame.grid_remove()
             self.button_frame.grid_remove()
             logger.debug("Limpiando grupos: falta información previa.")
-            self._update_dialog_size_and_scrollbar()
+            # self._update_dialog_size_and_scrollbar() # Removed call
             if hasattr(super(), 'update_available_groups'): return super_update_available_groups_result
             return
 
@@ -1082,7 +1082,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             self._clear_group_selectors(update_columns=False) 
             self.group_selection_outer_frame.grid_remove()
         
-        self._update_dialog_size_and_scrollbar()
+        # self._update_dialog_size_and_scrollbar() # Removed call
         if hasattr(super(), 'update_available_groups'): return super_update_available_groups_result
 
     def _show_final_steps(self):
@@ -1093,7 +1093,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.analysis_name_frame.grid()
         self.button_frame.grid()
         if hasattr(self, 'save_button'): self.save_button.config(state=tk.NORMAL) 
-        self._update_dialog_size_and_scrollbar()
+        # self._update_dialog_size_and_scrollbar() # Removed call
         if hasattr(super(), '_show_final_steps'): return super_show_final_steps_result
 
     def _hide_final_steps(self):
@@ -1104,7 +1104,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.analysis_name_frame.grid_remove()
         self.button_frame.grid_remove()
         if hasattr(self, 'save_button'): self.save_button.config(state=tk.DISABLED) 
-        self._update_dialog_size_and_scrollbar()
+        # self._update_dialog_size_and_scrollbar() # Removed call
         if hasattr(super(), '_hide_final_steps'): return super_hide_final_steps_result
 
     def add_group_selector(self, initial_value=""):
@@ -1157,7 +1157,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         
         self._refresh_group_combobox_options() 
         self.update_available_columns() # Call after adding, to reflect new state
-        self._update_dialog_size_and_scrollbar() # Added
+        # self._update_dialog_size_and_scrollbar() # Removed call
         if hasattr(super(), 'add_group_selector'): return super_add_group_selector_result
 
 
@@ -1189,7 +1189,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
 
             self.update_available_columns()
             self._refresh_group_combobox_options() 
-            self._update_dialog_size_and_scrollbar() # Added
+            # self._update_dialog_size_and_scrollbar() # Removed call
         except (ValueError, IndexError):
             logger.warning("Intento de eliminar un selector de grupo que ya no existe o índice inválido.")
         if hasattr(super(), 'remove_group_selector'): return super_remove_group_selector_result
