@@ -5,6 +5,7 @@ import logging # Importar logging
 from pathlib import Path # Importar Path
 from kineviz.core.services.study_service import MAX_PINNED_STUDIES # Importar la constante
 from kineviz.ui.widgets.tooltip import Tooltip # Import Tooltip
+from kineviz.ui.utils.style import get_scaled_font, DEFAULT_FONT_SIZE # Import font utilities
 
 logger = logging.getLogger(__name__) # Logger para este módulo
 
@@ -112,13 +113,31 @@ class MainView:
         
         # --- Búsqueda ---
         # Populate self.search_content_frame
-        ttk.Label(self.search_content_frame, text="Buscar estudio:").pack(side=tk.LEFT, padx=(0, 5))
-        search_entry = ttk.Entry(self.search_content_frame, textvariable=self.search_term)
+        ttk.Label(self.search_content_frame, text="Buscar:").pack(side=tk.LEFT, padx=(0, 5)) # Changed label text
+        scaled_font_tuple = get_scaled_font(DEFAULT_FONT_SIZE, self.main_window.settings.font_scale)
+        search_entry = ttk.Entry(self.search_content_frame, textvariable=self.search_term, font=scaled_font_tuple) # Added font
         search_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
         search_entry.bind("<Return>", lambda event: self.search_studies())
-        ttk.Button(self.search_content_frame, text="Buscar", command=self.search_studies).pack(side=tk.LEFT, padx=5)
-        ttk.Button(self.search_content_frame, text="Limpiar", command=self.clear_search).pack(side=tk.LEFT, padx=(0,5))
-        ttk.Button(self.search_content_frame, text="Refrescar", command=self.load_studies).pack(side=tk.LEFT)
+        
+        search_button = ttk.Button(self.search_content_frame, text="Buscar", command=self.search_studies)
+        search_button.pack(side=tk.LEFT, padx=5)
+        Tooltip(search_button, text="Buscar estudios por nombre.", short_text="Buscar estudios.", enabled=self.main_window.settings.enable_hover_tooltips)
+
+        clear_button = ttk.Button(self.search_content_frame, text="Limpiar", command=self.clear_search)
+        clear_button.pack(side=tk.LEFT, padx=(0,5))
+        Tooltip(clear_button, text="Limpiar el término de búsqueda y mostrar todos los estudios.", short_text="Limpiar búsqueda.", enabled=self.main_window.settings.enable_hover_tooltips)
+
+        refresh_button = ttk.Button(self.search_content_frame, text="Refrescar", command=self.load_studies)
+        refresh_button.pack(side=tk.LEFT, padx=(0,5)) # Added padx for spacing before help button
+        Tooltip(refresh_button, text="Recargar la lista de estudios desde la base de datos.", short_text="Recargar lista.", enabled=self.main_window.settings.enable_hover_tooltips)
+
+        # Moved "?" (MainView Help) button here
+        main_view_help_button = ttk.Button(self.search_content_frame, text="?", width=3,
+                                           style="Help.TButton", command=self._show_main_view_help)
+        main_view_help_button.pack(side=tk.LEFT, padx=(0,5)) # Pack it to the left, after Refrescar
+        main_view_tooltip_text = "Mostrar ayuda para la ventana principal de estudios."
+        Tooltip(main_view_help_button, text=main_view_tooltip_text, short_text=main_view_tooltip_text, enabled=self.main_window.settings.enable_hover_tooltips)
+
 
         # --- Tabla de Estudios (inside self.scrollable_frame_content) ---
         table_frame = ttk.Frame(self.scrollable_frame_content)
@@ -164,22 +183,20 @@ class MainView:
         delete_all_button = ttk.Button(self.bottom_buttons_container, text='Eliminar Todos los Estudios',
                                        command=self._confirm_delete_all_studies, style="Danger.TButton")
         delete_all_button.pack(side=tk.LEFT, padx=(0, 5))
+        Tooltip(delete_all_button, text="Eliminar TODOS los estudios y sus datos asociados. ¡Acción irreversible!", short_text="Eliminar todo.", enabled=self.main_window.settings.enable_hover_tooltips)
 
         self.delete_selected_button = ttk.Button(self.bottom_buttons_container, text='Eliminar Seleccionado(s)',
                                                  command=self._confirm_delete_selected_studies, style="Danger.TButton", state=tk.DISABLED)
         self.delete_selected_button.pack(side=tk.LEFT, padx=(0, 10))
+        Tooltip(self.delete_selected_button, text="Eliminar los estudios seleccionados en la tabla y sus datos asociados.", short_text="Eliminar selección.", enabled=self.main_window.settings.enable_hover_tooltips)
 
         # Estilo Danger.TButton se asume configurado globalmente
         create_study_button = ttk.Button(self.bottom_buttons_container, text='Crear Nuevo Estudio',
                                          command=lambda: self.main_window.show_create_study_dialog(study_to_edit=None), style="Celeste.TButton")
         create_study_button.pack(side=tk.RIGHT)
+        Tooltip(create_study_button, text="Abrir diálogo para crear un nuevo estudio.", short_text="Nuevo estudio.", enabled=self.main_window.settings.enable_hover_tooltips)
         
-        # Insert "?" (MainView Help) button here, packed side=tk.RIGHT before "Crear Nuevo Estudio"
-        main_view_help_button = ttk.Button(self.bottom_buttons_container, text="?", width=3,
-                                           style="Help.TButton", command=self._show_main_view_help)
-        main_view_help_button.pack(side=tk.RIGHT, padx=5)
-        main_view_tooltip_text = "Mostrar ayuda para la ventana principal de estudios."
-        Tooltip(main_view_help_button, text=main_view_tooltip_text, short_text=main_view_tooltip_text, enabled=self.main_window.settings.enable_hover_tooltips)
+        # "?" (MainView Help) button was moved to the search bar area.
 
     def _confirm_delete_selected_studies(self):
         """Muestra confirmación y luego elimina los estudios seleccionados."""
@@ -281,12 +298,14 @@ class MainView:
         # Botón Primera Página
         first_btn = ttk.Button(self.pagination_container, text="<<", command=lambda: self.go_to_page(1))
         first_btn.pack(side=tk.LEFT, padx=2)
+        Tooltip(first_btn, text="Ir a la primera página.", short_text="Primera página.", enabled=self.main_window.settings.enable_hover_tooltips)
         if self.current_page == 1:
             first_btn.config(state=tk.DISABLED)
 
         # Botón Anterior
         prev_btn = ttk.Button(self.pagination_container, text="<", command=lambda: self.go_to_page(self.current_page - 1))
         prev_btn.pack(side=tk.LEFT, padx=2)
+        Tooltip(prev_btn, text="Ir a la página anterior.", short_text="Página anterior.", enabled=self.main_window.settings.enable_hover_tooltips)
         if self.current_page == 1:
             prev_btn.config(state=tk.DISABLED)
 
@@ -296,12 +315,14 @@ class MainView:
         # Botón Siguiente
         next_btn = ttk.Button(self.pagination_container, text=">", command=lambda: self.go_to_page(self.current_page + 1))
         next_btn.pack(side=tk.LEFT, padx=2)
+        Tooltip(next_btn, text="Ir a la página siguiente.", short_text="Página siguiente.", enabled=self.main_window.settings.enable_hover_tooltips)
         if self.current_page == self.total_pages:
             next_btn.config(state=tk.DISABLED)
 
         # Botón Última Página
         last_btn = ttk.Button(self.pagination_container, text=">>", command=lambda: self.go_to_page(self.total_pages))
         last_btn.pack(side=tk.LEFT, padx=2)
+        Tooltip(last_btn, text="Ir a la última página.", short_text="Última página.", enabled=self.main_window.settings.enable_hover_tooltips)
         if self.current_page == self.total_pages:
             last_btn.config(state=tk.DISABLED)
 
