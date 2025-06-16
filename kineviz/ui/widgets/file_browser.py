@@ -7,15 +7,20 @@ from pathlib import Path # Para manejar rutas de archivo
 import logging # Importar logging
 # Importar FileService para type hinting
 from kineviz.core.services.file_service import FileService
+from kineviz.config.settings import AppSettings # Import AppSettings
+from kineviz.ui.utils.style import get_scaled_font, DEFAULT_FONT_SIZE # Import font utilities
+from kineviz.ui.widgets.tooltip import Tooltip # Import Tooltip
+
 
 logger = logging.getLogger(__name__) # Logger para este módulo
 
 class FileBrowser(ttk.Frame):
-    def __init__(self, parent, file_service: FileService, study_id: int, files_per_page: int = 10, pagination_parent=None):
+    def __init__(self, parent, file_service: FileService, study_id: int, files_per_page: int = 10, settings: AppSettings = None, pagination_parent=None):
         super().__init__(parent)
         self.file_service = file_service
         self.study_id = study_id
         self.files_per_page = files_per_page
+        self.settings = settings # Store AppSettings instance
         self.pagination_parent = pagination_parent # Store the custom parent for pagination
 
         # Estado de paginación y filtros
@@ -36,7 +41,8 @@ class FileBrowser(ttk.Frame):
 
         # Búsqueda
         ttk.Label(filter_frame, text="Buscar:").pack(side=tk.LEFT, padx=(0, 5))
-        search_entry = ttk.Entry(filter_frame, textvariable=self.search_var)
+        scaled_font_tuple = get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale if self.settings else 1.0)
+        search_entry = ttk.Entry(filter_frame, textvariable=self.search_var, font=scaled_font_tuple) # Added font
         search_entry.pack(side=tk.LEFT, padx=5)
         search_entry.bind("<Return>", lambda event: self.apply_filters())
 
@@ -53,9 +59,18 @@ class FileBrowser(ttk.Frame):
         freq_menu.pack(side=tk.LEFT, padx=5)
 
         # Botones de Filtro
-        ttk.Button(filter_frame, text="Aplicar", command=self.apply_filters).pack(side=tk.LEFT, padx=5)
-        ttk.Button(filter_frame, text="Limpiar", command=self.clear_filters).pack(side=tk.LEFT, padx=(0,5))
-        ttk.Button(filter_frame, text="Refrescar", command=self.load_files).pack(side=tk.LEFT, padx=5)
+        apply_button = ttk.Button(filter_frame, text="Aplicar", command=self.apply_filters)
+        apply_button.pack(side=tk.LEFT, padx=5)
+        Tooltip(apply_button, text="Aplicar los filtros de búsqueda, tipo y tipo de dato.", short_text="Aplicar filtros.", enabled=self.settings.enable_hover_tooltips if self.settings else False)
+
+        clear_button = ttk.Button(filter_frame, text="Limpiar", command=self.clear_filters)
+        clear_button.pack(side=tk.LEFT, padx=(0,5))
+        Tooltip(clear_button, text="Limpiar todos los filtros y mostrar todos los archivos.", short_text="Limpiar filtros.", enabled=self.settings.enable_hover_tooltips if self.settings else False)
+
+        refresh_button = ttk.Button(filter_frame, text="Refrescar", command=self.load_files)
+        refresh_button.pack(side=tk.LEFT, padx=5)
+        Tooltip(refresh_button, text="Recargar la lista de archivos del estudio.", short_text="Recargar lista.", enabled=self.settings.enable_hover_tooltips if self.settings else False)
+
 
         # --- Tabla de Archivos ---
         # Crear tabla de archivos directamente en self (FileBrowser frame)
@@ -162,12 +177,14 @@ class FileBrowser(ttk.Frame):
         # Botón Primera Página
         first_btn = ttk.Button(self.pagination_frame, text="<<", command=lambda: self.go_to_page(1))
         first_btn.pack(side=tk.LEFT, padx=2)
+        Tooltip(first_btn, text="Ir a la primera página.", short_text="Primera página.", enabled=self.settings.enable_hover_tooltips if self.settings else False)
         if self.current_page == 1:
             first_btn.config(state=tk.DISABLED)
 
         # Botón Anterior
         prev_btn = ttk.Button(self.pagination_frame, text="<", command=lambda: self.go_to_page(self.current_page - 1))
         prev_btn.pack(side=tk.LEFT, padx=2)
+        Tooltip(prev_btn, text="Ir a la página anterior.", short_text="Página anterior.", enabled=self.settings.enable_hover_tooltips if self.settings else False)
         if self.current_page == 1:
             prev_btn.config(state=tk.DISABLED)
 
@@ -177,12 +194,14 @@ class FileBrowser(ttk.Frame):
         # Botón Siguiente
         next_btn = ttk.Button(self.pagination_frame, text=">", command=lambda: self.go_to_page(self.current_page + 1))
         next_btn.pack(side=tk.LEFT, padx=2)
+        Tooltip(next_btn, text="Ir a la página siguiente.", short_text="Página siguiente.", enabled=self.settings.enable_hover_tooltips if self.settings else False)
         if self.current_page == self.total_pages:
             next_btn.config(state=tk.DISABLED)
 
         # Botón Última Página
         last_btn = ttk.Button(self.pagination_frame, text=">>", command=lambda: self.go_to_page(self.total_pages))
         last_btn.pack(side=tk.LEFT, padx=2)
+        Tooltip(last_btn, text="Ir a la última página.", short_text="Última página.", enabled=self.settings.enable_hover_tooltips if self.settings else False)
         if self.current_page == self.total_pages:
             last_btn.config(state=tk.DISABLED)
 
