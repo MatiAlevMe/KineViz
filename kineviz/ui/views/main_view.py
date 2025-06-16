@@ -87,16 +87,16 @@ class MainView:
         manual_tooltip_text = "Abrir el manual de usuario de KineViz."
         Tooltip(manual_btn, text=manual_tooltip_text, short_text=manual_tooltip_text, enabled=self.main_window.settings.enable_hover_tooltips)
 
-        config_btn = ttk.Button(action_button_frame, text='Configuración', command=self.main_window.show_config_dialog)
-        config_btn.pack(side=tk.RIGHT, padx=5)
-        config_tooltip_text = "Abrir el diálogo de configuración de la aplicación."
-        Tooltip(config_btn, text=config_tooltip_text, short_text=config_tooltip_text, enabled=self.main_window.settings.enable_hover_tooltips)
-        
         help_btn = ttk.Button(action_button_frame, text='Ayuda', command=self.main_window.show_welcome_message)
         help_btn.pack(side=tk.RIGHT, padx=5)
         help_tooltip_text = "Mostrar mensaje de bienvenida e introducción."
         Tooltip(help_btn, text=help_tooltip_text, short_text=help_tooltip_text, enabled=self.main_window.settings.enable_hover_tooltips)
 
+        config_btn = ttk.Button(action_button_frame, text='Configuración', command=self.main_window.show_config_dialog)
+        config_btn.pack(side=tk.RIGHT, padx=5)
+        config_tooltip_text = "Abrir el diálogo de configuración de la aplicación."
+        Tooltip(config_btn, text=config_tooltip_text, short_text=config_tooltip_text, enabled=self.main_window.settings.enable_hover_tooltips)
+        
         open_folder_btn = ttk.Button(action_button_frame, text='Abrir Carpeta Estudios',
                                      command=lambda: self.main_window.open_folder("estudios"))
         open_folder_btn.pack(side=tk.RIGHT, padx=5)

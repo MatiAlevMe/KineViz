@@ -142,6 +142,10 @@ class StudyView:
         if vi_names:
             info_button = ttk.Button(vi_frame, text="ℹ️", width=3, command=self.show_vi_descriptor_info)
             info_button.pack(side=tk.LEFT, padx=(5, 0))
+            # Add Tooltip for info_button
+            info_tooltip_short_text = "Ver detalle de VIs, sub-valores y alias."
+            # The long text is handled by the popup from show_vi_descriptor_info command
+            Tooltip(info_button, text=info_tooltip_short_text, short_text=info_tooltip_short_text, enabled=self.main_window.settings.enable_hover_tooltips)
         # --- Fin VIs ---
 
         # Mostrar Alias asignados a sub-valores definidos
@@ -345,8 +349,8 @@ class StudyView:
 
     def add_files_dialog(self):
         """Abre el diálogo para seleccionar y agregar archivos al estudio."""
-        # Pasar el file_service y el study_id, junto con el callback para refrescar
-        FileDialog(self.frame, self.main_window.file_service, self.study_id, self.refresh_file_list)
+        # Pasar el file_service, study_id, settings y el callback para refrescar
+        FileDialog(self.frame, self.main_window.file_service, self.study_id, self.main_window.settings, self.refresh_file_list)
 
     def refresh_file_list(self):
         """Refresca la lista de archivos en el FileBrowser."""
