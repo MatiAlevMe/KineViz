@@ -23,37 +23,57 @@ class StudyView:
         self.frame = ttk.Frame(parent) # This is the outermost frame for StudyView
         self.frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-        # --- Setup for scrollable area ---
-        canvas_container = ttk.Frame(self.frame)
-        canvas_container.pack(fill=tk.BOTH, expand=True)
+        # --- Top Fixed Frames ---
+        self.top_fixed_header_actions_frame = ttk.Frame(self.frame)
+        self.top_fixed_header_actions_frame.pack(side=tk.TOP, fill=tk.X, pady=(0,5))
+        
+        self.top_fixed_study_details_frame = ttk.Frame(self.frame) # For the LabelFrame
+        self.top_fixed_study_details_frame.pack(side=tk.TOP, fill=tk.X, pady=(0,10))
+
+        # --- Bottom Fixed Frames (Order of packing matters for visual order) ---
+        self.bottom_fixed_delete_buttons_frame = ttk.Frame(self.frame)
+        self.bottom_fixed_delete_buttons_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(10,0))
+
+        self.bottom_fixed_pagination_frame = ttk.Frame(self.frame)
+        self.bottom_fixed_pagination_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(5,0))
+        
+        # --- Scrollable Middle Area (Canvas) ---
+        canvas_container = ttk.Frame(self.frame) # Takes remaining space
+        canvas_container.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
         self.canvas = tk.Canvas(canvas_container, highlightthickness=0)
         v_scrollbar = ttk.Scrollbar(canvas_container, orient="vertical", command=self.canvas.yview)
         h_scrollbar = ttk.Scrollbar(canvas_container, orient="horizontal", command=self.canvas.xview)
         
-        self.scrollable_frame = ttk.Frame(self.canvas) # Content goes here
+        self.scrollable_frame_content = ttk.Frame(self.canvas) # Content goes here
 
-        self.scrollable_frame.bind(
+        self.scrollable_frame_content.bind(
             "<Configure>",
             lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")) if hasattr(self, 'canvas') and self.canvas.winfo_exists() else None
         )
-        # Removed problematic canvas.bind("<Configure>") that forced inner frame width
-
-        self.canvas.interior_id = self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        
+        self.canvas_interior_id = self.canvas.create_window((0, 0), window=self.scrollable_frame_content, anchor="nw")
         self.canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
+        self.canvas.bind("<Configure>", self._on_canvas_configure) # Bind to force width
 
         canvas_container.grid_rowconfigure(0, weight=1)
         canvas_container.grid_columnconfigure(0, weight=1)
         self.canvas.grid(row=0, column=0, sticky="nsew")
         v_scrollbar.grid(row=0, column=1, sticky="ns")
         h_scrollbar.grid(row=1, column=0, sticky="ew")
-        # --- End scrollable area setup ---
 
-        self.create_ui_content(self.scrollable_frame) # Pass scrollable_frame as parent for content
+        self.create_ui_content() # No longer passes parent_frame
 
-    def create_ui_content(self, parent_frame): # Renamed from create_ui, parent_frame is self.scrollable_frame
-        # --- Header Row 1 ---
-        header_frame_row1 = ttk.Frame(parent_frame) # Changed parent
+    def _on_canvas_configure(self, event):
+        """Adjusts the width of the scrollable_frame_content to match the canvas width."""
+        canvas_width = event.width
+        if hasattr(self, 'canvas_interior_id') and self.canvas_interior_id and \
+           hasattr(self, 'canvas') and self.canvas.winfo_exists():
+            self.canvas.itemconfig(self.canvas_interior_id, width=canvas_width)
+
+    def create_ui_content(self): # Removed parent_frame argument
+        # --- Populate Top Fixed Header Actions Frame ---
+        header_frame_row1 = ttk.Frame(self.top_fixed_header_actions_frame)
         header_frame_row1.pack(fill=tk.X, pady=(0, 5))
 
         back_command = self.main_window.show_main_view
@@ -75,23 +95,21 @@ class StudyView:
         help_button_general = ttk.Button(header_frame_row1, text="?", width=3, style="HelpView.TButton", command=self.show_study_view_help)
         help_button_general.pack(side=tk.RIGHT, padx=(10, 0))
 
-        # --- Header Row 2 ---
-        header_frame_row2 = ttk.Frame(parent_frame) # Changed parent
+        # --- Header Row 2 (also in top_fixed_header_actions_frame) ---
+        header_frame_row2 = ttk.Frame(self.top_fixed_header_actions_frame)
         header_frame_row2.pack(fill=tk.X, pady=(0, 10))
 
-        ttk.Button(header_frame_row2, text="Abrir Carpeta de Estudio", # Renamed
+        ttk.Button(header_frame_row2, text="Abrir Carpeta de Estudio",
                    command=self.open_study_folder).pack(side=tk.LEFT, padx=(0, 10))
 
-        ttk.Button(header_frame_row2, text="Gestionar Alias de Sub-valores", # Renamed
+        ttk.Button(header_frame_row2, text="Gestionar Alias de Sub-valores",
                    command=self.manage_descriptor_aliases).pack(side=tk.LEFT, padx=(0, 10))
 
-
-        # --- Detalles del estudio ---
+        # --- Populate Top Fixed Study Details Frame ---
         study_details = self.main_window.study_service.get_study_details(self.study_id)
-        details_frame = ttk.LabelFrame(parent_frame, text="Detalles del Estudio") # Changed parent
-        details_frame.pack(fill='x', padx=10, pady=10) # Keep pady for spacing from header_frame_row2
+        details_frame = ttk.LabelFrame(self.top_fixed_study_details_frame, text="Detalles del Estudio")
+        details_frame.pack(fill='x', padx=10, pady=0) # No pady from parent, use internal padding
 
-        # Corregido: Mostrar solo una vez el nombre
         ttk.Label(details_frame, text=f"Nombre del Estudio: {study_details.get('name', 'N/A')}").pack(anchor='w', padx=5, pady=2)
         ttk.Label(details_frame, text=f"Cantidad de Participantes: {study_details.get('num_subjects', 'N/A')}").pack(anchor='w', padx=5, pady=2)
         ttk.Label(details_frame, text=f"Cantidad de Intento(s) de Prueba: {study_details.get('attempts_count', 'N/A')}").pack(anchor='w', padx=5, pady=2)
@@ -118,40 +136,35 @@ class StudyView:
         # No llamar aquí, se llama después de obtener detalles
         # self.update_alias_display()
 
-        # --- File browser ---
-        # Pasar la instancia de file_service y files_per_page desde main_window
-        files_per_page = self.main_window.files_per_page # Obtener de main_window
-        self.file_browser = FileBrowser(self.frame, self.file_service, self.study_id, files_per_page)
-        # --- Botón Eliminar Todos los Archivos (y seleccionados) ---
-        # This frame is now a direct child of self.frame, packed after canvas_container
-        delete_all_files_button_frame = ttk.Frame(self.frame) # Parent is self.frame
-        delete_all_files_button_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(10, 0))
+        # --- FileBrowser (Treeview part goes into scrollable_frame_content) ---
+        files_per_page = self.main_window.files_per_page
+        # Pass self.bottom_fixed_pagination_frame as the parent for pagination controls
+        self.file_browser = FileBrowser(self.scrollable_frame_content, 
+                                        self.file_service, 
+                                        self.study_id, 
+                                        files_per_page,
+                                        pagination_parent=self.bottom_fixed_pagination_frame)
+        self.file_browser.pack(fill=tk.BOTH, expand=True) # FileBrowser itself fills the scrollable area
+        self.file_browser.bind("<<FileBrowserSelectionChanged>>", self._on_file_browser_selection_changed)
 
+        # --- Populate Bottom Fixed Delete Buttons Frame ---
         delete_all_files_button = ttk.Button(
-            delete_all_files_button_frame, # Parent is this new frame
+            self.bottom_fixed_delete_buttons_frame,
             text="Eliminar Todos los Archivos del Estudio",
             command=self._confirm_delete_all_files,
             style="Danger.TButton"
         )
         delete_all_files_button.pack(side=tk.LEFT, padx=(0,5))
 
-        # Botón Eliminar Archivo(s) Seleccionado(s)
         self.delete_selected_files_button = ttk.Button(
-            delete_all_files_button_frame, # Parent is this new frame
+            self.bottom_fixed_delete_buttons_frame,
             text="Eliminar Archivo(s) Seleccionado(s)",
             command=self._confirm_delete_selected_files_from_browser,
             style="Danger.TButton",
             state=tk.DISABLED
         )
         self.delete_selected_files_button.pack(side=tk.LEFT, padx=(0, 5))
-
-        # FileBrowser se empaqueta después de los detalles y ANTES del frame de botones de eliminación
-        # para que los botones de eliminación queden fijos en la parte inferior.
-        files_per_page = self.main_window.files_per_page
-        self.file_browser = FileBrowser(parent_frame, self.file_service, self.study_id, files_per_page) # Changed parent
-        self.file_browser.pack(fill=tk.BOTH, expand=True, pady=(10, 0)) # FileBrowser toma el espacio restante
-        self.file_browser.bind("<<FileBrowserSelectionChanged>>", self._on_file_browser_selection_changed)
-
+        
         # Llamar a update_alias_display después de que todo esté creado
         self.update_alias_display()
 
