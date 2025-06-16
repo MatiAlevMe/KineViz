@@ -53,7 +53,8 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 │   │   ├── paginated_table.py
 │   │   ├── file_tree.py
 │   │   ├── file_browser.py
-│   │   └── charting.py
+│   │   ├── charting.py
+│   │   └── tooltip.py      # Nuevo: Para tooltips personalizadas
 │   │
 │   └── utils/            # Helpers de UI
 │       ├── validators.py
