@@ -35,7 +35,9 @@ class AppSettings:
             'font_scale': '1.0',
             'theme': 'Light',
             'show_factory_reset_button': 'False', # New setting
-            'enable_hover_tooltips': 'False' # New setting for hover tooltips
+            'enable_hover_tooltips': 'False', # New setting for hover tooltips
+            'max_automatic_backups': '2', # Default max automatic backups
+            'max_manual_backups': '2'     # Default max manual backups
         }
         # DESCRIPTOR_ALIASES ya no se gestiona aquí
     }
@@ -224,6 +226,24 @@ class AppSettings:
     @enable_hover_tooltips.setter
     def enable_hover_tooltips(self, value: bool):
         self.set_setting('enable_hover_tooltips', str(value))
+
+    @property
+    def max_automatic_backups(self) -> int:
+        """Maximum number of automatic backups to keep."""
+        return self.get_int_setting('max_automatic_backups', 2)
+
+    @max_automatic_backups.setter
+    def max_automatic_backups(self, value: int):
+        self.set_setting('max_automatic_backups', str(value))
+
+    @property
+    def max_manual_backups(self) -> int:
+        """Maximum number of manual backups to keep."""
+        return self.get_int_setting('max_manual_backups', 2)
+
+    @max_manual_backups.setter
+    def max_manual_backups(self, value: int):
+        self.set_setting('max_manual_backups', str(value))
 
     def reset_to_defaults(self):
          """Restablece las configuraciones en memoria a los valores por defecto."""

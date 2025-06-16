@@ -8,10 +8,12 @@ from typing import Optional
 # Configure logger for this module
 logger = logging.getLogger(__name__)
 
+from kineviz.config.settings import AppSettings # Import AppSettings
+
 # Constants for backup configuration
 BACKUPS_DIR_NAME = "backups"
 AUTOMATIC_BACKUPS_SUBDIR = "automatic"
-MANUAL_BACKUPS_SUBDIR = "manuales"
+MANUAL_BACKUPS_SUBDIR = "manual" # Changed from "manuales"
 
 DB_FILENAME = "kineviz.db"
 CONFIG_FILENAME = "config.ini"
@@ -71,6 +73,34 @@ def create_backup(backup_type: str) -> Optional[pathlib.Path]:
 
     if not _ensure_dir_exists(backup_destination_subdir):
         return None
+
+    # Manage rolling backups for automatic backups
+    if backup_type == AUTOMATIC_BACKUPS_SUBDIR:
+        try:
+            settings = AppSettings()
+            max_backups = settings.max_automatic_backups
+            
+            existing_backups = sorted(
+                [f for f in backup_destination_subdir.glob("backup_*.zip") if f.is_file()],
+                key=lambda f: f.name
+            )
+            
+            num_existing = len(existing_backups)
+            if num_existing >= max_backups and max_backups > 0: # max_backups > 0 to prevent deleting all if set to 0
+                num_to_delete = num_existing - max_backups + 1
+                for i in range(num_to_delete):
+                    old_backup = existing_backups[i]
+                    logger.info(f"Max automatic backups ({max_backups}) reached. Deleting oldest: {old_backup.name}")
+                    old_backup.unlink()
+            elif max_backups == 0: # If max_backups is 0, delete all existing automatic backups
+                logger.info("max_automatic_backups is 0. Deleting all existing automatic backups.")
+                for old_backup in existing_backups:
+                    old_backup.unlink()
+
+
+        except Exception as e:
+            logger.error(f"Error during rolling backup management: {e}", exc_info=True)
+            # Decide if we should proceed with backup creation or not. For now, we'll proceed.
 
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     zip_filename = f"backup_{timestamp}.zip"
@@ -149,15 +179,43 @@ if __name__ == '__main__':
     
     # Test automatic backup
     logger.info("Attempting to create an automatic backup...")
-    auto_backup_path = create_backup(AUTOMATIC_BACKUPS_SUBDIR)
-    if auto_backup_path:
-        logger.info(f"Automatic backup created at: {auto_backup_path}")
+    # Create a few automatic backups to test rolling
+    app_settings = AppSettings()
+    max_auto = app_settings.max_automatic_backups
+    logger.info(f"Max automatic backups configured: {max_auto}")
+
+    if max_auto > 0:
+        for i in range(max_auto + 2): # Create more than max to test deletion
+            logger.info(f"Creating automatic backup {i+1}...")
+            auto_backup_path = create_backup(AUTOMATIC_BACKUPS_SUBDIR)
+            if auto_backup_path:
+                logger.info(f"Automatic backup {i+1} created at: {auto_backup_path.name}")
+                # Introduce a small delay to ensure distinct timestamps if runs too fast
+                if i < max_auto + 1: # Not for the last one
+                    import time
+                    time.sleep(1.1) 
+            else:
+                logger.error(f"Automatic backup {i+1} creation failed.")
     else:
-        logger.error("Automatic backup creation failed.")
+        logger.info("Skipping automatic backup creation test as max_automatic_backups is 0 or less.")
+        # Test if existing backups are deleted if max_auto is 0
+        # Create one first then try to create another
+        logger.info("Creating one auto backup then testing deletion with max_auto = 0")
+        # Temporarily create a backup file to test deletion when max_auto is 0
+        temp_backup_dir = get_project_root() / BACKUPS_DIR_NAME / AUTOMATIC_BACKUPS_SUBDIR
+        _ensure_dir_exists(temp_backup_dir)
+        (temp_backup_dir / "backup_20000101_000000.zip").write_text("temp")
+        
+        auto_backup_path = create_backup(AUTOMATIC_BACKUPS_SUBDIR) # This should trigger deletion if max_auto is 0
+        if not (temp_backup_dir / "backup_20000101_000000.zip").exists():
+            logger.info("Temp auto backup was correctly deleted when max_auto is 0.")
+        else:
+            logger.warning("Temp auto backup was NOT deleted when max_auto is 0.")
+
 
     # Test manual backup
     logger.info("Attempting to create a manual backup...")
-    manual_backup_path = create_backup(MANUAL_BACKUPS_SUBDIR)
+    manual_backup_path = create_backup(MANUAL_BACKUPS_SUBDIR) # Uses updated constant
     if manual_backup_path:
         logger.info(f"Manual backup created at: {manual_backup_path}")
     else:
