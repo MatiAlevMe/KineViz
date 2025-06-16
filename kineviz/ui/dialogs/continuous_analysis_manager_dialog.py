@@ -70,8 +70,8 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         self.update_idletasks()
         self.scrollable_main_frame.update_idletasks()
         self.canvas.update_idletasks()
-        req_width = self.scrollable_main_frame.winfo_reqwidth() + v_scrollbar.winfo_reqwidth() + 20
-        req_height = self.scrollable_main_frame.winfo_reqheight() + h_scrollbar.winfo_reqheight() + 20
+        req_width = self.scrollable_main_frame.winfo_reqwidth() + self.v_scrollbar.winfo_reqwidth() + 20 # Use self attributes
+        req_height = self.scrollable_main_frame.winfo_reqheight() + self.h_scrollbar.winfo_reqheight() + 20 # Use self attributes
         self.minsize(max(600, req_width), max(400, req_height))
 
 
@@ -89,8 +89,8 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         canvas_container.pack(fill=tk.BOTH, expand=True)
 
         self.canvas = tk.Canvas(canvas_container, highlightthickness=0)
-        v_scrollbar = ttk.Scrollbar(canvas_container, orient="vertical", command=self.canvas.yview)
-        h_scrollbar = ttk.Scrollbar(canvas_container, orient="horizontal", command=self.canvas.xview)
+        self.v_scrollbar = ttk.Scrollbar(canvas_container, orient="vertical", command=self.canvas.yview) # Assign to self
+        self.h_scrollbar = ttk.Scrollbar(canvas_container, orient="horizontal", command=self.canvas.xview) # Assign to self
         
         self.scrollable_main_frame = ttk.Frame(self.canvas, padding="10") 
 
@@ -104,13 +104,13 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         )
 
         self.canvas.interior_id = self.canvas.create_window((0, 0), window=self.scrollable_main_frame, anchor="nw")
-        self.canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
+        self.canvas.configure(yscrollcommand=self.v_scrollbar.set, xscrollcommand=self.h_scrollbar.set) # Use self attributes
 
         canvas_container.grid_rowconfigure(0, weight=1)
         canvas_container.grid_columnconfigure(0, weight=1)
         self.canvas.grid(row=0, column=0, sticky="nsew")
-        v_scrollbar.grid(row=0, column=1, sticky="ns")
-        h_scrollbar.grid(row=1, column=0, sticky="ew")
+        self.v_scrollbar.grid(row=0, column=1, sticky="ns") # Use self attributes
+        self.h_scrollbar.grid(row=1, column=0, sticky="ew") # Use self attributes
         # --- End scrollable area setup ---
 
         main_content_parent = self.scrollable_main_frame
