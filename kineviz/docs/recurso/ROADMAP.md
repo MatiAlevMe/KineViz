@@ -250,10 +250,22 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
 `delete_continuous_analysis(analysis_folder_to_delete: Path)`: Elimina un análisis continuo (adaptado para tomar Path).
 5.2 [Hecho] Integración con UI: Conectados métodos a `ContinuousAnalysisManagerDialog` (evolución de `ContinuousAnalysisResultsView`) para la gestión de los análisis.
 
-## [Pendiente] Fase 5: Funcionalidades Adicionales
-1. [Pendiente] Copias de Seguridad Automaticas en la Ventana de Estudios.
-1.1 [Pendiente] Implementar copias de seguridad automáticas cada vez que se agreguen archivos a un estudio.
-1.2 [Pendiente] Implementar opción de volver a versión anterior del estudio.
+## [En Progreso] Fase 5: Funcionalidades Adicionales
+1. [En progreso] Copias de Seguridad Automaticas.
+1.1 [En Progreso] Implementar copias de seguridad automáticas cada vez que se agreguen, restauren y/o eliminen archivos/carpetas (por un maximo de 2 copias a la vez que se van creando temporalmente, es decir que una vez que se agreguen, restauren y/o eliminen archivos se volvera a generar una copia de seguridad y se eliminara la mas antigua del sistema temporal interno). Las ventanas que se pueden ver afectadas por este comportamiento son:
+   - Ventana Principal
+   - Ventana de Estudio
+   - Dialogo de Gestión de Análisis Discretos
+   - Dialogo de Gestión de Análisis Continuos
+Las copias de seguridad seran de todo el sistema.
+Ayuda: Necesito ayuda en decidir si es mejor que las copias de seguridad automaticas sean en todo momento que se agregue, restauren y eliminen archivos o solamente cuando se restauren y elimenen archivos por ejemplo. Y es una buena práctica limitar la cantidad de copias de seguridad tanto automaticas y manuales para evitar problemas de rendimiento y son 2 copias por tipo una buena idea.
+1.2 [En Progreso] Implementar el UI con una opción de "Restauración del sistema" con una opción de volver a una versión de trabajo anterior (mostrando un nuevo dialogo con hasta 2 posibles versiones anteriores del sistema a restaurar) opción que estará ubicado en el dialogo de configuración de la ventana principal.
+1.3 [En Progreso] Implementar un tooltip "?" con el estilo especial azul. Y su hover tooltip con el una explicación mas corta para la UI de la opción de restauración.
+1.4 [En Progreso] En el dialogo se debería mostrar una leyenda con el titulo, una tabla con los archivos que se pueden restaurar (maximo de 2 automaticos y 2 manuales a la vez) y unos botónes de acción en la parte inferior de la ventana para "Crear Copia de Seguridad" (left aligned, to the leftmost), "Restaurar Copia de Seguridad" (Left aligned, to the left of "Crear Copia de Seguridad") y el botón de "Cancelar" (Right aligned, to the rightmost) y un botón de "Asignar Alias" (Right aligned, next to the "Cancelar" button) para darle un nombre a una copia de seguridad MANUAL que el usuario pueda reconocerla.
+1.5 [En Progreso] En este dialogo también se pueden crear hasta 2 copias de respaldo adicionales que se pueden aplicar manualmente y se añaden a la misma tabla anterior. Cuando se quiere crear una tercera copia de seguridad el usuario debe seleccionar cual copia de seguridad manual desea eliminar para hacer el espacio. Y debe aparecer doble pop-up de confirmación. También se requiere de doble pop-up de confirmación cuando se eligue un punto de restauración.
+1.6 [En Progreso] La tabla mostraría columnas con el Tipo de punto de restauración (Automatico y Manual), la fecha de creación y el Alias Asignado (estará vacio cuando no hay alias asignado o es una copia automatica que no se puede asignar un alias.) El Alias Asignado se actualiza dinamicamente cuando se asigna un nuevo alias en esta ventana y se podrá crear/modificar el Alias Asignado indefinidamente y se actualizara dinamicamente al hacer click en Alias Asignado y guardar el nombre del alias se actualizara en la tabla.
+1.7 [En Progreso] Implementar el dialogo de Alias Asignado. Primero el usuario selecciona una copia de seguridad (si selecciona una copia automatica no se permitira asignar un alias se entregara un pop up con esa información), luego aparece un dialogo pequeño con un box y un texto de input. Y dos botónes de acción en la parte inferior "Guardar" y "Cancelar"
+1.8 [En Progreso] Adaptar todos estos dialogos nuevos a la modificación del tamaño de texto.
 2. [Hecho] Ayuda en la Interfaz: Añadir Tooltips Adicionales.
 2.1 [Hecho] Añadir tooltips con el mismo icono "i" que se utiliza en la ventana de estudio para explicar las VIs, necesito que estos tooltips explique el formato de cada ventana relevante donde se necesite input del usuario, esto es:
 Editar estudio, crear nuevo estudio, agregar archivos a un estudio, gestor de analisis discretos, gestor de analisis continuos, gestionar alias de sub-valores.
@@ -261,12 +273,12 @@ Editar estudio, crear nuevo estudio, agregar archivos a un estudio, gestor de an
 3.1 [Hecho] Decidir si mantener todas las tablas del analisis discreto o solamente las tablas .xlsx para ahorrar espacio.
 3.2 [Hecho] Decidir formato final y filtrado de las ventanas de tablas de datos como:
 Ventana de estudio, ventana de estudio especifico, ventana de tablas de analisis discreto, analisis discreto, analisis continuo
-4. [Pendiente] Refactorizar Documentación
-4.1 [Pendiente] Unir todos los manuales en el manual principal con distintas secciones, esto es primero una descripción general del software (que hace, cual es su necesidad, etc), los objetivos del software, los flujos principales, resumen general de cada ventana o dialogo y lo que hace, una sección que explique en detalle cada parte ventana o dialogo de KineViz, notas importantes, y cualquier información relevante que se requieran de un manual completo para el cliente, explicados en terminos simples cuando se tratén de cosas informaticas pero con un lenguaje posiblemente más tecnico cuando es más del area de investigación kinesiologica que es el area que manejan.
-4.2 [Pendiente] Agregar referencias dentro del mismo manual que diga "Vaya a la sección X" o similares para referirse a que sección ir del manual para alguna información importante dentro de otra sección.
-4.3 [Pendiente] Eliminar todos los botones que hagan referencia a manuales antiguos que no sean el manual principal.
+4. [En Progreso] Refactorizar Documentación
+4.1 [En Progreso] Unir todos los manuales en el manual principal con distintas secciones, esto es primero una descripción general del software (que hace, cual es su necesidad, etc), los objetivos del software, los flujos principales, resumen general de cada ventana o dialogo y lo que hace, una sección que explique en detalle cada parte ventana o dialogo de KineViz, notas importantes, y cualquier información relevante que se requieran de un manual completo para el cliente, explicados en terminos simples cuando se tratén de cosas informaticas pero con un lenguaje posiblemente más tecnico cuando es más del area de investigación kinesiologica que es el area que manejan.
+4.2 [En Progreso] Agregar referencias dentro del mismo manual que diga "Vaya a la sección X" o similares para referirse a que sección ir del manual para alguna información importante dentro de otra sección.
+4.3 [En Progreso] Eliminar todos los botones que hagan referencia a manuales antiguos que no sean el manual principal.
 
-## [En Progreso] Fase 6: Cambios Opcionales.
+## [Hecho] Fase 6: Cambios Opcionales.
 1. [Hecho] (Cambio Manual) Cambiar terminos de:
 "paciente" a "participante", "Paciente" a "Participante"
 "pacientes" a "participantes", "Pacientes" a "Participantes"
@@ -288,7 +300,7 @@ Con un botón de chincheta y se mantengan fijos sobre los demas estudios.
 8. [Hecho] Opción para Comentar Estudios en la Ventana del Estudio Especifico (Maximo 150 caracteres)
 Para que el usuario tenga la opción de escribir algún detalle que estime conveniente sobre el estudio especifico.
 Este comentario de estudio podrá ser modificado también
-9. [En Progreso] Opciones de Accesibilidad en la Configuración del Software:
+1. [Hecho] Opciones de Accesibilidad en la Configuración del Software:
 Como aumentar el tamaño de las letras, y cambiar el tema de KineViz de blanco a oscuro.
 
 ## [Pendiente] Fase 7: Documentación y Despliegue
@@ -325,11 +337,12 @@ Full Two-Way ANOVA: The current "2VIs" mode performs comparisons within a level 
 8.3 [Omitido] Análisis Discreto
 8.3.1 [Omitido] Corrección de Errores: Revisar y corregir errores conocidos (ej: formato cabeceras CSV, error generación tablas discretas, inconsistencia nombres archivo análisis individual).
 8.3.2 [Omitido] Integración y Pruebas: Integrar y probar toda la funcionalidad de análisis discreto, incluyendo análisis de efectos principales.
-8.4. [Omitido] Análisis Continuo 
+8.4 [Omitido] Análisis Continuo 
 8.4.1 [Omititdo] Pruebas Unitarias: Para la lógica de normalización, interacción con `spm1d`, y generación de gráficos/tablas.
 8.4.2 [Omititdo] Pruebas de Integración: Probar el flujo completo desde la configuración en la UI hasta la visualización y gestión de los resultados del análisis continuo.
-8.5. [Omitido] Manejo de Floats al Procesar Archivos en un Estudio:
+8.5 [Omitido] Manejo de Floats al Procesar Archivos en un Estudio:
 Que exista la posibilidad de manejar situaciones donde los archivos de entrada esten en float como "Pte03 CMJ 03.txt: could not convert string to float: '5,47567'" en cuyo caso se debería poder convertir al valor convencional de "5.47567".
+8.6 [Omitido] en el dialogo de configuración de análisis discreto y continuo falta arreglar el tooltip hover a Grupos Comparados que por alguna razón no se visualiza correctamente.
 
 # Arquitectura de KineViz
 
