@@ -133,33 +133,36 @@ class StudyDialog(Toplevel):
         nombre_frame = ttk.Frame(main_frame)
         nombre_frame.grid(row=row_idx, column=1, sticky="ew")
         ttk.Entry(nombre_frame, textvariable=self.var_nombre, font=self.scaled_font_tuple).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
+        nombre_help_long_text = "Nombre descriptivo para el estudio.\nEj: Estudio Piloto Marcha, Análisis Comparativo CMJ"
+        nombre_help_short_text = "Nombre descriptivo del estudio."
         nombre_help_button = ttk.Button(nombre_frame, text="?", width=3, style="Help.TButton",
-                                        command=lambda: self._show_input_help("Ayuda: Nombre del Estudio",
-                                                                              "Nombre descriptivo para el estudio.\nEj: Estudio Piloto Marcha, Análisis Comparativo CMJ"))
+                                        command=lambda: self._show_input_help("Ayuda: Nombre del Estudio", nombre_help_long_text))
         nombre_help_button.pack(side=tk.LEFT)
-        Tooltip(nombre_help_button, "Nombre descriptivo para el estudio.\nEj: Estudio Piloto Marcha, Análisis Comparativo CMJ", enabled=self.settings.enable_hover_tooltips)
+        Tooltip(nombre_help_button, text=nombre_help_long_text, short_text=nombre_help_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         ttk.Label(main_frame, text="Cantidad de Participantes:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
         num_sujetos_frame = ttk.Frame(main_frame)
         num_sujetos_frame.grid(row=row_idx, column=1, sticky="ew")
         ttk.Entry(num_sujetos_frame, textvariable=self.var_num_sujetos, font=self.scaled_font_tuple).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
+        num_sujetos_long_text = "Número entero positivo que representa la cantidad máxima de participantes en el estudio.\nEj: 15"
+        num_sujetos_short_text = "Cantidad máxima de participantes."
         num_sujetos_help_button = ttk.Button(num_sujetos_frame, text="?", width=3, style="Help.TButton",
-                                             command=lambda: self._show_input_help("Ayuda: Cantidad de Participantes",
-                                                                                   "Número entero positivo que representa la cantidad máxima de participantes en el estudio.\nEj: 15"))
+                                             command=lambda: self._show_input_help("Ayuda: Cantidad de Participantes", num_sujetos_long_text))
         num_sujetos_help_button.pack(side=tk.LEFT)
-        Tooltip(num_sujetos_help_button, "Número entero positivo que representa la cantidad máxima de participantes en el estudio.\nEj: 15", enabled=self.settings.enable_hover_tooltips)
+        Tooltip(num_sujetos_help_button, text=num_sujetos_long_text, short_text=num_sujetos_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         ttk.Label(main_frame, text="Cantidad de Intento(s) de Prueba:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
         intentos_frame = ttk.Frame(main_frame)
         intentos_frame.grid(row=row_idx, column=1, sticky="ew")
         ttk.Entry(intentos_frame, textvariable=self.var_cantidad_intentos, font=self.scaled_font_tuple).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
+        intentos_long_text = "Número entero positivo que representa la cantidad máxima de intentos por cada combinación de sub-valores de VIs para cada participante.\nEj: 3"
+        intentos_short_text = "Cantidad máxima de intentos por prueba."
         intentos_help_button = ttk.Button(intentos_frame, text="?", width=3, style="Help.TButton",
-                                          command=lambda: self._show_input_help("Ayuda: Cantidad de Intento(s)",
-                                                                                "Número entero positivo que representa la cantidad máxima de intentos por cada combinación de sub-valores de VIs para cada participante.\nEj: 3"))
+                                          command=lambda: self._show_input_help("Ayuda: Cantidad de Intento(s)", intentos_long_text))
         intentos_help_button.pack(side=tk.LEFT)
-        Tooltip(intentos_help_button, "Número entero positivo que representa la cantidad máxima de intentos por cada combinación de sub-valores de VIs para cada participante.\nEj: 3", enabled=self.settings.enable_hover_tooltips)
+        Tooltip(intentos_help_button, text=intentos_long_text, short_text=intentos_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         # --- Sección de Variables Independientes Dinámicas ---
@@ -169,17 +172,15 @@ class StudyDialog(Toplevel):
         
         # Use default TLabelframe.Label style for this title, which is scaled
         ttk.Label(iv_title_frame, text="Variable(s) Independientes (VIs)", style="TLabelframe.Label").pack(side=tk.LEFT, anchor="w")
+        iv_title_long_text = ("Las VIs definen las condiciones o factores que varían en su estudio.\n"
+                              "Cada VI tiene 'sub-valores' (niveles o categorías).\n"
+                              "Ej: VI 'Condicion' con sub-valores 'PRE', 'POST'.\n"
+                              "Los nombres de archivo deben reflejar estos sub-valores en el orden definido aquí.")
+        iv_title_short_text = "Define condiciones/factores del estudio y sus niveles."
         iv_title_help_button = ttk.Button(iv_title_frame, text="?", width=3, style="Help.TButton",
-                                          command=lambda: self._show_input_help("Ayuda: Variables Independientes (VIs)",
-                                                                                ("Las VIs definen las condiciones o factores que varían en su estudio.\n"
-                                                                                 "Cada VI tiene 'sub-valores' (niveles o categorías).\n"
-                                                                                 "Ej: VI 'Condicion' con sub-valores 'PRE', 'POST'.\n"
-                                                                                 "Los nombres de archivo deben reflejar estos sub-valores en el orden definido aquí.")))
+                                          command=lambda: self._show_input_help("Ayuda: Variables Independientes (VIs)", iv_title_long_text))
         iv_title_help_button.pack(side=tk.LEFT, padx=(5,0))
-        Tooltip(iv_title_help_button, ("Las VIs definen las condiciones o factores que varían en su estudio.\n"
-                                       "Cada VI tiene 'sub-valores' (niveles o categorías).\n"
-                                       "Ej: VI 'Condicion' con sub-valores 'PRE', 'POST'.\n"
-                                       "Los nombres de archivo deben reflejar estos sub-valores en el orden definido aquí."), enabled=self.settings.enable_hover_tooltips)
+        Tooltip(iv_title_help_button, text=iv_title_long_text, short_text=iv_title_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1 # Incrementar fila para el contenedor de VIs
 
         iv_frame = ttk.Frame(main_frame, relief="groove", borderwidth=1) # Contenedor para el canvas de VIs
@@ -279,11 +280,12 @@ class StudyDialog(Toplevel):
         # vi_name_entry.config(state='readonly' if self.is_editing else 'normal')
 
         if not self.is_editing:
+            vi_name_long_text = "Nombre corto y descriptivo para la Variable Independiente.\nEvite espacios y caracteres especiales.\nEj: Condicion, Grupo, TipoSalto"
+            vi_name_short_text = "Nombre corto para la VI (sin espacios/especiales)."
             vi_name_help_button = ttk.Button(vi_header_frame, text="?", width=3, style="Help.TButton",
-                                              command=lambda: self._show_input_help("Ayuda: Nombre de VI",
-                                                                                    "Nombre corto y descriptivo para la Variable Independiente.\nEvite espacios y caracteres especiales.\nEj: Condicion, Grupo, TipoSalto"))
+                                              command=lambda: self._show_input_help("Ayuda: Nombre de VI", vi_name_long_text))
             vi_name_help_button.pack(side=tk.LEFT, padx=(2,5), pady=5)
-            Tooltip(vi_name_help_button, "Nombre corto y descriptivo para la Variable Independiente.\nEvite espacios y caracteres especiales.\nEj: Condicion, Grupo, TipoSalto", enabled=self.settings.enable_hover_tooltips)
+            Tooltip(vi_name_help_button, text=vi_name_long_text, short_text=vi_name_short_text, enabled=self.settings.enable_hover_tooltips)
 
 
         # Botón para añadir sub-valor a ESTA VI
@@ -321,21 +323,17 @@ class StudyDialog(Toplevel):
             variable=allows_combination_var,
         )
         allows_combination_cb.pack(side=tk.LEFT)
+        multiple_long_text = ("Permite que un archivo o intento se asocie con MÁS DE UN sub-valor de esta VI simultáneamente.\n\n"
+                              "Ejemplo: VI 'Equipamiento' con sub-valores 'Zapatillas', 'Canilleras', 'Vendas'.\n"
+                              "Si 'Equipamiento' es Múltiple, un archivo podría ser:\n"
+                              "  `P01 Zapatillas 01.txt` y `P01 Zapatillas 01.txt` (P01 usa Zapatillas Y Canilleras).\n"
+                              "Si NO es Múltiple, un archivo solo puede tener UN sub-valor de 'Equipamiento':\n"
+                              "  `P01 Zapatillas 01.txt` O `P01 Canilleras 01.txt`, pero no ambos para la misma VI.")
+        multiple_short_text = "Permite asociar múltiples sub-valores de esta VI a un archivo."
         multiple_help_button = ttk.Button(multiple_frame, text="?", width=3, style="Help.TButton",
-                                          command=lambda: self._show_input_help("Ayuda: VI Múltiple",
-                                                                                ("Permite que un archivo o intento se asocie con MÁS DE UN sub-valor de esta VI simultáneamente.\n\n"
-                                                                                 "Ejemplo: VI 'Equipamiento' con sub-valores 'Zapatillas', 'Canilleras', 'Vendas'.\n"
-                                                                                 "Si 'Equipamiento' es Múltiple, un archivo podría ser:\n"
-                                                                                 "  `P01 Zapatillas 01.txt` y `P01 Zapatillas 01.txt` (P01 usa Zapatillas Y Canilleras).\n"
-                                                                                 "Si NO es Múltiple, un archivo solo puede tener UN sub-valor de 'Equipamiento':\n"
-                                                                                 "  `P01 Zapatillas 01.txt` O `P01 Canilleras 01.txt`, pero no ambos para la misma VI.")))
+                                          command=lambda: self._show_input_help("Ayuda: VI Múltiple", multiple_long_text))
         multiple_help_button.pack(side=tk.LEFT, padx=(2,0))
-        Tooltip(multiple_help_button, ("Permite que un archivo o intento se asocie con MÁS DE UN sub-valor de esta VI simultáneamente.\n\n"
-                                       "Ejemplo: VI 'Equipamiento' con sub-valores 'Zapatillas', 'Canilleras', 'Vendas'.\n"
-                                       "Si 'Equipamiento' es Múltiple, un archivo podría ser:\n"
-                                       "  `P01 Zapatillas 01.txt` y `P01 Zapatillas 01.txt` (P01 usa Zapatillas Y Canilleras).\n" # Note: Example filename seems duplicated, kept as is.
-                                       "Si NO es Múltiple, un archivo solo puede tener UN sub-valor de 'Equipamiento':\n"
-                                       "  `P01 Zapatillas 01.txt` O `P01 Canilleras 01.txt`, pero no ambos para la misma VI."), enabled=self.settings.enable_hover_tooltips)
+        Tooltip(multiple_help_button, text=multiple_long_text, short_text=multiple_short_text, enabled=self.settings.enable_hover_tooltips)
 
 
         # Checkbox "¿Obligatorio?" (se empaquetará/desempaquetará dinámicamente)
@@ -435,11 +433,12 @@ class StudyDialog(Toplevel):
         if self.is_editing:
             desc_entry.config(state='readonly')
         else:
+            desc_long_text = "Valor o nivel específico de la Variable Independiente.\nEvite espacios y caracteres especiales. No usar 'Nulo'.\nEj: PRE, POST, Control, Experimental, CMJ, SJ"
+            desc_short_text = "Valor específico de la VI (sin espacios/especiales, no 'Nulo')."
             desc_help_button = ttk.Button(desc_entry_frame, text="?", width=3, style="Help.TButton",
-                                           command=lambda: self._show_input_help("Ayuda: Sub-valor de VI",
-                                                                                 "Valor o nivel específico de la Variable Independiente.\nEvite espacios y caracteres especiales. No usar 'Nulo'.\nEj: PRE, POST, Control, Experimental, CMJ, SJ"))
+                                           command=lambda: self._show_input_help("Ayuda: Sub-valor de VI", desc_long_text))
             desc_help_button.pack(side=tk.LEFT, padx=(2,0))
-            Tooltip(desc_help_button, "Valor o nivel específico de la Variable Independiente.\nEvite espacios y caracteres especiales. No usar 'Nulo'.\nEj: PRE, POST, Control, Experimental, CMJ, SJ", enabled=self.settings.enable_hover_tooltips)
+            Tooltip(desc_help_button, text=desc_long_text, short_text=desc_short_text, enabled=self.settings.enable_hover_tooltips)
 
 
         # Botón para eliminar este sub-valor
@@ -517,25 +516,19 @@ class StudyDialog(Toplevel):
             
             # Crear y empaquetar botón de ayuda para "Obligatorio"
             # Este botón se crea aquí porque solo es relevante si "Multiple" está activo.
+            mandatory_long_text = ("Este checkbox SOLO aplica si la VI es 'Múltiple'.\n\n"
+                                   "Si una VI es Múltiple Y Obligatoria:\n"
+                                   "  Se debe especificar AL MENOS UN sub-valor de esta VI en el nombre del archivo.\n"
+                                   "  NO se permite 'Nulo' para esta VI.\n"
+                                   "  Ej: VI 'Equipamiento' (Múltiple, Obligatoria). Archivo `P01 Zapatillas 01.txt` es válido. `P01 Nulo 01.txt` NO es válido para 'Equipamiento'.\n\n"
+                                   "Si una VI es Múltiple pero NO Obligatoria:\n"
+                                   "  Se PUEDE usar 'Nulo' para esta VI si no aplica ningún sub-valor.\n"
+                                   "  Ej: VI 'Equipamiento' (Múltiple, No Obligatoria). Archivo `P01 Nulo VI2 01.txt` es válido para 'Equipamiento' siempre que exista al menos una VI no nula en el nombre del archivo.")
+            mandatory_short_text = "Si Múltiple: ¿Se requiere al menos un sub-valor de esta VI (no 'Nulo')?"
             mandatory_help_button = ttk.Button(mandatory_frame, text="?", width=3, style="Help.TButton",
-                                               command=lambda: self._show_input_help("Ayuda: VI Obligatoria (si es Múltiple)",
-                                                                                     ("Este checkbox SOLO aplica si la VI es 'Múltiple'.\n\n"
-                                                                                      "Si una VI es Múltiple Y Obligatoria:\n"
-                                                                                      "  Se debe especificar AL MENOS UN sub-valor de esta VI en el nombre del archivo.\n"
-                                                                                      "  NO se permite 'Nulo' para esta VI.\n"
-                                                                                      "  Ej: VI 'Equipamiento' (Múltiple, Obligatoria). Archivo `P01 Zapatillas 01.txt` es válido. `P01 Nulo 01.txt` NO es válido para 'Equipamiento'.\n\n"
-                                                                                      "Si una VI es Múltiple pero NO Obligatoria:\n"
-                                                                                      "  Se PUEDE usar 'Nulo' para esta VI si no aplica ningún sub-valor.\n"
-                                                                                      "  Ej: VI 'Equipamiento' (Múltiple, No Obligatoria). Archivo `P01 Nulo VI2 01.txt` es válido para 'Equipamiento' siempre que exista al menos una VI no nula en el nombre del archivo.")))
+                                               command=lambda: self._show_input_help("Ayuda: VI Obligatoria (si es Múltiple)", mandatory_long_text))
             mandatory_help_button.pack(side=tk.LEFT, padx=(2,0))
-            Tooltip(mandatory_help_button, ("Este checkbox SOLO aplica si la VI es 'Múltiple'.\n\n"
-                                            "Si una VI es Múltiple Y Obligatoria:\n"
-                                            "  Se debe especificar AL MENOS UN sub-valor de esta VI en el nombre del archivo.\n"
-                                            "  NO se permite 'Nulo' para esta VI.\n"
-                                            "  Ej: VI 'Equipamiento' (Múltiple, Obligatoria). Archivo `P01 Zapatillas 01.txt` es válido. `P01 Nulo 01.txt` NO es válido para 'Equipamiento'.\n\n"
-                                            "Si una VI es Múltiple pero NO Obligatoria:\n"
-                                            "  Se PUEDE usar 'Nulo' para esta VI si no aplica ningún sub-valor.\n"
-                                            "  Ej: VI 'Equipamiento' (Múltiple, No Obligatoria). Archivo `P01 Nulo VI2 01.txt` es válido para 'Equipamiento' siempre que exista al menos una VI no nula en el nombre del archivo."), enabled=self.settings.enable_hover_tooltips)
+            Tooltip(mandatory_help_button, text=mandatory_long_text, short_text=mandatory_short_text, enabled=self.settings.enable_hover_tooltips)
 
             current_state = tk.NORMAL if not self.is_editing else tk.DISABLED
             is_mandatory_cb_widget.config(state=current_state)
