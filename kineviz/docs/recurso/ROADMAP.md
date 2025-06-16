@@ -252,13 +252,17 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
 
 ## [En Progreso] Fase 5: Funcionalidades Adicionales
 1. [En progreso] Copias de Seguridad Automaticas.
-1.1 [En Progreso] Implementar copias de seguridad automáticas cada vez que se agreguen, restauren y/o eliminen archivos/carpetas (por un maximo de 2 copias a la vez que se van creando temporalmente, es decir que una vez que se agreguen, restauren y/o eliminen archivos se volvera a generar una copia de seguridad y se eliminara la mas antigua del sistema temporal interno). Las ventanas que se pueden ver afectadas por este comportamiento son:
-   - Ventana Principal
-   - Ventana de Estudio
-   - Dialogo de Gestión de Análisis Discretos
-   - Dialogo de Gestión de Análisis Continuos
-Las copias de seguridad seran de todo el sistema.
-Ayuda: Necesito ayuda en decidir si es mejor que las copias de seguridad automaticas sean en todo momento que se agregue, restauren y eliminen archivos o solamente cuando se restauren y elimenen archivos por ejemplo. Y es una buena práctica limitar la cantidad de copias de seguridad tanto automaticas y manuales para evitar problemas de rendimiento y son 2 copias por tipo una buena idea.
+1.1 [En Progreso] Implementar copias de seguridad automáticas de todo el sistema. Se mantendrán un máximo de 2 copias automáticas de forma rotativa (la creación de una nueva copia elimina la más antigua). Estas copias se generarán *después* de operaciones de agregar, restaurar o eliminar archivos/carpetas.
+    - Decisiones Clave:
+        - Disparadores: Operaciones de agregar, restaurar y eliminar archivos/carpetas.
+        - Alcance: Copias de seguridad de todo el sistema.
+        - Límite Automáticas: 2 copias rotativas.
+        - Límite Manuales: 2 copias (ver detalles en puntos siguientes, ej. 1.5).
+    - Puntos de activación (ventanas/diálogos donde estas operaciones ocurren y que, por lo tanto, activarán la creación de copias de seguridad):
+       - Ventana Principal (ej. al eliminar estudios)
+       - Ventana de Estudio (ej. al agregar/eliminar archivos de un estudio)
+       - Diálogo de Gestión de Análisis Discretos (ej. al eliminar resultados de análisis)
+       - Diálogo de Gestión de Análisis Continuos (ej. al eliminar resultados de análisis)
 1.2 [En Progreso] Implementar el UI con una opción de "Restauración del sistema" con una opción de volver a una versión de trabajo anterior (mostrando un nuevo dialogo con hasta 2 posibles versiones anteriores del sistema a restaurar) opción que estará ubicado en el dialogo de configuración de la ventana principal.
 1.3 [En Progreso] Implementar un tooltip "?" con el estilo especial azul. Y su hover tooltip con el una explicación mas corta para la UI de la opción de restauración.
 1.4 [En Progreso] En el dialogo se debería mostrar una leyenda con el titulo, una tabla con los archivos que se pueden restaurar (maximo de 2 automaticos y 2 manuales a la vez) y unos botónes de acción en la parte inferior de la ventana para "Crear Copia de Seguridad" (left aligned, to the leftmost), "Restaurar Copia de Seguridad" (Left aligned, to the left of "Crear Copia de Seguridad") y el botón de "Cancelar" (Right aligned, to the rightmost) y un botón de "Asignar Alias" (Right aligned, next to the "Cancelar" button) para darle un nombre a una copia de seguridad MANUAL que el usuario pueda reconocerla.
