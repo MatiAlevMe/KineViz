@@ -12,6 +12,7 @@ import webbrowser # Para abrir HTML
 # Importar servicios y otros diálogos necesarios
 from kineviz.core.services.analysis_service import AnalysisService
 from kineviz.ui.dialogs.configure_individual_analysis_dialog import ConfigureIndividualAnalysisDialog
+from kineviz.ui.widgets.tooltip import Tooltip # Import Tooltip
 
 
 logger = logging.getLogger(__name__)
@@ -25,6 +26,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.parent = parent
         self.analysis_service = analysis_service
         self.study_id = study_id
+        self.settings = parent.main_window.settings # Get settings from parent's main_window
 
         self.title(f"Gestor de Análisis Discretos - Estudio {study_id}")
         self.geometry("950x700") # Adjusted size for filters
@@ -112,17 +114,27 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         if self.total_pages <= 1:
             return # No mostrar controles si hay 1 página o menos
 
-        ttk.Button(self.bottom_fixed_pagination_frame, text="<<", command=lambda: self._go_to_page(1), # Changed target frame
-                   state=tk.DISABLED if self.current_page == 1 else tk.NORMAL).pack(side=tk.LEFT, padx=2)
-        ttk.Button(self.bottom_fixed_pagination_frame, text="<", command=lambda: self._go_to_page(self.current_page - 1), # Target new frame
-                   state=tk.DISABLED if self.current_page == 1 else tk.NORMAL).pack(side=tk.LEFT, padx=2)
+        first_page_btn = ttk.Button(self.bottom_fixed_pagination_frame, text="<<", command=lambda: self._go_to_page(1),
+                                    state=tk.DISABLED if self.current_page == 1 else tk.NORMAL)
+        first_page_btn.pack(side=tk.LEFT, padx=2)
+        Tooltip(first_page_btn, text="Ir a la primera página.", short_text="Primera.", enabled=self.settings.enable_hover_tooltips)
 
-        ttk.Label(self.bottom_fixed_pagination_frame, text=f"Página {self.current_page} de {self.total_pages}").pack(side=tk.LEFT, padx=5) # Target new frame
+        prev_page_btn = ttk.Button(self.bottom_fixed_pagination_frame, text="<", command=lambda: self._go_to_page(self.current_page - 1),
+                                   state=tk.DISABLED if self.current_page == 1 else tk.NORMAL)
+        prev_page_btn.pack(side=tk.LEFT, padx=2)
+        Tooltip(prev_page_btn, text="Ir a la página anterior.", short_text="Anterior.", enabled=self.settings.enable_hover_tooltips)
 
-        ttk.Button(self.bottom_fixed_pagination_frame, text=">", command=lambda: self._go_to_page(self.current_page + 1), # Target new frame
-                   state=tk.DISABLED if self.current_page == self.total_pages else tk.NORMAL).pack(side=tk.LEFT, padx=2)
-        ttk.Button(self.bottom_fixed_pagination_frame, text=">>", command=lambda: self._go_to_page(self.total_pages), # Target new frame
-                   state=tk.DISABLED if self.current_page == self.total_pages else tk.NORMAL).pack(side=tk.LEFT, padx=2)
+        ttk.Label(self.bottom_fixed_pagination_frame, text=f"Página {self.current_page} de {self.total_pages}").pack(side=tk.LEFT, padx=5)
+
+        next_page_btn = ttk.Button(self.bottom_fixed_pagination_frame, text=">", command=lambda: self._go_to_page(self.current_page + 1),
+                                   state=tk.DISABLED if self.current_page == self.total_pages else tk.NORMAL)
+        next_page_btn.pack(side=tk.LEFT, padx=2)
+        Tooltip(next_page_btn, text="Ir a la página siguiente.", short_text="Siguiente.", enabled=self.settings.enable_hover_tooltips)
+
+        last_page_btn = ttk.Button(self.bottom_fixed_pagination_frame, text=">>", command=lambda: self._go_to_page(self.total_pages),
+                                   state=tk.DISABLED if self.current_page == self.total_pages else tk.NORMAL)
+        last_page_btn.pack(side=tk.LEFT, padx=2)
+        Tooltip(last_page_btn, text="Ir a la última página.", short_text="Última.", enabled=self.settings.enable_hover_tooltips)
 
     def _go_to_page(self, page_number):
         """Navega a una página específica y repopula el treeview."""
@@ -161,7 +173,9 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         search_entry = ttk.Entry(search_filter_frame, textvariable=self.search_term_var, width=30)
         search_entry.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
         search_entry.bind("<Return>", lambda event: self._apply_filters_and_search())
-        ttk.Button(search_filter_frame, text="Buscar", command=self._apply_filters_and_search).grid(row=0, column=2, padx=5, pady=5, sticky="e")
+        search_button = ttk.Button(search_filter_frame, text="Buscar", command=self._apply_filters_and_search)
+        search_button.grid(row=0, column=2, padx=5, pady=5, sticky="e")
+        Tooltip(search_button, text="Buscar análisis por nombre, cálculo o variable analizada.", short_text="Buscar.", enabled=self.settings.enable_hover_tooltips)
 
         # Filter by Cálculo
         ttk.Label(search_filter_frame, text="Cálculo:").grid(row=1, column=0, padx=(0,5), pady=5, sticky="w")
@@ -218,9 +232,17 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         # Filter Action Buttons (moved to a new row)
         filter_action_buttons_frame = ttk.Frame(search_filter_frame)
         filter_action_buttons_frame.grid(row=6, column=0, columnspan=3, sticky="ew", pady=(5,0)) # New row for these buttons
-        ttk.Button(filter_action_buttons_frame, text="Aplicar Filtros", command=self._apply_filters_and_search).pack(side=tk.LEFT, padx=5)
-        ttk.Button(filter_action_buttons_frame, text="Limpiar Filtros", command=self._clear_filters).pack(side=tk.LEFT, padx=(0,5))
-        ttk.Button(filter_action_buttons_frame, text="Refrescar Lista", command=self.load_analyses).pack(side=tk.LEFT, padx=5)
+        apply_button = ttk.Button(filter_action_buttons_frame, text="Aplicar Filtros", command=self._apply_filters_and_search)
+        apply_button.pack(side=tk.LEFT, padx=5)
+        Tooltip(apply_button, text="Aplicar todos los filtros seleccionados.", short_text="Aplicar filtros.", enabled=self.settings.enable_hover_tooltips)
+        
+        clear_button = ttk.Button(filter_action_buttons_frame, text="Limpiar Filtros", command=self._clear_filters)
+        clear_button.pack(side=tk.LEFT, padx=(0,5))
+        Tooltip(clear_button, text="Limpiar todos los filtros y mostrar todos los análisis.", short_text="Limpiar filtros.", enabled=self.settings.enable_hover_tooltips)
+
+        refresh_button = ttk.Button(filter_action_buttons_frame, text="Refrescar Lista", command=self.load_analyses)
+        refresh_button.pack(side=tk.LEFT, padx=5)
+        Tooltip(refresh_button, text="Recargar la lista de análisis guardados.", short_text="Refrescar lista.", enabled=self.settings.enable_hover_tooltips)
 
 
         # --- Lista de Análisis (Treeview) - Goes into self.scrollable_main_frame ---
@@ -264,22 +286,34 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         # --- Populate Bottom Fixed View Actions Frame ---
         self.view_plot_button = ttk.Button(self.bottom_fixed_view_actions_frame, text="Ver/Abrir Gráfico", command=self.view_analysis_plot, state=tk.DISABLED)
         self.view_plot_button.pack(side=tk.LEFT, padx=5)
+        Tooltip(self.view_plot_button, text="Abrir el gráfico estático (PNG) del análisis seleccionado.", short_text="Ver gráfico.", enabled=self.settings.enable_hover_tooltips)
+
         self.view_interactive_button = ttk.Button(self.bottom_fixed_view_actions_frame, text="Ver Gráfico Interactivo", command=self.view_interactive_plot, state=tk.DISABLED)
         self.view_interactive_button.pack(side=tk.LEFT, padx=5)
+        Tooltip(self.view_interactive_button, text="Abrir el gráfico interactivo (HTML) del análisis seleccionado en un navegador.", short_text="Ver interactivo.", enabled=self.settings.enable_hover_tooltips)
+
         self.view_config_button = ttk.Button(self.bottom_fixed_view_actions_frame, text="Ver Configuración", command=self._view_config, state=tk.DISABLED)
         self.view_config_button.pack(side=tk.LEFT, padx=5)
+        Tooltip(self.view_config_button, text="Ver la configuración detallada del análisis seleccionado en un archivo de texto.", short_text="Ver config.", enabled=self.settings.enable_hover_tooltips)
+
         ttk.Frame(self.bottom_fixed_view_actions_frame).pack(side=tk.LEFT, expand=True, fill=tk.X) # Spacer
-        ttk.Button(self.bottom_fixed_view_actions_frame, text="Nuevo Análisis...", command=self.open_new_analysis_dialog).pack(side=tk.RIGHT, padx=5)
+        
+        new_analysis_button = ttk.Button(self.bottom_fixed_view_actions_frame, text="Nuevo Análisis...", command=self.open_new_analysis_dialog)
+        new_analysis_button.pack(side=tk.RIGHT, padx=5)
+        Tooltip(new_analysis_button, text="Abrir el diálogo para configurar y generar un nuevo análisis discreto individual.", short_text="Nuevo análisis.", enabled=self.settings.enable_hover_tooltips)
 
         # --- Populate Bottom Fixed Folder Actions Frame ---
         self.open_folder_button = ttk.Button(self.bottom_fixed_folder_actions_frame, text="Abrir Carpeta", command=self.open_analysis_folder, state=tk.DISABLED)
         self.open_folder_button.pack(side=tk.LEFT, padx=5)
+        Tooltip(self.open_folder_button, text="Abrir la carpeta que contiene los archivos del análisis seleccionado.", short_text="Abrir carpeta análisis.", enabled=self.settings.enable_hover_tooltips)
+
         self.open_main_discrete_folder_button = ttk.Button(
             self.bottom_fixed_folder_actions_frame,
             text="Abrir Carpeta de Análisis Discretos",
             command=self._open_main_discrete_analyses_folder
         )
         self.open_main_discrete_folder_button.pack(side=tk.LEFT, padx=5)
+        Tooltip(self.open_main_discrete_folder_button, text="Abrir la carpeta principal donde se guardan todos los análisis discretos individuales de este estudio.", short_text="Abrir carpeta principal.", enabled=self.settings.enable_hover_tooltips)
 
         # --- Populate Bottom Fixed Pagination Frame ---
         # This is done by _update_pagination_controls, which now needs to target self.bottom_fixed_pagination_frame
@@ -293,6 +327,8 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
             style="Danger.TButton"
         )
         self.delete_all_button.pack(side=tk.LEFT, padx=(0, 5))
+        Tooltip(self.delete_all_button, text="Eliminar TODOS los análisis discretos individuales guardados para este estudio. ¡Acción irreversible!", short_text="Eliminar todo.", enabled=self.settings.enable_hover_tooltips)
+
         self.delete_selected_button = ttk.Button(
             self.bottom_fixed_delete_actions_frame,
             text="Eliminar Seleccionado(s)",
@@ -301,7 +337,11 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
             style="Danger.TButton"
         )
         self.delete_selected_button.pack(side=tk.LEFT, padx=5)
-        ttk.Button(self.bottom_fixed_delete_actions_frame, text="Cerrar", command=self.destroy).pack(side=tk.RIGHT, padx=5)
+        Tooltip(self.delete_selected_button, text="Eliminar los análisis discretos seleccionados en la lista.", short_text="Eliminar selección.", enabled=self.settings.enable_hover_tooltips)
+
+        close_button = ttk.Button(self.bottom_fixed_delete_actions_frame, text="Cerrar", command=self.destroy)
+        close_button.pack(side=tk.RIGHT, padx=5)
+        Tooltip(close_button, text="Cerrar el gestor de análisis discretos.", short_text="Cerrar.", enabled=self.settings.enable_hover_tooltips)
 
         # self.delete_all_button = ttk.Button( # OLD
         #     bottom_action_frame,
