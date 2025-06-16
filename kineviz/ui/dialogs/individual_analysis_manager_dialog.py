@@ -309,12 +309,6 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.view_config_button.pack(side=tk.LEFT, padx=5)
         Tooltip(self.view_config_button, text="Ver la configuración detallada del análisis seleccionado en un archivo de texto.", short_text="Ver config.", enabled=self.settings.enable_hover_tooltips)
 
-        ttk.Frame(self.bottom_fixed_view_actions_frame).pack(side=tk.LEFT, expand=True, fill=tk.X) # Spacer
-        
-        new_analysis_button = ttk.Button(self.bottom_fixed_view_actions_frame, text="Nuevo Análisis...", command=self.open_new_analysis_dialog)
-        new_analysis_button.pack(side=tk.RIGHT, padx=5)
-        Tooltip(new_analysis_button, text="Abrir el diálogo para configurar y generar un nuevo análisis discreto individual.", short_text="Nuevo análisis.", enabled=self.settings.enable_hover_tooltips)
-
         # --- Populate Bottom Fixed Folder Actions Frame ---
         self.open_folder_button = ttk.Button(self.bottom_fixed_folder_actions_frame, text="Abrir Carpeta", command=self.open_analysis_folder, state=tk.DISABLED)
         self.open_folder_button.pack(side=tk.LEFT, padx=5)
@@ -327,6 +321,12 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         )
         self.open_main_discrete_folder_button.pack(side=tk.LEFT, padx=5)
         Tooltip(self.open_main_discrete_folder_button, text="Abrir la carpeta principal donde se guardan todos los análisis discretos individuales de este estudio.", short_text="Abrir carpeta principal.", enabled=self.settings.enable_hover_tooltips)
+
+        ttk.Frame(self.bottom_fixed_folder_actions_frame).pack(side=tk.LEFT, expand=True, fill=tk.X) # Spacer
+        
+        new_analysis_button = ttk.Button(self.bottom_fixed_folder_actions_frame, text="Nuevo Análisis...", command=self.open_new_analysis_dialog)
+        new_analysis_button.pack(side=tk.RIGHT, padx=5)
+        Tooltip(new_analysis_button, text="Abrir el diálogo para configurar y generar un nuevo análisis discreto individual.", short_text="Nuevo análisis.", enabled=self.settings.enable_hover_tooltips)
 
         # --- Populate Bottom Fixed Pagination Frame ---
         # This is done by _update_pagination_controls, which now needs to target self.bottom_fixed_pagination_frame
