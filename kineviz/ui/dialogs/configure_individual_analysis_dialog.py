@@ -100,7 +100,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         # Set a very small minsize initially to allow shrink-wrapping to content
         self.minsize(1, 1)
         
-        self._adjust_dialog_layout() # Set initial size based on content
+        self._resize_to_content() # Set initial size based on content
 
         # Now set a practical minimum size for user manual resizing and future content changes
         # This prevents the dialog from becoming too small.
@@ -111,41 +111,53 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         
         self.grab_set()
         self.transient(self.parent_window)
-        self.bind("<Configure>", self._on_configure_event)
-        # self.bind("<Configure>", self._on_configure_event) # Already bound if using the above block
+        self.bind("<Configure>", self._on_manual_resize)
 
+    def _on_manual_resize(self, event):
+        if event.widget != self or self._is_adjusting_size:
+            return
+        self._is_adjusting_size = True
 
-    def _on_configure_event(self, event):
-        if event.widget == self:
-            self._adjust_dialog_layout()
+        self.update_idletasks()
+        current_w = self.winfo_width()
+        current_h = self.winfo_height()
+        max_w = int(self.winfo_screenwidth() * 0.9)
+        max_h = int(self.winfo_screenheight() * 0.9)
 
-    def _adjust_dialog_layout(self):
+        new_w, new_h = current_w, current_h
+        capped = False
+        if current_w > max_w:
+            new_w = max_w
+            capped = True
+        if current_h > max_h:
+            new_h = max_h
+            capped = True
+        
+        if capped:
+            self.geometry(f"{new_w}x{new_h}")
+            # self.update_idletasks() # Called in _update_scrollbars_and_region
+        
+        self._update_scrollbars_and_region()
+        self._is_adjusting_size = False
+
+    def _resize_to_content(self):
         if self._is_adjusting_size:
             return
         self._is_adjusting_size = True
 
         self.update_idletasks()
-
         min_dialog_width, min_dialog_height = self.wm_minsize()
 
         content_req_width = self.scrollable_frame.winfo_reqwidth()
         content_req_height = self.scrollable_frame.winfo_reqheight()
         
-        padding_val = 15 
-        h_padding = padding_val * 2
-        v_padding = padding_val * 2
-
-        content_req_width += h_padding
-        content_req_height += v_padding
-        
-        content_req_width = max(content_req_width, min_dialog_width)
-        content_req_height = max(content_req_height, min_dialog_height)
+        target_dialog_width = max(content_req_width, min_dialog_width)
+        target_dialog_height = max(content_req_height, min_dialog_height)
 
         max_screen_width = int(self.winfo_screenwidth() * 0.9)
         max_screen_height = int(self.winfo_screenheight() * 0.9)
-
-        target_dialog_width = min(max(content_req_width, min_dialog_width), max_screen_width)
-        target_dialog_height = min(max(content_req_height, min_dialog_height), max_screen_height)
+        target_dialog_width = min(target_dialog_width, max_screen_width)
+        target_dialog_height = min(target_dialog_height, max_screen_height)
         
         current_dialog_width = self.winfo_width()
         current_dialog_height = self.winfo_height()
@@ -153,45 +165,45 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         if target_dialog_width != current_dialog_width or \
            target_dialog_height != current_dialog_height:
             self.geometry(f"{target_dialog_width}x{target_dialog_height}")
-            self.update_idletasks()
-            current_dialog_width = self.winfo_width()
-            current_dialog_height = self.winfo_height()
+            # self.update_idletasks() # Called in _update_scrollbars_and_region
+            
+        self._update_scrollbars_and_region()
+        self._is_adjusting_size = False
 
-        v_scroll_needed = content_req_height > current_dialog_height
-        h_scroll_needed = content_req_width > current_dialog_width
-        
-        if v_scroll_needed:
-            if not self.scrollbar.winfo_ismapped():
-                self.scrollbar.grid(row=0, column=1, sticky="ns")
-        elif self.scrollbar.winfo_ismapped():
-            self.scrollbar.grid_remove()
-
-        if h_scroll_needed:
-            if not self.h_scrollbar.winfo_ismapped():
-                self.h_scrollbar.grid(row=1, column=0, sticky="ew")
-        elif self.h_scrollbar.winfo_ismapped():
-            self.h_scrollbar.grid_remove()
-        
+    def _update_scrollbars_and_region(self):
         self.update_idletasks()
 
-        actual_canvas_width = current_dialog_width
-        if self.scrollbar.winfo_ismapped():
-            actual_canvas_width -= self.scrollbar.winfo_reqwidth()
+        content_req_width = self.scrollable_frame.winfo_reqwidth()
+        content_req_height = self.scrollable_frame.winfo_reqheight()
         
-        actual_canvas_height = current_dialog_height
-        if self.h_scrollbar.winfo_ismapped():
-            actual_canvas_height -= self.h_scrollbar.winfo_reqheight()
+        current_dialog_width = self.winfo_width()
+        current_dialog_height = self.winfo_height()
 
-        if not h_scroll_needed and content_req_width > actual_canvas_width:
-            if not self.h_scrollbar.winfo_ismapped():
-                self.h_scrollbar.grid(row=1, column=0, sticky="ew")
+        canvas_viewport_width = current_dialog_width
+        canvas_viewport_height = current_dialog_height
+
+        v_scroll_needed = content_req_height > canvas_viewport_height
+        h_scroll_needed = content_req_width > canvas_viewport_width
         
-        if not v_scroll_needed and content_req_height > actual_canvas_height:
-            if not self.scrollbar.winfo_ismapped():
+        if v_scroll_needed:
+            if not self.scrollbar.winfo_ismapped(): self.scrollbar.grid(row=0, column=1, sticky="ns")
+            canvas_viewport_width -= self.scrollbar.winfo_reqwidth()
+        elif self.scrollbar.winfo_ismapped(): self.scrollbar.grid_remove()
+
+        if not h_scroll_needed and v_scroll_needed:
+            h_scroll_needed = content_req_width > canvas_viewport_width
+
+        if h_scroll_needed:
+            if not self.h_scrollbar.winfo_ismapped(): self.h_scrollbar.grid(row=1, column=0, sticky="ew")
+            canvas_viewport_height -= self.h_scrollbar.winfo_reqheight()
+        elif self.h_scrollbar.winfo_ismapped(): self.h_scrollbar.grid_remove()
+        
+        if not v_scroll_needed and h_scroll_needed:
+             v_scroll_needed = content_req_height > canvas_viewport_height
+             if v_scroll_needed and not self.scrollbar.winfo_ismapped():
                  self.scrollbar.grid(row=0, column=1, sticky="ns")
-
+        
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
-        self._is_adjusting_size = False
 
     def _show_input_help(self, title: str, message: str):
         """Muestra un popup de ayuda simple."""
@@ -449,7 +461,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
                  self.vi_grouping_mode.set("") # Resetear modo
                  if hasattr(self, 'one_vi_button'): self.one_vi_button.state(['!pressed', '!disabled']) 
                  if hasattr(self, 'two_vi_button'): self.two_vi_button.state(['!pressed', '!disabled'])
-                 self._adjust_dialog_layout()
+                 self._resize_to_content()
                  return
             self.two_vi_config_frame.grid()
             if hasattr(self, 'fixed_vi_combo'): self.fixed_vi_combo['values'] = self.all_vi_names
@@ -460,7 +472,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
              if hasattr(self, 'one_vi_button'): self.one_vi_button.state(['!pressed', '!disabled'])
              if hasattr(self, 'two_vi_button'): self.two_vi_button.state(['!pressed', '!disabled'])
         
-        self._adjust_dialog_layout()
+        self._resize_to_content()
 
 
     def _update_fixed_descriptor_options(self, event=None):
@@ -487,7 +499,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.analysis_name_frame.grid_remove()
         self.button_frame.grid_remove()
         if hasattr(self, 'save_button'): self.save_button.config(state=tk.DISABLED)
-        self._adjust_dialog_layout()
+        self._resize_to_content()
 
 
     def load_initial_data(self):
@@ -853,7 +865,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             self.button_frame.grid_remove()
             if hasattr(self, 'save_button'): self.save_button.config(state=tk.DISABLED)
             logger.debug("Limpiando columnas y ocultando pasos: falta info o grupos.")
-            self._adjust_dialog_layout()
+            self._resize_to_content()
             return
 
         try:
@@ -891,7 +903,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             self.column_combo['values'] = []
             self.column_var.set("")
             self._hide_final_steps() # Ocultar pasos finales en caso de error
-        self._adjust_dialog_layout()
+        self._resize_to_content()
 
 
     def _on_column_selected(self, event=None):
@@ -907,7 +919,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.analysis_name_frame.grid()
         self.button_frame.grid()
         if hasattr(self, 'save_button'): self.save_button.config(state=tk.NORMAL) 
-        self._adjust_dialog_layout()
+        self._resize_to_content()
 
     def _hide_final_steps(self):
         """Oculta los frames de supuestos, nombre y botones."""
@@ -915,7 +927,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.analysis_name_frame.grid_remove()
         self.button_frame.grid_remove()
         if hasattr(self, 'save_button'): self.save_button.config(state=tk.DISABLED) 
-        self._adjust_dialog_layout()
+        self._resize_to_content()
 
 
     def _save_configuration_and_close(self):
@@ -1258,7 +1270,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         
         self._refresh_group_combobox_options() 
         self.update_available_columns() 
-        self._adjust_dialog_layout()
+        self._resize_to_content()
 
 
     def remove_group_selector(self, frame_to_remove, var_to_remove):
@@ -1284,7 +1296,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
 
             self.update_available_columns()
             self._refresh_group_combobox_options() 
-            self._adjust_dialog_layout()
+            self._resize_to_content()
         except (ValueError, IndexError):
             logger.warning("Intento de eliminar un selector de grupo que ya no existe o índice inválido.")
 
