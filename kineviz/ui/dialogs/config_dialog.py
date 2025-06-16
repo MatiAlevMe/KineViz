@@ -171,7 +171,7 @@ class ConfigDialog(Toplevel):
 
         # After all widgets are created, set a minimum size based on their initial requested size
         self.update_idletasks() # Ensure Tkinter has processed widget sizes
-        self.minsize(self.winfo_reqwidth() + 10, self.winfo_reqheight() + 10) # Add a little padding to requested size
+        self.minsize(450, 380) # Set a reasonable fixed minimum size
 
     def validate_input(self) -> bool:
         """Valida que los valores ingresados sean enteros positivos."""

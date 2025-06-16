@@ -239,11 +239,9 @@ class StudyDialog(Toplevel):
         scrollable_main_frame.update_idletasks() 
         canvas.update_idletasks()
         
-        # Set a minimum size for the Toplevel dialog based on content
-        # Add some padding to the requested size
-        req_width = scrollable_main_frame.winfo_reqwidth() + v_scrollbar.winfo_reqwidth() + 40 # padding + scrollbar
-        req_height = scrollable_main_frame.winfo_reqheight() + h_scrollbar.winfo_reqheight() + 40 # padding + scrollbar
-        self.minsize(max(400, req_width), max(300, req_height)) # Ensure a reasonable base minsize
+        # Set a minimum size for the Toplevel dialog
+        self.minsize(500, 400) # Set a reasonable fixed minimum size
+        # Initial geometry is set in __init__
 
 
     def add_independent_variable_ui(self, name_value="", descriptors_values=None, allows_combination_value=False, is_mandatory_value=False):

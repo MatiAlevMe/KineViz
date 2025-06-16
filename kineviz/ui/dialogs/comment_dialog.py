@@ -76,7 +76,7 @@ class CommentDialog(Toplevel):
 
         # After all widgets are created, set a minimum size
         self.update_idletasks()
-        self.minsize(self.winfo_reqwidth() + 10, self.winfo_reqheight() + 10)
+        self.minsize(400, 250) # Set a reasonable fixed minimum size
 
 
     def _on_text_modified(self, event=None):

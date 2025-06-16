@@ -44,11 +44,7 @@ class DescriptorAliasDialog(Toplevel):
             "<Configure>",
             lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
         )
-        # Bind canvas configure to adjust scrollable_frame width for horizontal scroll
-        self.canvas.bind(
-            "<Configure>",
-            lambda e: self.canvas.itemconfig(self.canvas.nametowidget(e.widget).interior_id, width=e.width) if hasattr(self.canvas, 'interior_id') else None
-        )
+        # Removed problematic canvas.bind("<Configure>") that forced inner frame width
 
         self.canvas.interior_id = self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
         self.canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
@@ -105,7 +101,7 @@ class DescriptorAliasDialog(Toplevel):
 
         # Set minsize after widgets are created
         self.update_idletasks()
-        self.minsize(self.winfo_reqwidth() + 20, self.winfo_reqheight() + 20)
+        self.minsize(400, 300) # Set a reasonable fixed minimum size
 
     def load_descriptors_and_aliases(self):
         """Carga los sub-valores definidos en el estudio y sus alias actuales."""
