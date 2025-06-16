@@ -105,6 +105,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.grab_set()
         self.transient(self.parent_window)
         self.bind("<Configure>", self._on_configure_event)
+        # self.bind("<Configure>", self._on_configure_event) # Already bound if using the above block
 
 
     def _on_configure_event(self, event):
