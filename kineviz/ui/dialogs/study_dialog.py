@@ -9,14 +9,19 @@ import logging # Importar logging
 # Nota: FileService se importa aquí para consistencia, aunque también se usa en __init__
 from kineviz.core.services.file_service import FileService
 from pathlib import Path
+# Import AppSettings for type hinting and style utilities for font scaling
+from kineviz.config.settings import AppSettings
+from kineviz.ui.utils.style import get_scaled_font, DEFAULT_FONT_SIZE
+
 
 logger = logging.getLogger(__name__) # Logger para este módulo
 
 class StudyDialog(Toplevel):
-    # Añadir study_to_edit y on_save_callback
-    def __init__(self, parent, study_service, study_to_edit=None, on_save_callback=None):
+    # Añadir study_to_edit, on_save_callback, and settings
+    def __init__(self, parent, study_service, settings: AppSettings, study_to_edit=None, on_save_callback=None):
         super().__init__(parent)
         self.study_service = study_service
+        self.settings = settings # Store AppSettings instance
         self.file_service = FileService(study_service) # Necesitamos FileService para buscar archivos
         self.study_to_edit = study_to_edit
         self.on_save_callback = on_save_callback
@@ -35,6 +40,9 @@ class StudyDialog(Toplevel):
         self.var_nombre = tk.StringVar()
         self.var_num_sujetos = tk.StringVar()
         self.var_cantidad_intentos = tk.StringVar()
+
+        # Calculate scaled font once
+        self.scaled_font_tuple = get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale)
 
         # Cargar datos si estamos editando (ahora carga VIs)
         if self.is_editing:
@@ -123,7 +131,7 @@ class StudyDialog(Toplevel):
         ttk.Label(main_frame, text="Nombre del Estudio:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
         nombre_frame = ttk.Frame(main_frame)
         nombre_frame.grid(row=row_idx, column=1, sticky="ew")
-        ttk.Entry(nombre_frame, textvariable=self.var_nombre).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
+        ttk.Entry(nombre_frame, textvariable=self.var_nombre, font=self.scaled_font_tuple).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         nombre_help_button = ttk.Button(nombre_frame, text="?", width=3, style="Help.TButton",
                                         command=lambda: self._show_input_help("Ayuda: Nombre del Estudio",
                                                                               "Nombre descriptivo para el estudio.\nEj: Estudio Piloto Marcha, Análisis Comparativo CMJ"))
@@ -133,7 +141,7 @@ class StudyDialog(Toplevel):
         ttk.Label(main_frame, text="Cantidad de Participantes:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
         num_sujetos_frame = ttk.Frame(main_frame)
         num_sujetos_frame.grid(row=row_idx, column=1, sticky="ew")
-        ttk.Entry(num_sujetos_frame, textvariable=self.var_num_sujetos).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
+        ttk.Entry(num_sujetos_frame, textvariable=self.var_num_sujetos, font=self.scaled_font_tuple).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         num_sujetos_help_button = ttk.Button(num_sujetos_frame, text="?", width=3, style="Help.TButton",
                                              command=lambda: self._show_input_help("Ayuda: Cantidad de Participantes",
                                                                                    "Número entero positivo que representa la cantidad máxima de participantes en el estudio.\nEj: 15"))
@@ -143,7 +151,7 @@ class StudyDialog(Toplevel):
         ttk.Label(main_frame, text="Cantidad de Intento(s) de Prueba:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
         intentos_frame = ttk.Frame(main_frame)
         intentos_frame.grid(row=row_idx, column=1, sticky="ew")
-        ttk.Entry(intentos_frame, textvariable=self.var_cantidad_intentos).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
+        ttk.Entry(intentos_frame, textvariable=self.var_cantidad_intentos, font=self.scaled_font_tuple).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         intentos_help_button = ttk.Button(intentos_frame, text="?", width=3, style="Help.TButton",
                                           command=lambda: self._show_input_help("Ayuda: Cantidad de Intento(s)",
                                                                                 "Número entero positivo que representa la cantidad máxima de intentos por cada combinación de sub-valores de VIs para cada participante.\nEj: 3"))
@@ -257,7 +265,7 @@ class StudyDialog(Toplevel):
         vi_header_frame.pack(fill=tk.X)
 
         vi_name_var = tk.StringVar(value=name_value)
-        vi_name_entry = ttk.Entry(vi_header_frame, textvariable=vi_name_var, width=25) # Ajustar ancho para botón
+        vi_name_entry = ttk.Entry(vi_header_frame, textvariable=vi_name_var, width=25, font=self.scaled_font_tuple) # Ajustar ancho para botón
         vi_name_entry.pack(side=tk.LEFT, padx=(5,0), pady=5, fill=tk.X, expand=True)
         # Permitir editar nombre VI en modo edición
         # vi_name_entry.config(state='readonly' if self.is_editing else 'normal')
@@ -407,7 +415,7 @@ class StudyDialog(Toplevel):
         desc_entry_frame = ttk.Frame(desc_frame) # Frame para entry y botón de ayuda
         desc_entry_frame.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(5,0))
 
-        desc_entry = ttk.Entry(desc_entry_frame, textvariable=desc_var)
+        desc_entry = ttk.Entry(desc_entry_frame, textvariable=desc_var, font=self.scaled_font_tuple)
         desc_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
         if self.is_editing:
             desc_entry.config(state='readonly')
