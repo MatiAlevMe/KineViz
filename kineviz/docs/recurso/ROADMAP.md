@@ -277,14 +277,14 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
             - `create_backup(backup_type)`: Crea una copia de seguridad de los componentes definidos.
             - Gestión de copias automáticas rotativas: Al crear una nueva copia automática, si se excede `max_automatic_backups` (de `config.ini`), se elimina la más antigua.
     1.2 [En Progreso] Disparadores y Puntos de Activación para Copias Automáticas.
-        - Disparadores: Operaciones significativas que modifican datos persistentes. Se activarán *después* de la finalización exitosa de la operación.
-            - Creación/Eliminación de estudio(s).
-            - Adición/Eliminación de lote de archivos/archivo individual.
-            - Generación/Eliminación de resultados de análisis (discreto/continuo).
+        - Disparadores: Operaciones significativas que modifican datos persistentes. Se activarán *antes* de la finalización exitosa de las siguientes operaciónes (Para poder copiar la versión de `kineviz.db` que se neceita).
+            - Eliminación de estudio(s).
+            - Eliminación de lote de archivos.
+            - Eliminación de resultados de análisis (discreto/continuo).
         - Puntos de activación (funciones clave donde se invocaría `backup_manager.create_backup('automatic')`):
-            - `StudyService`: `create_study`, `delete_study`, `delete_all_studies`.
-            - `FileService`: `add_files_to_study`, `delete_file`, `delete_all_files_in_study` (si se implementa).
-            - `AnalysisService`: `generate_discrete_summary_tables`, `delete_individual_analysis`, `perform_continuous_analysis` (al guardar), `delete_continuous_analysis`, etc.
+            - `StudyService`: `delete_study`, `delete_all_studies`.
+            - `FileService`: `delete_file`, `delete_all_files_in_study`.
+            - `AnalysisService`: `delete_individual_analysis`, `delete_all_individual_analysis`, `delete_continuous_analysis`, `delete_all_continuous_analysis`
     1.3 [En Progreso] UI para Gestión de Copias de Seguridad (`BackupRestoreDialog`).
         - Acceso: Opción "Gestión de Copias de Seguridad" en `ConfigDialog`.
         - Funcionalidades:
@@ -295,13 +295,13 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
             - "Eliminar Manual Seleccionada": Elimina una copia manual. Requiere doble confirmación.
             - "Cancelar".
         - Tooltip de ayuda para la opción en `ConfigDialog`.
+        - (Opcional) Checkbox para activar/desactivar el auto backup (desactivado por defecto) en `ConfigDialog`.
     1.4 [En Progreso] Configuración Adicional y Mejoras UI para Backups.
         - `ConfigDialog`: Opciones para `max_automatic_backups` y `max_manual_backups`.
-        - Paginación en `BackupRestoreDialog` si la lista de backups es larga.
+        - Paginación en `BackupRestoreDialog` si la lista de backups es larga (Algo así como mostrar 4 archivos por paguina, si hay más de 4 aparece la paguinación).
         - Adaptación a cambios de tamaño de texto y tooltips en `BackupRestoreDialog`.
     1.5 [En Progreso] Logging para Operaciones de Backup.
         - Registrar eventos significativos (creación iniciada/completada/fallida, eliminación de copia antigua).
-
 2. [En Progreso] Funcionalidad "Deshacer Eliminación" (Undo Delete).
     2.1 [Pendiente] Lógica Central para "Deshacer Eliminación".
         - Propósito: Permitir la reversión inmediata de la última operación de eliminación de elementos específicos (archivos, resultados de análisis, un estudio).
@@ -316,27 +316,27 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
             2. Mover los elementos de la caché "undo" de vuelta a sus ubicaciones originales.
             3. Limpiar la caché "undo".
         - Transitoriedad: La opción "Deshacer" y su caché se invalidan/limpian si:
-            - Se realiza otra operación significativa.
+            - Se realiza otra operación significativa (Agregar/eliminar elementos).
             - El usuario navega fuera de la vista/diálogo actual.
             - Se cierra la aplicación.
             - (Opcional) Expira un temporizador corto.
     2.2 [Pendiente] Integración UI para "Deshacer Eliminación".
-        - Botón/mensaje temporal "Deshacer" en las vistas/diálogos donde ocurren eliminaciones (`StudyView`, `IndividualAnalysisManagerDialog`, `ContinuousAnalysisManagerDialog`, `MainView` para eliminar estudio).
+        - Botón temporal "Deshacer" en las vistas/diálogos donde ocurren eliminaciones (`StudyView`, `IndividualAnalysisManagerDialog`, `ContinuousAnalysisManagerDialog`, `MainView` para eliminar estudio).
     2.3 [Pendiente] Configuración para "Deshacer Eliminación".
         - Opción en `ConfigDialog` para habilitar/deshabilitar esta característica.
         - Tooltip explicativo.
-
 3. [Hecho] Ayuda en la Interfaz: Añadir Tooltips Adicionales.
-2.1 [Hecho] Añadir tooltips con el mismo icono "i" que se utiliza en la ventana de estudio para explicar las VIs, necesito que estos tooltips explique el formato de cada ventana relevante donde se necesite input del usuario, esto es:
+3.1 [Hecho] Añadir tooltips con el mismo icono "i" que se utiliza en la ventana de estudio para explicar las VIs, necesito que estos tooltips explique el formato de cada ventana relevante donde se necesite input del usuario, esto es:
 Editar estudio, crear nuevo estudio, agregar archivos a un estudio, gestor de analisis discretos, gestor de analisis continuos, gestionar alias de sub-valores.
-3. [Hecho] Optimización del Sistema.
-3.1 [Hecho] Decidir si mantener todas las tablas del analisis discreto o solamente las tablas .xlsx para ahorrar espacio.
-3.2 [Hecho] Decidir formato final y filtrado de las ventanas de tablas de datos como:
+4. [Hecho] Optimización del Sistema.
+4.1 [Hecho] Decidir si mantener todas las tablas del analisis discreto o solamente las tablas .xlsx para ahorrar espacio.
+4.2 [Hecho] Decidir formato final y filtrado de las ventanas de tablas de datos como:
 Ventana de estudio, ventana de estudio especifico, ventana de tablas de analisis discreto, analisis discreto, analisis continuo
-4. [En Progreso] Refactorizar Documentación
-4.1 [En Progreso] Unir todos los manuales en el manual principal con distintas secciones, esto es primero una descripción general del software (que hace, cual es su necesidad, etc), los objetivos del software, los flujos principales, resumen general de cada ventana o dialogo y lo que hace, una sección que explique en detalle cada parte ventana o dialogo de KineViz, notas importantes, y cualquier información relevante que se requieran de un manual completo para el cliente, explicados en terminos simples cuando se tratén de cosas informaticas pero con un lenguaje posiblemente más tecnico cuando es más del area de investigación kinesiologica que es el area que manejan.
-4.2 [En Progreso] Agregar referencias dentro del mismo manual que diga "Vaya a la sección X" o similares para referirse a que sección ir del manual para alguna información importante dentro de otra sección.
-4.3 [En Progreso] Eliminar todos los botones que hagan referencia a manuales antiguos que no sean el manual principal.
+5. [En Progreso] Refactorizar Documentación
+5.1 [En Progreso] Actualizar ROADMAP con los nuevos archivos que hemos ido agregando al sistema en “## Estrctura de Carpetas del Proyecto” y los cambios de la arquitectura y otras cosas relevantes del proyecto en la sección de “# Arquitectura de KineViz”.
+5.2 [En Progreso] Unir todos los manuales en el manual principal con distintas secciones, esto es primero una descripción general del software (que hace, cual es su necesidad, etc), los objetivos del software, los flujos principales, resumen general de cada ventana o dialogo y lo que hace, una sección que explique en detalle cada parte ventana o dialogo de KineViz, notas importantes, y cualquier información relevante que se requieran de un manual completo para el cliente, explicados en terminos simples cuando se tratén de cosas informaticas pero con un lenguaje posiblemente más tecnico cuando es más del area de investigación kinesiologica que es el area que manejan.
+5.3 [En Progreso] Agregar referencias dentro del mismo manual que diga "Vaya a la sección X" o similares para referirse a que sección ir del manual para alguna información importante dentro de otra sección.
+5.4 [En Progreso] Eliminar todos los botones que hagan referencia a manuales antiguos que no sean el manual principal.
 
 ## [Hecho] Fase 6: Cambios Opcionales.
 1. [Hecho] (Cambio Manual) Cambiar terminos de:
@@ -348,7 +348,6 @@ Ventana de estudio, ventana de estudio especifico, ventana de tablas de analisis
 3.2 [Hecho] Botón para eliminar todas las tablas del análisis discreto y pruebas para el analisis discreto y el analisis continuo.
 3.3 [Hecho] Botón "Eliminación Masiva" para seleccionar los archivos que se deseen eliminar. Tanto en la ventana de estudio como en la ventana de pruebas de analisis discreto y pruebas analisis continuo.
 3.4 [Hecho] Botón para eliminar todos los estudios.
-3.5 [Pendiente] (Cambio Manúal) Validar manualmente si es que se pueden eliminar todos los estudios junto a la funcionalida de backup de seguridad.
 4. [Hecho] Agregar las Siguiente Reglas a la Eliminación de Archivos Individuales o Eliminación Masiva:
 "Si no hay archivos o carpetas dentro del estudio elimina los archivos carpetas locales dentro de ese estudio (sin incluir el propio estudio padre)"
 "Si no hay archivos para un participante en particular, elimina la carpeta con el nombre del participante"
@@ -363,19 +362,21 @@ Este comentario de estudio podrá ser modificado también
 1. [Hecho] Opciones de Accesibilidad en la Configuración del Software:
 Como aumentar el tamaño de las letras, y cambiar el tema de KineViz de blanco a oscuro.
 
-## [Pendiente] Fase 7: Documentación y Despliegue
-1. [Pendiente] Limpieza del Repositorio (Manual).
-1.1 [Pendiente] (Cambio Manual) Limpiar archivos como kineviz.spec, kineviz/docs/recurso.
-1.2 [Pendiente] (Cambio Manual) Eliminar logs de la repo final. 
-1.2 [Pendiente] (Cambio Manual) Eliminar pruebas y cambiar el LOG a INFO o WARNING.
-1.2 [Pendiente] (Revisión Manual) Posible revisión y correción de UI con V. D.
-2. [Pendiente] Creación de Demo en Video del Uso del Software con V. D. (Manual).
+## [Pendiente] Fase 7: Limpieza y Despliegue
+1. [Pendiente] Creación de Demo en Video del Uso del Software con V. D. (Manual).
+    - Agregar DEMO.mp4 al landing page del programa y un botón en la vista principal/botón de ayuda.
+2. [Pendiente] Limpieza del Repositorio (Manual).
+2.1 [Pendiente] (Cambio Manual) Limpiar archivos como kineviz.spec, kineviz/docs/recurso.
+2.2 [Pendiente] (Cambio Manual) Eliminar logs de la repo final. 
+2.2 [Pendiente] (Cambio Manual) Eliminar pruebas y cambiar el LOG a INFO o WARNING.
+2.2 [Pendiente] (Revisión Manual) Posible revisión y correción de UI con V. D.
 3. [Pendiente] Empaquetado y Distribución con Paquetes Distribuibles.
 3.1 [Pendiente] Configurar PyInstaller: Creado y refinando `kineviz.spec` para definir el proceso de build (corrigiendo errores de hidden imports, backends, etc.).
 3.2 [Pendiente] Generar Build Windows: Ejecutar PyInstaller en Windows para crear el paquete.
 3.3 [Pendiente] Generar Build macOS: Ejecutando PyInstaller en macOS para crear el paquete (`.app` bundle).
 3.4 [Pendiente] Pruebas de Paquetes: Probar los paquetes generados en máquinas limpias de Windows 10/11 y macOS 11+.
-4. [Pendiente] Documentación (Manual).
+
+## [Pendiente] Fase 8: Documentación
 4.1 [Pendiente] (Cambio Manual) Modificar Tabla de Modelo de Datos:
 Modificar terminología de Frecuencia a Tipo de Dato y Pruebas (POST/PRE)
 4.2 [Pendiente] (Cambio Manual) Modificar el Abstract:
@@ -403,6 +404,7 @@ Full Two-Way ANOVA: The current "2VIs" mode performs comparisons within a level 
 8.5 [Omitido] Manejo de Floats al Procesar Archivos en un Estudio:
 Que exista la posibilidad de manejar situaciones donde los archivos de entrada esten en float como "Pte03 CMJ 03.txt: could not convert string to float: '5,47567'" en cuyo caso se debería poder convertir al valor convencional de "5.47567".
 8.6 [Omitido] en el dialogo de configuración de análisis discreto y continuo falta arreglar el tooltip hover a Grupos Comparados que por alguna razón no se visualiza correctamente.
+8.7 [Omitido] (Cambio Manúal) Validar manualmente si es que se pueden eliminar todos los estudios junto a la funcionalida de backup de seguridad.
 
 # Arquitectura de KineViz
 
