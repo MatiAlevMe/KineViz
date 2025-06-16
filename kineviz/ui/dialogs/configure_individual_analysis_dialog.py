@@ -6,7 +6,8 @@ from typing import List, Tuple # Añadir Tuple para type hint
 from kineviz.core.services.analysis_service import AnalysisService
 # Importar validador necesario
 from kineviz.ui.utils.validators import validate_filename_for_study_criteria
-
+from kineviz.ui.widgets.tooltip import Tooltip # Import Tooltip
+from kineviz.config.settings import AppSettings # Import AppSettings
 
 logger = logging.getLogger(__name__)
 
