@@ -90,9 +90,29 @@ class FileDialog(Toplevel):
         filename_help_short_text = "Reglas para nombrar archivos de datos."
         Tooltip(filename_help_button, text=filename_help_long_text, short_text=filename_help_short_text, enabled=self.settings.enable_hover_tooltips)
 
-        # --- Middle Frame for Listbox and Scrollbars (this one will expand) ---
+        # --- Bottom Fixed Frame for Action Buttons (Packed before middle frame) ---
+        bottom_fixed_frame = ttk.Frame(self, padding=(10, 5, 10, 10)) # Pad top 5
+        bottom_fixed_frame.pack(side=tk.BOTTOM, fill=tk.X)
+
+        # Row 1 for "Quitar Archivo(s) Seleccionado(s)"
+        remove_button_frame = ttk.Frame(bottom_fixed_frame)
+        remove_button_frame.pack(side=tk.TOP, fill=tk.X, pady=(0, 5)) # Add some padding below this row
+
+        remove_button = ttk.Button(remove_button_frame, text="Quitar Archivo(s) Seleccionado(s)", command=self.remove_selected)
+        remove_button.pack(side=tk.LEFT) # Align to the left
+
+        # Row 2 for "Procesar Archivo(s) Seleccionado(s)" and "Cancelar"
+        process_cancel_frame = ttk.Frame(bottom_fixed_frame)
+        process_cancel_frame.pack(side=tk.TOP, fill=tk.X)
+        
+        # Pack Cancelar primero para que quede a la derecha de Procesar
+        ttk.Button(process_cancel_frame, text="Cancelar", command=self.destroy).pack(side=tk.RIGHT)
+        self.process_button = ttk.Button(process_cancel_frame, text="Procesar Archivo(s) Seleccionado(s)", command=self.process_files, state=tk.DISABLED)
+        self.process_button.pack(side=tk.RIGHT, padx=5)
+
+        # --- Middle Frame for Listbox and Scrollbars (Packed last to fill remaining space) ---
         middle_list_frame = ttk.Frame(self)
-        middle_list_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+        middle_list_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5) # This will now fill space between top and bottom
         middle_list_frame.grid_rowconfigure(0, weight=1)
         middle_list_frame.grid_columnconfigure(0, weight=1)
 
@@ -116,14 +136,6 @@ class FileDialog(Toplevel):
         v_scrollbar.grid(row=0, column=1, sticky="ns")
         h_scrollbar.grid(row=1, column=0, sticky="ew") # Span across listbox width
         self.listbox.grid(row=0, column=0, sticky="nsew")
-
-
-        # --- Bottom Fixed Frame for Action Buttons ---
-        bottom_fixed_frame = ttk.Frame(self, padding=(10, 5, 10, 10)) # Pad top 5
-        bottom_fixed_frame.pack(side=tk.BOTTOM, fill=tk.X)
-
-        # Row 1 for "Quitar Archivo(s) Seleccionado(s)"
-        remove_button_frame = ttk.Frame(bottom_fixed_frame)
         remove_button_frame.pack(side=tk.TOP, fill=tk.X, pady=(0, 5)) # Add some padding below this row
 
         remove_button = ttk.Button(remove_button_frame, text="Quitar Archivo(s) Seleccionado(s)", command=self.remove_selected)
