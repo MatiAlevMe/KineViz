@@ -1054,7 +1054,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
     def set_vi_grouping_mode(self, mode):
         """Configura la UI según se elija agrupar por 1 o 2 VIs."""
         # ... (existing code for set_vi_grouping_mode) ...
-        super_set_vi_grouping_mode_result = super().set_vi_grouping_mode(mode) if hasattr(super(), 'set_vi_grouping_mode') else None
+        # super_set_vi_grouping_mode_result = super().set_vi_grouping_mode(mode) if hasattr(super(), 'set_vi_grouping_mode') else None
         self.vi_grouping_mode.set(mode)
         logger.info(f"Modo de agrupación seleccionado: {mode}")
 
@@ -1204,7 +1204,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.analysis_name_frame.grid_remove()
         self.button_frame.grid_remove()
         if hasattr(self, 'save_button'): self.save_button.config(state=tk.DISABLED) 
-        self._adjust_dialog_layout()
+        self._resize_to_content()
 
     def add_group_selector(self, initial_value=""):
         """Añade una nueva fila para seleccionar un grupo."""
