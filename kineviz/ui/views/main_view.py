@@ -136,7 +136,7 @@ class MainView:
 
         # Corrected packing order for search elements:
         # Left side (fixed width for search_entry):
-        search_entry.config(width=30) # Set a fixed width for the search entry
+        search_entry.config(width=20) # Reduced width from 30 to 20
         search_entry.pack(side=tk.LEFT, padx=(0,5)) # Removed fill=tk.X, expand=True
         search_button.pack(side=tk.LEFT, padx=(0,10))
         
