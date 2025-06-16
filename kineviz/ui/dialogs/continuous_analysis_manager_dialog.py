@@ -224,11 +224,11 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         ttk.Frame(filter_action_buttons_frame).pack(side=tk.LEFT, expand=True, fill=tk.X)
 
         refresh_button_list = ttk.Button(filter_action_buttons_frame, text="Refrescar Lista", command=self.load_analyses)
-        refresh_button_list.pack(side=tk.RIGHT, padx=(0,5)) 
+        refresh_button_list.pack(side=tk.RIGHT, padx=(0,0)) # Rightmost, no right padding from itself
         Tooltip(refresh_button_list, text="Recargar la lista de análisis guardados.", short_text="Refrescar lista.", enabled=self.main_window.settings.enable_hover_tooltips)
 
         search_button_moved_cont = ttk.Button(filter_action_buttons_frame, text="Buscar", command=self._apply_filters_and_search)
-        search_button_moved_cont.pack(side=tk.RIGHT, padx=(0,0)) # Pack right, rightmost
+        search_button_moved_cont.pack(side=tk.RIGHT, padx=(0,5)) # To the left of Refresh, 5px padding on its right
         Tooltip(search_button_moved_cont, text="Buscar análisis por nombre o variable analizada.", short_text="Buscar.", enabled=self.main_window.settings.enable_hover_tooltips)
 
 
