@@ -9,7 +9,8 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 │
 ├── core/                 # Lógica de negocio y dominio
 │   ├── __init__.py
-│   ├── exceptions.py  
+│   ├── exceptions.py
+│   ├── backup_manager.py # NUEVO: Gestión de copias de seguridad
 │   ├── data_processing/  # Procesamiento de datos
 │   │   ├── processors.py  # (formatos, cálculos)
 │   │   ├── file_handlers.py  # Manejo específico de archivos
@@ -80,6 +81,10 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 ├── tests/                # Pruebas automatizadas
 │   ├── unit/
 │   └── integration/
+│
+├── backups/              # NUEVO: Copias de seguridad
+│   ├── automatic/        # Copias de seguridad automáticas
+│   └── manuales/         # Copias de seguridad manuales
 │
 ├── docs/                 # Documentación
 │   └── help/             # Documentación de ayuda del software
@@ -251,25 +256,56 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
 5.2 [Hecho] Integración con UI: Conectados métodos a `ContinuousAnalysisManagerDialog` (evolución de `ContinuousAnalysisResultsView`) para la gestión de los análisis.
 
 ## [En Progreso] Fase 5: Funcionalidades Adicionales
-1. [En progreso] Copias de Seguridad Automaticas.
-1.1 [En Progreso] Implementar copias de seguridad automáticas de todo el sistema. Se mantendrán un máximo de 2 copias automáticas de forma rotativa (la creación de una nueva copia elimina la más antigua). Estas copias se generarán *después* de operaciones de agregar, restaurar o eliminar archivos/carpetas.
-    - Decisiones Clave:
-        - Disparadores: Operaciones de agregar, restaurar y eliminar archivos/carpetas.
-        - Alcance: Copias de seguridad de todo el sistema.
-        - Límite Automáticas: 2 copias rotativas.
-        - Límite Manuales: 2 copias (ver detalles en puntos siguientes, ej. 1.5).
-    - Puntos de activación (ventanas/diálogos donde estas operaciones ocurren y que, por lo tanto, activarán la creación de copias de seguridad):
-       - Ventana Principal (ej. al eliminar estudios)
-       - Ventana de Estudio (ej. al agregar/eliminar archivos de un estudio)
-       - Diálogo de Gestión de Análisis Discretos (ej. al eliminar resultados de análisis)
-       - Diálogo de Gestión de Análisis Continuos (ej. al eliminar resultados de análisis)
-1.2 [En Progreso] Implementar el UI con una opción de "Restauración del sistema" con una opción de volver a una versión de trabajo anterior (mostrando un nuevo dialogo con hasta 2 posibles versiones anteriores del sistema a restaurar) opción que estará ubicado en el dialogo de configuración de la ventana principal.
-1.3 [En Progreso] Implementar un tooltip "?" con el estilo especial azul. Y su hover tooltip con el una explicación mas corta para la UI de la opción de restauración.
-1.4 [En Progreso] En el dialogo se debería mostrar una leyenda con el titulo, una tabla con los archivos que se pueden restaurar (maximo de 2 automaticos y 2 manuales a la vez) y unos botónes de acción en la parte inferior de la ventana para "Crear Copia de Seguridad" (left aligned, to the leftmost), "Restaurar Copia de Seguridad" (Left aligned, to the left of "Crear Copia de Seguridad") y el botón de "Cancelar" (Right aligned, to the rightmost) y un botón de "Asignar Alias" (Right aligned, next to the "Cancelar" button) para darle un nombre a una copia de seguridad MANUAL que el usuario pueda reconocerla.
-1.5 [En Progreso] En este dialogo también se pueden crear hasta 2 copias de respaldo adicionales que se pueden aplicar manualmente y se añaden a la misma tabla anterior. Cuando se quiere crear una tercera copia de seguridad el usuario debe seleccionar cual copia de seguridad manual desea eliminar para hacer el espacio. Y debe aparecer doble pop-up de confirmación. También se requiere de doble pop-up de confirmación cuando se eligue un punto de restauración.
-1.6 [En Progreso] La tabla mostraría columnas con el Tipo de punto de restauración (Automatico y Manual), la fecha de creación y el Alias Asignado (estará vacio cuando no hay alias asignado o es una copia automatica que no se puede asignar un alias.) El Alias Asignado se actualiza dinamicamente cuando se asigna un nuevo alias en esta ventana y se podrá crear/modificar el Alias Asignado indefinidamente y se actualizara dinamicamente al hacer click en Alias Asignado y guardar el nombre del alias se actualizara en la tabla.
-1.7 [En Progreso] Implementar el dialogo de Alias Asignado. Primero el usuario selecciona una copia de seguridad (si selecciona una copia automatica no se permitira asignar un alias se entregara un pop up con esa información), luego aparece un dialogo pequeño con un box y un texto de input. Y dos botónes de acción en la parte inferior "Guardar" y "Cancelar"
-1.8 [En Progreso] Adaptar todos estos dialogos nuevos a la modificación del tamaño de texto.
+1. [En Progreso] Gestión de Copias de Seguridad y Restauración del Sistema.
+    1.1 [En Progreso] Implementar lógica central de copias de seguridad y almacenamiento.
+        - Componentes del sistema a respaldar: "kineviz.db", directorio "estudios/", archivo "config.ini".
+        - Rutas de almacenamiento: "kineviz/backups/automatic/" para automáticas, "kineviz/backups/manuales/" para manuales.
+        - Formato: Archivos ZIP con marca de tiempo ("timestamped ZIP archives").
+        - Crear módulo `kineviz.core.backup_manager` para encapsular la funcionalidad de respaldo.
+        - Funcionalidad del `backup_manager`: Crear una copia de seguridad completa de los componentes definidos.
+        - Funcionalidad del `backup_manager`: Gestionar el mecanismo de respaldo rotativo para copias automáticas (listar existentes, eliminar la más antigua si se excede el límite configurado al crear una nueva).
+        - Disparadores para copias automáticas: Operaciones de agregar, restaurar o eliminar archivos, carpetas, estudios, o resultados de análisis.
+        - Puntos de activación para copias automáticas: `MainWindow` (ej. al eliminar estudios), `StudyView` (ej. al agregar/eliminar archivos), `IndividualAnalysisManagerDialog` (ej. al eliminar análisis), `ContinuousAnalysisManagerDialog` (ej. al eliminar análisis).
+    1.2 [En Progreso] Implementar UI para Gestión de Copias de Seguridad.
+        - Añadir opción "Gestión de Copias de Seguridad" en el diálogo de configuración (`ConfigDialog`).
+        - Al seleccionar, mostrar un nuevo diálogo (`BackupRestoreDialog`) que liste las copias de seguridad disponibles y permita gestionarlas.
+    1.3 [En Progreso] Añadir Tooltip de Ayuda para UI de Gestión de Copias de Seguridad.
+        - Implementar un tooltip con icono "?" (estilo azul especial) junto a la opción de "Gestión de Copias de Seguridad".
+        - El tooltip al pasar el cursor (hover) debe mostrar una explicación breve de la funcionalidad.
+    1.4 [En Progreso] Diseñar Diálogo de Gestión de Copias de Seguridad (`BackupRestoreDialog`).
+        - Título y leyenda explicativa.
+        - Tabla para listar copias de seguridad (automáticas y manuales).
+        - Botones de acción:
+            - "Crear Copia Manual"
+            - "Restaurar Seleccionada"
+            - "Asignar Alias a Manual"
+            - "Eliminar Manual Seleccionada"
+            - "Cancelar"
+    1.5 [En Progreso] Implementar Creación y Gestión de Copias Manuales en `BackupRestoreDialog`.
+        - Permitir crear hasta un número configurable de copias manuales (por defecto 2).
+        - Si se intenta crear una copia manual excediendo el límite, solicitar al usuario que seleccione una copia manual existente para eliminar (usar botón "Eliminar Manual Seleccionada").
+        - Implementar doble pop-up de confirmación para eliminar una copia manual y para restaurar cualquier copia de seguridad.
+    1.6 [En Progreso] Detalles de la Tabla de Copias de Seguridad en `BackupRestoreDialog`.
+        - Columnas: "Tipo" (Automática/Manual), "Fecha de Creación", "Alias Asignado".
+        - El campo "Alias Asignado" estará vacío para copias automáticas o si no se ha asignado ninguno a una manual.
+        - El alias se actualizará dinámicamente en la tabla tras ser asignado o modificado.
+    1.7 [En Progreso] Implementar Diálogo para Asignar/Modificar Alias de Copias Manuales.
+        - Al seleccionar una copia manual y presionar "Asignar Alias a Manual", abrir un diálogo pequeño.
+        - Si se selecciona una copia automática para asignar alias, mostrar un pop-up informativo indicando que no es posible.
+        - Diálogo de alias: campo de entrada de texto para el alias, botones "Guardar" y "Cancelar".
+    1.8 [En Progreso] Adaptar Nuevos Diálogos a Cambios de Tamaño de Texto.
+        - Asegurar que `BackupRestoreDialog` y el diálogo de asignación de alias respeten la configuración de escalado de fuente.
+    1.9 [En Progreso] Integrar Llamadas al Sistema de Backup en Operaciones Existentes.
+        - Identificar funciones en `StudyService`, `FileService`, `AnalysisService`, y `MainWindow` que realicen operaciones disparadoras de copias automáticas.
+        - Modificar estas funciones para invocar al `backup_manager` después de que la operación principal se complete con éxito.
+        - Implementar manejo de errores: la copia de seguridad automática solo se intentará si la operación principal fue exitosa.
+    1.10 [En Progreso] Aspectos de Configuración Adicionales para Copias de Seguridad.
+        - En `ConfigDialog`, añadir opción para configurar el número máximo de copias automáticas y manuales a retener (valor por defecto: 2 para cada una).
+        - Si se permite un número elevado de copias, implementar paginación en la tabla de `BackupRestoreDialog`.
+        - Mejoras UI para `BackupRestoreDialog`: asegurar redimensionamiento correcto y sincronización con cambios de tamaño de texto.
+        - Añadir tooltips (hover) para botones de paginación (si se implementa) y botones de acción en `BackupRestoreDialog`.
+    1.11 [En Progreso] Implementar Logging para Operaciones de Backup.
+        - Registrar todos los eventos significativos del sistema de copias de seguridad (ej: inicio de creación de copia, completada, fallida, copia antigua eliminada) usando el logger de la aplicación.
 2. [Hecho] Ayuda en la Interfaz: Añadir Tooltips Adicionales.
 2.1 [Hecho] Añadir tooltips con el mismo icono "i" que se utiliza en la ventana de estudio para explicar las VIs, necesito que estos tooltips explique el formato de cada ventana relevante donde se necesite input del usuario, esto es:
 Editar estudio, crear nuevo estudio, agregar archivos a un estudio, gestor de analisis discretos, gestor de analisis continuos, gestionar alias de sub-valores.
