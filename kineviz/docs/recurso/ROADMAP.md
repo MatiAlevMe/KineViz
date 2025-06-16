@@ -256,86 +256,77 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
 5.2 [Hecho] Integración con UI: Conectados métodos a `ContinuousAnalysisManagerDialog` (evolución de `ContinuousAnalysisResultsView`) para la gestión de los análisis.
 
 ## [En Progreso] Fase 5: Funcionalidades Adicionales
-1. [En Progreso] Gestión de Copias de Seguridad y Restauración del Sistema.
-    1.1 [En Progreso] Implementar lógica central de copias de seguridad y almacenamiento.
-        - Componentes del sistema a respaldar ("Todo el Sistema"):
-            - Base de datos: `kineviz.db` (ubicada en la raíz del proyecto).
-            - Archivo de configuración: `config.ini` (ubicado en la raíz del proyecto).
-            - Directorio de estudios (`estudios/`): Se respaldarán selectivamente los siguientes contenidos esenciales:
-                - Archivos de datos de estudio:
-                    - Originales: `estudios/[NOMBRE_ESTUDIO]/[ID_PARTICIPANTE]/OG/[NOMBRE_ARCHIVO_ORIGINAL].txt` (o `.csv`)
-                    - Procesados: `estudios/[NOMBRE_ESTUDIO]/[ID_PARTICIPANTE]/[TIPO_DATO]/[NOMBRE_ARCHIVO_PROCESADO]_[TIPO_DATO].txt` (ej. _Cinematica.txt)
-                - Resultados de Análisis Discreto:
-                    - Tablas de resumen:
-                        - `estudios/[NOMBRE_ESTUDIO]/Analisis Discreto/Tablas/[TIPO_DATO]/[CALCULO]_[TIPO_DATO]_[COMBINACION_VIS].xlsx`
-                        - `estudios/[NOMBRE_ESTUDIO]/Analisis Discreto/Tablas/[TIPO_DATO]/[CALCULO]_[TIPO_DATO]_[COMBINACION_VIS].csv` (interno)
-                    - Gráficos y configuraciones: `estudios/[NOMBRE_ESTUDIO]/Analisis Discreto/Graficos/[NOMBRE_COLUMNA_ANALIZADA]/[NOMBRE_ANALISIS]/` (incluyendo `boxplot.png`, `config.json`, `boxplot_interactive.html`, `configuracion_detallada_discreto.txt`)
-                - Resultados de Análisis Continuo:
-                    - `estudios/[NOMBRE_ESTUDIO]/Analisis Continuo/[NOMBRE_COLUMNA_ANALIZADA]/[NOMBRE_ANALISIS]/` (incluyendo `spm_plot.png`, `spm_results.json`, `config_continuous.json`, `spm_plot_interactive.html`, `configuracion_detallada.txt`)
-        - Estrategia de respaldo para `estudios/`: El respaldo será selectivo para incluir solo las estructuras y tipos de archivo definidos anteriormente, excluyendo archivos temporales, formatos obsoletos o archivos no reconocidos para optimizar el tamaño y rendimiento del backup.
-        - Rutas de almacenamiento: `kineviz/backups/automatic/` para automáticas, `kineviz/backups/manual/` para manuales.
-        - Formato de las copias de seguridad: Archivos ZIP individuales con marca de tiempo en el nombre (ej: `backup_20250616_103000.zip`).
-        - Crear módulo `kineviz.core.backup_manager` para encapsular la funcionalidad de respaldo.
+1. [En Progreso] Sistema Principal de Copias de Seguridad y Restauración.
+    1.1 [En Progreso] Lógica Central de Copias de Seguridad (`backup_manager.py`).
+        - Componentes del sistema a respaldar en cada copia de seguridad:
+            - Base de datos: `kineviz.db` (completa, estado actual al momento del backup).
+            - Archivo de configuración: `config.ini` (estado actual al momento del backup).
+            - Directorio de estudios (`estudios/`): Se respaldarán selectivamente los siguientes contenidos esenciales (ver detalles de estructuras de archivos más abajo).
+        - Estrategia de respaldo para `estudios/`: Selectiva, para incluir solo estructuras y tipos de archivo definidos, optimizando tamaño y rendimiento. Excluir archivos temporales, formatos obsoletos, o no reconocidos.
+            - Archivos de datos de estudio:
+                - Originales: `estudios/[NOMBRE_ESTUDIO]/[ID_PARTICIPANTE]/OG/[NOMBRE_ARCHIVO_ORIGINAL].txt` (o `.csv`)
+                - Procesados: `estudios/[NOMBRE_ESTUDIO]/[ID_PARTICIPANTE]/[TIPO_DATO]/[NOMBRE_ARCHIVO_PROCESADO]_[TIPO_DATO].txt`
+            - Resultados de Análisis Discreto:
+                - Tablas: `estudios/[NOMBRE_ESTUDIO]/Analisis Discreto/Tablas/[TIPO_DATO]/[CALCULO]_[TIPO_DATO]_[COMBINACION_VIS].xlsx` y `.csv`
+                - Gráficos/Config: `estudios/[NOMBRE_ESTUDIO]/Analisis Discreto/Graficos/[COLUMNA_ANALIZADA]/[NOMBRE_ANALISIS]/` (contenido relevante)
+            - Resultados de Análisis Continuo:
+                - `estudios/[NOMBRE_ESTUDIO]/Analisis Continuo/[COLUMNA_ANALIZADA]/[NOMBRE_ANALISIS]/` (contenido relevante)
+        - Rutas de almacenamiento: `kineviz/backups/automatic/` y `kineviz/backups/manual/`.
+        - Formato: Archivos ZIP individuales con marca de tiempo (ej: `backup_20250616_103000.zip`).
         - Funcionalidad del `backup_manager`:
-            - Crear una copia de seguridad de los componentes definidos.
-            - Gestionar el mecanismo de respaldo rotativo para copias automáticas (listar existentes, eliminar la más antigua si se excede el límite configurado al crear una nueva).
-        - Disparadores para copias automáticas: Operaciones significativas que modifican datos persistentes de forma sustancial. Se activarán *después* de la finalización exitosa de:
-            - Creación de un estudio.
-            - Eliminación de un estudio / eliminación de todos los estudios.
-            - Adición de un lote de archivos a un estudio.
-            - Eliminación de un archivo de un estudio / eliminación de todos los archivos de un estudio.
-            - Generación/actualización completa de tablas de resumen de análisis discreto.
-            - Eliminación de un análisis discreto individual o todos los análisis discretos de un estudio.
-            - Creación de un análisis continuo.
-            - Eliminación de un análisis continuo o todos los análisis continuos de un estudio.
-        - Puntos de activación (funciones clave donde se invocaría el backup):
-            - `StudyService.create_study`, `StudyService.delete_study`, `StudyService.delete_all_studies`
-            - `FileService.add_files_to_study`, `FileService.delete_file`, `FileService.delete_all_files_in_study` (si se implementa)
-            - `AnalysisService.generate_discrete_summary_tables`
-            - `AnalysisService.delete_individual_analysis`, `AnalysisService.delete_all_individual_analyses_for_study` (si se implementa)
-            - `AnalysisService.perform_continuous_analysis` (al guardar exitosamente)
-            - `AnalysisService.delete_continuous_analysis`, `AnalysisService.delete_all_continuous_analyses_for_study` (si se implementa)
-    1.2 [En Progreso] Implementar UI para Gestión de Copias de Seguridad.
-        - Añadir opción "Gestión de Copias de Seguridad" en el diálogo de configuración (`ConfigDialog`).
-        - Al seleccionar, mostrar un nuevo diálogo (`BackupRestoreDialog`) que liste las copias de seguridad disponibles y permita gestionarlas.
-    1.3 [En Progreso] Añadir Tooltip de Ayuda para UI de Gestión de Copias de Seguridad.
-        - Implementar un tooltip con icono "?" (estilo azul especial) junto a la opción de "Gestión de Copias de Seguridad".
-        - El tooltip al pasar el cursor (hover) debe mostrar una explicación breve de la funcionalidad.
-    1.4 [En Progreso] Diseñar Diálogo de Gestión de Copias de Seguridad (`BackupRestoreDialog`).
-        - Título y leyenda explicativa.
-        - Tabla para listar copias de seguridad (automáticas y manuales).
-        - Botones de acción:
-            - "Crear Copia Manual"
-            - "Restaurar Seleccionada"
-            - "Asignar Alias a Manual"
-            - "Eliminar Manual Seleccionada"
-            - "Cancelar"
-    1.5 [En Progreso] Implementar Creación y Gestión de Copias Manuales en `BackupRestoreDialog`.
-        - Permitir crear hasta un número configurable de copias manuales (por defecto 2).
-        - Si se intenta crear una copia manual excediendo el límite, solicitar al usuario que seleccione una copia manual existente para eliminar (usar botón "Eliminar Manual Seleccionada").
-        - Implementar doble pop-up de confirmación para eliminar una copia manual y para restaurar cualquier copia de seguridad.
-    1.6 [En Progreso] Detalles de la Tabla de Copias de Seguridad en `BackupRestoreDialog`.
-        - Columnas: "Tipo" (Automática/Manual), "Fecha de Creación", "Alias Asignado".
-        - El campo "Alias Asignado" estará vacío para copias automáticas o si no se ha asignado ninguno a una manual.
-        - El alias se actualizará dinámicamente en la tabla tras ser asignado o modificado.
-    1.7 [En Progreso] Implementar Diálogo para Asignar/Modificar Alias de Copias Manuales.
-        - Al seleccionar una copia manual y presionar "Asignar Alias a Manual", abrir un diálogo pequeño.
-        - Si se selecciona una copia automática para asignar alias, mostrar un pop-up informativo indicando que no es posible.
-        - Diálogo de alias: campo de entrada de texto para el alias, botones "Guardar" y "Cancelar".
-    1.8 [En Progreso] Adaptar Nuevos Diálogos a Cambios de Tamaño de Texto.
-        - Asegurar que `BackupRestoreDialog` y el diálogo de asignación de alias respeten la configuración de escalado de fuente.
-    1.9 [En Progreso] Integrar Llamadas al Sistema de Backup en Operaciones Existentes.
-        - Identificar funciones en `StudyService`, `FileService`, `AnalysisService`, y `MainWindow` que realicen operaciones disparadoras de copias automáticas.
-        - Modificar estas funciones para invocar al `backup_manager` después de que la operación principal se complete con éxito.
-        - Implementar manejo de errores: la copia de seguridad automática solo se intentará si la operación principal fue exitosa.
-    1.10 [En Progreso] Aspectos de Configuración Adicionales para Copias de Seguridad.
-        - En `ConfigDialog`, añadir opción para configurar el número máximo de copias automáticas y manuales a retener (valor por defecto: 2 para cada una).
-        - Si se permite un número elevado de copias, implementar paginación en la tabla de `BackupRestoreDialog`.
-        - Mejoras UI para `BackupRestoreDialog`: asegurar redimensionamiento correcto y sincronización con cambios de tamaño de texto.
-        - Añadir tooltips (hover) para botones de paginación (si se implementa) y botones de acción en `BackupRestoreDialog`.
-    1.11 [En Progreso] Implementar Logging para Operaciones de Backup.
-        - Registrar todos los eventos significativos del sistema de copias de seguridad (ej: inicio de creación de copia, completada, fallida, copia antigua eliminada) usando el logger de la aplicación.
-2. [Hecho] Ayuda en la Interfaz: Añadir Tooltips Adicionales.
+            - `create_backup(backup_type)`: Crea una copia de seguridad de los componentes definidos.
+            - Gestión de copias automáticas rotativas: Al crear una nueva copia automática, si se excede `max_automatic_backups` (de `config.ini`), se elimina la más antigua.
+    1.2 [En Progreso] Disparadores y Puntos de Activación para Copias Automáticas.
+        - Disparadores: Operaciones significativas que modifican datos persistentes. Se activarán *después* de la finalización exitosa de la operación.
+            - Creación/Eliminación de estudio(s).
+            - Adición/Eliminación de lote de archivos/archivo individual.
+            - Generación/Eliminación de resultados de análisis (discreto/continuo).
+        - Puntos de activación (funciones clave donde se invocaría `backup_manager.create_backup('automatic')`):
+            - `StudyService`: `create_study`, `delete_study`, `delete_all_studies`.
+            - `FileService`: `add_files_to_study`, `delete_file`, `delete_all_files_in_study` (si se implementa).
+            - `AnalysisService`: `generate_discrete_summary_tables`, `delete_individual_analysis`, `perform_continuous_analysis` (al guardar), `delete_continuous_analysis`, etc.
+    1.3 [En Progreso] UI para Gestión de Copias de Seguridad (`BackupRestoreDialog`).
+        - Acceso: Opción "Gestión de Copias de Seguridad" en `ConfigDialog`.
+        - Funcionalidades:
+            - Listar copias de seguridad (automáticas y manuales) en tabla (Columnas: Tipo, Fecha Creación, Alias).
+            - "Crear Copia Manual": Crea una copia manual. Gestión de límite `max_manual_backups` (de `config.ini`); si se excede, solicitar eliminación de una existente.
+            - "Restaurar Seleccionada": Restaura el sistema completo (`kineviz.db`, `config.ini`, `estudios/` selectivo) desde la copia ZIP elegida. Requiere doble confirmación.
+            - "Asignar Alias a Manual": Permite nombrar copias manuales.
+            - "Eliminar Manual Seleccionada": Elimina una copia manual. Requiere doble confirmación.
+            - "Cancelar".
+        - Tooltip de ayuda para la opción en `ConfigDialog`.
+    1.4 [En Progreso] Configuración Adicional y Mejoras UI para Backups.
+        - `ConfigDialog`: Opciones para `max_automatic_backups` y `max_manual_backups`.
+        - Paginación en `BackupRestoreDialog` si la lista de backups es larga.
+        - Adaptación a cambios de tamaño de texto y tooltips en `BackupRestoreDialog`.
+    1.5 [En Progreso] Logging para Operaciones de Backup.
+        - Registrar eventos significativos (creación iniciada/completada/fallida, eliminación de copia antigua).
+
+2. [En Progreso] Funcionalidad "Deshacer Eliminación" (Undo Delete).
+    2.1 [Pendiente] Lógica Central para "Deshacer Eliminación".
+        - Propósito: Permitir la reversión inmediata de la última operación de eliminación de elementos específicos (archivos, resultados de análisis, un estudio).
+        - Mecanismo:
+            - Al confirmar una eliminación, *antes* de la eliminación real:
+                1. Copiar los elementos a eliminar a una caché temporal "undo" (ej. `kineviz/backups/.undo_cache/`).
+                2. Copiar el archivo `kineviz.db` actual a esta caché "undo".
+            - Proceder con la eliminación de los elementos del sistema vivo y actualizar `kineviz.db`.
+            - Ofrecer opción "Deshacer" en la UI.
+        - Reversión ("Deshacer"):
+            1. Reemplazar `kineviz.db` vivo con la copia de la caché "undo".
+            2. Mover los elementos de la caché "undo" de vuelta a sus ubicaciones originales.
+            3. Limpiar la caché "undo".
+        - Transitoriedad: La opción "Deshacer" y su caché se invalidan/limpian si:
+            - Se realiza otra operación significativa.
+            - El usuario navega fuera de la vista/diálogo actual.
+            - Se cierra la aplicación.
+            - (Opcional) Expira un temporizador corto.
+    2.2 [Pendiente] Integración UI para "Deshacer Eliminación".
+        - Botón/mensaje temporal "Deshacer" en las vistas/diálogos donde ocurren eliminaciones (`StudyView`, `IndividualAnalysisManagerDialog`, `ContinuousAnalysisManagerDialog`, `MainView` para eliminar estudio).
+    2.3 [Pendiente] Configuración para "Deshacer Eliminación".
+        - Opción en `ConfigDialog` para habilitar/deshabilitar esta característica.
+        - Tooltip explicativo.
+
+3. [Hecho] Ayuda en la Interfaz: Añadir Tooltips Adicionales.
 2.1 [Hecho] Añadir tooltips con el mismo icono "i" que se utiliza en la ventana de estudio para explicar las VIs, necesito que estos tooltips explique el formato de cada ventana relevante donde se necesite input del usuario, esto es:
 Editar estudio, crear nuevo estudio, agregar archivos a un estudio, gestor de analisis discretos, gestor de analisis continuos, gestionar alias de sub-valores.
 3. [Hecho] Optimización del Sistema.
