@@ -281,7 +281,8 @@ class StudyView:
         dialog = DescriptorAliasDialog(
             self.frame, # Padre
             self.main_window.study_service, # Pasar StudyService
-            self.study_id
+            self.study_id,
+            self.main_window.settings # Pass AppSettings instance
         )
         # Esperar a que el diálogo se cierre y luego actualizar la etiqueta de alias
         self.parent.wait_window(dialog) # Espera a que el Toplevel se cierre

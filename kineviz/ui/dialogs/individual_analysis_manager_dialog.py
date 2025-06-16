@@ -714,7 +714,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
     def open_new_analysis_dialog(self):
         """Abre el diálogo para configurar un nuevo análisis."""
-        dialog = ConfigureIndividualAnalysisDialog(self, self.analysis_service, self.study_id)
+        dialog = ConfigureIndividualAnalysisDialog(self, self.analysis_service, self.study_id, self.parent.main_window.settings) # Pass settings
         # Esperar a que el diálogo se cierre y luego refrescar la lista
         self.wait_window(dialog)
         

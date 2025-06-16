@@ -3,8 +3,8 @@ from tkinter import ttk, Toplevel, messagebox
 import logging
 
 from kineviz.core.services.study_service import StudyService
-# Ya no se necesita AppSettings
-# from kineviz.config.settings import AppSettings
+from kineviz.ui.widgets.tooltip import Tooltip # Import Tooltip
+from kineviz.config.settings import AppSettings # Import AppSettings
 # Ya no se necesita FileService directamente aquí
 # from kineviz.core.services.file_service import FileService
 
@@ -14,12 +14,13 @@ class DescriptorAliasDialog(Toplevel):
     """Diálogo para gestionar alias de sub-valores definidos en un estudio."""
 
     # Cambiar app_settings y file_service por study_service
-    def __init__(self, parent, study_service: StudyService, study_id: int):
+    def __init__(self, parent, study_service: StudyService, study_id: int, settings: AppSettings):
         super().__init__(parent)
         # self.app_settings = app_settings # Ya no se usa
         # self.file_service = file_service # Ya no se usa
         self.study_service = study_service # Usar StudyService
         self.study_id = study_id
+        self.settings = settings # Store AppSettings instance
 
         self.title(f"Gestionar Alias de Sub-valores (Estudio {study_id})")
         self.geometry("500x400")
