@@ -54,7 +54,8 @@ class StudyView:
         
         self.canvas_interior_id = self.canvas.create_window((0, 0), window=self.scrollable_frame_content, anchor="nw")
         self.canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
-        self.canvas.bind("<Configure>", self._on_canvas_configure) # Bind to force width
+        # Bind to the new dynamic width configuration method
+        self.canvas.bind("<Configure>", self._dynamic_canvas_item_width_configure)
 
         canvas_container.grid_rowconfigure(0, weight=1)
         canvas_container.grid_columnconfigure(0, weight=1)
@@ -64,12 +65,25 @@ class StudyView:
 
         self.create_ui_content() # No longer passes parent_frame
 
-    def _on_canvas_configure(self, event):
-        """Adjusts the width of the scrollable_frame_content to match the canvas width."""
+    def _dynamic_canvas_item_width_configure(self, event):
+        """
+        Adjusts the width of the scrollable_frame_content (canvas window item)
+        to be the maximum of its natural content width and the canvas's current width.
+        """
         canvas_width = event.width
+        
+        if hasattr(self, 'scrollable_frame_content') and self.scrollable_frame_content.winfo_exists():
+            self.scrollable_frame_content.update_idletasks() # Ensure natural width is calculated
+            content_natural_width = self.scrollable_frame_content.winfo_reqwidth()
+        else:
+            content_natural_width = canvas_width
+            
+        effective_width = max(content_natural_width, canvas_width)
+        
         if hasattr(self, 'canvas_interior_id') and self.canvas_interior_id and \
            hasattr(self, 'canvas') and self.canvas.winfo_exists():
-            self.canvas.itemconfig(self.canvas_interior_id, width=canvas_width)
+            self.canvas.itemconfig(self.canvas_interior_id, width=effective_width)
+            # Height is managed by content and scrollregion (via scrollable_frame_content's own Configure binding)
 
     def create_ui_content(self): # Removed parent_frame argument
         # --- Populate Top Fixed Header Actions Frame ---

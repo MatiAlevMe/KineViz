@@ -72,21 +72,13 @@ class FileBrowser(ttk.Frame):
             # Ajustar ancho y anclaje directamente aquí
             self.tree.column(col, width=100, anchor='center' if col in ['Ver', 'Eliminar'] else 'w')
 
-        # Scrollbar (Configurar antes de usar grid)
-        scrollbar = ttk.Scrollbar(table_container, orient=tk.VERTICAL, command=self.tree.yview)
-        self.tree.configure(yscrollcommand=scrollbar.set)
-
-        # Empaquetar tabla y scrollbar usando grid dentro de table_container
+        # Scrollbars are removed; scrolling will be handled by the parent canvas in StudyView.
+        # Empaquetar tabla usando grid dentro de table_container
         table_container.grid_rowconfigure(0, weight=1)
         table_container.grid_columnconfigure(0, weight=1)
         self.tree.grid(row=0, column=0, sticky='nsew')
-        scrollbar.grid(row=0, column=1, sticky='ns')
-
-        # Scrollbar horizontal
-        h_scrollbar = ttk.Scrollbar(table_container, orient=tk.HORIZONTAL, command=self.tree.xview)
-        self.tree.configure(xscrollcommand=h_scrollbar.set)
-        h_scrollbar.grid(row=1, column=0, sticky='ew')
-
+        # scrollbar.grid(row=0, column=1, sticky='ns') # Removed
+        # h_scrollbar.grid(row=1, column=0, sticky='ew') # Removed
 
         # Configurar eventos
         self.tree.bind('<ButtonRelease-1>', self.on_tree_click)
