@@ -531,6 +531,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         group_combo_frame = ttk.Frame(selector_frame) # Frame para combo y botón de ayuda
         group_combo_frame.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
 
+        scaled_font = get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale) # Define scaled_font here
         group_combo = ttk.Combobox(group_combo_frame, textvariable=group_var, state="readonly",
                                    values=sorted(list(self.available_groups_filtered.keys())), font=scaled_font)
         group_combo.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0,5))
