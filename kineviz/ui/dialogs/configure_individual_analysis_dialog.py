@@ -68,19 +68,35 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             "<Configure>",
             lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
         )
-        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
-        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+        # Removed problematic canvas.bind("<Configure>") that forced inner frame width
+        self.canvas.interior_id = self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.canvas.configure(yscrollcommand=self.scrollbar.set) # Assuming self.scrollbar is vertical
 
-        self.canvas.pack(side="left", fill="both", expand=True)
+        # Add horizontal scrollbar
+        self.h_scrollbar = ttk.Scrollbar(self.container_frame, orient="horizontal", command=self.canvas.xview)
+        self.canvas.configure(xscrollcommand=self.h_scrollbar.set)
+
+        # Grid layout for canvas and scrollbars
+        self.container_frame.grid_rowconfigure(0, weight=1)
+        self.container_frame.grid_columnconfigure(0, weight=1)
+        
+        self.canvas.grid(row=0, column=0, sticky="nsew")
+        self.scrollbar.grid(row=0, column=1, sticky="ns") # Vertical
+        self.h_scrollbar.grid(row=1, column=0, sticky="ew") # Horizontal
+
         self.container_frame.pack(fill=tk.BOTH, expand=True)
 
-        self.create_widgets(self.scrollable_frame) # Pass scrollable_frame as parent
-        should_continue_init = self.load_initial_data() # Cargará VIs, alias, frecuencias
+        self.create_widgets(self.scrollable_frame) 
+        should_continue_init = self.load_initial_data() 
         
         if not should_continue_init:
-            return # load_initial_data decided to destroy or stop
+            return 
 
-        self._update_dialog_size_and_scrollbar() # Initial sizing, scrollbar, and centering
+        # Simplified sizing and centering
+        self.update_idletasks()
+        self.minsize(500, 400) # Set a reasonable fixed minimum
+        self.geometry("700x550") # Set a reasonable initial size
+        self._center_dialog()
         
         self.grab_set()
         self.transient(self.parent_window)
@@ -871,63 +887,8 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         logger.info(f"Configuración de análisis individual lista para ser devuelta: {self.result}")
         self.destroy() # Cerrar el diálogo de configuración
 
-    def _update_dialog_size_and_scrollbar(self):
-        # Ensure all widget states (gridded, packed) are processed for size requests
-        self.scrollable_frame.update_idletasks()
-        self.update_idletasks()
-
-        content_req_height = self.scrollable_frame.winfo_reqheight()
-        content_req_width = self.scrollable_frame.winfo_reqwidth()
-        
-        toplevel_chrome_height_approx = self.winfo_rooty() - self.winfo_y() 
-        toplevel_padding_height_approx = 0 
-        total_vertical_chrome = toplevel_chrome_height_approx + toplevel_padding_height_approx
-        
-        toplevel_chrome_width_approx = 0 
-        total_horizontal_chrome = toplevel_chrome_width_approx
-
-        screen_height = self.winfo_screenheight()
-        screen_width = self.winfo_screenwidth()
-
-        max_dialog_height = int(screen_height * 0.90)
-        max_dialog_width = int(screen_width * 0.90)
-
-        show_scrollbar = False
-        if (content_req_height + total_vertical_chrome) > max_dialog_height:
-            show_scrollbar = True
-            final_dialog_height = max_dialog_height
-        else:
-            final_dialog_height = content_req_height + total_vertical_chrome
-
-        actual_scrollbar_width = 0
-        if show_scrollbar:
-            if not self.scrollbar.winfo_ismapped():
-                self.scrollbar.pack(side="right", fill="y") 
-                self.scrollbar.update_idletasks()
-                actual_scrollbar_width = self.scrollbar.winfo_reqwidth()
-                self.scrollbar.pack_forget() 
-            else:
-                actual_scrollbar_width = self.scrollbar.winfo_reqwidth()
-        
-        desired_dialog_width = content_req_width + actual_scrollbar_width + total_horizontal_chrome
-        final_dialog_width = min(desired_dialog_width, max_dialog_width)
-        
-        final_dialog_height = max(final_dialog_height, 150) 
-        final_dialog_width = max(final_dialog_width, 300)   
-
-        if show_scrollbar:
-            if not self.scrollbar.winfo_ismapped():
-                self.scrollbar.pack(side="right", fill="y")
-        else:
-            if self.scrollbar.winfo_ismapped():
-                self.scrollbar.pack_forget()
-        
-        self.geometry(f"{int(final_dialog_width)}x{int(final_dialog_height)}")
-        
-        self.canvas.update_idletasks()
-        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
-        
-        self._center_dialog()
+    # Removed _update_dialog_size_and_scrollbar method
+    # Sizing is now simplified in __init__
 
     def _center_dialog(self):
         self.update_idletasks()
