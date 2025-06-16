@@ -63,8 +63,8 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         # The canvas mechanism will be placed directly in self (the Toplevel).
 
         # --- Setup for scrollable area ---
-        canvas_container = ttk.Frame(self) # Container for canvas and scrollbars
-        canvas_container.pack(fill=tk.BOTH, expand=True)
+        canvas_container = ttk.Frame(self) 
+        canvas_container.pack(side=tk.TOP, fill=tk.BOTH, expand=True) # Ensure this expands
 
         self.canvas = tk.Canvas(canvas_container, highlightthickness=0)
         v_scrollbar = ttk.Scrollbar(canvas_container, orient="vertical", command=self.canvas.yview)
@@ -90,10 +90,33 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         # --- End scrollable area setup ---
 
         # All original content of self.main_frame now goes into self.scrollable_main_frame
-        # Let's call it main_content_parent for clarity in this method
         main_content_parent = self.scrollable_main_frame
         main_content_parent.rowconfigure(2, weight=1)  # Treeview's row
-        main_content_parent.columnconfigure(0, weight=1) # Main column
+        main_content_parent.columnconfigure(0, weight=1) 
+
+        # --- Fixed Bottom Action Buttons (children of self, Toplevel) ---
+        fixed_bottom_actions = ttk.Frame(self) # Parent is self (Toplevel)
+        fixed_bottom_actions.pack(side=tk.BOTTOM, fill=tk.X, pady=(10,5), padx=10)
+
+        self.delete_all_button = ttk.Button(
+            fixed_bottom_actions,
+            text="Eliminar Todos los Análisis Discretos",
+            command=self._confirm_delete_all_individual_analyses,
+            style="Danger.TButton"
+        )
+        self.delete_all_button.pack(side=tk.LEFT, padx=(0, 5))
+        
+        self.delete_selected_button = ttk.Button(
+            fixed_bottom_actions,
+            text="Eliminar Seleccionado(s)",
+            command=self._confirm_delete_selected_analyses,
+            state=tk.DISABLED,
+            style="Danger.TButton"
+        )
+        self.delete_selected_button.pack(side=tk.LEFT, padx=5)
+
+        ttk.Button(fixed_bottom_actions, text="Cerrar", command=self.destroy).pack(side=tk.RIGHT, padx=5)
+        # --- End Fixed Bottom Buttons ---
 
         # --- Search and Filter Frame ---
         search_filter_frame = ttk.LabelFrame(main_content_parent, text="Buscar y Filtrar Análisis", padding="10") # Changed parent
@@ -256,11 +279,16 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.pagination_controls_frame.grid(row=6, column=0, sticky="ew", pady=(5,0)) # New row for pagination
 
         # --- Bottom Action Frame (Delete and Close buttons) ---
-        bottom_action_frame = ttk.Frame(main_content_parent) # Changed parent
-        bottom_action_frame.grid(row=7, column=0, sticky="ew", pady=(10, 0)) # Adjusted row
+        # This frame will now be a direct child of self (Toplevel)
+        # and packed/gridded AFTER canvas_container.
+        # The widgets below will be parented to this new frame.
+        # This SEARCH/REPLACE block removes them from main_content_parent.
+        # A subsequent block will add them to the new fixed bottom frame.
+        # bottom_action_frame = ttk.Frame(main_content_parent) # OLD
+        # bottom_action_frame.grid(row=7, column=0, sticky="ew", pady=(10, 0)) # OLD
 
-        self.delete_all_button = ttk.Button(
-            bottom_action_frame,
+        # self.delete_all_button = ttk.Button( # OLD
+        #     bottom_action_frame,
             text="Eliminar Todos los Análisis Discretos",
             command=self._confirm_delete_all_individual_analyses,
             style="Danger.TButton"
@@ -277,10 +305,10 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.delete_selected_button.pack(side=tk.LEFT, padx=5)
 
         # El botón individual "Eliminar Análisis" ya no es necesario si "Eliminar Seleccionado(s)" maneja ambos casos.
-        # self.delete_button = ttk.Button(bottom_action_frame, text="Eliminar Análisis", command=self.delete_analysis, state=tk.DISABLED)
-        # self.delete_button.pack(side=tk.LEFT, padx=5)
+        # self.delete_button = ttk.Button(bottom_action_frame, text="Eliminar Análisis", command=self.delete_analysis, state=tk.DISABLED) # OLD
+        # self.delete_button.pack(side=tk.LEFT, padx=5) # OLD
 
-        ttk.Button(bottom_action_frame, text="Cerrar", command=self.destroy).pack(side=tk.RIGHT, padx=5)
+        # ttk.Button(bottom_action_frame, text="Cerrar", command=self.destroy).pack(side=tk.RIGHT, padx=5) # OLD
 
         # Set minsize after widgets are created
         self.update_idletasks()

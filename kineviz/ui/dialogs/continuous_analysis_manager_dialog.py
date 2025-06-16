@@ -83,8 +83,8 @@ class ContinuousAnalysisManagerDialog(Toplevel):
 
     def create_widgets(self):
         # --- Setup for scrollable area ---
-        canvas_container = ttk.Frame(self) # Container for canvas and scrollbars
-        canvas_container.pack(fill=tk.BOTH, expand=True)
+        canvas_container = ttk.Frame(self) 
+        canvas_container.pack(side=tk.TOP, fill=tk.BOTH, expand=True) # Ensure this expands
 
         self.canvas = tk.Canvas(canvas_container, highlightthickness=0)
         self.v_scrollbar = ttk.Scrollbar(canvas_container, orient="vertical", command=self.canvas.yview) # Assign to self
@@ -117,6 +117,29 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         main_content_parent.rowconfigure(6, weight=0) 
         main_content_parent.rowconfigure(7, weight=0) 
 
+        # --- Fixed Bottom Action Buttons (children of self, Toplevel) ---
+        fixed_bottom_actions = ttk.Frame(self) # Parent is self (Toplevel)
+        fixed_bottom_actions.pack(side=tk.BOTTOM, fill=tk.X, pady=(10,5), padx=10)
+
+        self.delete_all_button = ttk.Button(
+            fixed_bottom_actions,
+            text="Eliminar Todos los Análisis Continuos",
+            command=self._confirm_delete_all_continuous_analyses,
+            style="Danger.TButton"
+        )
+        self.delete_all_button.pack(side=tk.LEFT, padx=(0, 5))
+        
+        self.delete_selected_button = ttk.Button(
+            fixed_bottom_actions,
+            text="Eliminar Seleccionado(s)",
+            command=self._confirm_delete_selected_analyses,
+            state=tk.DISABLED,
+            style="Danger.TButton"
+        )
+        self.delete_selected_button.pack(side=tk.LEFT, padx=5)
+
+        ttk.Button(fixed_bottom_actions, text="Cerrar", command=self._on_close).pack(side=tk.RIGHT, padx=5)
+        # --- End Fixed Bottom Buttons ---
 
         # --- Search and Filter Frame ---
         search_filter_frame = ttk.LabelFrame(main_content_parent, text="Buscar y Filtrar Análisis", padding="10") # Changed parent
@@ -259,11 +282,13 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         self.pagination_controls_frame.grid(row=6, column=0, sticky="ew", pady=(5,0)) 
 
         # --- Bottom Action Frame (Delete and Close buttons) ---
-        bottom_action_frame = ttk.Frame(main_content_parent) # Changed parent
-        bottom_action_frame.grid(row=7, column=0, sticky="ew", pady=(10,0)) 
+        # This frame will now be a direct child of self (Toplevel)
+        # and packed/gridded AFTER canvas_container.
+        # bottom_action_frame = ttk.Frame(main_content_parent) # OLD
+        # bottom_action_frame.grid(row=7, column=0, sticky="ew", pady=(10,0)) # OLD
 
-        self.delete_all_button = ttk.Button(
-            bottom_action_frame,
+        # self.delete_all_button = ttk.Button( # OLD
+        #     bottom_action_frame,
             text="Eliminar Todos los Análisis Continuos",
             command=self._confirm_delete_all_continuous_analyses,
             style="Danger.TButton"
@@ -280,10 +305,10 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         self.delete_selected_button.pack(side=tk.LEFT, padx=5)
 
         # El botón individual "Eliminar Análisis" ya no es necesario
-        # self.delete_button = ttk.Button(bottom_action_frame, text="Eliminar Análisis", command=self._delete_analysis, state=tk.DISABLED)
-        # self.delete_button.pack(side=tk.LEFT, padx=5)
+        # self.delete_button = ttk.Button(bottom_action_frame, text="Eliminar Análisis", command=self._delete_analysis, state=tk.DISABLED) # OLD
+        # self.delete_button.pack(side=tk.LEFT, padx=5) # OLD
 
-        ttk.Button(bottom_action_frame, text="Cerrar", command=self._on_close).pack(side=tk.RIGHT, padx=5)
+        # ttk.Button(bottom_action_frame, text="Cerrar", command=self._on_close).pack(side=tk.RIGHT, padx=5) # OLD
 
     def _confirm_delete_all_continuous_analyses(self):
         """Muestra confirmación y luego elimina todos los análisis continuos."""
