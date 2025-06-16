@@ -112,7 +112,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         if self.total_pages <= 1:
             return # No mostrar controles si hay 1 página o menos
 
-        ttk.Button(self.pagination_controls_frame, text="<<", command=lambda: self._go_to_page(1),
+        ttk.Button(self.bottom_fixed_pagination_frame, text="<<", command=lambda: self._go_to_page(1), # Changed target frame
                    state=tk.DISABLED if self.current_page == 1 else tk.NORMAL).pack(side=tk.LEFT, padx=2)
         ttk.Button(self.bottom_fixed_pagination_frame, text="<", command=lambda: self._go_to_page(self.current_page - 1), # Target new frame
                    state=tk.DISABLED if self.current_page == 1 else tk.NORMAL).pack(side=tk.LEFT, padx=2)
