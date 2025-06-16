@@ -8,16 +8,20 @@ from typing import Tuple # Importar Tuple para type hints
 # Importar FileService para type hinting y validación
 from kineviz.core.services.file_service import FileService
 from kineviz.ui.utils.validators import validate_filename_for_study_criteria
+from kineviz.config.settings import AppSettings # Import AppSettings
+from kineviz.ui.utils.style import get_font_object, DEFAULT_FONT_SIZE # Import font utilities
+from kineviz.ui.widgets.tooltip import Tooltip # Import Tooltip
 
 logger = logging.getLogger(__name__) # Logger para este módulo
 
 class FileDialog(Toplevel):
     """Diálogo para seleccionar y agregar archivos a un estudio."""
 
-    def __init__(self, parent, file_service: FileService, study_id: int, on_close_callback=None):
+    def __init__(self, parent, file_service: FileService, study_id: int, settings: AppSettings, on_close_callback=None):
         super().__init__(parent)
         self.file_service = file_service
         self.study_id = study_id
+        self.settings = settings # Store AppSettings instance
         self.on_close_callback = on_close_callback
         self.selected_files = [] # Lista de rutas (Path objects)
         # Mapeo de display_name en listbox a Path object
@@ -81,14 +85,26 @@ class FileDialog(Toplevel):
                                                                                  "- Intento: Número de intento para esa combinación de VIs (ej: 01, 02, 03).\n"
                                                                                  "- Extensión: .txt o .csv"))
         filename_help_button.pack(side=tk.LEFT)
+        filename_help_long_text = ("Los nombres de archivo deben seguir el formato:\n"
+                                   "[ID_Participante] [SubValor_VI1] [SubValor_VI2] ... [Intento].ext\n\n"
+                                   "Ejemplo: P01 CMJ PRE 01.txt\n\n"
+                                   "- ID_Participante: Identificador único del participante (letras seguidas de números, ej: P01, Sujeto007).\n"
+                                   "- SubValores VIs: Deben coincidir con los sub-valores definidos para cada VI en el estudio, en el orden correcto. Usar 'Nulo' si una VI opcional no aplica.\n"
+                                   "- Intento: Número de intento para esa combinación de VIs (ej: 01, 02, 03).\n"
+                                   "- Extensión: .txt o .csv")
+        filename_help_short_text = "Reglas para nombrar archivos de datos."
+        Tooltip(filename_help_button, text=filename_help_long_text, short_text=filename_help_short_text, enabled=self.settings.enable_hover_tooltips)
 
 
         # Listbox para mostrar archivos seleccionados
         list_frame = ttk.Frame(main_frame)
         list_frame.pack(fill=tk.BOTH, expand=True, pady=5)
 
+        # Calculate scaled font for tk.Listbox
+        scaled_font_tuple = get_font_object(DEFAULT_FONT_SIZE, self.settings.font_scale)
+
         scrollbar = Scrollbar(list_frame, orient=tk.VERTICAL)
-        self.listbox = Listbox(list_frame, yscrollcommand=scrollbar.set, selectmode=tk.EXTENDED) # Permitir selección múltiple
+        self.listbox = Listbox(list_frame, yscrollcommand=scrollbar.set, selectmode=tk.EXTENDED, font=scaled_font_tuple) # Apply scaled font
         scrollbar.config(command=self.listbox.yview)
 
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
