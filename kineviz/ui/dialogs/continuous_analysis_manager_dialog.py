@@ -66,6 +66,11 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         self.protocol("WM_DELETE_WINDOW", self._on_close)
         self.bind("<Escape>", self._on_close)
 
+        # Set minsize after widgets are created
+        self.update_idletasks()
+        self.minsize(self.winfo_reqwidth() + 20, self.winfo_reqheight() + 20)
+
+
     # _show_input_help was already added in the previous commit, this block is to ensure it's present.
     # If it was missing, this would add it. Since it's there, this block might be reported as not matching
     # if the content is identical to what's already in the file.
