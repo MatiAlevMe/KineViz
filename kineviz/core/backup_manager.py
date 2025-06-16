@@ -159,6 +159,11 @@ def create_backup(backup_type: str) -> Optional[pathlib.Path]:
         return None
 
 if __name__ == '__main__':
+    # Declare global variables that will be modified in this block at the very top.
+    # This is to ensure the declaration precedes any use or assignment if there's
+    # a subtle parsing order issue causing the SyntaxError.
+    global DB_FILENAME, CONFIG_FILENAME
+
     import sys # For sys.path modification
     # shutil is already imported at the top if needed for cleanup
 
@@ -185,7 +190,8 @@ if __name__ == '__main__':
     (root / TEST_CONFIG_FILENAME).write_text(f"[SETTINGS]\ndummy_setting=1\nmax_automatic_backups = 2\nmax_manual_backups = 2") # Ensure config for test
         
     # Temporarily override global constants for the scope of this test
-    global DB_FILENAME, CONFIG_FILENAME
+    # The 'global DB_FILENAME, CONFIG_FILENAME' declaration was moved to the top 
+    # of the 'if __name__ == "__main__":' block.
     original_db_filename, original_config_filename = DB_FILENAME, CONFIG_FILENAME
     DB_FILENAME, CONFIG_FILENAME = TEST_DB_FILENAME, TEST_CONFIG_FILENAME
     
