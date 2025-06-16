@@ -119,10 +119,12 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         freq_frame.grid(row=row_idx, column=1, sticky="ew")
         self.freq_combo = ttk.Combobox(freq_frame, textvariable=self.frequency_var, state="disabled") # Cambiado a disabled
         self.freq_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
-        ttk.Button(freq_frame, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Tipo de Dato",
-                                                         "Tipo de datos a analizar.\nPara análisis discreto, actualmente solo 'Cinematica' está soportado y se selecciona automáticamente.")
-                  ).pack(side=tk.LEFT)
+        freq_long_text_discrete = "Tipo de datos a analizar.\nPara análisis discreto, actualmente solo 'Cinematica' está soportado y se selecciona automáticamente."
+        freq_short_text_discrete = "Tipo de datos (fijo a 'Cinematica' para discreto)."
+        freq_help_btn_discrete = ttk.Button(freq_frame, text="?", width=3, style="Help.TButton",
+                                            command=lambda: self._show_input_help("Ayuda: Tipo de Dato", freq_long_text_discrete))
+        freq_help_btn_discrete.pack(side=tk.LEFT)
+        Tooltip(freq_help_btn_discrete, text=freq_long_text_discrete, short_text=freq_short_text_discrete, enabled=self.parent.main_window.settings.enable_hover_tooltips if hasattr(self.parent, 'main_window') else True) # Added safety for parent
         row_idx += 1
 
         ttk.Label(main_frame, text="Cálculo:").grid(row=row_idx, column=0, sticky="w", padx=5, pady=5)
@@ -131,10 +133,12 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.calc_combo = ttk.Combobox(calc_frame, textvariable=self.calculation_var, values=self.available_calculations, state="readonly")
         self.calc_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.calc_combo.bind("<<ComboboxSelected>>", self.update_available_groups) # Actualizar grupos al seleccionar cálculo
-        ttk.Button(calc_frame, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Cálculo",
-                                                         "El tipo de cálculo (Maximo, Minimo, Rango) aplicado a los datos en las tablas de resumen que se usarán para el análisis.")
-                  ).pack(side=tk.LEFT)
+        calc_long_text = "El tipo de cálculo (Maximo, Minimo, Rango) aplicado a los datos en las tablas de resumen que se usarán para el análisis."
+        calc_short_text = "Cálculo (Maximo, Minimo, Rango) de tablas resumen."
+        calc_help_btn = ttk.Button(calc_frame, text="?", width=3, style="Help.TButton",
+                                   command=lambda: self._show_input_help("Ayuda: Cálculo", calc_long_text))
+        calc_help_btn.pack(side=tk.LEFT)
+        Tooltip(calc_help_btn, text=calc_long_text, short_text=calc_short_text, enabled=self.parent.main_window.settings.enable_hover_tooltips if hasattr(self.parent, 'main_window') else True)
         row_idx += 1
 
         # --- NUEVO: Selección de Modo de Agrupación (1 VI vs 2 VIs) ---
