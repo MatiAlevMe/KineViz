@@ -272,12 +272,6 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         self.view_config_button.pack(side=tk.LEFT, padx=5)
         Tooltip(self.view_config_button, text="Ver la configuración detallada del análisis SPM seleccionado en un archivo de texto.", short_text="Ver config. SPM.", enabled=self.main_window.settings.enable_hover_tooltips)
 
-        ttk.Frame(self.bottom_fixed_view_actions_frame).pack(side=tk.LEFT, expand=True, fill=tk.X) # Spacer
-        
-        new_analysis_button_cont = ttk.Button(self.bottom_fixed_view_actions_frame, text="Nuevo Análisis...", command=self._open_new_analysis_dialog)
-        new_analysis_button_cont.pack(side=tk.RIGHT, padx=5)
-        Tooltip(new_analysis_button_cont, text="Abrir el diálogo para configurar y generar un nuevo análisis continuo (SPM).", short_text="Nuevo análisis SPM.", enabled=self.main_window.settings.enable_hover_tooltips)
-
         # --- Populate Bottom Fixed Folder Actions Frame ---
         # (Abrir Carpeta, Abrir Carpeta de Análisis Continuos)
         self.open_folder_button = ttk.Button(self.bottom_fixed_folder_actions_frame, text="Abrir Carpeta", command=self._open_folder, state=tk.DISABLED)
@@ -291,6 +285,12 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         )
         self.open_main_continuous_folder_button.pack(side=tk.LEFT, padx=5)
         Tooltip(self.open_main_continuous_folder_button, text="Abrir la carpeta principal donde se guardan todos los análisis continuos (SPM) de este estudio.", short_text="Abrir carpeta principal.", enabled=self.main_window.settings.enable_hover_tooltips)
+
+        ttk.Frame(self.bottom_fixed_folder_actions_frame).pack(side=tk.LEFT, expand=True, fill=tk.X) # Spacer
+
+        new_analysis_button_cont = ttk.Button(self.bottom_fixed_folder_actions_frame, text="Nuevo Análisis...", command=self._open_new_analysis_dialog)
+        new_analysis_button_cont.pack(side=tk.RIGHT, padx=5)
+        Tooltip(new_analysis_button_cont, text="Abrir el diálogo para configurar y generar un nuevo análisis continuo (SPM).", short_text="Nuevo análisis SPM.", enabled=self.main_window.settings.enable_hover_tooltips)
 
         # --- Populate Bottom Fixed Pagination Frame ---
         # This is done by _update_pagination_controls, which now needs to target self.bottom_fixed_pagination_frame
