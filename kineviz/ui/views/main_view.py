@@ -84,9 +84,16 @@ class MainView:
         action_button_frame.pack(side=tk.RIGHT)
 
         # Packing order is reversed for side=tk.RIGHT to achieve visual L-R order
-        # Desired visual L-R: "Abrir Carpeta" | "Ayuda" | "Configuración" | "Manual"
+        # Desired visual L-R: "Abrir Carpeta" | "Ayuda" | "Configuración" | "Manual" | "?" (MainView Help)
         
-        # 1. Manual (packed first, appears rightmost)
+        # 0. MainView Help Button (packed first, appears rightmost)
+        main_view_help_button = ttk.Button(action_button_frame, text="?", width=3,
+                                           style="Help.TButton", command=self._show_main_view_help)
+        main_view_help_button.pack(side=tk.RIGHT, padx=5)
+        main_view_tooltip_text = "Mostrar ayuda para la ventana principal de estudios."
+        Tooltip(main_view_help_button, text=main_view_tooltip_text, short_text=main_view_tooltip_text, enabled=self.main_window.settings.enable_hover_tooltips)
+        
+        # 1. Manual (packed second, appears second from right)
         manual_btn = ttk.Button(action_button_frame, text='Manual', command=self.main_window.open_user_manual, style="Green.TButton")
         manual_btn.pack(side=tk.RIGHT, padx=5)
         manual_tooltip_text = "Abrir el manual de usuario de KineViz."
@@ -113,31 +120,30 @@ class MainView:
         
         # --- Búsqueda ---
         # Populate self.search_content_frame
-        ttk.Label(self.search_content_frame, text="Buscar:").pack(side=tk.LEFT, padx=(0, 5)) # Changed label text
+        # Label "Buscar:" is removed.
         scaled_font_tuple = get_scaled_font(DEFAULT_FONT_SIZE, self.main_window.settings.font_scale)
         search_entry = ttk.Entry(self.search_content_frame, textvariable=self.search_term, font=scaled_font_tuple) # Added font
-        search_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
         search_entry.bind("<Return>", lambda event: self.search_studies())
         
         search_button = ttk.Button(self.search_content_frame, text="Buscar", command=self.search_studies)
-        search_button.pack(side=tk.LEFT, padx=5)
         Tooltip(search_button, text="Buscar estudios por nombre.", short_text="Buscar estudios.", enabled=self.main_window.settings.enable_hover_tooltips)
 
         clear_button = ttk.Button(self.search_content_frame, text="Limpiar", command=self.clear_search)
-        clear_button.pack(side=tk.LEFT, padx=(0,5))
         Tooltip(clear_button, text="Limpiar el término de búsqueda y mostrar todos los estudios.", short_text="Limpiar búsqueda.", enabled=self.main_window.settings.enable_hover_tooltips)
 
         refresh_button = ttk.Button(self.search_content_frame, text="Refrescar", command=self.load_studies)
-        refresh_button.pack(side=tk.LEFT, padx=(0,5)) # Added padx for spacing before help button
         Tooltip(refresh_button, text="Recargar la lista de estudios desde la base de datos.", short_text="Recargar lista.", enabled=self.main_window.settings.enable_hover_tooltips)
 
-        # Moved "?" (MainView Help) button here
-        main_view_help_button = ttk.Button(self.search_content_frame, text="?", width=3,
-                                           style="Help.TButton", command=self._show_main_view_help)
-        main_view_help_button.pack(side=tk.LEFT, padx=(0,5)) # Pack it to the left, after Refrescar
-        main_view_tooltip_text = "Mostrar ayuda para la ventana principal de estudios."
-        Tooltip(main_view_help_button, text=main_view_tooltip_text, short_text=main_view_tooltip_text, enabled=self.main_window.settings.enable_hover_tooltips)
+        # New packing order for search elements:
+        refresh_button.pack(side=tk.LEFT, padx=(0,5)) 
+        clear_button.pack(side=tk.LEFT, padx=(0,5))
+        
+        # Search button and entry are packed to the RIGHT.
+        # To have [Search Button][Search Entry] on the right, pack entry last with expand=True.
+        search_button.pack(side=tk.RIGHT, padx=(5,0)) # padx for spacing from entry
+        search_entry.pack(side=tk.RIGHT, fill=tk.X, expand=True, padx=(0,5)) # padx for spacing from window edge
 
+        # The "?" (MainView Help) button has been moved to the header_content_frame.
 
         # --- Tabla de Estudios (inside self.scrollable_frame_content) ---
         table_frame = ttk.Frame(self.scrollable_frame_content)
