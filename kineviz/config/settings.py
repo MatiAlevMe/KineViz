@@ -36,8 +36,8 @@ class AppSettings:
             'theme': 'Light',
             'show_factory_reset_button': 'False', # New setting
             'enable_hover_tooltips': 'False', # New setting for hover tooltips
-            'max_automatic_backups': '2', # Default max automatic backups
-            'max_manual_backups': '2'     # Default max manual backups
+            'max_automatic_backups': '4', # Default max automatic backups
+            'max_manual_backups': '4'     # Default max manual backups
         }
         # DESCRIPTOR_ALIASES ya no se gestiona aquí
     }
@@ -181,7 +181,7 @@ class AppSettings:
     @property
     def discrete_tables_per_page(self) -> int:
         """Número de tablas de análisis discreto a mostrar por página."""
-        return self.get_int_setting('discrete_tables_per_page', 15)
+        return self.get_int_setting('discrete_tables_per_page', 10)
 
     @discrete_tables_per_page.setter
     def discrete_tables_per_page(self, value: int):
@@ -230,7 +230,7 @@ class AppSettings:
     @property
     def max_automatic_backups(self) -> int:
         """Maximum number of automatic backups to keep."""
-        return self.get_int_setting('max_automatic_backups', 2)
+        return self.get_int_setting('max_automatic_backups', 4)
 
     @max_automatic_backups.setter
     def max_automatic_backups(self, value: int):
@@ -239,7 +239,7 @@ class AppSettings:
     @property
     def max_manual_backups(self) -> int:
         """Maximum number of manual backups to keep."""
-        return self.get_int_setting('max_manual_backups', 2)
+        return self.get_int_setting('max_manual_backups', 4)
 
     @max_manual_backups.setter
     def max_manual_backups(self, value: int):

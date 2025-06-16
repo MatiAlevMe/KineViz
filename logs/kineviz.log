@@ -17297,3 +17297,118 @@ AttributeError: 'ConfigureIndividualAnalysisDialog' object has no attribute '_ad
 2025-06-16 04:32:40,526 - INFO - [kineviz.core.services.analysis_service] - Configuración análisis guardada en: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/1_Edad y Peso con 3 sub-valores/Analisis Discreto/Graficos/LAnkleAngles Z/testing 10b/config.json
 2025-06-16 04:32:42,208 - DEBUG - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Cargados 16 análisis individuales para estudio 32.
 2025-06-16 04:32:47,199 - INFO - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Intentando abrir gráfico interactivo: file:///Users/arakito/Mati/Codigo/Python/KineViz/estudios/1_Edad%20y%20Peso%20con%203%20sub-valores/Analisis%20Discreto/Graficos/LAnkleAngles%20Z/testing%2010b/boxplot_interactive.html
+2025-06-16 16:57:26,788 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 16:57:26,788 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 16:57:27,381 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 16:57:27,381 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 16:57:27,383 - CRITICAL - [__main__] - Error crítico no capturado en la aplicación.
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/app.py", line 25, in main
+    app = MainWindow(root)
+          ^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/main_window.py", line 51, in __init__
+    self.study_service = StudyService()
+                         ^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/core/services/study_service.py", line 13, in __init__
+    self.repo = StudyRepository()
+                ^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/database/repositories.py", line 25, in __init__
+    self._create_tables()
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/database/repositories.py", line 33, in _create_tables
+    cursor.execute('''
+sqlite3.DatabaseError: file is not a database
+2025-06-16 17:17:03,568 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 17:17:03,568 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 17:17:03,788 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 17:17:03,788 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 17:17:03,790 - CRITICAL - [__main__] - Error crítico no capturado en la aplicación.
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/app.py", line 25, in main
+    app = MainWindow(root)
+          ^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/main_window.py", line 51, in __init__
+    self.study_service = StudyService()
+                         ^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/core/services/study_service.py", line 13, in __init__
+    self.repo = StudyRepository()
+                ^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/database/repositories.py", line 25, in __init__
+    self._create_tables()
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/database/repositories.py", line 33, in _create_tables
+    cursor.execute('''
+sqlite3.DatabaseError: file is not a database
+2025-06-16 17:39:24,975 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 17:39:24,975 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 17:39:25,532 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 17:39:25,532 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 17:39:25,534 - INFO - [kineviz.ui.main_window] - Applying theme: Light, font scale: 1.0
+2025-06-16 17:39:49,568 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 17:39:49,568 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 17:39:49,754 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 17:39:49,754 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 17:39:49,755 - INFO - [kineviz.ui.main_window] - Applying theme: Light, font scale: 1.0
+2025-06-16 17:43:51,608 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 17:43:51,608 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 17:43:52,162 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 17:43:52,162 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 17:43:52,163 - CRITICAL - [__main__] - Error crítico no capturado en la aplicación.
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/app.py", line 25, in main
+    app = MainWindow(root)
+          ^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/main_window.py", line 51, in __init__
+    self.study_service = StudyService()
+                         ^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/core/services/study_service.py", line 13, in __init__
+    self.repo = StudyRepository()
+                ^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/database/repositories.py", line 25, in __init__
+    self._create_tables()
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/database/repositories.py", line 33, in _create_tables
+    cursor.execute('''
+sqlite3.DatabaseError: file is not a database
+2025-06-16 18:48:02,091 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 18:48:02,091 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 18:48:02,605 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 18:48:02,605 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 18:48:02,606 - WARNING - [kineviz.config.settings] - No se encontró /Users/arakito/Mati/Codigo/Python/KineViz/config.ini. Creando archivo con valores por defecto.
+2025-06-16 18:48:02,606 - INFO - [kineviz.config.settings] - Archivo de configuración creado en: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 18:48:02,607 - INFO - [kineviz.database.repositories] - Columna 'comentario' añadida a la tabla 'estudios'.
+2025-06-16 18:48:02,608 - INFO - [kineviz.database.repositories] - Columna 'is_pinned' añadida a la tabla 'estudios'.
+2025-06-16 18:48:02,608 - INFO - [kineviz.ui.main_window] - Applying theme: Light, font scale: 1.0
+2025-06-16 18:49:03,563 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 18:49:03,564 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 18:49:04,120 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 18:49:04,120 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 18:49:04,121 - INFO - [kineviz.ui.main_window] - Applying theme: Light, font scale: 1.0
+2025-06-16 18:49:09,301 - INFO - [kineviz.ui.main_window] - Intentando abrir manual de usuario: /Users/arakito/Mati/Codigo/Python/KineViz/kineviz/docs/help/manual_usuario.txt
+2025-06-16 18:49:26,629 - INFO - [kineviz.database.repositories] - Directorio creado para estudio 1: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Prueba
+2025-06-16 18:49:26,629 - INFO - [kineviz.core.services.study_service] - Estudio 1 ('Prueba') creado en servicio.
+2025-06-16 18:49:33,775 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Pin' para estudio ID 1
+2025-06-16 18:49:33,779 - INFO - [kineviz.database.repositories] - Estado de pin para estudio ID 1 actualizado a True.
+2025-06-16 18:49:33,780 - INFO - [kineviz.core.services.study_service] - Estado de pin para estudio 1 cambiado a True.
+2025-06-16 18:49:33,780 - INFO - [kineviz.ui.views.main_view] - Estado de pin para estudio 1 cambiado.
+2025-06-16 18:49:35,599 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Pin' para estudio ID 1
+2025-06-16 18:49:35,603 - INFO - [kineviz.database.repositories] - Estado de pin para estudio ID 1 actualizado a False.
+2025-06-16 18:49:35,604 - INFO - [kineviz.core.services.study_service] - Estado de pin para estudio 1 cambiado a False.
+2025-06-16 18:49:35,604 - INFO - [kineviz.ui.views.main_view] - Estado de pin para estudio 1 cambiado.
+2025-06-16 18:57:58,495 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 18:57:58,495 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 18:57:59,023 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 18:57:59,023 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 18:57:59,025 - INFO - [kineviz.ui.main_window] - Applying theme: Light, font scale: 1.0
+2025-06-16 18:58:11,188 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Comentar' para estudio ID 1
+2025-06-16 18:58:15,174 - INFO - [kineviz.database.repositories] - Comentario para estudio ID 1 actualizado.
+2025-06-16 18:58:15,174 - INFO - [kineviz.core.services.study_service] - Comentario actualizado para estudio 1.
+2025-06-16 18:58:15,175 - INFO - [kineviz.ui.dialogs.comment_dialog] - Comentario para estudio 1 guardado.
+2025-06-16 18:58:46,346 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 18:58:46,346 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 18:58:46,541 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 18:58:46,541 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 18:58:46,542 - INFO - [kineviz.ui.main_window] - Applying theme: Light, font scale: 1.0
+2025-06-16 18:59:29,997 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 18:59:29,998 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 18:59:30,195 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 18:59:30,195 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 18:59:30,196 - INFO - [kineviz.ui.main_window] - Applying theme: Light, font scale: 1.0
+2025-06-16 18:59:31,744 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Comentar' para estudio ID 1
