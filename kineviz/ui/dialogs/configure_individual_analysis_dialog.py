@@ -559,10 +559,13 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         group_combo.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0,5))
         group_combo.bind("<<ComboboxSelected>>", self.update_available_columns)
         
-        ttk.Button(group_combo_frame, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Selección de Grupo",
-                                                         "Seleccione un grupo (sub-valor o combinación de sub-valores con alias) para incluir en la comparación.\nDebe seleccionar al menos dos grupos distintos.")
-                  ).pack(side=tk.LEFT)
+        group_select_help_long_text = ("Seleccione un grupo (sub-valor o combinación de sub-valores con alias) para incluir en la comparación.\n"
+                                       "Debe seleccionar al menos dos grupos distintos.")
+        group_select_help_short_text = "Seleccionar grupo para comparar."
+        group_select_help_button = ttk.Button(group_combo_frame, text="?", width=3, style="Help.TButton",
+                                              command=lambda: self._show_input_help("Ayuda: Selección de Grupo", group_select_help_long_text))
+        group_select_help_button.pack(side=tk.LEFT)
+        Tooltip(group_select_help_button, text=group_select_help_long_text, short_text=group_select_help_short_text, enabled=self.settings.enable_hover_tooltips)
 
         # Botón para eliminar este selector (icono basura)
         remove_button = ttk.Button(selector_frame, text="🗑️", width=3, # Usar icono
