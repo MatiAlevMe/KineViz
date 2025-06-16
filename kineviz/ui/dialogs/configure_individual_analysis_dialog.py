@@ -185,10 +185,12 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.primary_vi_combo = ttk.Combobox(primary_vi_frame, textvariable=self.primary_vi_var, state="readonly", font=scaled_font)
         self.primary_vi_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.primary_vi_combo.bind("<<ComboboxSelected>>", self.update_available_groups) # Actualizar grupos al seleccionar VI primaria
-        ttk.Button(primary_vi_frame, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Agrupar por VI",
-                                                         "Seleccione la Variable Independiente principal cuyos sub-valores (con alias) formarán los grupos a comparar.")
-                  ).pack(side=tk.LEFT)
+        primary_vi_help_long_text = "Seleccione la Variable Independiente principal cuyos sub-valores (con alias) formarán los grupos a comparar."
+        primary_vi_help_short_text = "VI principal para agrupar."
+        primary_vi_help_btn = ttk.Button(primary_vi_frame, text="?", width=3, style="Help.TButton",
+                                         command=lambda: self._show_input_help("Ayuda: Agrupar por VI", primary_vi_help_long_text))
+        primary_vi_help_btn.pack(side=tk.LEFT)
+        Tooltip(primary_vi_help_btn, text=primary_vi_help_long_text, short_text=primary_vi_help_short_text, enabled=self.settings.enable_hover_tooltips)
 
         # Frame para selección de VI fija y sub-valor fijo (modo 2VIs)
         self.two_vi_config_frame = ttk.Frame(main_frame)
@@ -202,10 +204,12 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.fixed_vi_combo = ttk.Combobox(fixed_vi_frame, textvariable=self.fixed_vi_var, state="readonly", font=scaled_font)
         self.fixed_vi_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.fixed_vi_combo.bind("<<ComboboxSelected>>", self._update_fixed_descriptor_options) # Actualizar sub-valores al seleccionar VI fija
-        ttk.Button(fixed_vi_frame, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: VI a Fijar",
-                                                         "Seleccione la Variable Independiente que permanecerá constante mientras se comparan los sub-valores de la otra VI.")
-                  ).pack(side=tk.LEFT)
+        fixed_vi_help_long_text = "Seleccione la Variable Independiente que permanecerá constante mientras se comparan los sub-valores de la otra VI."
+        fixed_vi_help_short_text = "VI que se mantendrá constante."
+        fixed_vi_help_btn = ttk.Button(fixed_vi_frame, text="?", width=3, style="Help.TButton",
+                                       command=lambda: self._show_input_help("Ayuda: VI a Fijar", fixed_vi_help_long_text))
+        fixed_vi_help_btn.pack(side=tk.LEFT)
+        Tooltip(fixed_vi_help_btn, text=fixed_vi_help_long_text, short_text=fixed_vi_help_short_text, enabled=self.settings.enable_hover_tooltips)
 
         self.fixed_descriptor_label = ttk.Label(self.two_vi_config_frame, text="Valor Fijo:")
         self.fixed_descriptor_label.grid(row=1, column=0, sticky="w", padx=5, pady=5)
@@ -214,10 +218,13 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.fixed_descriptor_combo = ttk.Combobox(fixed_desc_frame, textvariable=self.fixed_descriptor_var, state="readonly", font=scaled_font)
         self.fixed_descriptor_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.fixed_descriptor_combo.bind("<<ComboboxSelected>>", self.update_available_groups) # Actualizar grupos al seleccionar descriptor fijo
-        ttk.Button(fixed_desc_frame, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Valor Fijo",
-                                                         "Seleccione el sub-valor (con alias) de la 'VI a Fijar' que se mantendrá constante.\nLos grupos a comparar se formarán con los sub-valores de la otra VI, dentro de este contexto.")
-                  ).pack(side=tk.LEFT)
+        fixed_desc_help_long_text = ("Seleccione el sub-valor (con alias) de la 'VI a Fijar' que se mantendrá constante.\n"
+                                     "Los grupos a comparar se formarán con los sub-valores de la otra VI, dentro de este contexto.")
+        fixed_desc_help_short_text = "Sub-valor constante de la VI a fijar."
+        fixed_desc_help_btn = ttk.Button(fixed_desc_frame, text="?", width=3, style="Help.TButton",
+                                         command=lambda: self._show_input_help("Ayuda: Valor Fijo", fixed_desc_help_long_text))
+        fixed_desc_help_btn.pack(side=tk.LEFT)
+        Tooltip(fixed_desc_help_btn, text=fixed_desc_help_long_text, short_text=fixed_desc_help_short_text, enabled=self.settings.enable_hover_tooltips)
 
         row_idx += 1 # Incrementar fila para el siguiente elemento
 
@@ -247,10 +254,13 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.column_combo = ttk.Combobox(column_combo_frame, textvariable=self.column_var, state="readonly", width=45, font=scaled_font) # Ajustar width si es necesario
         self.column_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.column_combo.bind("<<ComboboxSelected>>", self._on_column_selected) # Llamar al seleccionar columna
-        ttk.Button(column_combo_frame, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Variable a Analizar",
-                                                         "Seleccione la columna de datos (variable dependiente) de las tablas de resumen que desea analizar.\nLas opciones se filtran a columnas comunes entre los grupos seleccionados.")
-                  ).pack(side=tk.LEFT)
+        column_help_long_text = ("Seleccione la columna de datos (variable dependiente) de las tablas de resumen que desea analizar.\n"
+                                 "Las opciones se filtran a columnas comunes entre los grupos seleccionados.")
+        column_help_short_text = "Variable dependiente a analizar."
+        column_help_btn = ttk.Button(column_combo_frame, text="?", width=3, style="Help.TButton",
+                                     command=lambda: self._show_input_help("Ayuda: Variable a Analizar", column_help_long_text))
+        column_help_btn.pack(side=tk.LEFT)
+        Tooltip(column_help_btn, text=column_help_long_text, short_text=column_help_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         # --- Supuestos Estadísticos (En su propio frame) ---
@@ -261,23 +271,27 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         parametric_frame = ttk.Frame(self.assumptions_frame)
         parametric_frame.pack(anchor="w", padx=5)
         ttk.Checkbutton(parametric_frame, text="Datos Paramétricos (Normalidad/Homocedasticidad)", variable=self.parametric_var).pack(side=tk.LEFT)
-        ttk.Button(parametric_frame, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Datos Paramétricos",
-                                                         ("Marque si sus datos cumplen los supuestos para pruebas paramétricas (ej. t-test, ANOVA):\n"
-                                                          "- Aproximadamente distribuidos normalmente.\n"
-                                                          "- Homogeneidad de varianzas (homocedasticidad) entre grupos.\n"
-                                                          "Si no se cumplen, se usarán pruebas no paramétricas (ej. Wilcoxon, Kruskal-Wallis)."))
-                  ).pack(side=tk.LEFT, padx=(2,0))
+        parametric_help_long_text = ("Marque si sus datos cumplen los supuestos para pruebas paramétricas (ej. t-test, ANOVA):\n"
+                                     "- Aproximadamente distribuidos normalmente.\n"
+                                     "- Homogeneidad de varianzas (homocedasticidad) entre grupos.\n"
+                                     "Si no se cumplen, se usarán pruebas no paramétricas (ej. Wilcoxon, Kruskal-Wallis).")
+        parametric_help_short_text = "Cumplimiento de supuestos paramétricos."
+        parametric_help_btn = ttk.Button(parametric_frame, text="?", width=3, style="Help.TButton",
+                                         command=lambda: self._show_input_help("Ayuda: Datos Paramétricos", parametric_help_long_text))
+        parametric_help_btn.pack(side=tk.LEFT, padx=(2,0))
+        Tooltip(parametric_help_btn, text=parametric_help_long_text, short_text=parametric_help_short_text, enabled=self.settings.enable_hover_tooltips)
 
         paired_frame = ttk.Frame(self.assumptions_frame)
         paired_frame.pack(anchor="w", padx=5)
         ttk.Checkbutton(paired_frame, text="Muestras Pareadas (Mismos sujetos en todos los grupos)", variable=self.paired_var).pack(side=tk.LEFT)
-        ttk.Button(paired_frame, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Muestras Pareadas",
-                                                         ("Marque si los datos en los grupos a comparar provienen de los mismos participantes (medidas repetidas).\n"
-                                                          "Ej: Comparar 'PRE' vs 'POST' para los mismos sujetos.\n"
-                                                          "Si los grupos son independientes (diferentes sujetos), no marque esta opción."))
-                  ).pack(side=tk.LEFT, padx=(2,0))
+        paired_help_long_text = ("Marque si los datos en los grupos a comparar provienen de los mismos participantes (medidas repetidas).\n"
+                                 "Ej: Comparar 'PRE' vs 'POST' para los mismos sujetos.\n"
+                                 "Si los grupos son independientes (diferentes sujetos), no marque esta opción.")
+        paired_help_short_text = "Datos de muestras pareadas/repetidas."
+        paired_help_btn = ttk.Button(paired_frame, text="?", width=3, style="Help.TButton",
+                                     command=lambda: self._show_input_help("Ayuda: Muestras Pareadas", paired_help_long_text))
+        paired_help_btn.pack(side=tk.LEFT, padx=(2,0))
+        Tooltip(paired_help_btn, text=paired_help_long_text, short_text=paired_help_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         # --- Nombre del Análisis (En su propio frame) ---
@@ -289,10 +303,12 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         analysis_name_entry_frame = ttk.Frame(self.analysis_name_frame)
         analysis_name_entry_frame.grid(row=0, column=1, sticky="ew")
         ttk.Entry(analysis_name_entry_frame, textvariable=self.analysis_name_var, font=scaled_font).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
-        ttk.Button(analysis_name_entry_frame, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Nombre del Análisis",
-                                                         "Ingrese un nombre descriptivo para guardar este análisis.\nEvite caracteres especiales como / \\ : * ? \" < > |")
-                  ).pack(side=tk.LEFT)
+        analysis_name_help_long_text = "Ingrese un nombre descriptivo para guardar este análisis.\nEvite caracteres especiales como / \\ : * ? \" < > |"
+        analysis_name_help_short_text = "Nombre para guardar el análisis."
+        analysis_name_help_btn = ttk.Button(analysis_name_entry_frame, text="?", width=3, style="Help.TButton",
+                                            command=lambda: self._show_input_help("Ayuda: Nombre del Análisis", analysis_name_help_long_text))
+        analysis_name_help_btn.pack(side=tk.LEFT)
+        Tooltip(analysis_name_help_btn, text=analysis_name_help_long_text, short_text=analysis_name_help_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         # --- Botones de Acción (En su propio frame) ---

@@ -98,7 +98,7 @@ class Tooltip:
             self.widget.after_cancel(self._id_show)
             self._id_show = None
             
-    def _cancel_tooltip_hiding(self):
+    def _cancel_tooltip_hiding(self, event=None): # Added event=None
         if self._id_hide:
             self.widget.after_cancel(self._id_hide)
             self._id_hide = None

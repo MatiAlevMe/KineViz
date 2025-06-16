@@ -100,20 +100,23 @@ class StudyView:
         add_files_button.pack(side=tk.LEFT, padx=(0, 10))
         Tooltip(add_files_button, text="Abrir diálogo para agregar archivos de datos a este estudio.", short_text="Agregar archivos.", enabled=self.main_window.settings.enable_hover_tooltips)
 
-        discrete_analysis_button = ttk.Button(header_frame_row1, text="Análisis Discreto", command=lambda: self.main_window.show_discrete_analysis_view(self.study_id), style="Green.TButton")
-        discrete_analysis_button.pack(side=tk.LEFT, padx=(0, 10))
-        Tooltip(discrete_analysis_button, text="Abrir la interfaz de gestión y generación de análisis discretos (tablas resumen, boxplots).", short_text="Análisis discreto.", enabled=self.main_window.settings.enable_hover_tooltips)
+        # Spacer to push analysis and help buttons to the right
+        ttk.Frame(header_frame_row1).pack(side=tk.LEFT, expand=True, fill=tk.X)
 
-        continuous_analysis_button = ttk.Button(header_frame_row1, text="Análisis Continuo", command=lambda: self.main_window.show_continuous_analysis_manager_dialog(self.study_id), style="Green.TButton")
-        continuous_analysis_button.pack(side=tk.LEFT, padx=(0, 10))
-        Tooltip(continuous_analysis_button, text="Abrir la interfaz de gestión y generación de análisis continuos (SPM).", short_text="Análisis continuo.", enabled=self.main_window.settings.enable_hover_tooltips)
-
-        # Botón Ayuda General (a la derecha de la primera fila de header)
+        # Botón Ayuda General (ahora a la izquierda de los botones de análisis)
         style = ttk.Style() 
         style.configure("HelpView.TButton", foreground="white", background="green") 
         help_button_general = ttk.Button(header_frame_row1, text="?", width=3, style="HelpView.TButton", command=self.show_study_view_help)
-        help_button_general.pack(side=tk.RIGHT, padx=(10, 0))
+        help_button_general.pack(side=tk.RIGHT, padx=(0, 5)) # Adjusted padding
         Tooltip(help_button_general, text="Abrir el manual de ayuda específico para la vista de estudio.", short_text="Ayuda vista estudio.", enabled=self.main_window.settings.enable_hover_tooltips)
+
+        continuous_analysis_button = ttk.Button(header_frame_row1, text="Análisis Continuo", command=lambda: self.main_window.show_continuous_analysis_manager_dialog(self.study_id), style="Green.TButton")
+        continuous_analysis_button.pack(side=tk.RIGHT, padx=(0, 5)) # Adjusted padding
+        Tooltip(continuous_analysis_button, text="Abrir la interfaz de gestión y generación de análisis continuos (SPM).", short_text="Análisis continuo.", enabled=self.main_window.settings.enable_hover_tooltips)
+
+        discrete_analysis_button = ttk.Button(header_frame_row1, text="Análisis Discreto", command=lambda: self.main_window.show_discrete_analysis_view(self.study_id), style="Green.TButton")
+        discrete_analysis_button.pack(side=tk.RIGHT, padx=(0, 5)) # Adjusted padding
+        Tooltip(discrete_analysis_button, text="Abrir la interfaz de gestión y generación de análisis discretos (tablas resumen, boxplots).", short_text="Análisis discreto.", enabled=self.main_window.settings.enable_hover_tooltips)
 
 
         # --- Header Row 2 (also in top_fixed_header_actions_frame) ---
