@@ -51,6 +51,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         
         self.group_selector_frames = []
         self.group_selector_vars = [] # Renombrar selected_groups_vars
+        self.group_selector_tooltips = [] # NUEVO: Para almacenar instancias de Tooltip
         self.available_groups_filtered = {} # Para grupos filtrados por VI
         # self.group_display_to_key_map ya no se usa directamente, se usa available_groups_filtered
 
@@ -864,8 +865,8 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         group_select_help_button_cont = ttk.Button(group_combo_frame_cont, text="?", width=3, style="Help.TButton",
                                                    command=lambda: self._show_input_help("Ayuda: Selección de Grupo (Continuo)", group_select_help_long_text_cont))
         group_select_help_button_cont.pack(side=tk.LEFT)
-        Tooltip(group_select_help_button_cont, text=group_select_help_long_text_cont, short_text=group_select_help_short_text_cont, enabled=self.settings.enable_hover_tooltips)
-
+        help_tooltip = Tooltip(group_select_help_button_cont, text=group_select_help_long_text_cont, short_text=group_select_help_short_text_cont, enabled=self.settings.enable_hover_tooltips)
+        
 
         remove_button = ttk.Button(selector_frame, text="🗑️", width=3,
                                    command=lambda f=selector_frame, v=group_var: self.remove_group_selector(f, v))
@@ -874,6 +875,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
 
         self.group_selector_vars.append(group_var)
         self.group_selector_frames.append(selector_frame)
+        self.group_selector_tooltips.append(help_tooltip) # Store the help button's tooltip
         self._update_remove_button_states()
 
         self.groups_inner_frame.update_idletasks()
@@ -901,6 +903,8 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
             index = self.group_selector_frames.index(frame_to_remove)
             self.group_selector_vars.pop(index)
             self.group_selector_frames.pop(index)
+            if index < len(self.group_selector_tooltips): # Ensure index is valid before popping
+                self.group_selector_tooltips.pop(index)
             frame_to_remove.destroy()
             self._update_remove_button_states()
             
@@ -928,6 +932,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
             frame.destroy()
         self.group_selector_frames.clear()
         self.group_selector_vars.clear()
+        self.group_selector_tooltips.clear() # Clear stored tooltips
 
         if hasattr(self, 'groups_inner_frame') and self.groups_inner_frame.winfo_exists():
             self.groups_inner_frame.update_idletasks()
@@ -980,6 +985,10 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
                     options_for_this_combo.append(option)
             
             combo_widget['values'] = options_for_this_combo
+
+            # Re-apply font to ensure it's not lost during value updates
+            scaled_font_refresh = get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale)
+            combo_widget.configure(font=scaled_font_refresh)
             
             if current_selection_this_combo and current_selection_this_combo not in options_for_this_combo:
                 combo_var.set("")
