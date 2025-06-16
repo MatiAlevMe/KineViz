@@ -393,10 +393,13 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         analysis_name_entry_frame_cont = ttk.Frame(self.analysis_name_frame)
         analysis_name_entry_frame_cont.grid(row=0, column=1, sticky="ew")
         ttk.Entry(analysis_name_entry_frame_cont, textvariable=self.analysis_name_var, font=scaled_font).pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
-        ttk.Button(analysis_name_entry_frame_cont, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Nombre del Análisis (Continuo)",
-                                                         "Ingrese un nombre descriptivo para guardar este análisis continuo (SPM).\nEvite caracteres especiales como / \\ : * ? \" < > |")
-                  ).pack(side=tk.LEFT)
+        
+        analysis_name_help_long_text = "Ingrese un nombre descriptivo para guardar este análisis continuo (SPM).\nEvite caracteres especiales como / \\ : * ? \" < > |"
+        analysis_name_help_short_text = "Nombre para el análisis SPM."
+        analysis_name_help_btn = ttk.Button(analysis_name_entry_frame_cont, text="?", width=3, style="Help.TButton",
+                                            command=lambda: self._show_input_help("Ayuda: Nombre del Análisis (Continuo)", analysis_name_help_long_text))
+        analysis_name_help_btn.pack(side=tk.LEFT)
+        Tooltip(analysis_name_help_btn, text=analysis_name_help_long_text, short_text=analysis_name_help_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         # --- Botones de Acción ---
