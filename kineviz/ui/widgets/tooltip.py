@@ -7,9 +7,10 @@ class Tooltip:
     The tooltip uses a ttk.Label styled with 'Tooltip.TLabel',
     which should be pre-configured with font scaling and colors.
     """
-    def __init__(self, widget, text: str, wraplength: int = 350, enabled: bool = True): # Added enabled flag
+    def __init__(self, widget, text: str, short_text: str = None, wraplength: int = 350, enabled: bool = True): # Added short_text
         self.widget = widget
-        self.text = text
+        self.text = text # Full text, used by click action via _show_input_help
+        self.short_text = short_text if short_text is not None else text # Shorter text for hover, defaults to full text
         self.wraplength = wraplength
         self.enabled = enabled # Store enabled state
         self.tooltip_window = None
@@ -52,7 +53,9 @@ class Tooltip:
         self.tooltip_window = tw = tk.Toplevel(self.widget)
         tw.wm_overrideredirect(True) # No window decorations
         
-        label = ttk.Label(tw, text=self.text, justify=tk.LEFT, wraplength=self.wraplength)
+        # Use short_text for the hover label
+        label_text_to_display = self.short_text
+        label = ttk.Label(tw, text=label_text_to_display, justify=tk.LEFT, wraplength=self.wraplength)
         label.configure(style="Tooltip.TLabel") # Style provides font, bg, fg, relief, borderwidth
         label.pack(ipadx=5, ipady=3) # Add some internal padding
 

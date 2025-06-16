@@ -144,10 +144,12 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         freq_frame_cont.grid(row=row_idx, column=1, sticky="ew")
         self.freq_combo = ttk.Combobox(freq_frame_cont, textvariable=self.frequency_var, state="disabled")
         self.freq_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
-        ttk.Button(freq_frame_cont, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Tipo de Dato",
-                                                         "Tipo de datos a analizar.\nPara análisis continuo (SPM), actualmente solo 'Cinematica' está soportado y se selecciona automáticamente.")
-                  ).pack(side=tk.LEFT)
+        freq_long_text = "Tipo de datos a analizar.\nPara análisis continuo (SPM), actualmente solo 'Cinematica' está soportado y se selecciona automáticamente."
+        freq_short_text = "Tipo de datos (fijo a 'Cinematica' para SPM)."
+        freq_help_btn = ttk.Button(freq_frame_cont, text="?", width=3, style="Help.TButton",
+                                   command=lambda: self._show_input_help("Ayuda: Tipo de Dato", freq_long_text))
+        freq_help_btn.pack(side=tk.LEFT)
+        Tooltip(freq_help_btn, text=freq_long_text, short_text=freq_short_text, enabled=self.parent.main_window.settings.enable_hover_tooltips if hasattr(self.parent, 'main_window') else True) # Added safety for parent
         row_idx += 1
 
         # --- NUEVO: Selección de Modo de Agrupación (1 VI vs 2 VIs) ---
@@ -157,16 +159,18 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         label_agrupar_frame_cont = ttk.Frame(vi_mode_frame)
         label_agrupar_frame_cont.pack(side=tk.LEFT, padx=(0,5))
         ttk.Label(label_agrupar_frame_cont, text="Agrupar por:").pack(side=tk.LEFT)
-        ttk.Button(label_agrupar_frame_cont, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Modo de Agrupación (Continuo)",
-                                                         ("Define cómo se formarán los grupos de series temporales para la comparación SPM:\n\n"
-                                                          "1 Variable Independiente (1VI):\n"
-                                                          "  Compara los diferentes sub-valores de UNA ÚNICA VI.\n"
-                                                          "  Ej: Comparar 'PRE' vs 'POST' de la VI 'Condicion' para la variable 'LAnkleAngles/X/deg'.\n\n"
-                                                          "2 Variables Independientes (2VIs):\n"
-                                                          "  Compara los sub-valores de una VI, MANTENIENDO FIJO un sub-valor de OTRA VI.\n"
-                                                          "  Ej: Comparar 'CMJ' vs 'SJ' (VI 'TipoSalto'), solo para 'PRE' (VI 'Condicion')."))
-                  ).pack(side=tk.LEFT, padx=(2,0))
+        agrupar_long_text = ("Define cómo se formarán los grupos de series temporales para la comparación SPM:\n\n"
+                             "1 Variable Independiente (1VI):\n"
+                             "  Compara los diferentes sub-valores de UNA ÚNICA VI.\n"
+                             "  Ej: Comparar 'PRE' vs 'POST' de la VI 'Condicion' para la variable 'LAnkleAngles/X/deg'.\n\n"
+                             "2 Variables Independientes (2VIs):\n"
+                             "  Compara los sub-valores de una VI, MANTENIENDO FIJO un sub-valor de OTRA VI.\n"
+                             "  Ej: Comparar 'CMJ' vs 'SJ' (VI 'TipoSalto'), solo para 'PRE' (VI 'Condicion').")
+        agrupar_short_text = "Modo de agrupar datos para SPM (1VI o 2VIs)."
+        agrupar_help_btn = ttk.Button(label_agrupar_frame_cont, text="?", width=3, style="Help.TButton",
+                                      command=lambda: self._show_input_help("Ayuda: Modo de Agrupación (Continuo)", agrupar_long_text))
+        agrupar_help_btn.pack(side=tk.LEFT, padx=(2,0))
+        Tooltip(agrupar_help_btn, text=agrupar_long_text, short_text=agrupar_short_text, enabled=self.parent.main_window.settings.enable_hover_tooltips if hasattr(self.parent, 'main_window') else True)
 
         self.one_vi_button = ttk.Button(vi_mode_frame, text="1 Variable Independiente", command=lambda: self.set_vi_grouping_mode('1VI'))
         self.one_vi_button.pack(side=tk.LEFT, padx=5)

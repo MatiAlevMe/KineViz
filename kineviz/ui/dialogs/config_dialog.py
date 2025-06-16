@@ -76,10 +76,12 @@ class ConfigDialog(Toplevel):
         studies_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
         studies_entry = ttk.Entry(studies_frame, textvariable=self.var_studies_per_page, width=7)
         studies_entry.pack(side=tk.LEFT, padx=(0,5))
-        ttk.Button(studies_frame, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Estudios por Página",
-                                                         "Número de estudios a mostrar por página en la vista principal.")
-                  ).pack(side=tk.LEFT)
+        studies_long_text = "Número de estudios a mostrar por página en la vista principal."
+        studies_short_text = "Estudios por página." # Example short text
+        studies_help_btn = ttk.Button(studies_frame, text="?", width=3, style="Help.TButton",
+                                      command=lambda: self._show_input_help("Ayuda: Estudios por Página", studies_long_text))
+        studies_help_btn.pack(side=tk.LEFT)
+        Tooltip(studies_help_btn, text=studies_long_text, short_text=studies_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         ttk.Label(main_frame, text="Archivos por página (vista estudio):").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
@@ -87,10 +89,12 @@ class ConfigDialog(Toplevel):
         files_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
         files_entry = ttk.Entry(files_frame, textvariable=self.var_files_per_page, width=7)
         files_entry.pack(side=tk.LEFT, padx=(0,5))
-        ttk.Button(files_frame, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Archivos por Página",
-                                                         "Número de archivos a mostrar por página en el navegador de archivos de la vista de estudio.")
-                  ).pack(side=tk.LEFT)
+        files_long_text = "Número de archivos a mostrar por página en el navegador de archivos de la vista de estudio."
+        files_short_text = "Archivos por página (vista estudio)."
+        files_help_btn = ttk.Button(files_frame, text="?", width=3, style="Help.TButton",
+                                    command=lambda: self._show_input_help("Ayuda: Archivos por Página", files_long_text))
+        files_help_btn.pack(side=tk.LEFT)
+        Tooltip(files_help_btn, text=files_long_text, short_text=files_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         ttk.Label(main_frame, text="Elementos por página (gestores análisis):").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5) # Changed label
@@ -98,10 +102,12 @@ class ConfigDialog(Toplevel):
         analysis_items_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
         analysis_items_entry = ttk.Entry(analysis_items_frame, textvariable=self.var_analysis_items_per_page, width=7) # Changed variable
         analysis_items_entry.pack(side=tk.LEFT, padx=(0,5))
-        ttk.Button(analysis_items_frame, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Elementos por Página (Gestores de Análisis)", # Changed help title
-                                                         "Número de elementos (análisis guardados) a mostrar por página en los gestores de análisis discreto y continuo.") # Changed help text
-                  ).pack(side=tk.LEFT)
+        analysis_items_long_text = "Número de elementos (análisis guardados) a mostrar por página en los gestores de análisis discreto y continuo."
+        analysis_items_short_text = "Elementos por página (gestores análisis)."
+        analysis_items_help_btn = ttk.Button(analysis_items_frame, text="?", width=3, style="Help.TButton",
+                                             command=lambda: self._show_input_help("Ayuda: Elementos por Página (Gestores de Análisis)", analysis_items_long_text))
+        analysis_items_help_btn.pack(side=tk.LEFT)
+        Tooltip(analysis_items_help_btn, text=analysis_items_long_text, short_text=analysis_items_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         ttk.Label(main_frame, text="Tablas resumen discreto por página:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
@@ -109,10 +115,12 @@ class ConfigDialog(Toplevel):
         discrete_tables_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
         discrete_tables_entry = ttk.Entry(discrete_tables_frame, textvariable=self.var_discrete_tables_per_page, width=7)
         discrete_tables_entry.pack(side=tk.LEFT, padx=(0,5))
-        ttk.Button(discrete_tables_frame, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Tablas de Resumen Discreto por Página",
-                                                         "Número de tablas de resumen (ej. Maximo_Cinematica_...) a mostrar por página en la vista de 'Análisis Discreto'.")
-                  ).pack(side=tk.LEFT)
+        discrete_tables_long_text = "Número de tablas de resumen (ej. Maximo_Cinematica_...) a mostrar por página en la vista de 'Análisis Discreto'."
+        discrete_tables_short_text = "Tablas resumen discreto por página."
+        discrete_tables_help_btn = ttk.Button(discrete_tables_frame, text="?", width=3, style="Help.TButton",
+                                              command=lambda: self._show_input_help("Ayuda: Tablas de Resumen Discreto por Página", discrete_tables_long_text))
+        discrete_tables_help_btn.pack(side=tk.LEFT)
+        Tooltip(discrete_tables_help_btn, text=discrete_tables_long_text, short_text=discrete_tables_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         # --- Tamaño de Fuente ---
@@ -122,11 +130,13 @@ class ConfigDialog(Toplevel):
         font_scale_options = ["0.8", "0.9", "1.0", "1.1", "1.2", "1.3", "1.5", "1.75", "2.0"]
         font_scale_combo = ttk.Combobox(font_scale_frame, textvariable=self.var_font_scale, values=font_scale_options, width=5, state="readonly")
         font_scale_combo.pack(side=tk.LEFT, padx=(0,5))
-        ttk.Button(font_scale_frame, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Tamaño de Fuente",
-                                                         "Ajusta el tamaño general del texto en la aplicación.\n"
-                                                         "1.0 es el tamaño normal. Valores mayores agrandan el texto, menores lo achican.")
-                  ).pack(side=tk.LEFT)
+        font_scale_long_text = ("Ajusta el tamaño general del texto en la aplicación.\n"
+                                "1.0 es el tamaño normal. Valores mayores agrandan el texto, menores lo achican.")
+        font_scale_short_text = "Ajusta el tamaño del texto en la aplicación."
+        font_scale_help_btn = ttk.Button(font_scale_frame, text="?", width=3, style="Help.TButton",
+                                         command=lambda: self._show_input_help("Ayuda: Tamaño de Fuente", font_scale_long_text))
+        font_scale_help_btn.pack(side=tk.LEFT)
+        Tooltip(font_scale_help_btn, text=font_scale_long_text, short_text=font_scale_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         # --- Tema de Aplicación ---
@@ -136,12 +146,14 @@ class ConfigDialog(Toplevel):
         theme_options = ["Light", "Dark"] # Add more themes as they are defined
         theme_combo = ttk.Combobox(theme_frame, textvariable=self.var_theme, values=theme_options, width=10, state="readonly")
         theme_combo.pack(side=tk.LEFT, padx=(0,5))
-        ttk.Button(theme_frame, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Tema de Aplicación",
-                                                         "Cambia la apariencia visual de la aplicación (colores).\n"
-                                                         "Light: Tema claro (predeterminado).\n"
-                                                         "Dark: Tema oscuro.")
-                  ).pack(side=tk.LEFT)
+        theme_long_text = ("Cambia la apariencia visual de la aplicación (colores).\n"
+                           "Light: Tema claro (predeterminado).\n"
+                           "Dark: Tema oscuro.")
+        theme_short_text = "Cambia la apariencia visual (colores)."
+        theme_help_btn = ttk.Button(theme_frame, text="?", width=3, style="Help.TButton",
+                                    command=lambda: self._show_input_help("Ayuda: Tema de Aplicación", theme_long_text))
+        theme_help_btn.pack(side=tk.LEFT)
+        Tooltip(theme_help_btn, text=theme_long_text, short_text=theme_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         # --- Switch para habilitar/deshabilitar tooltips por hover ---
@@ -154,12 +166,14 @@ class ConfigDialog(Toplevel):
             variable=self.var_enable_hover_tooltips
         )
         enable_tooltips_cb.pack(side=tk.LEFT, padx=(0,5))
-        ttk.Button(enable_tooltips_frame, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Habilitar Tooltips por Hover",
-                                                         "Activa o desactiva los tooltips que aparecen al pasar el cursor sobre ciertos elementos.\n"
-                                                         "Estos tooltips respetan la configuración de tamaño de fuente.\n"
-                                                         "Los popups de ayuda por clic seguirán funcionando independientemente de esta opción.")
-                  ).pack(side=tk.LEFT)
+        enable_tooltips_long_text = ("Activa o desactiva los tooltips que aparecen al pasar el cursor sobre ciertos elementos.\n"
+                                     "Estos tooltips respetan la configuración de tamaño de fuente.\n"
+                                     "Los popups de ayuda por clic seguirán funcionando independientemente de esta opción.")
+        enable_tooltips_short_text = "Activa/desactiva tooltips por hover (accesibilidad)."
+        enable_tooltips_help_btn = ttk.Button(enable_tooltips_frame, text="?", width=3, style="Help.TButton",
+                                              command=lambda: self._show_input_help("Ayuda: Habilitar Tooltips por Hover", enable_tooltips_long_text))
+        enable_tooltips_help_btn.pack(side=tk.LEFT)
+        Tooltip(enable_tooltips_help_btn, text=enable_tooltips_long_text, short_text=enable_tooltips_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         # --- Switch para mostrar/ocultar botón de Restauración de Fábrica ---
@@ -173,11 +187,13 @@ class ConfigDialog(Toplevel):
             command=self._toggle_factory_reset_visibility
         )
         show_factory_reset_cb.pack(side=tk.LEFT, padx=(0,5))
-        ttk.Button(show_factory_reset_frame, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Mostrar Restauración de Fábrica",
-                                                         "Activa o desactiva la visibilidad del botón 'Restaurar KineViz a Estado de Fábrica'.\n"
-                                                         "Esta opción es peligrosa y está oculta por defecto para prevenir borrados accidentales.")
-                  ).pack(side=tk.LEFT)
+        show_factory_reset_long_text = ("Activa o desactiva la visibilidad del botón 'Restaurar KineViz a Estado de Fábrica'.\n"
+                                        "Esta opción es peligrosa y está oculta por defecto para prevenir borrados accidentales.")
+        show_factory_reset_short_text = "Muestra/oculta botón de Restauración de Fábrica (Avanzado)."
+        show_factory_reset_help_btn = ttk.Button(show_factory_reset_frame, text="?", width=3, style="Help.TButton",
+                                                 command=lambda: self._show_input_help("Ayuda: Mostrar Restauración de Fábrica", show_factory_reset_long_text))
+        show_factory_reset_help_btn.pack(side=tk.LEFT)
+        Tooltip(show_factory_reset_help_btn, text=show_factory_reset_long_text, short_text=show_factory_reset_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
         
         # --- Botón Restablecer Ajustes a Predeterminados ---
@@ -185,15 +201,17 @@ class ConfigDialog(Toplevel):
         reset_settings_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10, 5), sticky="w")
         reset_settings_button = ttk.Button(reset_settings_frame, text="Restablecer Ajustes a Predeterminados", command=self.reset_config_settings_to_default_action)
         reset_settings_button.pack(side=tk.LEFT, padx=(0,5))
-        ttk.Button(reset_settings_frame, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Restablecer Ajustes a Predeterminados",
-                                                         "Revierte todas las opciones de esta ventana (elementos por página, fuente, tema) "
-                                                         "a sus valores originales de fábrica.\n"
-                                                         "Esto NO afecta sus estudios ni datos guardados.\n"
-                                                         "Los cambios se aplicarán inmediatamente al archivo de configuración. "
-                                                         "Haga clic en 'Guardar' para cerrar este diálogo con los ajustes predeterminados aplicados, "
-                                                         "o 'Cancelar' para cerrar sin aplicar otros cambios que haya hecho manualmente antes de presionar este botón.")
-                  ).pack(side=tk.LEFT)
+        reset_settings_long_text = ("Revierte todas las opciones de esta ventana (elementos por página, fuente, tema) "
+                                    "a sus valores originales de fábrica.\n"
+                                    "Esto NO afecta sus estudios ni datos guardados.\n"
+                                    "Los cambios se aplicarán inmediatamente al archivo de configuración. "
+                                    "Haga clic en 'Guardar' para cerrar este diálogo con los ajustes predeterminados aplicados, "
+                                    "o 'Cancelar' para cerrar sin aplicar otros cambios que haya hecho manualmente antes de presionar este botón.")
+        reset_settings_short_text = "Revierte ajustes de esta ventana a predeterminados (no afecta datos)."
+        reset_settings_help_btn = ttk.Button(reset_settings_frame, text="?", width=3, style="Help.TButton",
+                                             command=lambda: self._show_input_help("Ayuda: Restablecer Ajustes a Predeterminados", reset_settings_long_text))
+        reset_settings_help_btn.pack(side=tk.LEFT)
+        Tooltip(reset_settings_help_btn, text=reset_settings_long_text, short_text=reset_settings_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         # --- Botón Restaurar KineViz a Estado de Fábrica (visibilidad controlada) ---
@@ -201,17 +219,19 @@ class ConfigDialog(Toplevel):
         self.factory_reset_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10, 5), sticky="w")
         factory_reset_button = ttk.Button(self.factory_reset_frame, text="Restaurar KineViz a Estado de Fábrica", command=self.trigger_factory_reset_callback, style="Danger.TButton")
         factory_reset_button.pack(side=tk.LEFT, padx=(0,5))
-        ttk.Button(self.factory_reset_frame, text="?", width=3, style="Help.TButton", # Podría ser Danger.TButton también si el ? es parte de la acción peligrosa
-                   command=lambda: self._show_input_help("Ayuda: Restaurar KineViz a Estado de Fábrica",
-                                                         "¡ADVERTENCIA! ESTA ACCIÓN ES IRREVERSIBLE.\n\n"
-                                                         "Restaurar KineViz a estado de fábrica eliminará TODA la información de la aplicación, incluyendo:\n"
-                                                         "- TODOS los estudios y sus archivos asociados.\n"
-                                                         "- TODOS los análisis guardados (discretos y continuos).\n"
-                                                         "- La base de datos completa de KineViz.\n"
-                                                         "- Todas las configuraciones personalizadas se revertirán a los valores iniciales.\n\n"
-                                                         "La aplicación podría requerir un reinicio después de esta operación.\n"
-                                                         "ÚSELA CON EXTREMA PRECAUCIÓN.")
-                  ).pack(side=tk.LEFT)
+        factory_reset_long_text = ("¡ADVERTENCIA! ESTA ACCIÓN ES IRREVERSIBLE.\n\n"
+                                   "Restaurar KineViz a estado de fábrica eliminará TODA la información de la aplicación, incluyendo:\n"
+                                   "- TODOS los estudios y sus archivos asociados.\n"
+                                   "- TODOS los análisis guardados (discretos y continuos).\n"
+                                   "- La base de datos completa de KineViz.\n"
+                                   "- Todas las configuraciones personalizadas se revertirán a los valores iniciales.\n\n"
+                                   "La aplicación podría requerir un reinicio después de esta operación.\n"
+                                   "ÚSELA CON EXTREMA PRECAUCIÓN.")
+        factory_reset_short_text = "¡PELIGRO! Elimina TODOS los datos y estudios. Irreversible."
+        factory_reset_help_btn = ttk.Button(self.factory_reset_frame, text="?", width=3, style="Help.TButton",
+                                            command=lambda: self._show_input_help("Ayuda: Restaurar KineViz a Estado de Fábrica", factory_reset_long_text))
+        factory_reset_help_btn.pack(side=tk.LEFT)
+        Tooltip(factory_reset_help_btn, text=factory_reset_long_text, short_text=factory_reset_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         # --- Botones Guardar/Cancelar ---

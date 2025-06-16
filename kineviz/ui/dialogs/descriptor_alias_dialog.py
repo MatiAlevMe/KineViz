@@ -152,13 +152,19 @@ class DescriptorAliasDialog(Toplevel):
                     alias_entry = ttk.Entry(alias_entry_frame, textvariable=alias_var)
                     alias_entry.pack(side=tk.LEFT, expand=True, fill=tk.X)
 
+                    alias_long_text_template = ("Asigne un alias descriptivo opcional para el sub-valor '{descriptor}'.\n"
+                                                "Este alias se usará en gráficos y reportes para mayor claridad.\n"
+                                                "Si se deja vacío, se usará el nombre original del sub-valor.\n"
+                                                "Ej: Para 'CTRL', el alias podría ser 'Control'.")
+                    alias_short_text_template = "Alias opcional para '{descriptor}' (usado en gráficos/reportes)."
+                    
+                    current_long_text = alias_long_text_template.format(descriptor=descriptor)
+                    current_short_text = alias_short_text_template.format(descriptor=descriptor)
+
                     alias_help_button = ttk.Button(alias_entry_frame, text="?", width=3, style="Help.TButton",
-                                                   command=lambda d=descriptor: self._show_input_help(f"Ayuda: Alias para '{d}'",
-                                                                                                     f"Asigne un alias descriptivo opcional para el sub-valor '{d}'.\n"
-                                                                                                     "Este alias se usará en gráficos y reportes para mayor claridad.\n"
-                                                                                                     "Si se deja vacío, se usará el nombre original del sub-valor.\n"
-                                                                                                     "Ej: Para 'CTRL', el alias podría ser 'Control'."))
+                                                   command=lambda lt=current_long_text, d=descriptor: self._show_input_help(f"Ayuda: Alias para '{d}'", lt))
                     alias_help_button.pack(side=tk.LEFT, padx=(2,0))
+                    Tooltip(alias_help_button, text=current_long_text, short_text=current_short_text, enabled=self.settings.enable_hover_tooltips)
                     
                     self.alias_vars[descriptor] = alias_var
                     row_idx += 1
