@@ -30,10 +30,12 @@ class ConfigDialog(Toplevel):
         self.var_discrete_tables_per_page = StringVar() # New variable
         self.var_font_scale = StringVar()
         self.var_theme = StringVar()
+        self.var_show_factory_reset = tk.BooleanVar() # New variable for the switch
 
         self.load_current_settings()
         
         self.create_widgets()
+        self._toggle_factory_reset_visibility() # Set initial visibility
 
         # Centrar diálogo
         self.transient(parent)
@@ -53,6 +55,7 @@ class ConfigDialog(Toplevel):
         self.var_discrete_tables_per_page.set(str(self.settings.discrete_tables_per_page)) # Load new setting
         self.var_font_scale.set(str(self.settings.font_scale))
         self.var_theme.set(self.settings.theme)
+        self.var_show_factory_reset.set(self.settings.show_factory_reset_button) # Load new setting
 
     def create_widgets(self):
         """Crea los widgets del diálogo."""
@@ -139,7 +142,24 @@ class ConfigDialog(Toplevel):
                   ).pack(side=tk.LEFT)
         row_idx += 1
 
-
+        # --- Switch para mostrar/ocultar botón de Restauración de Fábrica ---
+        show_factory_reset_frame = ttk.Frame(main_frame)
+        show_factory_reset_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10, 5), sticky="w")
+        
+        show_factory_reset_cb = ttk.Checkbutton(
+            show_factory_reset_frame,
+            text="Mostrar opción de Restauración de Fábrica (Avanzado)",
+            variable=self.var_show_factory_reset,
+            command=self._toggle_factory_reset_visibility
+        )
+        show_factory_reset_cb.pack(side=tk.LEFT, padx=(0,5))
+        ttk.Button(show_factory_reset_frame, text="?", width=3, style="Help.TButton",
+                   command=lambda: self._show_input_help("Ayuda: Mostrar Restauración de Fábrica",
+                                                         "Activa o desactiva la visibilidad del botón 'Restaurar KineViz a Estado de Fábrica'.\n"
+                                                         "Esta opción es peligrosa y está oculta por defecto para prevenir borrados accidentales.")
+                  ).pack(side=tk.LEFT)
+        row_idx += 1
+        
         # --- Botón Restablecer Ajustes a Predeterminados ---
         reset_settings_frame = ttk.Frame(main_frame)
         reset_settings_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10, 5), sticky="w")
@@ -156,12 +176,12 @@ class ConfigDialog(Toplevel):
                   ).pack(side=tk.LEFT)
         row_idx += 1
 
-        # --- Botón Restaurar KineViz a Estado de Fábrica ---
-        factory_reset_frame = ttk.Frame(main_frame)
-        factory_reset_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10, 5), sticky="w")
-        factory_reset_button = ttk.Button(factory_reset_frame, text="Restaurar KineViz a Estado de Fábrica", command=self.trigger_factory_reset_callback, style="Danger.TButton")
+        # --- Botón Restaurar KineViz a Estado de Fábrica (visibilidad controlada) ---
+        self.factory_reset_frame = ttk.Frame(main_frame) # Make it an instance variable
+        self.factory_reset_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10, 5), sticky="w")
+        factory_reset_button = ttk.Button(self.factory_reset_frame, text="Restaurar KineViz a Estado de Fábrica", command=self.trigger_factory_reset_callback, style="Danger.TButton")
         factory_reset_button.pack(side=tk.LEFT, padx=(0,5))
-        ttk.Button(factory_reset_frame, text="?", width=3, style="Help.TButton", # Podría ser Danger.TButton también si el ? es parte de la acción peligrosa
+        ttk.Button(self.factory_reset_frame, text="?", width=3, style="Help.TButton", # Podría ser Danger.TButton también si el ? es parte de la acción peligrosa
                    command=lambda: self._show_input_help("Ayuda: Restaurar KineViz a Estado de Fábrica",
                                                          "¡ADVERTENCIA! ESTA ACCIÓN ES IRREVERSIBLE.\n\n"
                                                          "Restaurar KineViz a estado de fábrica eliminará TODA la información de la aplicación, incluyendo:\n"
@@ -230,6 +250,7 @@ class ConfigDialog(Toplevel):
             self.settings.discrete_tables_per_page = int(self.var_discrete_tables_per_page.get()) # Save new setting
             self.settings.font_scale = float(self.var_font_scale.get())
             self.settings.theme = self.var_theme.get()
+            self.settings.show_factory_reset_button = self.var_show_factory_reset.get() # Save new setting
 
             # Guardar en el archivo config.ini
             self.settings.save_settings()
@@ -253,6 +274,7 @@ class ConfigDialog(Toplevel):
             try:
                 self.settings.reset_to_defaults() # Esto guarda en config.ini
                 self.load_current_settings() # Recargar en la UI del diálogo
+                self._toggle_factory_reset_visibility() # Actualizar visibilidad del botón de fábrica
                 messagebox.showinfo("Ajustes Restablecidos",
                                     "Los ajustes de configuración han sido restablecidos a sus valores predeterminados y guardados.\n"
                                     "Puede cerrar este diálogo con 'Guardar' o 'Cancelar'.",
@@ -260,6 +282,13 @@ class ConfigDialog(Toplevel):
             except Exception as e:
                 messagebox.showerror("Error", f"No se pudieron restablecer los ajustes:\n{e}", parent=self)
 
+    def _toggle_factory_reset_visibility(self):
+        """Muestra u oculta el frame del botón de restauración de fábrica."""
+        if hasattr(self, 'factory_reset_frame'): # Ensure frame exists
+            if self.var_show_factory_reset.get():
+                self.factory_reset_frame.grid()
+            else:
+                self.factory_reset_frame.grid_remove()
 
     def trigger_factory_reset_callback(self):
         """Llama al callback de reseteo de fábrica con doble confirmación."""

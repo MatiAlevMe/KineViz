@@ -33,7 +33,8 @@ class AppSettings:
             'analysis_items_per_page': '10', # Renamed from pdfs_per_page and changed default
             'discrete_tables_per_page': '10', # Changed default
             'font_scale': '1.0',
-            'theme': 'Light'
+            'theme': 'Light',
+            'show_factory_reset_button': 'False' # New setting
         }
         # DESCRIPTOR_ALIASES ya no se gestiona aquí
     }
@@ -126,6 +127,18 @@ class AppSettings:
             logger.warning(f"Valor inválido para '{key}' en config.ini ('{value_str}'). Usando fallback: {fallback}")
             return fallback
 
+    def get_bool_setting(self, key: str, fallback: bool) -> bool:
+        """Obtiene un valor de configuración como booleano."""
+        value_str = self.get_setting(key)
+        if value_str is None:
+            return fallback
+        if value_str.lower() in ('true', 'yes', '1', 'on'):
+            return True
+        if value_str.lower() in ('false', 'no', '0', 'off'):
+            return False
+        logger.warning(f"Valor booleano inválido para '{key}' en config.ini ('{value_str}'). Usando fallback: {fallback}")
+        return fallback
+
     def set_setting(self, key: str, value: str):
         """Establece un valor de configuración en la sección [SETTINGS]."""
         # Asegurarse de que la sección exista antes de establecer
@@ -192,6 +205,15 @@ class AppSettings:
     @theme.setter
     def theme(self, value: str):
         self.set_setting('theme', value)
+
+    @property
+    def show_factory_reset_button(self) -> bool:
+        """Controla la visibilidad del botón de reseteo de fábrica."""
+        return self.get_bool_setting('show_factory_reset_button', False)
+
+    @show_factory_reset_button.setter
+    def show_factory_reset_button(self, value: bool):
+        self.set_setting('show_factory_reset_button', str(value))
 
     def reset_to_defaults(self):
          """Restablece las configuraciones en memoria a los valores por defecto."""
