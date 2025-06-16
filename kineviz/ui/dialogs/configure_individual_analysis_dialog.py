@@ -657,6 +657,10 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             
             combo_widget['values'] = options_for_this_combo
             
+            # Re-apply font to ensure it's not lost during value updates
+            scaled_font_refresh = get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale)
+            combo_widget.configure(font=scaled_font_refresh)
+            
             # Re-validar la selección actual del combo
             if current_selection_this_combo and current_selection_this_combo not in options_for_this_combo:
                 combo_var.set("") # Limpiar si ya no es válida (debería ser raro con la lógica anterior)
