@@ -244,7 +244,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.canvas_window = self.groups_canvas.create_window((0, 0), window=self.groups_inner_frame, anchor="nw")
 
         self.groups_inner_frame.bind("<Configure>", lambda e: self.groups_canvas.configure(scrollregion=self.groups_canvas.bbox("all")))
-        self.groups_canvas.bind('<Configure>', self._on_canvas_configure)
+        # Removed: self.groups_canvas.bind('<Configure>', self._on_canvas_configure)
         
         self.add_group_button = ttk.Button(self.group_selection_outer_frame, text="+ Añadir Grupo", command=self.add_group_selector)
         self.add_group_button.pack(pady=5, anchor='w', padx=5)
@@ -361,10 +361,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self._toggle_time_delimitation_widgets() # Para asegurar estado inicial correcto
 
 
-    def _on_canvas_configure(self, event):
-        """Ajusta el ancho del frame interior al del canvas."""
-        canvas_width = event.width
-        self.groups_canvas.itemconfig(self.canvas_window, width=canvas_width)
+    # Removed: def _on_canvas_configure(self, event):
 
     def _on_accept(self):
         """Valida la config y guarda el resultado."""
