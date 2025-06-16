@@ -114,6 +114,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         if self.total_pages <= 1:
             return # No mostrar controles si hay 1 página o menos
 
+        # --- Left-aligned buttons ---
         first_page_btn = ttk.Button(self.bottom_fixed_pagination_frame, text="<<", command=lambda: self._go_to_page(1),
                                     state=tk.DISABLED if self.current_page == 1 else tk.NORMAL)
         first_page_btn.pack(side=tk.LEFT, padx=2)
@@ -124,17 +125,21 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         prev_page_btn.pack(side=tk.LEFT, padx=2)
         Tooltip(prev_page_btn, text="Ir a la página anterior.", short_text="Anterior.", enabled=self.settings.enable_hover_tooltips)
 
-        ttk.Label(self.bottom_fixed_pagination_frame, text=f"Página {self.current_page} de {self.total_pages}").pack(side=tk.LEFT, padx=5)
+        # --- Right-aligned buttons (packed in reverse visual order) ---
+        last_page_btn = ttk.Button(self.bottom_fixed_pagination_frame, text=">>", command=lambda: self._go_to_page(self.total_pages),
+                                   state=tk.DISABLED if self.current_page == self.total_pages else tk.NORMAL)
+        last_page_btn.pack(side=tk.RIGHT, padx=2)
+        Tooltip(last_page_btn, text="Ir a la última página.", short_text="Última.", enabled=self.settings.enable_hover_tooltips)
 
         next_page_btn = ttk.Button(self.bottom_fixed_pagination_frame, text=">", command=lambda: self._go_to_page(self.current_page + 1),
                                    state=tk.DISABLED if self.current_page == self.total_pages else tk.NORMAL)
-        next_page_btn.pack(side=tk.LEFT, padx=2)
+        next_page_btn.pack(side=tk.RIGHT, padx=2)
         Tooltip(next_page_btn, text="Ir a la página siguiente.", short_text="Siguiente.", enabled=self.settings.enable_hover_tooltips)
 
-        last_page_btn = ttk.Button(self.bottom_fixed_pagination_frame, text=">>", command=lambda: self._go_to_page(self.total_pages),
-                                   state=tk.DISABLED if self.current_page == self.total_pages else tk.NORMAL)
-        last_page_btn.pack(side=tk.LEFT, padx=2)
-        Tooltip(last_page_btn, text="Ir a la última página.", short_text="Última.", enabled=self.settings.enable_hover_tooltips)
+        # --- Center-aligned label (fills remaining space) ---
+        page_info_label = ttk.Label(self.bottom_fixed_pagination_frame, text=f"Página {self.current_page} de {self.total_pages}")
+        page_info_label.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+
 
     def _go_to_page(self, page_number):
         """Navega a una página específica y repopula el treeview."""
