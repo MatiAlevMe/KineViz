@@ -96,11 +96,7 @@ class StudyDialog(Toplevel):
             "<Configure>",
             lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
         )
-        # Bind canvas configure to adjust scrollable_main_frame width for horizontal scroll
-        canvas.bind(
-            "<Configure>",
-            lambda e: canvas.itemconfig(canvas.nametowidget(e.widget).interior_id, width=e.width) if hasattr(canvas, 'interior_id') else None
-        )
+        # Removed problematic canvas.bind("<Configure>") that forced inner frame width
 
 
         canvas.interior_id = canvas.create_window((0, 0), window=scrollable_main_frame, anchor="nw")
