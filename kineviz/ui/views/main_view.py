@@ -56,8 +56,12 @@ class MainView:
             "<Configure>",
             lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
         )
-        self.canvas.create_window((0, 0), window=self.scrollable_frame_content, anchor="nw")
+        # Store the canvas window ID for later configuration
+        self.canvas_interior_id = self.canvas.create_window((0, 0), window=self.scrollable_frame_content, anchor="nw")
         self.canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
+        
+        # Bind canvas configure event to adjust interior frame width
+        self.canvas.bind("<Configure>", self._on_canvas_configure)
 
         canvas_container.grid_rowconfigure(0, weight=1)
         canvas_container.grid_columnconfigure(0, weight=1)
@@ -115,17 +119,10 @@ class MainView:
         self.tree.column('Editar', width=80, anchor='center', stretch=tk.NO)
         self.tree.column('Eliminar', width=80, anchor='center', stretch=tk.NO)
 
-        # Scrollbar vertical
-        v_scrollbar = ttk.Scrollbar(table_frame, orient=tk.VERTICAL, command=self.tree.yview)
-        self.tree.configure(yscrollcommand=v_scrollbar.set)
-
-        # Scrollbar horizontal
-        h_scrollbar = ttk.Scrollbar(table_frame, orient=tk.HORIZONTAL, command=self.tree.xview)
-        self.tree.configure(xscrollcommand=h_scrollbar.set)
-
+        # Treeview's own scrollbars are removed as the main canvas scrollbars will handle it.
         self.tree.grid(row=0, column=0, sticky='nsew')
-        v_scrollbar.grid(row=0, column=1, sticky='ns')
-        h_scrollbar.grid(row=1, column=0, sticky='ew') # Grid the horizontal scrollbar
+        # v_scrollbar_tree.grid(row=0, column=1, sticky='ns') # Removed
+        # h_scrollbar_tree.grid(row=1, column=0, sticky='ew') # Removed
 
         table_frame.grid_rowconfigure(0, weight=1)
         table_frame.grid_columnconfigure(0, weight=1)
@@ -319,6 +316,13 @@ class MainView:
         self.current_page = 1
         self.load_studies()
         self._on_selection_change() # Actualizar estado del botón
+
+    def _on_canvas_configure(self, event):
+        """Adjusts the width of the scrollable_frame_content to match the canvas width."""
+        canvas_width = event.width
+        if hasattr(self, 'canvas_interior_id') and self.canvas_interior_id:
+            self.canvas.itemconfig(self.canvas_interior_id, width=canvas_width)
+            # Height is managed by content and scrollregion
 
     def _on_selection_change(self, event=None):
         """Actualiza el estado del botón 'Eliminar Seleccionado(s)'."""
