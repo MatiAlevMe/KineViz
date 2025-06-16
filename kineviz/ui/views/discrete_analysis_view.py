@@ -54,7 +54,41 @@ class DiscreteAnalysisView(ttk.Frame):
         self.filter_vi2_desc_var = tk.StringVar()
 
         # Empaquetar el frame principal
-        self.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        # self.pack(fill=tk.BOTH, expand=True, padx=10, pady=10) # Original packing of self (DiscreteAnalysisView)
+
+        # --- Setup for scrollable area ---
+        # DiscreteAnalysisView is a ttk.Frame itself. Content will go into a scrollable_frame inside it.
+        canvas_container = ttk.Frame(self) # Container for canvas and scrollbars
+        canvas_container.pack(fill=tk.BOTH, expand=True) # Fill the DiscreteAnalysisView frame
+
+        self.canvas = tk.Canvas(canvas_container, highlightthickness=0)
+        v_scrollbar = ttk.Scrollbar(canvas_container, orient="vertical", command=self.canvas.yview)
+        h_scrollbar = ttk.Scrollbar(canvas_container, orient="horizontal", command=self.canvas.xview)
+        
+        self.scrollable_frame = ttk.Frame(self.canvas) # Content goes here
+
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+        )
+        self.canvas.bind(
+            "<Configure>",
+            lambda e: self.canvas.itemconfig(self.canvas.nametowidget(e.widget).interior_id, width=e.width) if hasattr(self.canvas, 'interior_id') else None
+        )
+
+        self.canvas.interior_id = self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
+
+        canvas_container.grid_rowconfigure(0, weight=1)
+        canvas_container.grid_columnconfigure(0, weight=1)
+        self.canvas.grid(row=0, column=0, sticky="nsew")
+        v_scrollbar.grid(row=0, column=1, sticky="ns")
+        h_scrollbar.grid(row=1, column=0, sticky="ew")
+        # --- End scrollable area setup ---
+        
+        # Original self.pack is for DiscreteAnalysisView itself, done by its caller (MainWindow)
+        # Now, create_widgets will use self.scrollable_frame as its parent.
+        self.pack(fill=tk.BOTH, expand=True, padx=10, pady=10) # Pack self (DiscreteAnalysisView)
 
         self._load_study_vi_data()
         self.create_widgets()
@@ -62,11 +96,12 @@ class DiscreteAnalysisView(ttk.Frame):
         self._fetch_all_table_files_data() # Cargar todos los datos de tablas al inicio
         self.apply_filters() # Aplicar filtros iniciales (mostrar todos)
 
-    def create_widgets(self):
+    def create_widgets(self): # Content now goes into self.scrollable_frame
         """Crea los widgets para la vista de análisis discreto."""
+        parent_frame = self.scrollable_frame # All content goes into scrollable_frame
 
         # --- Cabecera ---
-        header_frame = ttk.Frame(self)
+        header_frame = ttk.Frame(parent_frame) # Changed parent
         header_frame.pack(fill=tk.X, pady=(0, 10))
 
         # Botón Volver
@@ -81,7 +116,7 @@ class DiscreteAnalysisView(ttk.Frame):
         ).pack(side=tk.LEFT, padx=(0, 20))
 
         # --- Acciones ---
-        action_frame = ttk.Frame(self)
+        action_frame = ttk.Frame(parent_frame) # Changed parent
         action_frame.pack(fill=tk.X, pady=10)
 
         ttk.Button(
@@ -102,7 +137,7 @@ class DiscreteAnalysisView(ttk.Frame):
         ).pack(side=tk.LEFT, padx=5)
 
         # --- Filtros y Búsqueda ---
-        filter_frame = ttk.Frame(self)
+        filter_frame = ttk.Frame(parent_frame) # Changed parent
         filter_frame.pack(fill=tk.X, pady=(5, 5))
         # Configure filter_frame to use grid
         filter_frame.columnconfigure(1, weight=1) # Allow search entry/combos to expand
@@ -179,7 +214,7 @@ class DiscreteAnalysisView(ttk.Frame):
         self.filter_vi2_frame.grid_remove() # Initially hidden
 
         # --- Lista de Tablas Generadas (Treeview) ---
-        list_frame = ttk.LabelFrame(self, text="Tablas Generadas (.xlsx)") # Updated title
+        list_frame = ttk.LabelFrame(parent_frame, text="Tablas Generadas (.xlsx)") # Changed parent
         list_frame.pack(fill=tk.BOTH, expand=True, pady=(5, 0)) # Adjusted padding
         list_frame.columnconfigure(0, weight=1)
         list_frame.rowconfigure(0, weight=1)

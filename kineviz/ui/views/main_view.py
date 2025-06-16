@@ -23,15 +23,45 @@ class MainView:
         self.total_pages = 1
 
         # Crear la interfaz de usuario
-        self.frame = ttk.Frame(root, padding="10")
+        self.frame = ttk.Frame(root, padding="10") # This is the outermost frame for MainView
         self.frame.pack(fill=tk.BOTH, expand=True)
-        self.create_ui()
+        
+        # --- Setup for scrollable area ---
+        canvas_container = ttk.Frame(self.frame)
+        canvas_container.pack(fill=tk.BOTH, expand=True)
+
+        self.canvas = tk.Canvas(canvas_container, highlightthickness=0)
+        v_scrollbar = ttk.Scrollbar(canvas_container, orient="vertical", command=self.canvas.yview)
+        h_scrollbar = ttk.Scrollbar(canvas_container, orient="horizontal", command=self.canvas.xview)
+        
+        self.scrollable_frame = ttk.Frame(self.canvas) # Content goes here
+
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+        )
+        self.canvas.bind(
+            "<Configure>",
+            lambda e: self.canvas.itemconfig(self.canvas.nametowidget(e.widget).interior_id, width=e.width) if hasattr(self.canvas, 'interior_id') else None
+        )
+
+        self.canvas.interior_id = self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
+
+        canvas_container.grid_rowconfigure(0, weight=1)
+        canvas_container.grid_columnconfigure(0, weight=1)
+        self.canvas.grid(row=0, column=0, sticky="nsew")
+        v_scrollbar.grid(row=0, column=1, sticky="ns")
+        h_scrollbar.grid(row=1, column=0, sticky="ew")
+        # --- End scrollable area setup ---
+
+        self.create_ui_content(self.scrollable_frame) # Pass scrollable_frame as parent for content
         self.load_studies() # Carga inicial
 
-    def create_ui(self):
-        """Crea los widgets de la interfaz de usuario."""
+    def create_ui_content(self, parent_frame): # Renamed from create_ui, parent_frame is self.scrollable_frame
+        """Crea los widgets de la interfaz de usuario dentro del frame desplazable."""
         # --- Cabecera ---
-        header_frame = ttk.Frame(self.frame)
+        header_frame = ttk.Frame(parent_frame) # Changed parent
         header_frame.pack(fill=tk.X, pady=(0, 10))
 
         ttk.Label(header_frame, text="KineViz", style='Header.TLabel').pack(side=tk.LEFT, padx=(0, 20))
@@ -48,7 +78,7 @@ class MainView:
 
 
         # --- Búsqueda ---
-        search_frame = ttk.Frame(self.frame)
+        search_frame = ttk.Frame(parent_frame) # Changed parent
         search_frame.pack(fill=tk.X, pady=(0, 10))
 
         ttk.Label(search_frame, text="Buscar estudio:").pack(side=tk.LEFT, padx=(0, 5))
@@ -60,7 +90,7 @@ class MainView:
         ttk.Button(search_frame, text="Refrescar", command=self.load_studies).pack(side=tk.LEFT)
 
         # --- Tabla de Estudios ---
-        table_frame = ttk.Frame(self.frame)
+        table_frame = ttk.Frame(parent_frame) # Changed parent
         table_frame.pack(fill=tk.BOTH, expand=True)
 
         columns = ('Pin', 'Nombre', 'Comentar', 'Ver', 'Editar', 'Eliminar') # Añadir 'Comentar'
@@ -104,7 +134,7 @@ class MainView:
         # --- Paginación ---
         # --- Botón Crear Nuevo Estudio y otros botones inferiores ---
         # Este frame se empaquetará al final (side=tk.BOTTOM)
-        bottom_buttons_frame = ttk.Frame(self.frame)
+        bottom_buttons_frame = ttk.Frame(parent_frame) # Changed parent
         bottom_buttons_frame.pack(side=tk.BOTTOM, pady=10, fill=tk.X)
 
         # Botón Eliminar Todos los Estudios (a la izquierda)
@@ -132,7 +162,7 @@ class MainView:
         create_study_button.pack(side=tk.RIGHT)
         
         # --- Paginación (se empaqueta después de los botones inferiores para que quede arriba de ellos) ---
-        self.pagination_frame = ttk.Frame(self.frame)
+        self.pagination_frame = ttk.Frame(parent_frame) # Changed parent
         self.pagination_frame.pack(side=tk.BOTTOM, pady=(5, 0), fill=tk.X) # side=tk.BOTTOM
 
 
