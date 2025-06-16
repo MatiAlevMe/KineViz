@@ -180,7 +180,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         ttk.Label(self.one_vi_config_frame, text="Agrupar por VI:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
         primary_vi_frame = ttk.Frame(self.one_vi_config_frame)
         primary_vi_frame.grid(row=0, column=1, sticky="ew")
-        self.primary_vi_combo = ttk.Combobox(primary_vi_frame, textvariable=self.primary_vi_var, state="readonly")
+        self.primary_vi_combo = ttk.Combobox(primary_vi_frame, textvariable=self.primary_vi_var, state="readonly", font=scaled_font)
         self.primary_vi_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.primary_vi_combo.bind("<<ComboboxSelected>>", self.update_available_groups) # Actualizar grupos al seleccionar VI primaria
         ttk.Button(primary_vi_frame, text="?", width=3, style="Help.TButton",
