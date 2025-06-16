@@ -131,6 +131,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.protocol("WM_DELETE_WINDOW", self._on_cancel)
         self.bind("<Escape>", self._on_cancel)
         self.bind("<Configure>", self._on_configure_event)
+        # self.bind("<Configure>", self._on_configure_event) # Already bound if using the above block
 
     def _on_configure_event(self, event):
         # Triggered by manual resize or self.geometry()
