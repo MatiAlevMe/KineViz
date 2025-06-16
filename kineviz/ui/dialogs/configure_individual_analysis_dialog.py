@@ -103,9 +103,8 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self._resize_to_content() # Set initial size based on content
 
         # Now set a practical minimum size for user manual resizing and future content changes
-        # This prevents the dialog from becoming too small.
-        # You can adjust these values (e.g., 300, 200) if needed.
-        self.minsize(400, 300)
+        # This prevents the dialog from becoming too small if content is very small or removed.
+        self.minsize(200, 150) # Adjusted to a smaller practical minimum
 
         self._center_dialog() # Center after initial size
         
@@ -114,34 +113,16 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.bind("<Configure>", self._on_manual_resize)
 
 
-    def _on_manual_resize(self, event): # Renamed from _on_configure_event
-        if event.widget != self or self._is_adjusting_size: # Check if event is for Toplevel and not recursing
-            return
-        self._is_adjusting_size = True
+    def _on_manual_resize(self, event):
+        # If the event is for the Toplevel window itself and we are not already adjusting size
+        if event.widget == self and not self._is_adjusting_size:
+            # Immediately try to resize to content. This will handle all cases:
+            # - User tries to expand beyond content: snaps back.
+            # - User tries to shrink: respects content size / minsize, adds scrollbars if needed.
+            self._resize_to_content()
+        # Note: _is_adjusting_size flag is set within _resize_to_content
 
-        self.update_idletasks()
-        current_w = self.winfo_width()
-        current_h = self.winfo_height()
-        max_w = int(self.winfo_screenwidth() * 0.9)
-        max_h = int(self.winfo_screenheight() * 0.9)
-
-        new_w, new_h = current_w, current_h
-        capped = False
-        if current_w > max_w:
-            new_w = max_w
-            capped = True
-        if current_h > max_h:
-            new_h = max_h
-            capped = True
-        
-        if capped:
-            self.geometry(f"{new_w}x{new_h}")
-            # self.update_idletasks() # Called in _update_scrollbars_and_region
-        
-        self._update_scrollbars_and_region()
-        self._is_adjusting_size = False
-
-    def _resize_to_content(self): # Renamed from _adjust_dialog_layout
+    def _resize_to_content(self):
         if self._is_adjusting_size:
             return
         self._is_adjusting_size = True
