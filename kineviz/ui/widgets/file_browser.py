@@ -174,6 +174,7 @@ class FileBrowser(ttk.Frame):
         if self.total_pages <= 1:
             return # No mostrar si solo hay una página
 
+        # --- Left-aligned buttons ---
         # Botón Primera Página
         first_btn = ttk.Button(self.pagination_frame, text="<<", command=lambda: self.go_to_page(1))
         first_btn.pack(side=tk.LEFT, padx=2)
@@ -188,22 +189,26 @@ class FileBrowser(ttk.Frame):
         if self.current_page == 1:
             prev_btn.config(state=tk.DISABLED)
 
-        # Etiqueta de Página Actual
-        ttk.Label(self.pagination_frame, text=f"Página {self.current_page} de {self.total_pages} ({self.total_files} archivos)").pack(side=tk.LEFT, padx=5)
+        # --- Right-aligned buttons (packed in reverse visual order) ---
+        # Botón Última Página
+        last_btn = ttk.Button(self.pagination_frame, text=">>", command=lambda: self.go_to_page(self.total_pages))
+        last_btn.pack(side=tk.RIGHT, padx=2)
+        Tooltip(last_btn, text="Ir a la última página.", short_text="Última página.", enabled=self.settings.enable_hover_tooltips if self.settings else False)
+        if self.current_page == self.total_pages:
+            last_btn.config(state=tk.DISABLED)
 
         # Botón Siguiente
         next_btn = ttk.Button(self.pagination_frame, text=">", command=lambda: self.go_to_page(self.current_page + 1))
-        next_btn.pack(side=tk.LEFT, padx=2)
+        next_btn.pack(side=tk.RIGHT, padx=2)
         Tooltip(next_btn, text="Ir a la página siguiente.", short_text="Página siguiente.", enabled=self.settings.enable_hover_tooltips if self.settings else False)
         if self.current_page == self.total_pages:
             next_btn.config(state=tk.DISABLED)
 
-        # Botón Última Página
-        last_btn = ttk.Button(self.pagination_frame, text=">>", command=lambda: self.go_to_page(self.total_pages))
-        last_btn.pack(side=tk.LEFT, padx=2)
-        Tooltip(last_btn, text="Ir a la última página.", short_text="Última página.", enabled=self.settings.enable_hover_tooltips if self.settings else False)
-        if self.current_page == self.total_pages:
-            last_btn.config(state=tk.DISABLED)
+        # --- Center-aligned label (fills remaining space) ---
+        # Etiqueta de Página Actual
+        page_label = ttk.Label(self.pagination_frame, text=f"Página {self.current_page} de {self.total_pages} ({self.total_files} archivos)")
+        page_label.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+
 
     def go_to_page(self, page_number):
         """Navega a una página específica."""
