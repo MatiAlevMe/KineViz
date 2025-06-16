@@ -1097,7 +1097,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
              if hasattr(self, 'one_vi_button'): self.one_vi_button.state(['!pressed', '!disabled'])
              if hasattr(self, 'two_vi_button'): self.two_vi_button.state(['!pressed', '!disabled'])
         
-        self._adjust_dialog_layout()
+        self._resize_to_content()
 
     def _update_fixed_descriptor_options(self, event=None):
         """Actualiza el combobox de sub-valores fijos basado en la VI fija seleccionada."""
@@ -1122,7 +1122,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.button_frame.grid_remove()
         if hasattr(self, 'save_button'): self.save_button.config(state=tk.DISABLED)
         
-        self._adjust_dialog_layout()
+        self._resize_to_content()
 
     def update_available_groups(self, event=None):
         """Actualiza la lista de grupos FILTRADOS basados en las selecciones previas."""
@@ -1143,7 +1143,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             self.analysis_name_frame.grid_remove()
             self.button_frame.grid_remove()
             logger.debug("Limpiando grupos: falta información previa.")
-            self._adjust_dialog_layout()
+            self._resize_to_content()
             return
 
         fixed_descriptor = None
@@ -1188,7 +1188,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             self._clear_group_selectors(update_columns=False) 
             self.group_selection_outer_frame.grid_remove()
         
-        self._adjust_dialog_layout()
+        self._resize_to_content()
 
     def _show_final_steps(self):
         """Muestra los frames de supuestos, nombre y botones."""
@@ -1196,7 +1196,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.analysis_name_frame.grid()
         self.button_frame.grid()
         if hasattr(self, 'save_button'): self.save_button.config(state=tk.NORMAL) 
-        self._adjust_dialog_layout()
+        self._resize_to_content()
 
     def _hide_final_steps(self):
         """Oculta los frames de supuestos, nombre y botones."""
