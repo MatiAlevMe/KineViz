@@ -17412,3 +17412,8 @@ sqlite3.DatabaseError: file is not a database
 2025-06-16 18:59:30,195 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
 2025-06-16 18:59:30,196 - INFO - [kineviz.ui.main_window] - Applying theme: Light, font scale: 1.0
 2025-06-16 18:59:31,744 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Comentar' para estudio ID 1
+2025-06-16 19:42:33,358 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 19:42:33,358 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 19:42:33,972 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 19:42:33,972 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 19:42:33,974 - INFO - [kineviz.ui.main_window] - Applying theme: Light, font scale: 1.0
