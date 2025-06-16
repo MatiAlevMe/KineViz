@@ -5,8 +5,7 @@ import logging
 from kineviz.core.services.study_service import StudyService
 from kineviz.ui.widgets.tooltip import Tooltip # Import Tooltip
 from kineviz.config.settings import AppSettings # Import AppSettings
-# Ya no se necesita FileService directamente aquí
-# from kineviz.core.services.file_service import FileService
+from kineviz.ui.utils.style import get_scaled_font, DEFAULT_FONT_SIZE # Import font utilities
 
 logger = logging.getLogger(__name__)
 
@@ -33,34 +32,37 @@ class DescriptorAliasDialog(Toplevel):
         # Almacenar alias actuales del estudio
         self.current_aliases = {}
 
-        # --- Frame principal con scroll ---
-        container_frame = ttk.Frame(self)
-        container_frame.pack(fill=tk.BOTH, expand=True)
-        self.canvas = tk.Canvas(container_frame, highlightthickness=0) # Remove border
-        v_scrollbar = ttk.Scrollbar(container_frame, orient="vertical", command=self.canvas.yview)
-        h_scrollbar = ttk.Scrollbar(container_frame, orient="horizontal", command=self.canvas.xview)
-        self.scrollable_frame = ttk.Frame(self.canvas)
+        # --- Bottom Fixed Frame for Action Buttons (Packed first for bottom placement) ---
+        self.bottom_action_buttons_frame = ttk.Frame(self, padding=(10, 10, 10, 10))
+        self.bottom_action_buttons_frame.pack(side=tk.BOTTOM, fill=tk.X)
+
+        # --- Middle Scrollable Area (Canvas Container) ---
+        self.canvas_container = ttk.Frame(self) # Takes remaining space
+        self.canvas_container.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=10, pady=(10,0)) # Add padding
+
+        self.canvas = tk.Canvas(self.canvas_container, highlightthickness=0)
+        v_scrollbar = ttk.Scrollbar(self.canvas_container, orient="vertical", command=self.canvas.yview)
+        h_scrollbar = ttk.Scrollbar(self.canvas_container, orient="horizontal", command=self.canvas.xview)
+        
+        self.scrollable_frame = ttk.Frame(self.canvas) # Content goes here
 
         self.scrollable_frame.bind(
             "<Configure>",
             lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")) if hasattr(self, 'canvas') and self.canvas.winfo_exists() else None
         )
-        # Removed problematic canvas.bind("<Configure>") that forced inner frame width
-
-        self.canvas.interior_id = self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
-        self.canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
-
-        # Grid layout for canvas and scrollbars
-        container_frame.grid_rowconfigure(0, weight=1)
-        container_frame.grid_columnconfigure(0, weight=1)
         
+        self.canvas_interior_id = self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
+        self.canvas.bind("<Configure>", self._dynamic_canvas_item_width_configure)
+
+        self.canvas_container.grid_rowconfigure(0, weight=1)
+        self.canvas_container.grid_columnconfigure(0, weight=1)
         self.canvas.grid(row=0, column=0, sticky="nsew")
         v_scrollbar.grid(row=0, column=1, sticky="ns")
         h_scrollbar.grid(row=1, column=0, sticky="ew")
-        # --- Fin frame principal con scroll ---
+        # --- End Scrollable Area Setup ---
 
-        # Crear widgets dentro del frame desplazable
-        self.create_widgets(self.scrollable_frame)
+        self.create_widgets() # No longer takes parent_frame
         self.load_descriptors_and_aliases()
 
         # Centrar diálogo
@@ -69,39 +71,63 @@ class DescriptorAliasDialog(Toplevel):
 
         # Definir estilo para el botón de ayuda
         style = ttk.Style()
-        style.configure("Help.TButton", foreground="white", background="blue")
+        style.configure("Help.TButton", foreground="white", background="blue") # This might be better in main_window style config
+
+    def _dynamic_canvas_item_width_configure(self, event):
+        """
+        Adjusts the width of the scrollable_frame (canvas window item)
+        to be the maximum of its natural content width and the canvas's current width.
+        """
+        canvas_width = event.width
+        if hasattr(self, 'scrollable_frame') and self.scrollable_frame.winfo_exists():
+            self.scrollable_frame.update_idletasks() # Ensure natural width is calculated
+            content_natural_width = self.scrollable_frame.winfo_reqwidth()
+        else:
+            content_natural_width = canvas_width # Fallback
+            
+        effective_width = max(content_natural_width, canvas_width)
+        
+        if hasattr(self, 'canvas_interior_id') and self.canvas_interior_id and \
+           hasattr(self, 'canvas') and self.canvas.winfo_exists():
+            self.canvas.itemconfig(self.canvas_interior_id, width=effective_width)
 
     def _show_input_help(self, title: str, message: str):
         """Muestra un popup de ayuda simple."""
         messagebox.showinfo(title, message, parent=self)
 
-    def create_widgets(self, parent_frame):
-        """Crea los widgets dentro del frame especificado."""
-        main_frame = ttk.Frame(parent_frame, padding="10")
-        main_frame.pack(fill=tk.BOTH, expand=True)
-
+    def create_widgets(self):
+        """Crea los widgets del diálogo."""
+        # Content for self.scrollable_frame
         # Instrucciones
-        ttk.Label(main_frame, text="Asigne un alias descriptivo a cada sub-valor definido para este estudio.", wraplength=450).pack(pady=(0, 10))
+        ttk.Label(self.scrollable_frame, text="Asigne un alias descriptivo a cada sub-valor definido para este estudio.", wraplength=450).pack(pady=(0, 10), padx=10)
 
         # Frame para la tabla de alias (usaremos grid aquí)
-        self.alias_grid_frame = ttk.Frame(main_frame)
-        self.alias_grid_frame.pack(fill=tk.BOTH, expand=True)
+        self.alias_grid_frame = ttk.Frame(self.scrollable_frame)
+        self.alias_grid_frame.pack(fill=tk.BOTH, expand=True, padx=10)
         self.alias_grid_frame.columnconfigure(1, weight=1) # Columna de alias expandible
 
-        # Cabeceras (revert to default TLabel style or previously explicit font if any)
-        ttk.Label(self.alias_grid_frame, text="Sub-valor Definido", font=('Helvetica', 10, 'bold')).grid(row=0, column=0, padx=5, pady=5, sticky='w')
-        ttk.Label(self.alias_grid_frame, text="Alias Asignado", font=('Helvetica', 10, 'bold')).grid(row=0, column=1, padx=5, pady=5, sticky='w')
+        # Cabeceras con fuente escalada
+        header_font = get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale, weight="bold")
+        ttk.Label(self.alias_grid_frame, text="Sub-valor Definido", font=header_font).grid(row=0, column=0, padx=5, pady=5, sticky='w')
+        ttk.Label(self.alias_grid_frame, text="Alias Asignado", font=header_font).grid(row=0, column=1, padx=5, pady=5, sticky='w')
 
         # Los sub-valores se añadirán dinámicamente en load_descriptors_and_aliases
 
-        # Botones de acción
-        button_frame = ttk.Frame(main_frame)
-        button_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(10, 0))
-        ttk.Button(button_frame, text="Guardar Alias", command=self.save_aliases).pack(side=tk.RIGHT, padx=5)
-        ttk.Button(button_frame, text="Cancelar", command=self.destroy).pack(side=tk.RIGHT)
+        # Botones de acción en self.bottom_action_buttons_frame
+        cancel_button = ttk.Button(self.bottom_action_buttons_frame, text="Cancelar", command=self.destroy)
+        cancel_button.pack(side=tk.RIGHT)
+        Tooltip(cancel_button, text="Cerrar este diálogo sin guardar cambios.", short_text="Cancelar.", enabled=self.settings.enable_hover_tooltips)
+        
+        save_button = ttk.Button(self.bottom_action_buttons_frame, text="Guardar Alias", command=self.save_aliases)
+        save_button.pack(side=tk.RIGHT, padx=(0,5)) # Add padding between buttons
+        Tooltip(save_button, text="Guardar los alias asignados y cerrar el diálogo.", short_text="Guardar.", enabled=self.settings.enable_hover_tooltips)
+
 
         # Set minsize after widgets are created
-        self.update_idletasks()
+        self.update_idletasks() # Process pending operations
+        self.scrollable_frame.update_idletasks()
+        if hasattr(self, 'canvas') and self.canvas.winfo_exists():
+            self.canvas.update_idletasks()
         self.minsize(400, 300) # Set a reasonable fixed minimum size
 
     def load_descriptors_and_aliases(self):
