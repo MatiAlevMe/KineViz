@@ -309,15 +309,14 @@ class StudyDialog(Toplevel):
             variable=allows_combination_var,
         )
         allows_combination_cb.pack(side=tk.LEFT)
-        multiple_help_button = ttk.Button(multiple_frame, text="?", width=3, style="Help.TButton",
-                                          command=lambda: self._show_input_help("Ayuda: VI Múltiple",
-                                                                                ("Permite que un archivo o intento se asocie con MÁS DE UN sub-valor de esta VI simultáneamente.\n\n"
-                                                                                 "Ejemplo: VI 'Equipamiento' con sub-valores 'Zapatillas', 'Canilleras', 'Vendas'.\n"
-                                                                                 "Si 'Equipamiento' es Múltiple, un archivo podría ser:\n"
-                                                                                 "  `P01 Zapatillas 01.txt` y `P01 Zapatillas 01.txt` (P01 usa Zapatillas Y Canilleras).\n"
-                                                                                 "Si NO es Múltiple, un archivo solo puede tener UN sub-valor de 'Equipamiento':\n"
-                                                                                 "  `P01 Zapatillas 01.txt` O `P01 Canilleras 01.txt`, pero no ambos para la misma VI.")))
+        multiple_help_button = ttk.Button(multiple_frame, text="?", width=3, style="Help.TButton")
         multiple_help_button.pack(side=tk.LEFT, padx=(2,0))
+        Tooltip(multiple_help_button, ("Permite que un archivo o intento se asocie con MÁS DE UN sub-valor de esta VI simultáneamente.\n\n"
+                                       "Ejemplo: VI 'Equipamiento' con sub-valores 'Zapatillas', 'Canilleras', 'Vendas'.\n"
+                                       "Si 'Equipamiento' es Múltiple, un archivo podría ser:\n"
+                                       "  `P01 Zapatillas 01.txt` y `P01 Zapatillas 01.txt` (P01 usa Zapatillas Y Canilleras).\n" # Note: Example filename seems duplicated, kept as is.
+                                       "Si NO es Múltiple, un archivo solo puede tener UN sub-valor de 'Equipamiento':\n"
+                                       "  `P01 Zapatillas 01.txt` O `P01 Canilleras 01.txt`, pero no ambos para la misma VI."))
 
 
         # Checkbox "¿Obligatorio?" (se empaquetará/desempaquetará dinámicamente)
