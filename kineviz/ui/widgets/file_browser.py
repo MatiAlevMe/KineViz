@@ -57,28 +57,18 @@ class FileBrowser(ttk.Frame):
         ttk.Button(filter_frame, text="Limpiar", command=self.clear_filters).pack(side=tk.LEFT, padx=(0,5))
         ttk.Button(filter_frame, text="Refrescar", command=self.load_files).pack(side=tk.LEFT, padx=5)
 
-
-        # --- Frame para Tabla y Scrollbar ---
-        table_container = ttk.Frame(self)
-        # Usar pack con fill=BOTH y expand=True para que la tabla ocupe el espacio
-        table_container.pack(fill=tk.BOTH, expand=True)
-
-        # Crear tabla de archivos
+        # --- Tabla de Archivos ---
+        # Crear tabla de archivos directamente en self (FileBrowser frame)
+        # y establecer su altura según files_per_page.
         columns = ('Participante', 'Nombre', 'Tipo', 'Tipo de Dato', 'Ver', 'Eliminar')
-        self.tree = ttk.Treeview(table_container, columns=columns, show='headings', selectmode="extended")
-
+        self.tree = ttk.Treeview(self, columns=columns, show='headings', selectmode="extended", height=self.files_per_page)
+        
         for col in columns:
             self.tree.heading(col, text=col)
-            # Ajustar ancho y anclaje directamente aquí
             self.tree.column(col, width=100, anchor='center' if col in ['Ver', 'Eliminar'] else 'w')
 
-        # Scrollbars are removed; scrolling will be handled by the parent canvas in StudyView.
-        # Empaquetar tabla usando grid dentro de table_container
-        table_container.grid_rowconfigure(0, weight=1)
-        table_container.grid_columnconfigure(0, weight=1)
-        self.tree.grid(row=0, column=0, sticky='nsew')
-        # scrollbar.grid(row=0, column=1, sticky='ns') # Removed
-        # h_scrollbar.grid(row=1, column=0, sticky='ew') # Removed
+        # Pack the tree directly. It will fill horizontally but not expand vertically beyond its requested height.
+        self.tree.pack(side=tk.TOP, fill=tk.X, expand=False, pady=(0,5), padx=5)
 
         # Configurar eventos
         self.tree.bind('<ButtonRelease-1>', self.on_tree_click)
@@ -89,10 +79,13 @@ class FileBrowser(ttk.Frame):
         # If a custom parent is provided for pagination, use it. Otherwise, pack locally.
         if self.pagination_parent:
             self.pagination_frame = ttk.Frame(self.pagination_parent)
-            self.pagination_frame.pack(fill=tk.X, pady=(5, 0)) # Or grid, depending on parent's layout
+            # Packing of self.pagination_frame is handled by the parent if external.
+            # However, if it's a direct child of pagination_parent, it needs packing here.
+            self.pagination_frame.pack(fill=tk.X, pady=(5, 0)) 
         else:
+            # If pagination is internal, pack it after the tree.
             self.pagination_frame = ttk.Frame(self)
-            self.pagination_frame.pack(fill=tk.X, pady=(5, 0))
+            self.pagination_frame.pack(side=tk.TOP, fill=tk.X, pady=(5, 0), padx=5)
 
     def load_files(self):
         """Carga los archivos filtrados y paginados usando FileService."""
