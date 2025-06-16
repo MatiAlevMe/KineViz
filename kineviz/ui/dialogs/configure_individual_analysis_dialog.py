@@ -590,12 +590,6 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self._refresh_group_combobox_options() # Actualizar opciones de todos los combos
 
     def remove_group_selector(self, frame_to_remove, var_to_remove):
-        """Elimina una fila de selector de grupo."""
-        if len(self.group_selector_frames) <= 2:
-            messagebox.showwarning("Acción no permitida",
-                                   "Se requieren al menos dos grupos.",
-                                   parent=self)
-    def remove_group_selector(self, frame_to_remove, var_to_remove):
         """Elimina un selector de grupo."""
         if len(self.group_selector_vars) <= 2:
             messagebox.showwarning("Acción no permitida", "Debe seleccionar al menos dos grupos para comparar.", parent=self)
