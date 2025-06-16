@@ -10,6 +10,7 @@ from datetime import datetime
 from kineviz.core.services.analysis_service import AnalysisService
 # Importar AppSettings para leer configuración
 from kineviz.config.settings import AppSettings
+from kineviz.ui.widgets.tooltip import Tooltip # Import Tooltip
 
 
 logger = logging.getLogger(__name__)
@@ -134,10 +135,12 @@ class DiscreteAnalysisView(ttk.Frame):
         header_frame.pack(fill=tk.X, pady=(0, 10))
 
         # Botón Volver
-        ttk.Button(
+        back_button = ttk.Button(
             header_frame, text="<< Volver al Estudio",
             command=lambda: self.main_window.show_study_view(self.study_id)
-        ).pack(side=tk.LEFT, padx=(0, 10))
+        )
+        back_button.pack(side=tk.LEFT, padx=(0, 10))
+        Tooltip(back_button, text="Regresar a la vista detallada del estudio.", short_text="Volver al estudio.", enabled=self.settings.enable_hover_tooltips)
 
         ttk.Label(
             header_frame, text=f"Análisis Discreto - Estudio {self.study_id}",
@@ -148,22 +151,28 @@ class DiscreteAnalysisView(ttk.Frame):
         action_frame = ttk.Frame(self.top_fixed_actions_frame)
         action_frame.pack(fill=tk.X, pady=0) # No pady for the frame itself, children will have
 
-        ttk.Button(
+        generate_tables_button = ttk.Button(
             action_frame, text="Generar/Actualizar Tablas Resumen",
             command=self.generate_tables
-        ).pack(side=tk.LEFT, padx=5)
+        )
+        generate_tables_button.pack(side=tk.LEFT, padx=5)
+        Tooltip(generate_tables_button, text="Genera o actualiza las tablas de resumen (.xlsx) con cálculos (Max, Min, Rango) para los datos procesados.", short_text="Generar tablas.", enabled=self.settings.enable_hover_tooltips)
 
-        ttk.Button(
+        open_manager_button = ttk.Button(
             action_frame, text="Gestor de Análisis Discretos", # Texto del botón cambiado
             command=self.open_individual_analysis_manager, style="Green.TButton"
-        ).pack(side=tk.LEFT, padx=5)
+        )
+        open_manager_button.pack(side=tk.LEFT, padx=5)
+        Tooltip(open_manager_button, text="Abrir el gestor para crear, ver y eliminar análisis discretos individuales (boxplots, tests estadísticos).", short_text="Gestor análisis.", enabled=self.settings.enable_hover_tooltips)
 
         # TODO: Añadir botón "Reporte General" (Fase 6)
 
-        ttk.Button(
+        open_folder_button = ttk.Button(
             action_frame, text="Abrir Carpeta de Tablas Resumen",
             command=self._open_summary_tables_folder
-        ).pack(side=tk.LEFT, padx=5)
+        )
+        open_folder_button.pack(side=tk.LEFT, padx=5)
+        Tooltip(open_folder_button, text="Abrir la carpeta donde se guardan las tablas de resumen (.xlsx) generadas.", short_text="Abrir carpeta.", enabled=self.settings.enable_hover_tooltips)
 
         # --- Populate Top Fixed Filters Frame ---
         filter_frame = ttk.Frame(self.top_fixed_filters_frame)
@@ -208,9 +217,17 @@ class DiscreteAnalysisView(ttk.Frame):
         # Spacer to push buttons to the right
         ttk.Frame(vi_controls_row).pack(side=tk.LEFT, expand=True, fill=tk.X)
 
-        ttk.Button(vi_controls_row, text="Refrescar Lista", command=self.refresh_table_list_action).pack(side=tk.LEFT, padx=5)
-        ttk.Button(vi_controls_row, text="Aplicar Todos los Filtros", command=self.apply_filters).pack(side=tk.LEFT, padx=5)
-        ttk.Button(vi_controls_row, text="Limpiar Todos los Filtros", command=self.clear_filters).pack(side=tk.LEFT, padx=5)
+        refresh_button = ttk.Button(vi_controls_row, text="Refrescar Lista", command=self.refresh_table_list_action)
+        refresh_button.pack(side=tk.LEFT, padx=5)
+        Tooltip(refresh_button, text="Recargar la lista de tablas desde el sistema de archivos.", short_text="Refrescar lista.", enabled=self.settings.enable_hover_tooltips)
+
+        apply_filters_button = ttk.Button(vi_controls_row, text="Aplicar Todos los Filtros", command=self.apply_filters)
+        apply_filters_button.pack(side=tk.LEFT, padx=5)
+        Tooltip(apply_filters_button, text="Aplicar todos los filtros de búsqueda y VIs seleccionados.", short_text="Aplicar filtros.", enabled=self.settings.enable_hover_tooltips)
+        
+        clear_filters_button = ttk.Button(vi_controls_row, text="Limpiar Todos los Filtros", command=self.clear_filters)
+        clear_filters_button.pack(side=tk.LEFT, padx=5)
+        Tooltip(clear_filters_button, text="Limpiar todos los filtros y mostrar todas las tablas.", short_text="Limpiar filtros.", enabled=self.settings.enable_hover_tooltips)
 
 
         # Row 2: VI 1 Filter Section (managed by grid_remove/grid)
@@ -293,6 +310,7 @@ class DiscreteAnalysisView(ttk.Frame):
             style="Danger.TButton"
         )
         delete_all_tables_button.pack(side=tk.LEFT, padx=5)
+        Tooltip(delete_all_tables_button, text="Eliminar TODAS las tablas de resumen (.xlsx) de este estudio. ¡Acción irreversible!", short_text="Eliminar todas las tablas.", enabled=self.settings.enable_hover_tooltips)
 
         self.delete_selected_button = ttk.Button(
             self.bottom_fixed_table_actions_frame,
@@ -302,10 +320,12 @@ class DiscreteAnalysisView(ttk.Frame):
             style="Danger.TButton"
         )
         self.delete_selected_button.pack(side=tk.LEFT, padx=5)
+        Tooltip(self.delete_selected_button, text="Eliminar las tablas de resumen seleccionadas en la lista.", short_text="Eliminar seleccionadas.", enabled=self.settings.enable_hover_tooltips)
         
         self.view_table_button = ttk.Button(self.bottom_fixed_table_actions_frame, text="Ver Tabla",
                                             command=self.view_table, state=tk.DISABLED)
         self.view_table_button.pack(side=tk.RIGHT, padx=5)
+        Tooltip(self.view_table_button, text="Abrir la tabla de resumen (.xlsx) seleccionada con la aplicación predeterminada.", short_text="Ver tabla.", enabled=self.settings.enable_hover_tooltips)
 
         # --- Botones de Acción para Tablas (Now direct children of parent_frame) ---
         # This frame is now a child of parent_frame (self.scrollable_frame), packed AFTER list_frame
@@ -557,6 +577,7 @@ class DiscreteAnalysisView(ttk.Frame):
         # Botón Primera Página (opcional, pero bueno para consistencia)
         first_btn = ttk.Button(self.bottom_fixed_pagination_frame, text="<<", command=lambda: self.go_to_page(1))
         first_btn.pack(side=tk.LEFT, padx=2)
+        Tooltip(first_btn, text="Ir a la primera página de tablas.", short_text="Primera página.", enabled=self.settings.enable_hover_tooltips)
         if self.current_page == 1: first_btn.config(state=tk.DISABLED)
 
         prev_btn = ttk.Button(
@@ -565,6 +586,7 @@ class DiscreteAnalysisView(ttk.Frame):
             state=tk.DISABLED if self.current_page <= 1 else tk.NORMAL
         )
         prev_btn.pack(side=tk.LEFT, padx=5)
+        Tooltip(prev_btn, text="Ir a la página anterior de tablas.", short_text="Página anterior.", enabled=self.settings.enable_hover_tooltips)
 
         page_label = ttk.Label(self.bottom_fixed_pagination_frame, text=page_info)
         page_label.pack(side=tk.LEFT, padx=5)
@@ -575,10 +597,12 @@ class DiscreteAnalysisView(ttk.Frame):
             state=tk.DISABLED if self.current_page >= self.total_pages else tk.NORMAL
         )
         next_btn.pack(side=tk.LEFT, padx=5)
+        Tooltip(next_btn, text="Ir a la página siguiente de tablas.", short_text="Página siguiente.", enabled=self.settings.enable_hover_tooltips)
         
         # Botón Última Página (opcional)
         last_btn = ttk.Button(self.bottom_fixed_pagination_frame, text=">>", command=lambda: self.go_to_page(self.total_pages))
         last_btn.pack(side=tk.LEFT, padx=2)
+        Tooltip(last_btn, text="Ir a la última página de tablas.", short_text="Última página.", enabled=self.settings.enable_hover_tooltips)
         if self.current_page == self.total_pages: last_btn.config(state=tk.DISABLED)
 
 
