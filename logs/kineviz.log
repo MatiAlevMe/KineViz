@@ -40649,3 +40649,26 @@ Traceback (most recent call last):
     raise ValueError(f"El archivo no parece ser una tabla CSV: "
 ValueError: El archivo no parece ser una tabla CSV: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/1_Edad y Peso con 3 sub-valores/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_OS.xlsx
 2025-06-15 16:04:27,083 - WARNING - [kineviz.core.services.analysis_service] - Se encontraron errores durante la eliminación masiva de tablas de resumen: ['Error eliminando tabla de resumen Rango_Cinematica_Edad_Adulto__Peso_NP.xlsx: El archivo no parece ser una tabla CSV: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/1_Edad y Peso con 3 sub-valores/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_NP.xlsx', 'Error eliminando tabla de resumen Minimo_Cinematica_Edad_Joven__Peso_OS.xlsx: El archivo no parece ser una tabla CSV: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/1_Edad y Peso con 3 sub-valores/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_OS.xlsx']
+2025-06-15 16:39:09,699 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-15 16:39:09,700 - INFO - [__main__] - Iniciando KineViz...
+2025-06-15 16:39:10,019 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-15 16:39:10,019 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-15 16:39:10,020 - INFO - [kineviz.ui.main_window] - Applying theme: Light, font scale: 1.0
+2025-06-15 16:39:11,394 - INFO - [kineviz.ui.main_window] - Applying theme: Light, font scale: 1.0
+2025-06-15 16:39:12,111 - INFO - [kineviz.ui.main_window] - Applying theme: Light, font scale: 1.0
+2025-06-15 16:39:19,212 - INFO - [kineviz.ui.main_window] - Applying theme: Light, font scale: 1.0
+2025-06-15 21:40:26,725 - CRITICAL - [__main__] - Error crítico no capturado en la aplicación.
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/app.py", line 25, in main
+    app = MainWindow(root)
+          ^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/main_window.py", line 70, in __init__
+    self.show_main_view() # Mostrar vista principal si hay estudios
+    ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/main_window.py", line 177, in show_main_view
+    self.current_view = MainView(self.root, self)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/views/main_view.py", line 46, in __init__
+    self.canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
+                                                                         ^^^^^^^^^^^
+NameError: name 'h_scrollbar' is not defined. Did you mean: 'v_scrollbar'?

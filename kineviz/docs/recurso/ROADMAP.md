@@ -270,13 +270,6 @@ Ventana de estudio, ventana de estudio especifico, ventana de tablas de analisis
 "paciente" a "participante", "Paciente" a "Participante"
 "pacientes" a "participantes", "Pacientes" a "Participantes"
 "sujeto de prueba" a "participante", "Sujetos de Prueba" a "Participantes"
-2. [Omitido] Implementar "Full Two-Way ANOVA"
-Full Two-Way ANOVA: The current "2VIs" mode performs comparisons within a level of a fixed VI (simple main effects). A full two-way ANOVA (e.g., spm1d.stats.anova2 or spm1d.stats.anova2rm for repeated measures) would assess:
-2.1 [Omitido] Main effect of VI1 (e.g., "Edad")
-2.2 [Omitido] Main effect of VI2 (e.g., "Peso")
-2.3 [Omitido] Interaction effect (VI1 x VI2) This would require a different UI setup (selecting both VIs and all their relevant levels) and significant changes in AnalysisService to  structure data for spm1d.stats.anova2 and interpret its multi-faceted results.
-2.4 [Omitido] Post-hoc tests for ANOVA: If an ANOVA (either 1-way in 1VI mode or the simple main effect ANOVA in 2VI mode) is significant, post-hoc tests would be needed to determine which specific groups differ. spm1d offers functions for this (e.g., spm1d.stats.posthoc.ttest_paired, spm1d.stats.posthoc.anova1_ttest_paired).
-2.5 [Omitido] Visualizations for 2VI: Specific plots for interactions (if a 2-way ANOVA was implemented) or more complex comparative plots for the "slicing" approach might be beneficial.
 3. [Hecho] Funcionalidad Extra para Eliminar:
 3.1 [Hecho] Botón para eliminar todos los archivos dentro de un estudio.
 3.2 [Hecho] Botón para eliminar todas las tablas del análisis discreto y pruebas para el analisis discreto y el analisis continuo.
@@ -288,41 +281,54 @@ Full Two-Way ANOVA: The current "2VIs" mode performs comparisons within a level 
 "Si no hay archivos para un participante en particular, elimina la carpeta con el nombre del participante"
 5. [Hecho] Agregar Botón para Refrescar Archivos en Todas las Tablas:
 Este botón mostrara los nuevos archivos en caso de por ejemplo el usuario modifique los archivos locales.
-6. [Omitido] Manejo de Floats al Procesar Archivos en un Estudio:
-Que exista la posibilidad de manejar situaciones donde los archivos de entrada esten en float como "Pte03 CMJ 03.txt: could not convert string to float: '5,47567'" en cuyo caso se debería poder convertir al valor convencional de "5.47567".
 7. [Hecho] Opción para Destacar Estudios (Hasta 5) en la Ventana Principal
 Cosa de que esos estudios se mantengan sobre todos los demas estudios.
 Con un botón de chincheta y se mantengan fijos sobre los demas estudios.
 8. [Hecho] Opción para Comentar Estudios en la Ventana del Estudio Especifico (Maximo 150 caracteres)
 Para que el usuario tenga la opción de escribir algún detalle que estime conveniente sobre el estudio especifico.
 Este comentario de estudio podrá ser modificado también
-9. [Pendiente] Opciones de Accesibilidad en la Configuración del Software:
+9. [En Progreso] Opciones de Accesibilidad en la Configuración del Software:
 Como aumentar el tamaño de las letras, y cambiar el tema de KineViz de blanco a oscuro.
 
-## [Pendiente] Fase 7: Pruebas, Documentación y Despliegue
-1. [Omitido] Análisis Discreto
-1.1 [Omitido] Corrección de Errores: Revisar y corregir errores conocidos (ej: formato cabeceras CSV, error generación tablas discretas, inconsistencia nombres archivo análisis individual).
-1.2 [Omitido] Integración y Pruebas: Integrar y probar toda la funcionalidad de análisis discreto, incluyendo análisis de efectos principales.
-2. [Omitido] Análisis Continuo 
-2.1 [Omititdo] Pruebas Unitarias: Para la lógica de normalización, interacción con `spm1d`, y generación de gráficos/tablas.
-2.2 [Omititdo] Pruebas de Integración: Probar el flujo completo desde la configuración en la UI hasta la visualización y gestión de los resultados del análisis continuo.
-3. [Pendiente] Documentación (Manual).
-3.1 [Pendiente] (Cambio Manual) Modificar Tabla de Modelo de Datos:
+## [Pendiente] Fase 7: Documentación y Despliegue
+1. [Pendiente] Limpieza del Repositorio (Manual).
+1.1 [Pendiente] (Cambio Manual) Limpiar archivos como kineviz.spec, kineviz/docs/recurso.
+1.2 [Pendiente] (Cambio Manual) Eliminar logs de la repo final. 
+1.2 [Pendiente] (Cambio Manual) Eliminar pruebas y cambiar el LOG a INFO o WARNING.
+1.2 [Pendiente] (Revisión Manual) Posible revisión y correción de UI con V. D.
+2. [Pendiente] Creación de Demo en Video del Uso del Software con V. D. (Manual).
+3. [Pendiente] Empaquetado y Distribución con Paquetes Distribuibles.
+3.1 [Pendiente] Configurar PyInstaller: Creado y refinando `kineviz.spec` para definir el proceso de build (corrigiendo errores de hidden imports, backends, etc.).
+3.2 [Pendiente] Generar Build Windows: Ejecutar PyInstaller en Windows para crear el paquete.
+3.3 [Pendiente] Generar Build macOS: Ejecutando PyInstaller en macOS para crear el paquete (`.app` bundle).
+3.4 [Pendiente] Pruebas de Paquetes: Probar los paquetes generados en máquinas limpias de Windows 10/11 y macOS 11+.
+4. [Pendiente] Documentación (Manual).
+4.1 [Pendiente] (Cambio Manual) Modificar Tabla de Modelo de Datos:
 Modificar terminología de Frecuencia a Tipo de Dato y Pruebas (POST/PRE)
-3.2 [Pendiente] (Cambio Manual) Modificar el Abstract:
+4.2 [Pendiente] (Cambio Manual) Modificar el Abstract:
 Sugiero mejorar el abstract del proyecto para sea más claro en lo que hace Kineviz y en que tipos de análisis se enfoca
-3.3 [Pendiente] (Cambio Manual) Revisión Final de ortografía del informe con V. D.
+4.3 [Pendiente] (Cambio Manual) Revisión Final de ortografía del informe con V. D.
 También agregar imagenes finales del software funcionando
-3.4 [Pendiente] (Cambio Manual) Revisión Final de ortografía de la presentación con V. D.
-Agregar el DEMO y optimizar los tiempos + añadir los ultimos cambios
-3.5 [Pendiente] (Cambio Manual) Limpiar archivos como kineviz.spec, kineviz/docs/recurso, logs de la repo final. Eliminar pruebas y cambiar el LOG a INFO o WARNING.
-3.6 [Pendiente] (Revisión Manual) Posible revisión y correción de UI con V. D.
-4. [Pendiente] (Cambio Manual) Creación de Demo en Video del Uso del Software con V. D.
-5. [Pendiente] Empaquetado y Distribución con Paquetes Distribuibles.
-5.1 [Pendiente] Configurar PyInstaller: Creado y refinando `kineviz.spec` para definir el proceso de build (corrigiendo errores de hidden imports, backends, etc.).
-5.2 [Pendiente] Generar Build Windows: Ejecutar PyInstaller en Windows para crear el paquete.
-5.3 [Pendiente] Generar Build macOS: Ejecutando PyInstaller en macOS para crear el paquete (`.app` bundle).
-5.4 [Pendiente] Pruebas de Paquetes: Probar los paquetes generados en máquinas limpias de Windows 10/11 y macOS 11+.
+4.4 [Pendiente] (Cambio Manual) Revisión Final de ortografía de la presentación con V. D.
+Agregar el DEMO y optimizar los tiempos de presentación + añadir los ultimos cambios
+
+## [Omitido] Fase 8: Tareas Omitidas
+8.1 [Omitido] Implementar "Full Two-Way ANOVA"
+Full Two-Way ANOVA: The current "2VIs" mode performs comparisons within a level of a fixed VI (simple main effects). A full two-way ANOVA (e.g., spm1d.stats.anova2 or spm1d.stats.anova2rm for repeated measures) would assess:
+8.1.1 [Omitido] Main effect of VI1 (e.g., "Edad")
+8.1.2 [Omitido] Main effect of VI2 (e.g., "Peso")
+8.1.3 [Omitido] Interaction effect (VI1 x VI2) This would require a different UI setup (selecting both VIs and all their relevant levels) and significant changes in AnalysisService to  structure data for spm1d.stats.anova2 and interpret its multi-faceted results.
+8.1.4 [Omitido] Post-hoc tests for ANOVA: If an ANOVA (either 1-way in 1VI mode or the simple main effect ANOVA in 2VI mode) is significant, post-hoc tests would be needed to determine which specific groups differ. spm1d offers functions for this (e.g., spm1d.stats.posthoc.ttest_paired, spm1d.stats.posthoc.anova1_ttest_paired).
+8.1.5 [Omitido] Visualizations for 2VI: Specific plots for interactions (if a 2-way ANOVA was implemented) or more complex comparative plots for the "slicing" approach might be beneficial.
+8.2 [Omitido] Corregir el cambio de tamaño de la letra para los textos que introduce el usuario y los drop-down selectors.
+8.3 [Omitido] Análisis Discreto
+8.3.1 [Omitido] Corrección de Errores: Revisar y corregir errores conocidos (ej: formato cabeceras CSV, error generación tablas discretas, inconsistencia nombres archivo análisis individual).
+8.3.2 [Omitido] Integración y Pruebas: Integrar y probar toda la funcionalidad de análisis discreto, incluyendo análisis de efectos principales.
+8.4. [Omitido] Análisis Continuo 
+8.4.1 [Omititdo] Pruebas Unitarias: Para la lógica de normalización, interacción con `spm1d`, y generación de gráficos/tablas.
+8.4.2 [Omititdo] Pruebas de Integración: Probar el flujo completo desde la configuración en la UI hasta la visualización y gestión de los resultados del análisis continuo.
+8.5. [Omitido] Manejo de Floats al Procesar Archivos en un Estudio:
+Que exista la posibilidad de manejar situaciones donde los archivos de entrada esten en float como "Pte03 CMJ 03.txt: could not convert string to float: '5,47567'" en cuyo caso se debería poder convertir al valor convencional de "5.47567".
 
 # Arquitectura de KineViz
 
