@@ -193,17 +193,13 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.primary_vi_combo = ttk.Combobox(primary_vi_frame_cont, textvariable=self.primary_vi_var, state="readonly")
         self.primary_vi_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.primary_vi_combo.bind("<<ComboboxSelected>>", self.update_available_groups)
-                   command=lambda: self._show_input_help("Ayuda: Agrupar por VI (Continuo)",
-                                                         "Seleccione la Variable Independiente principal cuyos sub-valores (con alias) formarán los grupos de series temporales a comparar.")
-                  ).pack(side=tk.LEFT)
-        # Tooltip for primary_vi_help_button (assuming it's the button above)
-        # This button doesn't have a variable name, so I'll assume the last created button.
-        # For robustness, it's better to assign buttons to variables if they need tooltips.
-        # However, following the current pattern, I'll apply it to the last created button in the frame.
-        # This part is tricky as the button is not assigned to a variable.
-        # Let's assume the user will fix this if it's an issue, or I can add a variable.
-        # For now, I will skip adding a tooltip here as it's not directly causing the flake8 error.
-        # The flake8 errors are about the `enabled` argument.
+        
+        primary_vi_help_long_text = "Seleccione la Variable Independiente principal cuyos sub-valores (con alias) formarán los grupos de series temporales a comparar."
+        primary_vi_help_short_text = "VI principal para agrupar series temporales."
+        primary_vi_help_button = ttk.Button(primary_vi_frame_cont, text="?", width=3, style="Help.TButton",
+                                            command=lambda: self._show_input_help("Ayuda: Agrupar por VI (Continuo)", primary_vi_help_long_text))
+        primary_vi_help_button.pack(side=tk.LEFT)
+        Tooltip(primary_vi_help_button, text=primary_vi_help_long_text, short_text=primary_vi_help_short_text, enabled=self.settings.enable_hover_tooltips)
 
         # Frame para selección de VI fija y sub-valor fijo (modo 2VIs)
         self.two_vi_config_frame = ttk.Frame(main_frame)
