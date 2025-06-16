@@ -17,7 +17,8 @@ class Tooltip:
 
         self.widget.bind("<Enter>", self._schedule_show_tooltip)
         self.widget.bind("<Leave>", self._schedule_hide_tooltip)
-        self.widget.bind("<ButtonPress>", self._hide_tooltip_now) # Hide immediately on click
+        # Removing the ButtonPress binding on the widget to allow its own command to fire.
+        # self.widget.bind("<ButtonPress>", self._hide_tooltip_now) 
 
     def _schedule_show_tooltip(self, event=None):
         self._cancel_tooltip_hiding() # Cancel any pending hide operations
