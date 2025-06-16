@@ -101,7 +101,9 @@ class MainView:
         table_frame.pack(fill=tk.BOTH, expand=True)
 
         columns = ('Pin', 'Nombre', 'Comentar', 'Ver', 'Editar', 'Eliminar')
-        self.tree = ttk.Treeview(table_frame, columns=columns, show='headings', style='Treeview', selectmode="extended")
+        # Use estudios_por_pagina from main_window settings for Treeview height
+        tree_height = self.main_window.settings.studies_per_page
+        self.tree = ttk.Treeview(table_frame, columns=columns, show='headings', style='Treeview', selectmode="extended", height=tree_height)
 
         # Configurar cabeceras
         self.tree.heading('Pin', text='Pin', anchor='center')

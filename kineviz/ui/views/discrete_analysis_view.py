@@ -245,14 +245,15 @@ class DiscreteAnalysisView(ttk.Frame):
         list_frame = ttk.LabelFrame(self.scrollable_frame_content, text="Tablas Generadas (.xlsx)")
         list_frame.pack(fill=tk.BOTH, expand=True, pady=(5, 0))
         list_frame.columnconfigure(0, weight=1) 
-        list_frame.rowconfigure(0, weight=1)    
+        # list_frame.rowconfigure(0, weight=1) # Removed to respect treeview height    
 
         # Updated columns
         self.tables_tree = ttk.Treeview(
             list_frame,
             columns=("Nombre Archivo", "Cálculo", "Sub-valores", "Fecha Creación/Modif."),
             show="headings",
-            selectmode="extended" # Permitir selección múltiple
+            selectmode="extended", # Permitir selección múltiple
+            height=self.tables_per_page # Set height
         )
         self.tables_tree.grid(row=0, column=0, sticky='nsew', padx=5, pady=(5, 0))
         self.tables_tree.bind("<<TreeviewSelect>>", self._on_selection_change) # Bind selection event

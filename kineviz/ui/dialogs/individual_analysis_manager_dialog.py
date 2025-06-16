@@ -226,7 +226,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         # --- Lista de Análisis (Treeview) - Goes into self.scrollable_main_frame ---
         tree_frame = ttk.LabelFrame(self.scrollable_main_frame, text="Análisis Guardados")
         tree_frame.pack(fill=tk.BOTH, expand=True) # Pack it to fill the scrollable area
-        tree_frame.rowconfigure(0, weight=1)
+        # tree_frame.rowconfigure(0, weight=1) # Removed to respect treeview height
         tree_frame.columnconfigure(0, weight=1)
 
         # Columnas definidas en __init__
@@ -234,7 +234,8 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
             tree_frame,
             columns=self.columns, # Usar self.columns
             show="headings",
-            selectmode="extended" # Permitir selección múltiple
+            selectmode="extended", # Permitir selección múltiple
+            height=self.items_per_page # Set height
         )
         self.analysis_tree.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
 
