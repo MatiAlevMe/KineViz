@@ -217,10 +217,13 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.fixed_vi_combo = ttk.Combobox(fixed_vi_frame_cont, textvariable=self.fixed_vi_var, state="readonly", font=scaled_font)
         self.fixed_vi_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.fixed_vi_combo.bind("<<ComboboxSelected>>", self._update_fixed_descriptor_options)
-        ttk.Button(fixed_vi_frame_cont, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: VI a Fijar (Continuo)",
-                                                         "Seleccione la Variable Independiente que permanecerá constante mientras se comparan los sub-valores de la otra VI.")
-                  ).pack(side=tk.LEFT)
+        fixed_vi_help_long_text = "Seleccione la Variable Independiente que permanecerá constante mientras se comparan los sub-valores de la otra VI."
+        fixed_vi_help_short_text = "VI que se mantendrá constante."
+        fixed_vi_help_btn = ttk.Button(fixed_vi_frame_cont, text="?", width=3, style="Help.TButton",
+                                       command=lambda: self._show_input_help("Ayuda: VI a Fijar (Continuo)", fixed_vi_help_long_text))
+        fixed_vi_help_btn.pack(side=tk.LEFT)
+        Tooltip(fixed_vi_help_btn, text=fixed_vi_help_long_text, short_text=fixed_vi_help_short_text, enabled=self.settings.enable_hover_tooltips)
+
 
         self.fixed_descriptor_label = ttk.Label(self.two_vi_config_frame, text="Valor Fijo:")
         self.fixed_descriptor_label.grid(row=1, column=0, sticky="w", padx=5, pady=5)
@@ -229,10 +232,13 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.fixed_descriptor_combo = ttk.Combobox(fixed_desc_frame_cont, textvariable=self.fixed_descriptor_var, state="readonly", font=scaled_font)
         self.fixed_descriptor_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.fixed_descriptor_combo.bind("<<ComboboxSelected>>", self.update_available_groups)
-        ttk.Button(fixed_desc_frame_cont, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Valor Fijo (Continuo)",
-                                                         "Seleccione el sub-valor (con alias) de la 'VI a Fijar' que se mantendrá constante.\nLos grupos a comparar se formarán con los sub-valores de la otra VI, dentro de este contexto.")
-                  ).pack(side=tk.LEFT)
+        fixed_desc_help_long_text = ("Seleccione el sub-valor (con alias) de la 'VI a Fijar' que se mantendrá constante.\n"
+                                     "Los grupos a comparar se formarán con los sub-valores de la otra VI, dentro de este contexto.")
+        fixed_desc_help_short_text = "Sub-valor constante de la VI a fijar."
+        fixed_desc_help_btn = ttk.Button(fixed_desc_frame_cont, text="?", width=3, style="Help.TButton",
+                                         command=lambda: self._show_input_help("Ayuda: Valor Fijo (Continuo)", fixed_desc_help_long_text))
+        fixed_desc_help_btn.pack(side=tk.LEFT)
+        Tooltip(fixed_desc_help_btn, text=fixed_desc_help_long_text, short_text=fixed_desc_help_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         # --- Selección Dinámica de Grupos ---
@@ -796,10 +802,14 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         group_combo.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0,5))
         group_combo.bind("<<ComboboxSelected>>", self._on_group_selection_change) # Cargar columnas al cambiar grupo
         
-        ttk.Button(group_combo_frame_cont, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Selección de Grupo (Continuo)",
-                                                         "Seleccione un grupo (sub-valor o combinación de sub-valores con alias) para incluir en la comparación de series temporales.\nDebe seleccionar al menos dos grupos distintos.")
-                  ).pack(side=tk.LEFT)
+        group_select_help_long_text_cont = ("Seleccione un grupo (sub-valor o combinación de sub-valores con alias) para incluir en la comparación de series temporales.\n"
+                                            "Debe seleccionar al menos dos grupos distintos.")
+        group_select_help_short_text_cont = "Seleccionar grupo para comparar (SPM)."
+        group_select_help_button_cont = ttk.Button(group_combo_frame_cont, text="?", width=3, style="Help.TButton",
+                                                   command=lambda: self._show_input_help("Ayuda: Selección de Grupo (Continuo)", group_select_help_long_text_cont))
+        group_select_help_button_cont.pack(side=tk.LEFT)
+        Tooltip(group_select_help_button_cont, text=group_select_help_long_text_cont, short_text=group_select_help_short_text_cont, enabled=self.settings.enable_hover_tooltips)
+
 
         remove_button = ttk.Button(selector_frame, text="🗑️", width=3,
                                    command=lambda f=selector_frame, v=group_var: self.remove_group_selector(f, v))
@@ -1087,7 +1097,6 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.button_frame.grid_remove()
         if hasattr(self, 'save_button'): self.save_button.config(state=tk.DISABLED)
         
-        self._update_dialog_size_and_scrollbar()
         if hasattr(super(), '_update_fixed_descriptor_options'): return super_update_fixed_descriptor_options_result
 
     def update_available_groups(self, event=None):
@@ -1160,7 +1169,6 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
             self._clear_group_selectors(update_columns=False)
             self.group_selection_outer_frame.grid_remove()
         
-        self._update_dialog_size_and_scrollbar()
         if hasattr(super(), 'update_available_groups'): return super_update_available_groups_result
 
     def _show_final_steps(self):
@@ -1173,7 +1181,6 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.analysis_name_frame.grid()
         self.button_frame.grid()
         if hasattr(self, 'save_button'): self.save_button.config(state=tk.NORMAL)
-        self._update_dialog_size_and_scrollbar()
         if hasattr(super(), '_show_final_steps'): return super_show_final_steps_result
 
     def _hide_final_steps(self):
@@ -1185,7 +1192,6 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.analysis_name_frame.grid_remove()
         self.button_frame.grid_remove()
         if hasattr(self, 'save_button'): self.save_button.config(state=tk.DISABLED)
-        self._update_dialog_size_and_scrollbar()
         if hasattr(super(), '_hide_final_steps'): return super_hide_final_steps_result
 
     def _toggle_time_delimitation_widgets(self):
@@ -1250,7 +1256,6 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         
         self._on_group_selection_change() 
         self._refresh_group_combobox_options() 
-        self._update_dialog_size_and_scrollbar() # Added
         if hasattr(super(), 'add_group_selector'): return super_add_group_selector_result
 
     def remove_group_selector(self, frame_to_remove, var_to_remove):
@@ -1275,7 +1280,6 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
 
             self._on_group_selection_change() 
             self._refresh_group_combobox_options() 
-            self._update_dialog_size_and_scrollbar() # Added
         except (ValueError, IndexError):
             logger.warning("Intento de eliminar un selector de grupo que ya no existe o índice inválido.")
         if hasattr(super(), 'remove_group_selector'): return super_remove_group_selector_result
