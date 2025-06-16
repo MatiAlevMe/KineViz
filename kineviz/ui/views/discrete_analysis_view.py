@@ -88,12 +88,47 @@ class DiscreteAnalysisView(ttk.Frame):
         self.pack(fill=tk.BOTH, expand=True, padx=10, pady=10) # Pack self (DiscreteAnalysisView)
 
         self._load_study_vi_data()
-        self.create_widgets()
+        self.create_widgets() # This now calls create_ui_content_discrete_view
         self._populate_filter_vi_comboboxes()
-        self._fetch_all_table_files_data() # Cargar todos los datos de tablas al inicio
-        self.apply_filters() # Aplicar filtros iniciales (mostrar todos)
+        self._fetch_all_table_files_data() 
+        self.apply_filters() 
 
-    def create_widgets(self): # Content now goes into self.scrollable_frame
+    def create_widgets(self): 
+        # create_widgets is called from __init__
+        # It should set up the scrollable_frame and then call a method to populate it.
+        # The fixed bottom buttons will be direct children of self (DiscreteAnalysisView)
+        # and packed AFTER canvas_container.
+
+        # Call the method that populates self.scrollable_frame
+        self.create_ui_content_discrete_view(self.scrollable_frame)
+
+        # --- Fixed Bottom Action Buttons for Tables (children of self) ---
+        fixed_table_actions_frame = ttk.Frame(self) # Parent is self (DiscreteAnalysisView)
+        fixed_table_actions_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(5,0))
+
+        delete_all_tables_button = ttk.Button(
+            fixed_table_actions_frame,
+            text="Eliminar Todas las Tablas de Resumen",
+            command=self._confirm_delete_all_summary_tables,
+            style="Danger.TButton"
+        )
+        delete_all_tables_button.pack(side=tk.LEFT, padx=5)
+
+        self.delete_selected_button = ttk.Button(
+            fixed_table_actions_frame,
+            text="Eliminar Seleccionado(s)",
+            command=self._confirm_delete_selected_tables,
+            state=tk.DISABLED,
+            style="Danger.TButton"
+        )
+        self.delete_selected_button.pack(side=tk.LEFT, padx=5)
+        
+        self.view_table_button = ttk.Button(fixed_table_actions_frame, text="Ver Tabla",
+                                            command=self.view_table, state=tk.DISABLED)
+        self.view_table_button.pack(side=tk.RIGHT, padx=5)
+
+
+    def create_ui_content_discrete_view(self, parent_frame): # New method name
         """Crea los widgets para la vista de análisis discreto."""
         parent_frame = self.scrollable_frame # All content goes into scrollable_frame
 
@@ -211,14 +246,12 @@ class DiscreteAnalysisView(ttk.Frame):
         self.filter_vi2_frame.grid_remove() # Initially hidden
 
         # --- Lista de Tablas Generadas (Treeview) ---
-        list_frame = ttk.LabelFrame(parent_frame, text="Tablas Generadas (.xlsx)") # Changed parent
-        list_frame.pack(fill=tk.BOTH, expand=True, pady=(5, 0)) 
-        # Configure list_frame's grid for its children (Treeview and its action buttons)
+        # This list_frame will now only contain the treeview and its direct scrollbars/pagination
+        list_frame = ttk.LabelFrame(parent_frame, text="Tablas Generadas (.xlsx)")
+        list_frame.pack(fill=tk.BOTH, expand=True, pady=(5, 0))
         list_frame.columnconfigure(0, weight=1) # Treeview column
         list_frame.rowconfigure(0, weight=1)    # Treeview row (should expand)
-        list_frame.rowconfigure(1, weight=0)    # Horizontal scrollbar row
-        list_frame.rowconfigure(2, weight=0)    # Pagination row
-        list_frame.rowconfigure(3, weight=0)    # Table action buttons row (fixed at bottom of list_frame)
+        # Pagination will be row 2, HScrollbar row 1. Action buttons moved out.
 
         # Updated columns
         self.tables_tree = ttk.Treeview(
@@ -283,39 +316,27 @@ class DiscreteAnalysisView(ttk.Frame):
         )
         self.next_button.pack(side=tk.LEFT, padx=5)
 
-        # "Ver Tabla" ya no está en pagination_frame
+        # "Ver Tabla" and other table actions are moved out of list_frame
 
-        # --- Botones de Acción para Tablas ---
-        table_action_frame = ttk.Frame(list_frame)
-        table_action_frame.grid(row=3, column=0, columnspan=2, sticky='ew', pady=(0, 5))
+        # --- Botones de Acción para Tablas (Now direct children of parent_frame) ---
+        # This frame is now a child of parent_frame (self.scrollable_frame), packed AFTER list_frame
+        # BUT for the desired effect, these should be children of self (DiscreteAnalysisView),
+        # packed AFTER canvas_container.
 
-        # "Eliminar Todas las Tablas de Resumen" a la izquierda
-        delete_all_tables_button = ttk.Button(
-            table_action_frame,
-            text="Eliminar Todas las Tablas de Resumen",
-            command=self._confirm_delete_all_summary_tables,
-            style="Danger.TButton"
-        )
-        delete_all_tables_button.pack(side=tk.LEFT, padx=5)
+        # The following buttons will be moved to a new frame, a direct child of self (DiscreteAnalysisView)
+        # and packed after canvas_container.
+        # For now, let's create the frame here and then move its packing logic.
+        # This change will be split: 1. Create frame here. 2. Adjust packing in __init__ or main layout.
 
-        # "Eliminar Seleccionado(s)"
-        self.delete_selected_button = ttk.Button(
-            table_action_frame,
-            text="Eliminar Seleccionado(s)",
-            command=self._confirm_delete_selected_tables, # Nuevo método
-            state=tk.DISABLED,
-            style="Danger.TButton"
-        )
-        self.delete_selected_button.pack(side=tk.LEFT, padx=5)
-        
-        # El botón individual "Eliminar Tabla" ya no es necesario
-        # ttk.Button(table_action_frame, text="Eliminar Tabla",
-        #            command=self.delete_table).pack(side=tk.LEFT, padx=5)
-        
-        # "Ver Tabla" al extremo derecho de esta fila
-        self.view_table_button = ttk.Button(table_action_frame, text="Ver Tabla",
-                                            command=self.view_table, state=tk.DISABLED)
-        self.view_table_button.pack(side=tk.RIGHT, padx=5)
+        # This frame will be created and packed outside the scrollable area.
+        # The widgets below will be parented to this new frame.
+        # This specific SEARCH/REPLACE block will remove them from list_frame.
+        # A subsequent block will add them to the new fixed bottom frame.
+        # table_action_frame = ttk.Frame(list_frame) # OLD: child of list_frame
+        # table_action_frame.grid(row=3, column=0, columnspan=2, sticky='ew', pady=(0, 5)) # OLD
+
+        # These buttons are moved out of list_frame.
+        # Their creation and packing will be handled in a new fixed bottom frame.
 
 
     def _confirm_delete_all_summary_tables(self):
