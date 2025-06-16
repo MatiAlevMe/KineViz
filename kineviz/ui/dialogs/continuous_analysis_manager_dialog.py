@@ -39,7 +39,7 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         self.filter_vi_count_var = tk.StringVar(value="No filtrar")
         self.current_page = 1 # For pagination
         self.total_pages = 1  # For pagination
-        self.items_per_page = parent.main_window.settings.analysis_items_per_page # Get from settings
+        self.items_per_page = main_window_instance.settings.analysis_items_per_page # Use main_window_instance
         self.filter_vi1_name_var = tk.StringVar()
         self.filter_vi1_desc_var = tk.StringVar()
         self.filter_vi2_name_var = tk.StringVar()
@@ -205,12 +205,12 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         folder_action_frame = ttk.Frame(self.main_frame)
         folder_action_frame.grid(row=4, column=0, sticky="ew", pady=(5,0)) # Changed to grid
 
-        self.open_folder_button = ttk.Button(folder_action_frame, text="Abrir Carpeta de Análisis", command=self._open_folder, state=tk.DISABLED)
+        self.open_folder_button = ttk.Button(folder_action_frame, text="Abrir Carpeta", command=self._open_folder, state=tk.DISABLED)
         self.open_folder_button.pack(side=tk.LEFT, padx=5)
 
         self.open_main_continuous_folder_button = ttk.Button(
             folder_action_frame,
-            text="Abrir Carpeta Principal de Análisis Continuos", # Slightly more descriptive
+            text="Abrir Carpeta de Análisis Continuos", # Renamed
             command=self._open_main_continuous_analyses_folder
         )
         self.open_main_continuous_folder_button.pack(side=tk.LEFT, padx=5)

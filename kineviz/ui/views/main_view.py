@@ -102,18 +102,15 @@ class MainView:
         self.tree.bind('<<TreeviewSelect>>', self._on_selection_change) # Para estado de botón
 
         # --- Paginación ---
-        self.pagination_frame = ttk.Frame(self.frame)
-        self.pagination_frame.pack(pady=(10, 0), fill=tk.X)
-
-        # --- Botón Crear Nuevo Estudio ---
-        # Frame para los botones inferiores
+        # --- Botón Crear Nuevo Estudio y otros botones inferiores ---
+        # Este frame se empaquetará al final (side=tk.BOTTOM)
         bottom_buttons_frame = ttk.Frame(self.frame)
-        bottom_buttons_frame.pack(pady=10, fill=tk.X)
+        bottom_buttons_frame.pack(side=tk.BOTTOM, pady=10, fill=tk.X)
 
         # Botón Eliminar Todos los Estudios (a la izquierda)
         delete_all_button = ttk.Button(bottom_buttons_frame, text='Eliminar Todos los Estudios',
                                        command=self._confirm_delete_all_studies, style="Danger.TButton")
-        delete_all_button.pack(side=tk.LEFT, padx=(0, 5)) # Ajustar padding
+        delete_all_button.pack(side=tk.LEFT, padx=(0, 5))
 
         # Botón Eliminar Seleccionado(s)
         self.delete_selected_button = ttk.Button(bottom_buttons_frame, text='Eliminar Seleccionado(s)',
@@ -133,6 +130,10 @@ class MainView:
         create_study_button = ttk.Button(bottom_buttons_frame, text='Crear Nuevo Estudio',
                                          command=lambda: self.main_window.show_create_study_dialog(study_to_edit=None), style="Celeste.TButton")
         create_study_button.pack(side=tk.RIGHT)
+        
+        # --- Paginación (se empaqueta después de los botones inferiores para que quede arriba de ellos) ---
+        self.pagination_frame = ttk.Frame(self.frame)
+        self.pagination_frame.pack(side=tk.BOTTOM, pady=(5, 0), fill=tk.X) # side=tk.BOTTOM
 
 
     def _confirm_delete_selected_studies(self):
