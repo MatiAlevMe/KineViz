@@ -115,12 +115,13 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         main_frame.columnconfigure(1, weight=1) # Columna de Combobox/Entry expandible
 
         row_idx = 0
+        scaled_font = get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale)
 
         # --- Selección de Tipo de Dato y Cálculo ---
         ttk.Label(main_frame, text="Tipo de Dato:").grid(row=row_idx, column=0, sticky="w", padx=5, pady=5)
         freq_frame = ttk.Frame(main_frame)
         freq_frame.grid(row=row_idx, column=1, sticky="ew")
-        self.freq_combo = ttk.Combobox(freq_frame, textvariable=self.frequency_var, state="disabled") # Cambiado a disabled
+        self.freq_combo = ttk.Combobox(freq_frame, textvariable=self.frequency_var, state="disabled", font=scaled_font) # Cambiado a disabled
         self.freq_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         freq_long_text_discrete = "Tipo de datos a analizar.\nPara análisis discreto, actualmente solo 'Cinematica' está soportado y se selecciona automáticamente."
         freq_short_text_discrete = "Tipo de datos (fijo a 'Cinematica' para discreto)."
@@ -133,7 +134,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         ttk.Label(main_frame, text="Cálculo:").grid(row=row_idx, column=0, sticky="w", padx=5, pady=5)
         calc_frame = ttk.Frame(main_frame)
         calc_frame.grid(row=row_idx, column=1, sticky="ew")
-        self.calc_combo = ttk.Combobox(calc_frame, textvariable=self.calculation_var, values=self.available_calculations, state="readonly")
+        self.calc_combo = ttk.Combobox(calc_frame, textvariable=self.calculation_var, values=self.available_calculations, state="readonly", font=scaled_font)
         self.calc_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.calc_combo.bind("<<ComboboxSelected>>", self.update_available_groups) # Actualizar grupos al seleccionar cálculo
         calc_long_text = "El tipo de cálculo (Maximo, Minimo, Rango) aplicado a los datos en las tablas de resumen que se usarán para el análisis."
@@ -196,7 +197,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         ttk.Label(self.two_vi_config_frame, text="VI a Fijar:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
         fixed_vi_frame = ttk.Frame(self.two_vi_config_frame)
         fixed_vi_frame.grid(row=0, column=1, sticky="ew")
-        self.fixed_vi_combo = ttk.Combobox(fixed_vi_frame, textvariable=self.fixed_vi_var, state="readonly")
+        self.fixed_vi_combo = ttk.Combobox(fixed_vi_frame, textvariable=self.fixed_vi_var, state="readonly", font=scaled_font)
         self.fixed_vi_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.fixed_vi_combo.bind("<<ComboboxSelected>>", self._update_fixed_descriptor_options) # Actualizar sub-valores al seleccionar VI fija
         ttk.Button(fixed_vi_frame, text="?", width=3, style="Help.TButton",
@@ -208,7 +209,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.fixed_descriptor_label.grid(row=1, column=0, sticky="w", padx=5, pady=5)
         fixed_desc_frame = ttk.Frame(self.two_vi_config_frame)
         fixed_desc_frame.grid(row=1, column=1, sticky="ew")
-        self.fixed_descriptor_combo = ttk.Combobox(fixed_desc_frame, textvariable=self.fixed_descriptor_var, state="readonly")
+        self.fixed_descriptor_combo = ttk.Combobox(fixed_desc_frame, textvariable=self.fixed_descriptor_var, state="readonly", font=scaled_font)
         self.fixed_descriptor_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.fixed_descriptor_combo.bind("<<ComboboxSelected>>", self.update_available_groups) # Actualizar grupos al seleccionar descriptor fijo
         ttk.Button(fixed_desc_frame, text="?", width=3, style="Help.TButton",
