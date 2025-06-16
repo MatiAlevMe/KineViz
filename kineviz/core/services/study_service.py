@@ -1,6 +1,7 @@
 import json # Importar json
 import logging
 from kineviz.database.repositories import StudyRepository
+from kineviz.core.backup_manager import create_backup # Import for automatic backups
 # El validador antiguo se eliminará, la validación se hará en el diálogo/nuevo validador
 # from kineviz.ui.utils.validators import validate_study_data
 
@@ -175,6 +176,12 @@ class StudyService:
         
         :param study_id: ID del estudio a eliminar
         """
+        try:
+            create_backup(backup_type='automatic')
+        except Exception as e_backup:
+            logger.error(f"Error creating automatic backup before deleting study {study_id}: {e_backup}", exc_info=True)
+            # Decide if operation should continue or be aborted. For now, logging and continuing.
+
         self.repo.delete_study(study_id)
 
     def delete_studies_by_ids(self, study_ids: list[int]):
@@ -389,6 +396,12 @@ class StudyService:
         """
         Elimina todos los estudios. Llama al método del repositorio.
         """
+        try:
+            create_backup(backup_type='automatic')
+        except Exception as e_backup:
+            logger.error(f"Error creating automatic backup before deleting all studies: {e_backup}", exc_info=True)
+            # Decide if operation should continue or be aborted. For now, logging and continuing.
+
         try:
             self.repo.delete_all_studies()
             logger.info("Servicio: Todos los estudios han sido eliminados.")
