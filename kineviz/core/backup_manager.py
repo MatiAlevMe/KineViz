@@ -135,12 +135,81 @@ def create_backup(backup_type: str) -> Optional[pathlib.Path]:
                 zf.write(item_path, arcname=arcname)
 
             if studies_dir_path.exists() and studies_dir_path.is_dir():
-                logger.debug(f"Adding directory to backup: {studies_dir_path}")
-                for file_path in studies_dir_path.rglob('*'):
-                    if file_path.is_file():
-                        relative_path = file_path.relative_to(project_root)
-                        logger.debug(f"Adding file from studies dir: {file_path} as {relative_path}")
-                        zf.write(file_path, arcname=relative_path)
+                logger.debug(f"Selectively adding files from studies directory: {studies_dir_path}")
+                
+                for study_name_dir in studies_dir_path.iterdir():
+                    if not study_name_dir.is_dir():
+                        continue # Skip files directly under studies_dir_path, looking for study folders
+
+                    # Path: estudios/[NOMBRE_ESTUDIO]
+                    
+                    # 1. Participant data files (Originals and Processed)
+                    for participant_dir in study_name_dir.iterdir():
+                        if not participant_dir.is_dir():
+                            continue # Skip files, looking for participant folders (e.g., [ID_PARTICIPANTE])
+
+                        # Path: estudios/[NOMBRE_ESTUDIO]/[ID_PARTICIPANTE]
+                        
+                        # Original files: .../[ID_PARTICIPANTE]/OG/*.txt or *.csv
+                        og_dir = participant_dir / "OG"
+                        if og_dir.is_dir():
+                            for ext in ["*.txt", "*.csv"]:
+                                for file_path in og_dir.glob(ext):
+                                    if file_path.is_file():
+                                        relative_path = file_path.relative_to(project_root)
+                                        logger.debug(f"Adding original data file: {file_path} as {relative_path}")
+                                        zf.write(file_path, arcname=relative_path)
+                        
+                        # Processed files: .../[ID_PARTICIPANTE]/[TIPO_DATO]/*.txt
+                        for data_type_dir in participant_dir.iterdir():
+                            if data_type_dir.is_dir() and data_type_dir.name != "OG":
+                                # Path: estudios/[NOMBRE_ESTUDIO]/[ID_PARTICIPANTE]/[TIPO_DATO]
+                                for file_path in data_type_dir.glob("*.txt"):
+                                    if file_path.is_file():
+                                        relative_path = file_path.relative_to(project_root)
+                                        logger.debug(f"Adding processed data file: {file_path} as {relative_path}")
+                                        zf.write(file_path, arcname=relative_path)
+
+                    # 2. Resultados de Análisis Discreto
+                    discrete_analysis_dir = study_name_dir / "Analisis Discreto"
+                    if discrete_analysis_dir.is_dir():
+                        # Tablas: .../Analisis Discreto/Tablas/[TIPO_DATO]/*.xlsx or *.csv
+                        tables_dir = discrete_analysis_dir / "Tablas"
+                        if tables_dir.is_dir():
+                            for data_type_sub_dir in tables_dir.iterdir(): # [TIPO_DATO]
+                                if data_type_sub_dir.is_dir():
+                                    for ext in ["*.xlsx", "*.csv"]:
+                                        for file_path in data_type_sub_dir.glob(ext):
+                                            if file_path.is_file():
+                                                relative_path = file_path.relative_to(project_root)
+                                                logger.debug(f"Adding discrete analysis table: {file_path} as {relative_path}")
+                                                zf.write(file_path, arcname=relative_path)
+                        # Graficos/Config: .../Analisis Discreto/Graficos/[COLUMNA_ANALIZADA]/[NOMBRE_ANALISIS]/ (contenido relevante)
+                        graphics_dir = discrete_analysis_dir / "Graficos"
+                        if graphics_dir.is_dir():
+                            for column_analyzed_dir in graphics_dir.iterdir(): # [COLUMNA_ANALIZADA]
+                                if column_analyzed_dir.is_dir():
+                                    for analysis_name_dir in column_analyzed_dir.iterdir(): # [NOMBRE_ANALISIS]
+                                        if analysis_name_dir.is_dir():
+                                            for file_path in analysis_name_dir.rglob('*'):
+                                                if file_path.is_file():
+                                                    relative_path = file_path.relative_to(project_root)
+                                                    logger.debug(f"Adding discrete analysis graphic/config: {file_path} as {relative_path}")
+                                                    zf.write(file_path, arcname=relative_path)
+                                                    
+                    # 3. Resultados de Análisis Continuo
+                    #    .../Analisis Continuo/[COLUMNA_ANALIZADA]/[NOMBRE_ANALISIS]/ (contenido relevante)
+                    continuous_analysis_dir = study_name_dir / "Analisis Continuo"
+                    if continuous_analysis_dir.is_dir():
+                        for column_analyzed_dir in continuous_analysis_dir.iterdir(): # [COLUMNA_ANALIZADA]
+                            if column_analyzed_dir.is_dir():
+                                for analysis_name_dir in column_analyzed_dir.iterdir(): # [NOMBRE_ANALISIS]
+                                    if analysis_name_dir.is_dir():
+                                        for file_path in analysis_name_dir.rglob('*'):
+                                            if file_path.is_file():
+                                                relative_path = file_path.relative_to(project_root)
+                                                logger.debug(f"Adding continuous analysis file: {file_path} as {relative_path}")
+                                                zf.write(file_path, arcname=relative_path)
             elif studies_dir_path.exists(): # It exists but is not a directory
                  logger.warning(f"Studies path {studies_dir_path} exists but is not a directory. It will not be included in the backup.")
             else: # It does not exist
