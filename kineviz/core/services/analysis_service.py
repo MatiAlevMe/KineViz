@@ -34,6 +34,8 @@ import time # Añadir import
 # Define logger before it's potentially used in the except block below
 logger = logging.getLogger(__name__)
 
+from kineviz.core.backup_manager import create_backup # Import for automatic backups
+
 # Importar scipy para tests estadísticos
 try:
     from scipy import stats
@@ -1426,6 +1428,12 @@ class AnalysisService:
         :raises ValueError: Si la ruta no es un directorio.
         :raises OSError: Si ocurre un error al eliminar el directorio.
         """
+        try:
+            create_backup(backup_type='automatic')
+        except Exception as e_backup:
+            logger.error(f"Error creating automatic backup before deleting continuous analysis {analysis_folder_to_delete.name}: {e_backup}", exc_info=True)
+            # Decide if operation should continue or be aborted. For now, logging and continuing.
+            
         logger.info(f"Solicitud para eliminar análisis continuo en: {analysis_folder_to_delete}")
 
         if not analysis_folder_to_delete.exists():
@@ -2661,6 +2669,12 @@ class AnalysisService:
         :raises ValueError: Si la ruta no es un directorio.
         :raises OSError: Si ocurre un error al eliminar el directorio.
         """
+        try:
+            create_backup(backup_type='automatic')
+        except Exception as e_backup:
+            logger.error(f"Error creating automatic backup before deleting individual analysis {analysis_path_to_delete.name}: {e_backup}", exc_info=True)
+            # Decide if operation should continue or be aborted. For now, logging and continuing.
+
         logger.info(f"Solicitud para eliminar análisis individual en: {analysis_path_to_delete}")
 
         if not analysis_path_to_delete.exists():
@@ -2741,6 +2755,12 @@ class AnalysisService:
         Elimina todos los análisis discretos individuales guardados para un estudio.
         :param study_id: ID del estudio.
         """
+        try:
+            create_backup(backup_type='automatic')
+        except Exception as e_backup:
+            logger.error(f"Error creating automatic backup before deleting all individual analyses for study {study_id}: {e_backup}", exc_info=True)
+            # Decide if operation should continue or be aborted. For now, logging and continuing.
+
         analyses_base_dir = self._get_individual_analysis_base_dir(study_id) # .../Analisis Discreto/Graficos
         if not analyses_base_dir or not analyses_base_dir.exists():
             logger.info(f"No se encontró directorio base de análisis individuales para estudio {study_id}. Nada que eliminar.")
@@ -2810,6 +2830,12 @@ class AnalysisService:
         Elimina todos los análisis continuos guardados para un estudio.
         :param study_id: ID del estudio.
         """
+        try:
+            create_backup(backup_type='automatic')
+        except Exception as e_backup:
+            logger.error(f"Error creating automatic backup before deleting all continuous analyses for study {study_id}: {e_backup}", exc_info=True)
+            # Decide if operation should continue or be aborted. For now, logging and continuing.
+
         analyses_base_dir = self._get_continuous_analysis_base_dir(study_id) # .../Analisis Continuo
         if not analyses_base_dir or not analyses_base_dir.exists():
             logger.info(f"No se encontró directorio base de análisis continuos para estudio {study_id}. Nada que eliminar.")

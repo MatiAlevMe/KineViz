@@ -3,6 +3,7 @@ import shutil
 import logging # Importar logging
 from pathlib import Path
 from tkinter import messagebox
+from kineviz.core.backup_manager import create_backup # Import for automatic backups
 # Importar validador a nivel de módulo
 from kineviz.ui.utils.validators import validate_filename_for_study_criteria
 
@@ -114,6 +115,12 @@ class FileService:
         :raises FileNotFoundError: Si el archivo no existe.
         :raises OSError: Si ocurre un error al eliminar el archivo o directorio.
         """
+        try:
+            create_backup(backup_type='automatic')
+        except Exception as e_backup:
+            logger.error(f"Error creating automatic backup before deleting file {file_path}: {e_backup}", exc_info=True)
+            # Decide if operation should continue or be aborted. For now, logging and continuing.
+
         if isinstance(file_path, str):
             file_path = Path(file_path)
 
@@ -648,6 +655,12 @@ class FileService:
         :raises ValueError: Si no se puede obtener la ruta del estudio.
         :raises OSError: Si ocurren errores durante la eliminación.
         """
+        try:
+            create_backup(backup_type='automatic')
+        except Exception as e_backup:
+            logger.error(f"Error creating automatic backup before deleting all files in study {study_id}: {e_backup}", exc_info=True)
+            # Decide if operation should continue or be aborted. For now, logging and continuing.
+
         study_path = self._get_study_path(study_id)
         if not study_path:
             raise ValueError(f"No se pudo obtener la ruta del estudio {study_id} para eliminar archivos.")
