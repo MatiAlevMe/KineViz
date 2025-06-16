@@ -212,9 +212,13 @@ class DiscreteAnalysisView(ttk.Frame):
 
         # --- Lista de Tablas Generadas (Treeview) ---
         list_frame = ttk.LabelFrame(parent_frame, text="Tablas Generadas (.xlsx)") # Changed parent
-        list_frame.pack(fill=tk.BOTH, expand=True, pady=(5, 0)) # Adjusted padding
-        list_frame.columnconfigure(0, weight=1)
-        list_frame.rowconfigure(0, weight=1)
+        list_frame.pack(fill=tk.BOTH, expand=True, pady=(5, 0)) 
+        # Configure list_frame's grid for its children (Treeview and its action buttons)
+        list_frame.columnconfigure(0, weight=1) # Treeview column
+        list_frame.rowconfigure(0, weight=1)    # Treeview row (should expand)
+        list_frame.rowconfigure(1, weight=0)    # Horizontal scrollbar row
+        list_frame.rowconfigure(2, weight=0)    # Pagination row
+        list_frame.rowconfigure(3, weight=0)    # Table action buttons row (fixed at bottom of list_frame)
 
         # Updated columns
         self.tables_tree = ttk.Treeview(
