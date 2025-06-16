@@ -140,7 +140,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.bind("<Configure>", self._on_manual_resize)
 
     def _on_manual_resize(self, event):
-        if event.widget != self or self._is_adjusting_size:
+        if event.widget != self or self._is_adjusting_size: # Check if event is for Toplevel and not recursing
             return
         self._is_adjusting_size = True
 
@@ -161,12 +161,12 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         
         if capped:
             self.geometry(f"{new_w}x{new_h}")
-            # self.update_idletasks() # update_idletasks will be called in _update_scrollbars_and_region
+            # self.update_idletasks() # Called in _update_scrollbars_and_region
         
         self._update_scrollbars_and_region()
         self._is_adjusting_size = False
 
-    def _resize_to_content(self):
+    def _resize_to_content(self): # Renamed from _adjust_dialog_layout
         if self._is_adjusting_size:
             return
         self._is_adjusting_size = True
@@ -192,7 +192,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         if target_dialog_width != current_dialog_width or \
            target_dialog_height != current_dialog_height:
             self.geometry(f"{target_dialog_width}x{target_dialog_height}")
-            # self.update_idletasks() # update_idletasks will be called in _update_scrollbars_and_region
+            # self.update_idletasks() # Called in _update_scrollbars_and_region
             
         self._update_scrollbars_and_region()
         self._is_adjusting_size = False
