@@ -972,7 +972,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
                  self.vi_grouping_mode.set("") 
                  self.one_vi_button.state(['!pressed', '!disabled']) 
                  self.two_vi_button.state(['!pressed', '!disabled'])
-                 self._update_dialog_size_and_scrollbar() # Update size even on warning
+                 # self._update_dialog_size_and_scrollbar() # Removed call
                  if hasattr(super(), 'set_vi_grouping_mode'): return super_set_vi_grouping_mode_result
                  return
             self.two_vi_config_frame.grid()
