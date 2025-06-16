@@ -60,8 +60,8 @@ class MainView:
         self.canvas_interior_id = self.canvas.create_window((0, 0), window=self.scrollable_frame_content, anchor="nw")
         self.canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
         
-        # Bind canvas configure event to adjust interior frame width
-        self.canvas.bind("<Configure>", self._on_canvas_configure)
+        # Removed: self.canvas.bind("<Configure>", self._on_canvas_configure)
+        # This allows scrollable_frame_content to determine its own width.
 
         canvas_container.grid_rowconfigure(0, weight=1)
         canvas_container.grid_columnconfigure(0, weight=1)
@@ -317,12 +317,8 @@ class MainView:
         self.load_studies()
         self._on_selection_change() # Actualizar estado del botón
 
-    def _on_canvas_configure(self, event):
-        """Adjusts the width of the scrollable_frame_content to match the canvas width."""
-        canvas_width = event.width
-        if hasattr(self, 'canvas_interior_id') and self.canvas_interior_id:
-            self.canvas.itemconfig(self.canvas_interior_id, width=canvas_width)
-            # Height is managed by content and scrollregion
+    # Removed: def _on_canvas_configure(self, event):
+    # This method was forcing the inner frame width, preventing horizontal scrolling of the canvas content.
 
     def _on_selection_change(self, event=None):
         """Actualiza el estado del botón 'Eliminar Seleccionado(s)'."""
