@@ -13,6 +13,7 @@ import webbrowser # Para abrir HTML
 from kineviz.core.services.analysis_service import AnalysisService
 from kineviz.ui.dialogs.configure_individual_analysis_dialog import ConfigureIndividualAnalysisDialog
 from kineviz.ui.widgets.tooltip import Tooltip # Import Tooltip
+from kineviz.ui.utils.style import get_scaled_font, DEFAULT_FONT_SIZE # Import font utilities
 
 
 logger = logging.getLogger(__name__)
@@ -174,28 +175,29 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         search_filter_frame.columnconfigure(5, weight=1)
 
         # Search
+        scaled_font = get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale)
         ttk.Label(search_filter_frame, text="Buscar:").grid(row=0, column=0, padx=(0,5), pady=5, sticky="w")
-        search_entry = ttk.Entry(search_filter_frame, textvariable=self.search_term_var, width=30)
+        search_entry = ttk.Entry(search_filter_frame, textvariable=self.search_term_var, width=30, font=scaled_font)
         search_entry.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
         search_entry.bind("<Return>", lambda event: self._apply_filters_and_search())
         # Search button is moved to filter_action_buttons_frame
 
         # Filter by Cálculo
         ttk.Label(search_filter_frame, text="Cálculo:").grid(row=1, column=0, padx=(0,5), pady=5, sticky="w")
-        self.filter_calc_combo = ttk.Combobox(search_filter_frame, textvariable=self.filter_calc_var, state="readonly", width=15)
+        self.filter_calc_combo = ttk.Combobox(search_filter_frame, textvariable=self.filter_calc_var, state="readonly", width=15, font=scaled_font)
         self.filter_calc_combo.grid(row=1, column=1, padx=5, pady=5, sticky="w")
         self.filter_calc_combo.bind("<<ComboboxSelected>>", lambda e: self._apply_filters_and_search())
 
         # Filter by Variable Analizada
         ttk.Label(search_filter_frame, text="Variable Analizada:").grid(row=2, column=0, padx=(0,5), pady=5, sticky="w")
-        self.filter_variable_combo = ttk.Combobox(search_filter_frame, textvariable=self.filter_variable_var, state="readonly", width=40)
+        self.filter_variable_combo = ttk.Combobox(search_filter_frame, textvariable=self.filter_variable_var, state="readonly", width=40, font=scaled_font)
         self.filter_variable_combo.grid(row=2, column=1, columnspan=2, padx=5, pady=5, sticky="ew")
         self.filter_variable_combo.bind("<<ComboboxSelected>>", lambda e: self._apply_filters_and_search())
 
         # Filter by VI count
         ttk.Label(search_filter_frame, text="Filtrar por VIs:").grid(row=3, column=0, padx=(0,5), pady=5, sticky="w") # Adjusted row
         self.filter_vi_count_combo = ttk.Combobox(search_filter_frame, textvariable=self.filter_vi_count_var,
-                                                  values=["No filtrar", "1 VI", "2 VIs"], state="readonly", width=12)
+                                                  values=["No filtrar", "1 VI", "2 VIs"], state="readonly", width=12, font=scaled_font)
         self.filter_vi_count_combo.grid(row=3, column=1, padx=5, pady=5, sticky="w") # Adjusted row
         self.filter_vi_count_combo.bind("<<ComboboxSelected>>", self._on_filter_vi_count_change)
 
@@ -206,12 +208,12 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.filter_vi1_frame.columnconfigure(3, weight=1)
 
         ttk.Label(self.filter_vi1_frame, text="VI 1:").grid(row=0, column=0, padx=(0,5), pady=2, sticky="w")
-        self.filter_vi1_name_combo = ttk.Combobox(self.filter_vi1_frame, textvariable=self.filter_vi1_name_var, state="readonly", width=15)
+        self.filter_vi1_name_combo = ttk.Combobox(self.filter_vi1_frame, textvariable=self.filter_vi1_name_var, state="readonly", width=15, font=scaled_font)
         self.filter_vi1_name_combo.grid(row=0, column=1, padx=5, pady=2, sticky="ew")
         self.filter_vi1_name_combo.bind("<<ComboboxSelected>>", lambda e: self._update_filter_descriptor_combobox(1))
         
         ttk.Label(self.filter_vi1_frame, text="Sub-valor VI 1:").grid(row=0, column=2, padx=(10,5), pady=2, sticky="w")
-        self.filter_vi1_desc_combo = ttk.Combobox(self.filter_vi1_frame, textvariable=self.filter_vi1_desc_var, state="readonly", width=15)
+        self.filter_vi1_desc_combo = ttk.Combobox(self.filter_vi1_frame, textvariable=self.filter_vi1_desc_var, state="readonly", width=15, font=scaled_font)
         self.filter_vi1_desc_combo.grid(row=0, column=3, padx=5, pady=2, sticky="ew")
 
         # VI 2 Filter (initially hidden)
@@ -221,12 +223,12 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.filter_vi2_frame.columnconfigure(3, weight=1)
 
         ttk.Label(self.filter_vi2_frame, text="VI 2:").grid(row=0, column=0, padx=(0,5), pady=2, sticky="w")
-        self.filter_vi2_name_combo = ttk.Combobox(self.filter_vi2_frame, textvariable=self.filter_vi2_name_var, state="readonly", width=15)
+        self.filter_vi2_name_combo = ttk.Combobox(self.filter_vi2_frame, textvariable=self.filter_vi2_name_var, state="readonly", width=15, font=scaled_font)
         self.filter_vi2_name_combo.grid(row=0, column=1, padx=5, pady=2, sticky="ew")
         self.filter_vi2_name_combo.bind("<<ComboboxSelected>>", lambda e: self._update_filter_descriptor_combobox(2))
 
         ttk.Label(self.filter_vi2_frame, text="Sub-valor VI 2:").grid(row=0, column=2, padx=(10,5), pady=2, sticky="w")
-        self.filter_vi2_desc_combo = ttk.Combobox(self.filter_vi2_frame, textvariable=self.filter_vi2_desc_var, state="readonly", width=15)
+        self.filter_vi2_desc_combo = ttk.Combobox(self.filter_vi2_frame, textvariable=self.filter_vi2_desc_var, state="readonly", width=15, font=scaled_font)
         self.filter_vi2_desc_combo.grid(row=0, column=3, padx=5, pady=2, sticky="ew")
         
         self.filter_vi1_frame.grid_remove() # Hide VI1 frame initially
@@ -248,7 +250,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         ttk.Frame(filter_action_buttons_frame).pack(side=tk.LEFT, expand=True, fill=tk.X)
 
         refresh_button = ttk.Button(filter_action_buttons_frame, text="Refrescar Lista", command=self.load_analyses)
-        refresh_button.pack(side=tk.RIGHT, padx=(0,5)) # Pack right, before search
+        refresh_button.pack(side=tk.RIGHT, padx=(0,10)) # Added more padding before search button
         Tooltip(refresh_button, text="Recargar la lista de análisis guardados.", short_text="Refrescar lista.", enabled=self.settings.enable_hover_tooltips)
 
         search_button_moved = ttk.Button(filter_action_buttons_frame, text="Buscar", command=self._apply_filters_and_search)
