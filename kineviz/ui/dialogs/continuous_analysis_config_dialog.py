@@ -282,10 +282,12 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.column_combo = ttk.Combobox(column_combo_frame_cont, textvariable=self.column_var, state="readonly", width=45, font=scaled_font)
         self.column_combo.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0,5))
         self.column_combo.bind("<<ComboboxSelected>>", self._on_column_selected)
-        ttk.Button(column_combo_frame_cont, text="?", width=3, style="Help.TButton",
-                   command=lambda: self._show_input_help("Ayuda: Variable a Analizar (Continuo)",
-                                                         "Seleccione la columna de datos cinemáticos (variable dependiente) que contiene la serie temporal a analizar.\nEj: LAnkleAngles/X/deg")
-                  ).pack(side=tk.LEFT)
+        column_help_long_text = "Seleccione la columna de datos cinemáticos (variable dependiente) que contiene la serie temporal a analizar.\nEj: LAnkleAngles/X/deg"
+        column_help_short_text = "Variable cinemática para análisis SPM."
+        column_help_btn = ttk.Button(column_combo_frame_cont, text="?", width=3, style="Help.TButton",
+                                     command=lambda: self._show_input_help("Ayuda: Variable a Analizar (Continuo)", column_help_long_text))
+        column_help_btn.pack(side=tk.LEFT)
+        Tooltip(column_help_btn, text=column_help_long_text, short_text=column_help_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         # --- Opciones de Visualización ---
@@ -298,21 +300,33 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         std_dev_frame.pack(anchor="w", padx=5)
         self.cb_std_dev = ttk.Checkbutton(std_dev_frame, text="Visualizar Desviación Estándar (DE)", variable=self.show_std_dev_var, command=lambda: self._on_viz_option_selected('std'))
         self.cb_std_dev.pack(side=tk.LEFT)
-        ttk.Button(std_dev_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Desviación Estándar", "Muestra la desviación estándar como una banda sombreada alrededor de la curva promedio del grupo.")).pack(side=tk.LEFT, padx=(2,0))
+        std_dev_help_long_text = "Muestra la desviación estándar como una banda sombreada alrededor de la curva promedio del grupo."
+        std_dev_help_short_text = "Mostrar DE en gráfico."
+        std_dev_help_btn = ttk.Button(std_dev_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Desviación Estándar", std_dev_help_long_text))
+        std_dev_help_btn.pack(side=tk.LEFT, padx=(2,0))
+        Tooltip(std_dev_help_btn, text=std_dev_help_long_text, short_text=std_dev_help_short_text, enabled=self.settings.enable_hover_tooltips)
 
         # IC
         conf_int_frame = ttk.Frame(self.plot_options_frame)
         conf_int_frame.pack(anchor="w", padx=5)
         self.cb_conf_int = ttk.Checkbutton(conf_int_frame, text="Visualizar Intervalos de Confianza (IC)", variable=self.show_conf_int_var, command=lambda: self._on_viz_option_selected('ci'))
         self.cb_conf_int.pack(side=tk.LEFT)
-        ttk.Button(conf_int_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Intervalos de Confianza", "Muestra los intervalos de confianza (generalmente 95%) como una banda sombreada alrededor de la curva promedio.")).pack(side=tk.LEFT, padx=(2,0))
+        conf_int_help_long_text = "Muestra los intervalos de confianza (generalmente 95%) como una banda sombreada alrededor de la curva promedio."
+        conf_int_help_short_text = "Mostrar IC en gráfico."
+        conf_int_help_btn = ttk.Button(conf_int_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Intervalos de Confianza", conf_int_help_long_text))
+        conf_int_help_btn.pack(side=tk.LEFT, padx=(2,0))
+        Tooltip(conf_int_help_btn, text=conf_int_help_long_text, short_text=conf_int_help_short_text, enabled=self.settings.enable_hover_tooltips)
         
         # EEM
         sem_frame = ttk.Frame(self.plot_options_frame)
         sem_frame.pack(anchor="w", padx=5)
         self.cb_sem = ttk.Checkbutton(sem_frame, text="Visualizar Error Estándar de la Media (EEM)", variable=self.show_sem_var, command=lambda: self._on_viz_option_selected('sem'))
         self.cb_sem.pack(side=tk.LEFT)
-        ttk.Button(sem_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Error Estándar de la Media", "Muestra el error estándar de la media como una banda sombreada alrededor de la curva promedio.")).pack(side=tk.LEFT, padx=(2,0))
+        sem_help_long_text = "Muestra el error estándar de la media como una banda sombreada alrededor de la curva promedio."
+        sem_help_short_text = "Mostrar EEM en gráfico."
+        sem_help_btn = ttk.Button(sem_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Error Estándar de la Media", sem_help_long_text))
+        sem_help_btn.pack(side=tk.LEFT, padx=(2,0))
+        Tooltip(sem_help_btn, text=sem_help_long_text, short_text=sem_help_short_text, enabled=self.settings.enable_hover_tooltips)
 
         ttk.Separator(self.plot_options_frame, orient='horizontal').pack(fill='x', pady=5, padx=5)
         
@@ -321,7 +335,11 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         interactive_frame.pack(anchor="w", padx=5, pady=(0,5))
         self.cb_interactive_plot = ttk.Checkbutton(interactive_frame, text="Generar Gráfico Interactivo (HTML)", variable=self.generate_interactive_plot_var)
         self.cb_interactive_plot.pack(side=tk.LEFT)
-        ttk.Button(interactive_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Gráfico Interactivo", "Genera una versión HTML interactiva del gráfico (usando Plotly) además del gráfico estático PNG.")).pack(side=tk.LEFT, padx=(2,0))
+        interactive_help_long_text = "Genera una versión HTML interactiva del gráfico (usando Plotly) además del gráfico estático PNG."
+        interactive_help_short_text = "Generar HTML interactivo."
+        interactive_help_btn = ttk.Button(interactive_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Gráfico Interactivo", interactive_help_long_text))
+        interactive_help_btn.pack(side=tk.LEFT, padx=(2,0))
+        Tooltip(interactive_help_btn, text=interactive_help_long_text, short_text=interactive_help_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         # --- Opciones de Anotación del Gráfico ---
@@ -333,20 +351,32 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         annotate_clusters_frame = ttk.Frame(self.annotation_options_frame)
         annotate_clusters_frame.pack(anchor="w", padx=5, pady=(5,0))
         ttk.Checkbutton(annotate_clusters_frame, text="Anotar clusters significativos SPM (gráfico inferior)", variable=self.annotate_spm_clusters_bottom_var).pack(side=tk.LEFT)
-        ttk.Button(annotate_clusters_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Anotar Clusters SPM", "Si se encuentran clusters de tiempo donde la diferencia es estadísticamente significativa, se resaltarán en el panel inferior del gráfico SPM.")).pack(side=tk.LEFT, padx=(2,0))
+        annotate_clusters_help_long_text = "Si se encuentran clusters de tiempo donde la diferencia es estadísticamente significativa, se resaltarán en el panel inferior del gráfico SPM."
+        annotate_clusters_help_short_text = "Resaltar clusters SPM."
+        annotate_clusters_help_btn = ttk.Button(annotate_clusters_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Anotar Clusters SPM", annotate_clusters_help_long_text))
+        annotate_clusters_help_btn.pack(side=tk.LEFT, padx=(2,0))
+        Tooltip(annotate_clusters_help_btn, text=annotate_clusters_help_long_text, short_text=annotate_clusters_help_short_text, enabled=self.settings.enable_hover_tooltips)
 
         # Anotar rango
         annotate_range_frame = ttk.Frame(self.annotation_options_frame)
         annotate_range_frame.pack(anchor="w", padx=5)
         ttk.Checkbutton(annotate_range_frame, text="Anotar rango significativo SPM (gráfico superior)", variable=self.annotate_spm_range_top_var).pack(side=tk.LEFT)
-        ttk.Button(annotate_range_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Anotar Rango SPM", "Si se encuentra un rango de tiempo general donde la diferencia es significativa, se indicará en el panel superior del gráfico SPM.")).pack(side=tk.LEFT, padx=(2,0))
+        annotate_range_help_long_text = "Si se encuentra un rango de tiempo general donde la diferencia es significativa, se indicará en el panel superior del gráfico SPM."
+        annotate_range_help_short_text = "Indicar rango SPM."
+        annotate_range_help_btn = ttk.Button(annotate_range_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Anotar Rango SPM", annotate_range_help_long_text))
+        annotate_range_help_btn.pack(side=tk.LEFT, padx=(2,0))
+        Tooltip(annotate_range_help_btn, text=annotate_range_help_long_text, short_text=annotate_range_help_short_text, enabled=self.settings.enable_hover_tooltips)
         
         # Delimitar Rango de Tiempo
         delimit_time_frame = ttk.Frame(self.annotation_options_frame)
         delimit_time_frame.pack(anchor="w", padx=5, pady=(5,0))
         self.delimit_time_checkbox = ttk.Checkbutton(delimit_time_frame, text="Delimitar Rango de Tiempo Mostrado", variable=self.delimit_time_range_var, command=self._toggle_time_delimitation_widgets)
         self.delimit_time_checkbox.pack(side=tk.LEFT)
-        ttk.Button(delimit_time_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Delimitar Rango de Tiempo", "Permite especificar un sub-rango del ciclo normalizado (0-100%) para enfocar la visualización del gráfico.\nÚtil para examinar fases específicas del movimiento.")).pack(side=tk.LEFT, padx=(2,0))
+        delimit_time_help_long_text = "Permite especificar un sub-rango del ciclo normalizado (0-100%) para enfocar la visualización del gráfico.\nÚtil para examinar fases específicas del movimiento."
+        delimit_time_help_short_text = "Enfocar gráfico en sub-rango."
+        delimit_time_help_btn = ttk.Button(delimit_time_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Delimitar Rango de Tiempo", delimit_time_help_long_text))
+        delimit_time_help_btn.pack(side=tk.LEFT, padx=(2,0))
+        Tooltip(delimit_time_help_btn, text=delimit_time_help_long_text, short_text=delimit_time_help_short_text, enabled=self.settings.enable_hover_tooltips)
 
         self.time_delimitation_subframe = ttk.Frame(self.annotation_options_frame, padding=(15, 5, 5, 5)) # Subframe con indentación
         self.time_delimitation_subframe.pack(fill=tk.X, expand=True)
@@ -730,7 +760,11 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         ttk.Label(time_min_frame, text="Tiempo Mínimo (%):").pack(side=tk.LEFT)
         self.time_min_entry = ttk.Entry(time_min_frame, textvariable=self.time_min_var, width=5)
         self.time_min_entry.pack(side=tk.LEFT, padx=(2,0))
-        ttk.Button(time_min_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Tiempo Mínimo", "Inicio del rango de tiempo a visualizar (0-100%). Debe ser menor que Tiempo Máximo.")).pack(side=tk.LEFT, padx=(2,0))
+        time_min_help_long_text = "Inicio del rango de tiempo a visualizar (0-100%). Debe ser menor que Tiempo Máximo."
+        time_min_help_short_text = "Inicio del rango (0-100%)."
+        time_min_help_btn = ttk.Button(time_min_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Tiempo Mínimo", time_min_help_long_text))
+        time_min_help_btn.pack(side=tk.LEFT, padx=(2,0))
+        Tooltip(time_min_help_btn, text=time_min_help_long_text, short_text=time_min_help_short_text, enabled=self.settings.enable_hover_tooltips)
 
         # Tiempo Máximo
         time_max_frame = ttk.Frame(self.time_delimitation_subframe)
@@ -738,32 +772,48 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         ttk.Label(time_max_frame, text="Tiempo Máximo (%):").pack(side=tk.LEFT)
         self.time_max_entry = ttk.Entry(time_max_frame, textvariable=self.time_max_var, width=5)
         self.time_max_entry.pack(side=tk.LEFT, padx=(2,0))
-        ttk.Button(time_max_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Tiempo Máximo", "Fin del rango de tiempo a visualizar (0-100%). Debe ser mayor que Tiempo Mínimo.")).pack(side=tk.LEFT, padx=(2,0))
+        time_max_help_long_text = "Fin del rango de tiempo a visualizar (0-100%). Debe ser mayor que Tiempo Mínimo."
+        time_max_help_short_text = "Fin del rango (0-100%)."
+        time_max_help_btn = ttk.Button(time_max_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Tiempo Máximo", time_max_help_long_text))
+        time_max_help_btn.pack(side=tk.LEFT, padx=(2,0))
+        Tooltip(time_max_help_btn, text=time_max_help_long_text, short_text=time_max_help_short_text, enabled=self.settings.enable_hover_tooltips)
 
         # Checkbox Mostrar Tiempo Completo
         show_full_frame = ttk.Frame(self.time_delimitation_subframe)
         show_full_frame.grid(row=1, column=0, columnspan=4, sticky="w", padx=5, pady=2)
         self.show_full_time_checkbox = ttk.Checkbutton(show_full_frame, text="Mostrar Tiempo Completo con Delimitadores", variable=self.show_full_time_with_delimiters_var)
         self.show_full_time_checkbox.pack(side=tk.LEFT)
-        ttk.Button(show_full_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Mostrar Tiempo Completo", "Si está marcado, el gráfico mostrará el ciclo completo (0-100%) con el rango delimitado resaltado o indicado. Si no, solo mostrará el rango delimitado.")).pack(side=tk.LEFT, padx=(2,0))
+        show_full_help_long_text = "Si está marcado, el gráfico mostrará el ciclo completo (0-100%) con el rango delimitado resaltado o indicado. Si no, solo mostrará el rango delimitado."
+        show_full_help_short_text = "Mostrar ciclo completo o solo rango."
+        show_full_help_btn = ttk.Button(show_full_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Mostrar Tiempo Completo", show_full_help_long_text))
+        show_full_help_btn.pack(side=tk.LEFT, padx=(2,0))
+        Tooltip(show_full_help_btn, text=show_full_help_long_text, short_text=show_full_help_short_text, enabled=self.settings.enable_hover_tooltips)
         
         # Checkbox Añadir Etiqueta de Rango
         add_label_frame = ttk.Frame(self.time_delimitation_subframe)
         add_label_frame.grid(row=2, column=0, columnspan=4, sticky="w", padx=5, pady=2)
         self.add_label_checkbox = ttk.Checkbutton(add_label_frame, text="Añadir Etiqueta de Rango de Tiempo", variable=self.add_time_range_label_var, command=self._toggle_time_label_entry)
         self.add_label_checkbox.pack(side=tk.LEFT)
-        ttk.Button(add_label_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Añadir Etiqueta de Rango", "Permite añadir un texto personalizado (ej. 'Fase de Apoyo') al gráfico para identificar el rango de tiempo delimitado.")).pack(side=tk.LEFT, padx=(2,0))
+        add_label_help_long_text = "Permite añadir un texto personalizado (ej. 'Fase de Apoyo') al gráfico para identificar el rango de tiempo delimitado."
+        add_label_help_short_text = "Añadir etiqueta a rango."
+        add_label_help_btn = ttk.Button(add_label_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Añadir Etiqueta de Rango", add_label_help_long_text))
+        add_label_help_btn.pack(side=tk.LEFT, padx=(2,0))
+        Tooltip(add_label_help_btn, text=add_label_help_long_text, short_text=add_label_help_short_text, enabled=self.settings.enable_hover_tooltips)
 
         # Frame para Etiqueta de Rango (inicialmente oculto)
-        self.time_label_entry_frame = ttk.Frame(self.time_delimitation_subframe) # Este es el frame que se muestra/oculta
+        self.time_label_entry_frame = ttk.Frame(self.time_delimitation_subframe) 
         self.time_label_entry_frame.grid(row=3, column=0, columnspan=4, sticky="ew", padx=(20, 5)) 
         
-        label_text_frame = ttk.Frame(self.time_label_entry_frame) # Sub-frame para label, entry y botón
+        label_text_frame = ttk.Frame(self.time_label_entry_frame) 
         label_text_frame.pack(fill=tk.X, expand=True)
         ttk.Label(label_text_frame, text="Texto de Etiqueta:").pack(side=tk.LEFT, padx=(0,5))
         self.time_label_text_entry = ttk.Entry(label_text_frame, textvariable=self.time_range_label_text_var, width=25)
         self.time_label_text_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0,5))
-        ttk.Button(label_text_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Texto de Etiqueta", "El texto que se mostrará en el gráfico para identificar el rango de tiempo delimitado.")).pack(side=tk.LEFT)
+        label_text_help_long_text = "El texto que se mostrará en el gráfico para identificar el rango de tiempo delimitado."
+        label_text_help_short_text = "Texto para etiqueta de rango."
+        label_text_help_btn = ttk.Button(label_text_frame, text="?", style="Help.TButton", width=3, command=lambda: self._show_input_help("Ayuda: Texto de Etiqueta", label_text_help_long_text))
+        label_text_help_btn.pack(side=tk.LEFT)
+        Tooltip(label_text_help_btn, text=label_text_help_long_text, short_text=label_text_help_short_text, enabled=self.settings.enable_hover_tooltips)
 
 
     def _toggle_time_delimitation_widgets(self):
@@ -799,8 +849,9 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         group_combo_frame_cont = ttk.Frame(selector_frame) # Frame para combo y botón de ayuda
         group_combo_frame_cont.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
 
+        # Ensure scaled_font is applied to the Combobox
         group_combo = ttk.Combobox(group_combo_frame_cont, textvariable=group_var, state="readonly",
-                                   values=sorted(list(self.available_groups_filtered.keys())), width=30, font=scaled_font) # Ajustar width
+                                   values=sorted(list(self.available_groups_filtered.keys())), width=30, font=scaled_font) 
         group_combo.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0,5))
         group_combo.bind("<<ComboboxSelected>>", self._on_group_selection_change) # Cargar columnas al cambiar grupo
         
