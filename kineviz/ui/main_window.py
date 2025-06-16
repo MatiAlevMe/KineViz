@@ -206,7 +206,7 @@ class MainWindow:
         # StudyDialog necesita ser adaptada para manejar la edición
         # y aceptar un callback
         # Pasar el callback como argumento nombrado
-        StudyDialog(self.root, self.study_service, study_to_edit=study_to_edit, on_save_callback=self.refresh_main_view)
+        StudyDialog(self.root, self.study_service, self.settings, study_to_edit=study_to_edit, on_save_callback=self.refresh_main_view)
 
     def show_comment_dialog(self, study_id: int, study_name: str):
         """Muestra el diálogo para añadir/editar un comentario de estudio."""
