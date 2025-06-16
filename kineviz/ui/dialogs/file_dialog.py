@@ -50,12 +50,22 @@ class FileDialog(Toplevel):
         # Centrar diálogo
         self.transient(parent)
         self.grab_set()
-        # Código para centrar (similar a StudyDialog)
-        # ...
+        
+        # Centering logic (can be simplified or made a helper)
+        self.update_idletasks() # Ensure dialog size is calculated
+        parent_x = parent.winfo_rootx()
+        parent_y = parent.winfo_rooty()
+        parent_width = parent.winfo_width()
+        parent_height = parent.winfo_height()
+        dialog_width = self.winfo_width()
+        dialog_height = self.winfo_height()
+        x = parent_x + (parent_width // 2) - (dialog_width // 2)
+        y = parent_y + (parent_height // 2) - (dialog_height // 2)
+        self.geometry(f'+{x}+{y}')
 
-        # Definir estilo para el botón de ayuda
-        style = ttk.Style()
-        style.configure("Help.TButton", foreground="white", background="blue")
+        # Definir estilo para el botón de ayuda (si no está globalmente definido)
+        # style = ttk.Style()
+        # style.configure("Help.TButton", foreground="white", background="blue")
 
 
     def _show_input_help(self, title: str, message: str):
@@ -63,64 +73,80 @@ class FileDialog(Toplevel):
         messagebox.showinfo(title, message, parent=self)
 
     def create_widgets(self):
-        main_frame = ttk.Frame(self, padding="10")
-        main_frame.pack(fill=tk.BOTH, expand=True)
-
-        # Frame para botón de selección y ayuda
-        selection_header_frame = ttk.Frame(main_frame)
-        selection_header_frame.pack(pady=10)
+        # --- Top Fixed Frame for Selection Button and Help ---
+        top_fixed_frame = ttk.Frame(self, padding=(10, 10, 10, 0)) # Pad bottom 0
+        top_fixed_frame.pack(side=tk.TOP, fill=tk.X)
 
         # Botón para seleccionar archivos
-        select_button = ttk.Button(selection_header_frame, text="Seleccionar Archivos (.txt, .csv)", command=self.select_files)
+        select_button = ttk.Button(top_fixed_frame, text="Seleccionar Archivos (.txt, .csv)", command=self.select_files)
         select_button.pack(side=tk.LEFT, padx=(0, 5))
 
         # Botón de ayuda para formato de nombre de archivo
-        filename_help_button = ttk.Button(selection_header_frame, text="?", width=3, style="Help.TButton",
+        filename_help_button = ttk.Button(top_fixed_frame, text="?", width=3, style="Help.TButton",
                                            command=lambda: self._show_input_help("Ayuda: Formato Nombre de Archivo",
-                                                                                 "Los nombres de archivo deben seguir el formato:\n"
-                                                                                 "[ID_Participante] [SubValor_VI1] [SubValor_VI2] ... [Intento].ext\n\n"
-                                                                                 "Ejemplo: P01 CMJ PRE 01.txt\n\n"
-                                                                                 "- ID_Participante: Identificador único del participante (letras seguidas de números, ej: P01, Sujeto007).\n"
-                                                                                 "- SubValores VIs: Deben coincidir con los sub-valores definidos para cada VI en el estudio, en el orden correcto. Usar 'Nulo' si una VI opcional no aplica.\n"
-                                                                                 "- Intento: Número de intento para esa combinación de VIs (ej: 01, 02, 03).\n"
-                                                                                 "- Extensión: .txt o .csv"))
+                                                                                 self._get_naming_rules_help_text())) # Use helper for long text
         filename_help_button.pack(side=tk.LEFT)
-        filename_help_long_text = ("Los nombres de archivo deben seguir el formato:\n"
-                                   "[ID_Participante] [SubValor_VI1] [SubValor_VI2] ... [Intento].ext\n\n"
-                                   "Ejemplo: P01 CMJ PRE 01.txt\n\n"
-                                   "- ID_Participante: Identificador único del participante (letras seguidas de números, ej: P01, Sujeto007).\n"
-                                   "- SubValores VIs: Deben coincidir con los sub-valores definidos para cada VI en el estudio, en el orden correcto. Usar 'Nulo' si una VI opcional no aplica.\n"
-                                   "- Intento: Número de intento para esa combinación de VIs (ej: 01, 02, 03).\n"
-                                   "- Extensión: .txt o .csv")
+        filename_help_long_text = self._get_naming_rules_help_text()
         filename_help_short_text = "Reglas para nombrar archivos de datos."
         Tooltip(filename_help_button, text=filename_help_long_text, short_text=filename_help_short_text, enabled=self.settings.enable_hover_tooltips)
 
-
-        # Listbox para mostrar archivos seleccionados
-        list_frame = ttk.Frame(main_frame)
-        list_frame.pack(fill=tk.BOTH, expand=True, pady=5)
+        # --- Middle Frame for Listbox and Scrollbars (this one will expand) ---
+        middle_list_frame = ttk.Frame(self)
+        middle_list_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+        middle_list_frame.grid_rowconfigure(0, weight=1)
+        middle_list_frame.grid_columnconfigure(0, weight=1)
 
         # Calculate scaled font for tk.Listbox
         scaled_font_tuple = get_font_object(DEFAULT_FONT_SIZE, self.settings.font_scale)
 
-        scrollbar = Scrollbar(list_frame, orient=tk.VERTICAL)
-        self.listbox = Listbox(list_frame, yscrollcommand=scrollbar.set, selectmode=tk.EXTENDED, font=scaled_font_tuple) # Apply scaled font
-        scrollbar.config(command=self.listbox.yview)
+        v_scrollbar = ttk.Scrollbar(middle_list_frame, orient=tk.VERTICAL)
+        h_scrollbar = ttk.Scrollbar(middle_list_frame, orient=tk.HORIZONTAL)
+        
+        self.listbox = Listbox(middle_list_frame, 
+                               yscrollcommand=v_scrollbar.set, 
+                               xscrollcommand=h_scrollbar.set, 
+                               selectmode=tk.EXTENDED, 
+                               font=scaled_font_tuple,
+                               height=10, # Default height in lines
+                               width=70)  # Default width in characters
+        
+        v_scrollbar.config(command=self.listbox.yview)
+        h_scrollbar.config(command=self.listbox.xview)
 
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        v_scrollbar.grid(row=0, column=1, sticky="ns")
+        h_scrollbar.grid(row=1, column=0, sticky="ew") # Span across listbox width
+        self.listbox.grid(row=0, column=0, sticky="nsew")
 
-        # Botón para quitar archivos seleccionados de la lista (opcional)
-        remove_button = ttk.Button(main_frame, text="Quitar Seleccionados", command=self.remove_selected)
-        remove_button.pack(pady=5)
 
-        # Botones de acción
-        button_frame = ttk.Frame(main_frame)
-        button_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(10, 0))
+        # --- Bottom Fixed Frame for Action Buttons ---
+        bottom_fixed_frame = ttk.Frame(self, padding=(10, 5, 10, 10)) # Pad top 5
+        bottom_fixed_frame.pack(side=tk.BOTTOM, fill=tk.X)
 
-        self.process_button = ttk.Button(button_frame, text="Procesar Archivos Seleccionados", command=self.process_files, state=tk.DISABLED)
+        # Botón para quitar archivos seleccionados de la lista
+        remove_button = ttk.Button(bottom_fixed_frame, text="Quitar Seleccionados", command=self.remove_selected)
+        remove_button.pack(side=tk.LEFT, padx=(0,10)) # Give some space to the right
+
+        # Botones de acción (Procesar, Cancelar)
+        # Pack Cancelar primero para que quede a la derecha de Procesar
+        ttk.Button(bottom_fixed_frame, text="Cancelar", command=self.destroy).pack(side=tk.RIGHT)
+        self.process_button = ttk.Button(bottom_fixed_frame, text="Procesar Archivos Seleccionados", command=self.process_files, state=tk.DISABLED)
         self.process_button.pack(side=tk.RIGHT, padx=5)
-        ttk.Button(button_frame, text="Cancelar", command=self.destroy).pack(side=tk.RIGHT)
+        
+        # Set minsize after widgets are created
+        self.update_idletasks()
+        self.minsize(500, 350) # Adjust minsize as needed
+
+    def _get_naming_rules_help_text(self) -> str:
+        """Helper to generate the detailed help text for naming rules."""
+        return (
+            "Los nombres de archivo deben seguir el formato:\n"
+            "[ID_Participante] [SubValor_VI1] [SubValor_VI2] ... [Intento].ext\n\n"
+            "Ejemplo: P01 CMJ PRE 01.txt\n\n"
+            "- ID_Participante: Identificador único del participante (letras seguidas de números, ej: P01, Sujeto007).\n"
+            "- SubValores VIs: Deben coincidir con los sub-valores definidos para cada VI en el estudio, en el orden correcto. Usar 'Nulo' si una VI opcional no aplica.\n"
+            "- Intento: Número de intento para esa combinación de VIs (ej: 01, 02, 03).\n"
+            "- Extensión: .txt o .csv"
+        )
 
     def select_files(self):
         """Abre el diálogo del sistema para seleccionar archivos."""
