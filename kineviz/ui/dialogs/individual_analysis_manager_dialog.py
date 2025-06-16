@@ -57,6 +57,38 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self._populate_filter_vi_comboboxes() # Populate VI comboboxes after widgets are created
         self.load_analyses() # This will now fetch all and then apply current (empty) filters
 
+    def _update_pagination_controls(self, total_items_in_filter):
+        """Actualiza los controles de paginación."""
+        for widget in self.pagination_controls_frame.winfo_children():
+            widget.destroy()
+
+        self.total_pages = (total_items_in_filter // self.items_per_page) + \
+                           (1 if total_items_in_filter % self.items_per_page else 0)
+        self.total_pages = max(1, self.total_pages)
+
+        if self.total_pages <= 1:
+            return # No mostrar controles si hay 1 página o menos
+
+        ttk.Button(self.pagination_controls_frame, text="<<", command=lambda: self._go_to_page(1),
+                   state=tk.DISABLED if self.current_page == 1 else tk.NORMAL).pack(side=tk.LEFT, padx=2)
+        ttk.Button(self.pagination_controls_frame, text="<", command=lambda: self._go_to_page(self.current_page - 1),
+                   state=tk.DISABLED if self.current_page == 1 else tk.NORMAL).pack(side=tk.LEFT, padx=2)
+
+        ttk.Label(self.pagination_controls_frame, text=f"Página {self.current_page} de {self.total_pages}").pack(side=tk.LEFT, padx=5)
+
+        ttk.Button(self.pagination_controls_frame, text=">", command=lambda: self._go_to_page(self.current_page + 1),
+                   state=tk.DISABLED if self.current_page == self.total_pages else tk.NORMAL).pack(side=tk.LEFT, padx=2)
+        ttk.Button(self.pagination_controls_frame, text=">>", command=lambda: self._go_to_page(self.total_pages),
+                   state=tk.DISABLED if self.current_page == self.total_pages else tk.NORMAL).pack(side=tk.LEFT, padx=2)
+
+    def _go_to_page(self, page_number):
+        """Navega a una página específica y repopula el treeview."""
+        if 1 <= page_number <= self.total_pages:
+            self.current_page = page_number
+            self._apply_filters_and_search() # This will repopulate based on current filters and new page
+        else:
+            logger.warning(f"Intento de ir a página inválida {page_number} (Total: {self.total_pages})")
+
     def create_widgets(self):
         """Crea los widgets del diálogo."""
         # self.main_frame was the original content holder. Now, content goes into scrollable_frame.
