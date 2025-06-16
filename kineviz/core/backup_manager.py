@@ -250,11 +250,16 @@ if __name__ == '__main__':
     if not invalid_backup_path:
         logger.info("Backup creation with invalid type correctly failed.")
 
-    # Clean up dummy files and directories
-    # (root / DB_FILENAME).unlink(missing_ok=True)
-    # (root / CONFIG_FILENAME).unlink(missing_ok=True)
-    # if dummy_studies_dir.exists():
-    #     shutil.rmtree(dummy_studies_dir)
-    # logger.info("Cleaned up dummy files and directories.")
-    # logger.info(f"Please manually clean up the '{BACKUPS_DIR_NAME}' directory created under {root} if needed.")
-    # logger.info("To fully test, run this script, check the 'backups' directory, then uncomment cleanup lines and run again.")
+    # --- Clean up dummy files and directories used for testing ---
+    logger.info("Cleaning up test-specific dummy files...")
+    (root / TEST_DB_FILENAME).unlink(missing_ok=True)
+    (root / TEST_CONFIG_FILENAME).unlink(missing_ok=True)
+    
+    # Restore original global constants
+    DB_FILENAME, CONFIG_FILENAME = original_db_filename, original_config_filename
+    
+    # Note: dummy_studies_dir and its contents are NOT automatically cleaned up here
+    # to allow inspection of its structure if needed after a test run.
+    # The backup files created in kineviz/backups/ are also not cleaned up automatically.
+    logger.info(f"Test cleanup complete. Dummy DB ({TEST_DB_FILENAME}) and Config ({TEST_CONFIG_FILENAME}) removed.")
+    logger.info(f"Please manually clean up the '{BACKUPS_DIR_NAME}' directory and '{STUDIES_DIR_NAME}' if it was created/modified by this test script.")
