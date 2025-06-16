@@ -259,16 +259,42 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
 1. [En Progreso] Gestión de Copias de Seguridad y Restauración del Sistema.
     1.1 [En Progreso] Implementar lógica central de copias de seguridad y almacenamiento.
         - Componentes del sistema a respaldar ("Todo el Sistema"):
-            - Base de datos: `kineviz.db`
-            - Directorio de estudios: `estudios/` (completo, con todos sus subdirectorios y archivos)
-            - Archivo de configuración: `config.ini`
-        - Rutas de almacenamiento: "kineviz/backups/automatic/" para automáticas, "kineviz/backups/manual/" para manuales.
+            - Base de datos: `kineviz.db` (ubicada en la raíz del proyecto).
+            - Archivo de configuración: `config.ini` (ubicado en la raíz del proyecto).
+            - Directorio de estudios (`estudios/`): Se respaldarán selectivamente los siguientes contenidos esenciales:
+                - Archivos de datos de estudio:
+                    - Originales: `estudios/[NOMBRE_ESTUDIO]/[ID_PARTICIPANTE]/OG/[NOMBRE_ARCHIVO_ORIGINAL].txt` (o `.csv`)
+                    - Procesados: `estudios/[NOMBRE_ESTUDIO]/[ID_PARTICIPANTE]/[TIPO_DATO]/[NOMBRE_ARCHIVO_PROCESADO]_[TIPO_DATO].txt` (ej. _Cinematica.txt)
+                - Resultados de Análisis Discreto:
+                    - Tablas de resumen:
+                        - `estudios/[NOMBRE_ESTUDIO]/Analisis Discreto/Tablas/[TIPO_DATO]/[CALCULO]_[TIPO_DATO]_[COMBINACION_VIS].xlsx`
+                        - `estudios/[NOMBRE_ESTUDIO]/Analisis Discreto/Tablas/[TIPO_DATO]/[CALCULO]_[TIPO_DATO]_[COMBINACION_VIS].csv` (interno)
+                    - Gráficos y configuraciones: `estudios/[NOMBRE_ESTUDIO]/Analisis Discreto/Graficos/[NOMBRE_COLUMNA_ANALIZADA]/[NOMBRE_ANALISIS]/` (incluyendo `boxplot.png`, `config.json`, `boxplot_interactive.html`, `configuracion_detallada_discreto.txt`)
+                - Resultados de Análisis Continuo:
+                    - `estudios/[NOMBRE_ESTUDIO]/Analisis Continuo/[NOMBRE_COLUMNA_ANALIZADA]/[NOMBRE_ANALISIS]/` (incluyendo `spm_plot.png`, `spm_results.json`, `config_continuous.json`, `spm_plot_interactive.html`, `configuracion_detallada.txt`)
+        - Estrategia de respaldo para `estudios/`: El respaldo será selectivo para incluir solo las estructuras y tipos de archivo definidos anteriormente, excluyendo archivos temporales, formatos obsoletos o archivos no reconocidos para optimizar el tamaño y rendimiento del backup.
+        - Rutas de almacenamiento: `kineviz/backups/automatic/` para automáticas, `kineviz/backups/manual/` para manuales.
         - Formato de las copias de seguridad: Archivos ZIP individuales con marca de tiempo en el nombre (ej: `backup_20250616_103000.zip`).
         - Crear módulo `kineviz.core.backup_manager` para encapsular la funcionalidad de respaldo.
-        - Funcionalidad del `backup_manager`: Crear una copia de seguridad completa de los componentes definidos ("Todo el Sistema").
-        - Funcionalidad del `backup_manager`: Gestionar el mecanismo de respaldo rotativo para copias automáticas (listar existentes, eliminar la más antigua si se excede el límite configurado al crear una nueva).
-        - Disparadores para copias automáticas: Operaciones de agregar, restaurar o eliminar archivos, carpetas, estudios, o resultados de análisis.
-        - Puntos de activación para copias automáticas: `MainWindow` (ej. al eliminar estudios), `StudyView` (ej. al agregar/eliminar archivos), `IndividualAnalysisManagerDialog` (ej. al eliminar análisis), `ContinuousAnalysisManagerDialog` (ej. al eliminar análisis).
+        - Funcionalidad del `backup_manager`:
+            - Crear una copia de seguridad de los componentes definidos.
+            - Gestionar el mecanismo de respaldo rotativo para copias automáticas (listar existentes, eliminar la más antigua si se excede el límite configurado al crear una nueva).
+        - Disparadores para copias automáticas: Operaciones significativas que modifican datos persistentes de forma sustancial. Se activarán *después* de la finalización exitosa de:
+            - Creación de un estudio.
+            - Eliminación de un estudio / eliminación de todos los estudios.
+            - Adición de un lote de archivos a un estudio.
+            - Eliminación de un archivo de un estudio / eliminación de todos los archivos de un estudio.
+            - Generación/actualización completa de tablas de resumen de análisis discreto.
+            - Eliminación de un análisis discreto individual o todos los análisis discretos de un estudio.
+            - Creación de un análisis continuo.
+            - Eliminación de un análisis continuo o todos los análisis continuos de un estudio.
+        - Puntos de activación (funciones clave donde se invocaría el backup):
+            - `StudyService.create_study`, `StudyService.delete_study`, `StudyService.delete_all_studies`
+            - `FileService.add_files_to_study`, `FileService.delete_file`, `FileService.delete_all_files_in_study` (si se implementa)
+            - `AnalysisService.generate_discrete_summary_tables`
+            - `AnalysisService.delete_individual_analysis`, `AnalysisService.delete_all_individual_analyses_for_study` (si se implementa)
+            - `AnalysisService.perform_continuous_analysis` (al guardar exitosamente)
+            - `AnalysisService.delete_continuous_analysis`, `AnalysisService.delete_all_continuous_analyses_for_study` (si se implementa)
     1.2 [En Progreso] Implementar UI para Gestión de Copias de Seguridad.
         - Añadir opción "Gestión de Copias de Seguridad" en el diálogo de configuración (`ConfigDialog`).
         - Al seleccionar, mostrar un nuevo diálogo (`BackupRestoreDialog`) que liste las copias de seguridad disponibles y permita gestionarlas.

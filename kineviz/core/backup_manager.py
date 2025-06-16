@@ -172,13 +172,24 @@ if __name__ == '__main__':
         sys.path.insert(0, str(root))
 
     from kineviz.config.settings import AppSettings # Import AppSettings locally for the test block
-
+    
+    # --- Test specific constants ---
+    TEST_DB_FILENAME = "dummy_test_kineviz.db"
+    TEST_CONFIG_FILENAME = "dummy_test_config.ini"
+    # We will still use the real STUDIES_DIR_NAME for testing the studies backup part,
+    # but the DB and Config will be dummies.
+    
     # Create dummy files and directories for testing
     # root is already defined above
-    (root / DB_FILENAME).write_text("dummy db content")
-    (root / CONFIG_FILENAME).write_text("[SETTINGS]\ndummy_setting=1\nmax_automatic_backups = 2") # Ensure config for test
+    (root / TEST_DB_FILENAME).write_text("dummy db content for testing")
+    (root / TEST_CONFIG_FILENAME).write_text(f"[SETTINGS]\ndummy_setting=1\nmax_automatic_backups = 2\nmax_manual_backups = 2") # Ensure config for test
+        
+    # Temporarily override global constants for the scope of this test
+    global DB_FILENAME, CONFIG_FILENAME
+    original_db_filename, original_config_filename = DB_FILENAME, CONFIG_FILENAME
+    DB_FILENAME, CONFIG_FILENAME = TEST_DB_FILENAME, TEST_CONFIG_FILENAME
     
-    dummy_studies_dir = root / STUDIES_DIR_NAME
+    dummy_studies_dir = root / STUDIES_DIR_NAME # This will be the actual studies dir name
     dummy_studies_dir.mkdir(exist_ok=True)
     (dummy_studies_dir / "study1").mkdir(exist_ok=True)
     (dummy_studies_dir / "study1" / "data.txt").write_text("study1 data")
