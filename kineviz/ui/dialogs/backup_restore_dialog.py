@@ -141,7 +141,7 @@ class BackupRestoreDialog(Toplevel):
 
 
         columns = ("type", "timestamp", "alias", "filename") # Filename is hidden but used for actions
-        self.tree = ttk.Treeview(tree_frame, columns=columns, show="headings", selectmode="browse")
+        self.tree = ttk.Treeview(tree_frame, columns=columns, show="headings", selectmode="browse", height=self.backups_per_page) # Set initial height
         
         self.tree.heading("type", text="Tipo")
         self.tree.heading("timestamp", text="Fecha de Creación")
@@ -332,9 +332,10 @@ class BackupRestoreDialog(Toplevel):
         # Show rows for a full page, or fewer if less than a page of items. Min 1 row.
         # If paginated_list is empty, display_count will be 0, so max(1,0) is 1.
         # If paginated_list has items, it will be len(self.paginated_list).
-        # This makes the treeview shrink if there are few items.
-        display_count = len(self.paginated_list)
-        self.tree.config(height=max(1, display_count))
+        # The initial height is set by self.backups_per_page.
+        # We no longer dynamically shrink the treeview height here.
+        # display_count = len(self.paginated_list)
+        # self.tree.config(height=max(1, display_count)) # Removed to keep height fixed by backups_per_page
 
         self.on_backup_selected(None) # Update button states
 
