@@ -718,27 +718,16 @@ class ConfigDialog(Toplevel):
     def open_backup_restore_dialog(self):
         """Abre el diálogo de gestión de copias de seguridad."""
         # Pass self.settings and a reference to MainWindow instance if available
-        # self.parent is the root Tk() window of MainWindow.
-        # MainWindow instance is self.parent.master if MainWindow is structured that way,
-        # or more reliably, pass MainWindow instance to ConfigDialog.
-        # For now, assuming self.parent is MainWindow's root, and MainWindow instance is accessible.
-        # Let's assume self.reset_callback is on MainWindow, or we need a direct main_window_instance.
-        # The parent of ConfigDialog is MainWindow's root (self.parent).
-        # The MainWindow instance itself is needed.
-        # We'll assume MainWindow passes itself as 'main_window_instance' to ConfigDialog if needed,
-        # or ConfigDialog's parent has a reference to it.
-        # For now, we rely on the parent of ConfigDialog (which is MainWindow's root)
-        # to have the trigger_app_restart method if MainWindow attached it there,
-        # or that MainWindow itself is the parent.
-        
         # The parent of ConfigDialog is MainWindow's root.
-        # The MainWindow instance is self.master if ConfigDialog is a Toplevel of MainWindow's root.
-        # Let's assume self.master is the MainWindow instance.
+        # The MainWindow instance itself is needed for trigger_app_restart.
         main_window_ref = None
-        if hasattr(self.master, 'trigger_app_restart'): # Check if parent (master of Toplevel) is MainWindow
+        # The most reliable way to get MainWindow instance is via the reset_callback's __self__ attribute
+        if self.reset_callback and hasattr(self.reset_callback.__self__, 'trigger_app_restart'):
+            main_window_ref = self.reset_callback.__self__
+        elif hasattr(self.master, 'trigger_app_restart'): 
+            # self.master is the parent widget (e.g., MainWindow.root tk.Tk() instance).
+            # This is less likely to be the MainWindow instance itself unless MainWindow is the Toplevel's parent.
             main_window_ref = self.master
-        elif hasattr(self.parent, 'trigger_app_restart'): # Check if parent (passed to Toplevel) is MainWindow
-             main_window_ref = self.parent
 
         dialog = BackupRestoreDialog(self, app_settings=self.settings, main_window_instance=main_window_ref)
         self.wait_window(dialog) # Make it modal to ConfigDialog
@@ -746,23 +735,15 @@ class ConfigDialog(Toplevel):
         if hasattr(dialog, 'restart_required_after_restore') and dialog.restart_required_after_restore:
             logger.info("BackupRestoreDialog indicated a restart is required. Closing ConfigDialog and triggering app restart via MainWindow.")
             self.destroy() # Close ConfigDialog
+            
+            # Use the determined main_window_ref or the reliable self.reset_callback.__self__
             if main_window_ref and hasattr(main_window_ref, 'trigger_app_restart'):
                 main_window_ref.trigger_app_restart()
-            elif hasattr(self.master, 'trigger_app_restart'): # Fallback if main_window_ref wasn't set but master is correct
-                self.master.trigger_app_restart()
+            elif self.reset_callback and hasattr(self.reset_callback.__self__, 'trigger_app_restart'):
+                # Fallback specifically to reset_callback's object if main_window_ref wasn't set or was incorrect
+                self.reset_callback.__self__.trigger_app_restart()
             else:
-                # This case means ConfigDialog's parent (or master) isn't MainWindow or doesn't have the method.
-                # This might happen if ConfigDialog is parented directly by root Tk() and MainWindow is a separate class.
-                # The reset_callback is likely on MainWindow, so we can use that path if available.
-                # This part of the logic is tricky due to Tkinter parenting.
-                # The most robust way is for MainWindow to pass itself to ConfigDialog.
-                # For now, we'll rely on the reset_callback's parent if it's MainWindow.
-                # Let's assume self.reset_callback is a method of MainWindow.
-                # The object that owns reset_callback is self.reset_callback.__self__
-                if self.reset_callback and hasattr(self.reset_callback.__self__, 'trigger_app_restart'):
-                    self.reset_callback.__self__.trigger_app_restart()
-                else:
-                    logger.warning("ConfigDialog: Could not find trigger_app_restart on a known MainWindow reference. Restart manually.")
+                logger.warning("ConfigDialog: Could not find trigger_app_restart on a known MainWindow reference. Restart manually.")
 
     def trigger_factory_reset_callback(self):
         """Llama al callback de reseteo de fábrica con doble confirmación."""
