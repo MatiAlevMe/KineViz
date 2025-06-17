@@ -191,20 +191,6 @@ def create_backup(backup_type: str, _is_test_mode: bool = False) -> Optional[pat
             return None # Do not proceed if pre-check fails
     
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-                changed_aliases = False
-                for old_manual_backup in existing_manual_backups:
-                    old_manual_backup.unlink()
-                    if old_manual_backup.name in aliases:
-                        del aliases[old_manual_backup.name]
-                        changed_aliases = True
-                if changed_aliases:
-                    _save_manual_backup_aliases(aliases)
-
-        except Exception as e:
-            logger.error(f"Error during rolling manual backup management: {e}", exc_info=True)
-            # Decide if we should proceed. For now, proceed.
-
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     zip_filename = f"backup_{timestamp}.zip"
     zip_filepath = backup_destination_subdir / zip_filename
 
