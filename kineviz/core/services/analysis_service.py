@@ -1419,22 +1419,12 @@ class AnalysisService:
             logger.error(f"Error en _get_contributing_full_keys para estudio {study_id}, partes {required_parts}: {e}", exc_info=True)
             return []
 
-    def delete_continuous_analysis(self, analysis_folder_to_delete: Path):
+    def _delete_continuous_analysis_no_backup(self, analysis_folder_to_delete: Path):
         """
-        Elimina la carpeta y contenido de un análisis continuo específico.
-
-        :param analysis_folder_to_delete: Path object de la carpeta del análisis a eliminar.
-        :raises FileNotFoundError: Si el directorio del análisis no existe.
-        :raises ValueError: Si la ruta no es un directorio.
-        :raises OSError: Si ocurre un error al eliminar el directorio.
+        Core logic to delete a continuous analysis folder. No backup trigger here.
         """
-        try:
-            create_backup(backup_type='automatic')
-        except Exception as e_backup:
-            logger.error(f"Error creating automatic backup before deleting continuous analysis {analysis_folder_to_delete.name}: {e_backup}", exc_info=True)
-            # Decide if operation should continue or be aborted. For now, logging and continuing.
-            
-        logger.info(f"Solicitud para eliminar análisis continuo en: {analysis_folder_to_delete}")
+        # Backup is now handled by the public method or batch operation
+        logger.info(f"Core logic: eliminar análisis continuo en: {analysis_folder_to_delete}")
 
         if not analysis_folder_to_delete.exists():
             raise FileNotFoundError(f"El directorio del análisis continuo no existe: {analysis_folder_to_delete}")
@@ -1465,6 +1455,18 @@ class AnalysisService:
             logger.error(f"Error eliminando directorio análisis continuo {analysis_folder_to_delete}: {e}", exc_info=True)
             raise
 
+    def delete_continuous_analysis(self, analysis_folder_to_delete: Path):
+        """
+        Elimina la carpeta y contenido de un análisis continuo específico, triggering backup.
+        """
+        try:
+            create_backup(backup_type='automatic')
+        except Exception as e_backup:
+            logger.error(f"Error creating automatic backup before deleting continuous analysis {analysis_folder_to_delete.name}: {e_backup}", exc_info=True)
+            # Log and continue for now
+        
+        self._delete_continuous_analysis_no_backup(analysis_folder_to_delete)
+
     # --- Métodos para Análisis Discreto (Fase 6) ---
 
     def get_discrete_analysis_tables_path(self, study_id: int) -> Path | None:
@@ -1489,16 +1491,11 @@ class AnalysisService:
                          f"estudio {study_id}: {e}", exc_info=True)
             return None
 
-    def delete_discrete_summary_table(self, table_path_str: str):
+    def _delete_discrete_summary_table_no_backup(self, table_path_str: str):
         """
-        Elimina un archivo de tabla de resumen discreto específico (.xlsx) y su
-        correspondiente archivo .csv interno si existe.
-
-        :param table_path_str: Ruta completa (string) del archivo .xlsx a eliminar.
-        :raises FileNotFoundError: Si el archivo .xlsx no existe.
-        :raises ValueError: Si la ruta no es un archivo o no es .xlsx.
-        :raises OSError: Si ocurre un error al eliminar.
+        Core logic to delete a discrete summary table (.xlsx and .csv). No backup trigger.
         """
+        # Backup is handled by public method or batch operation
         xlsx_path = Path(table_path_str)
         if not xlsx_path.exists():
             raise FileNotFoundError(f"El archivo de tabla .xlsx no existe: {xlsx_path}")
@@ -1531,6 +1528,19 @@ class AnalysisService:
         except OSError as e:
             logger.error(f"Error al eliminar la tabla {xlsx_path}: {e}", exc_info=True)
             raise
+
+    def delete_discrete_summary_table(self, table_path_str: str):
+        """
+        Elimina un archivo de tabla de resumen discreto específico (.xlsx) y su
+        correspondiente archivo .csv interno si existe, triggering backup.
+        """
+        try:
+            create_backup(backup_type='automatic')
+        except Exception as e_backup:
+            logger.error(f"Error creating automatic backup before deleting discrete summary table {table_path_str}: {e_backup}", exc_info=True)
+            # Log and continue for now
+        
+        self._delete_discrete_summary_table_no_backup(table_path_str)
 
     def _extract_stats_from_processed_file(self, file_path: Path, calculation: str) -> list | None:
         """Lee las últimas líneas de un archivo procesado y extrae la fila de datos para el cálculo especificado."""
@@ -2660,22 +2670,12 @@ class AnalysisService:
         analyses.sort(key=lambda x: x['mtime'], reverse=True)
         return analyses
 
-    def delete_individual_analysis(self, analysis_path_to_delete: Path):
+    def _delete_individual_analysis_no_backup(self, analysis_path_to_delete: Path):
         """
-        Elimina la carpeta y contenido de un análisis individual específico.
-
-        :param analysis_path_to_delete: Path object de la carpeta del análisis a eliminar.
-        :raises FileNotFoundError: Si el directorio del análisis no existe.
-        :raises ValueError: Si la ruta no es un directorio.
-        :raises OSError: Si ocurre un error al eliminar el directorio.
+        Core logic to delete an individual analysis folder. No backup trigger here.
         """
-        try:
-            create_backup(backup_type='automatic')
-        except Exception as e_backup:
-            logger.error(f"Error creating automatic backup before deleting individual analysis {analysis_path_to_delete.name}: {e_backup}", exc_info=True)
-            # Decide if operation should continue or be aborted. For now, logging and continuing.
-
-        logger.info(f"Solicitud para eliminar análisis individual en: {analysis_path_to_delete}")
+        # Backup is handled by public method or batch operation
+        logger.info(f"Core logic: eliminar análisis individual en: {analysis_path_to_delete}")
 
         if not analysis_path_to_delete.exists():
             raise FileNotFoundError(f"El directorio del análisis no existe: {analysis_path_to_delete}")
@@ -2708,11 +2708,29 @@ class AnalysisService:
             logger.error(f"Error eliminando directorio análisis {analysis_path_to_delete}: {e}", exc_info=True)
             raise
 
+    def delete_individual_analysis(self, analysis_path_to_delete: Path):
+        """
+        Elimina la carpeta y contenido de un análisis individual específico, triggering backup.
+        """
+        try:
+            create_backup(backup_type='automatic')
+        except Exception as e_backup:
+            logger.error(f"Error creating automatic backup before deleting individual analysis {analysis_path_to_delete.name}: {e_backup}", exc_info=True)
+            # Log and continue for now
+        
+        self._delete_individual_analysis_no_backup(analysis_path_to_delete)
+
     def delete_all_discrete_summary_tables(self, study_id: int):
         """
         Elimina todas las tablas de resumen discreto (.xlsx) para un estudio.
         :param study_id: ID del estudio.
         """
+        try:
+            create_backup(backup_type='automatic')
+        except Exception as e_backup:
+            logger.error(f"Error creating automatic backup before deleting all discrete summary tables for study {study_id}: {e_backup}", exc_info=True)
+            # Log and continue for now
+
         tables_base_dir = self.get_discrete_analysis_tables_path(study_id)
         if not tables_base_dir or not tables_base_dir.exists():
             logger.info(f"No se encontró directorio de tablas de resumen para estudio {study_id}. Nada que eliminar.")
@@ -2725,11 +2743,12 @@ class AnalysisService:
                 for table_file in list(freq_dir.iterdir()):
                     if table_file.is_file() and table_file.suffix == '.xlsx':
                         try:
-                            table_file.unlink()
+                            # Call the no-backup version, as backup is done for the whole operation
+                            self._delete_discrete_summary_table_no_backup(str(table_file))
                             deleted_count += 1
-                            logger.info(f"Tabla de resumen eliminada: {table_file}")
+                            # Logger message is handled by _delete_discrete_summary_table_no_backup
                         except OSError as e:
-                            logger.error(f"Error eliminando tabla de resumen {table_file}: {e}", exc_info=True)
+                            logger.error(f"Error eliminando tabla de resumen {table_file} (durante delete_all): {e}", exc_info=True)
                 # Limpiar carpeta de frecuencia si queda vacía
                 if not any(freq_dir.iterdir()):
                     try:
@@ -2811,9 +2830,15 @@ class AnalysisService:
 
         success_count = 0
         errors = []
+        try:
+            create_backup(backup_type='automatic')
+        except Exception as e_backup:
+            logger.error(f"Error creating automatic backup before deleting selected individual analyses: {e_backup}", exc_info=True)
+            # Log and continue for now
+
         for analysis_path in analysis_paths:
             try:
-                self.delete_individual_analysis(analysis_path)
+                self._delete_individual_analysis_no_backup(analysis_path) # Call no-backup version
                 success_count += 1
                 logger.info(f"Análisis individual {analysis_path.name} eliminado como parte de una operación masiva.")
             except Exception as e:
@@ -2886,9 +2911,15 @@ class AnalysisService:
 
         success_count = 0
         errors = []
+        try:
+            create_backup(backup_type='automatic')
+        except Exception as e_backup:
+            logger.error(f"Error creating automatic backup before deleting selected continuous analyses: {e_backup}", exc_info=True)
+            # Log and continue for now
+
         for analysis_path in analysis_paths:
             try:
-                self.delete_continuous_analysis(analysis_path)
+                self._delete_continuous_analysis_no_backup(analysis_path) # Call no-backup version
                 success_count += 1
                 logger.info(f"Análisis continuo {analysis_path.name} eliminado como parte de una operación masiva.")
             except Exception as e:
@@ -2912,10 +2943,16 @@ class AnalysisService:
 
         success_count = 0
         errors = []
+        try:
+            create_backup(backup_type='automatic')
+        except Exception as e_backup:
+            logger.error(f"Error creating automatic backup before deleting selected discrete summary tables: {e_backup}", exc_info=True)
+            # Log and continue for now
+
         for table_path_str in table_paths:
             try:
                 # delete_discrete_summary_table espera un string
-                self.delete_discrete_summary_table(table_path_str)
+                self._delete_discrete_summary_table_no_backup(table_path_str) # Call no-backup version
                 success_count += 1
                 logger.info(f"Tabla de resumen {Path(table_path_str).name} eliminada como parte de una operación masiva.")
             except Exception as e:
