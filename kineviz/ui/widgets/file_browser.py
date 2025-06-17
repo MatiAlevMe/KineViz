@@ -75,15 +75,15 @@ class FileBrowser(ttk.Frame):
         # --- Tabla de Archivos ---
         # Crear tabla de archivos directamente en self (FileBrowser frame)
         # y establecer su altura según files_per_page.
-        columns = ('Participante', 'Nombre', 'Tipo', 'Tipo de Dato', 'Ver', 'Eliminar')
+        columns = ('Participante', 'Nombre', 'Tipo', 'Tipo de Dato') # Removed Ver, Eliminar
         self.tree = ttk.Treeview(self, columns=columns, show='headings', selectmode="extended", height=self.files_per_page)
         
         for col in columns:
             self.tree.heading(col, text=col)
-            self.tree.column(col, width=100, anchor='center' if col in ['Ver', 'Eliminar'] else 'w')
+            self.tree.column(col, width=100, anchor='w') # Default anchor to 'w'
 
         # Pack the tree directly. It will fill horizontally but not expand vertically beyond its requested height.
-        self.tree.pack(side=tk.TOP, fill=tk.X, expand=False, pady=(0,5), padx=5)
+        self.tree.pack(side=tk.TOP, fill=tk.BOTH, expand=True, pady=(0,5), padx=5) # Changed to fill=tk.BOTH, expand=True
 
         # Configurar eventos
         self.tree.bind('<ButtonRelease-1>', self.on_tree_click)
@@ -136,9 +136,7 @@ class FileBrowser(ttk.Frame):
                     str(file_info.get('patient', 'N/A')),
                     str(file_info.get('name', 'N/A')),
                     str(file_info.get('type', 'N/A')),
-                str(file_info.get('frequency', 'N/A')),
-                'Ver',      # Texto para botón Ver
-                    'Eliminar'  # Texto para botón Eliminar
+                    str(file_info.get('frequency', 'N/A')),
                 ), tags=(str(file_info.get('path', '')),)) # Guardar la ruta como string en tags
 
             self.update_pagination_controls()
@@ -260,14 +258,10 @@ class FileBrowser(ttk.Frame):
         file_path_str = item_tags[0]
         file_path = Path(file_path_str) # Convertir a Path
 
-        # Determinar la acción basada en la columna clickeada
-        # Los índices de columna empiezan en 1 ('#1', '#2', ...)
-        column_index = int(column_id.replace('#', '')) - 1 # Índice basado en 0
-
-        if column_index == 4:  # Columna "Ver" (índice 4)
-            self.view_file(file_path)
-        elif column_index == 5:  # Columna "Eliminar" (índice 5)
-            self.delete_file(file_path, row_id) # Pasar row_id para eliminar de la vista si es exitoso
+        # Column click actions are removed as they are handled by buttons in StudyView
+        # This method might still be useful for double-click to view, if desired later.
+        # For now, it does nothing if columns are clicked.
+        pass
 
     def view_file(self, file_path: Path):
         """Abre el archivo seleccionado con la aplicación predeterminada."""

@@ -18,10 +18,11 @@ logger = logging.getLogger(__name__)
 class BackupRestoreDialog(Toplevel):
     """Diálogo para gestionar copias de seguridad y restauraciones."""
 
-    def __init__(self, parent, app_settings: AppSettings):
+    def __init__(self, parent, app_settings: AppSettings, main_window_instance=None):
         super().__init__(parent)
         self.parent_window = parent # Store parent for simpledialog if needed
         self.app_settings = app_settings # Store AppSettings instance
+        self.main_window_instance = main_window_instance # Store MainWindow instance for restart
         self.restart_required_after_restore = False # New flag
 
         self.title("Gestión de Copias de Seguridad")
@@ -512,29 +513,13 @@ class BackupRestoreDialog(Toplevel):
                 messagebox.showinfo("Restauración Exitosa", 
                                     "El sistema ha sido restaurado exitosamente desde la copia de seguridad.\n\n"
                                     "La aplicación AHORA SE CERRARÁ.\n"
-                                    "Por favor, vuelva a iniciar KineViz manualmente.", 
+                                    "Por favor, vuelva a iniciar KineViz manualmente.",
                                     parent=self)
-                # Trigger application restart via MainWindow
-                if hasattr(self.parent_window, 'master') and hasattr(self.parent_window.master, 'trigger_app_restart'):
-                    # If parent_window is another dialog, parent_window.master might be MainWindow's root
-                    # This is a bit fragile. A direct reference to MainWindow instance would be better.
-                    # Assuming self.parent_window is the root Tk() instance of MainWindow for now.
-                    dialog_parent_check = self.parent_window # Store for clarity
-                    self.destroy() # Close this dialog first
-
-                    if hasattr(dialog_parent_check, 'trigger_app_restart'): # If parent_window is MainWindow's root
-                         dialog_parent_check.trigger_app_restart()
-                    else: # Fallback if MainWindow instance is not directly accessible
-                         logger.warning("Could not find trigger_app_restart on parent. User needs to restart manually.")
-                         if hasattr(dialog_parent_check, 'quit'):
-                             dialog_parent_check.quit() # Close the app
-                else: # Fallback if MainWindow instance is not directly accessible (e.g. parent_window.master path)
-                    logger.warning("Could not find trigger_app_restart on parent. Attempting via master or direct quit.")
-                    # Try to quit the main application root if possible
-                    # Ensure this dialog is closed BEFORE attempting app restart
-                    self.restart_required_after_restore = True # Set flag
-                    self.destroy() # Close this dialog
-                    # The parent (ConfigDialog or MainWindow) will check this flag
+                
+                self.restart_required_after_restore = True # Signal that a restart is needed
+                self.destroy() # Close this dialog
+                # The calling dialog (ConfigDialog) or MainWindow will handle the restart logic
+                # by checking self.restart_required_after_restore.
             else:
                 messagebox.showerror("Error de Restauración", 
                                      "No se pudo restaurar el sistema desde la copia de seguridad.\n"
