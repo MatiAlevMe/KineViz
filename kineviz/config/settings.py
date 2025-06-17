@@ -41,7 +41,9 @@ class AppSettings:
             'automatic_backup_cooldown_seconds': '60',
             'backups_per_page': '10',
             'enable_automatic_backups': 'True', # Changed default
-            'enable_manual_backups': 'True'     # Changed default
+            'enable_manual_backups': 'True',     # Changed default
+            'show_advanced_backup_options': 'False', # New
+            'backup_before_restore': 'True'         # New, default to True
         }
         # DESCRIPTOR_ALIASES ya no se gestiona aquí
     }
@@ -155,7 +157,8 @@ class AppSettings:
             # get_bool_setting handles parse errors by returning fallback, so we check if the raw string is valid.
             boolean_settings = [
                 'show_factory_reset_button', 'enable_hover_tooltips',
-                'enable_automatic_backups', 'enable_manual_backups'
+                'enable_automatic_backups', 'enable_manual_backups',
+                'show_advanced_backup_options', 'backup_before_restore' # New
             ]
             for key in boolean_settings:
                 raw_val = self.config.get('SETTINGS', key, fallback=None)
@@ -410,6 +413,22 @@ class AppSettings:
     @enable_manual_backups.setter
     def enable_manual_backups(self, value: bool):
         self.set_setting('enable_manual_backups', str(value))
+
+    @property
+    def show_advanced_backup_options(self) -> bool:
+        return self.get_bool_setting('show_advanced_backup_options', False)
+
+    @show_advanced_backup_options.setter
+    def show_advanced_backup_options(self, value: bool):
+        self.set_setting('show_advanced_backup_options', str(value))
+
+    @property
+    def backup_before_restore(self) -> bool:
+        return self.get_bool_setting('backup_before_restore', True)
+
+    @backup_before_restore.setter
+    def backup_before_restore(self, value: bool):
+        self.set_setting('backup_before_restore', str(value))
 
     def reset_to_defaults(self):
          """Restablece las configuraciones en memoria a los valores por defecto."""
