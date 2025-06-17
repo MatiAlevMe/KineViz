@@ -455,6 +455,111 @@ def list_backups() -> list[dict]:
     return all_backups
 
 
+def restore_backup(backup_zip_path: pathlib.Path) -> bool:
+    """
+    Restores the system state from a given backup ZIP file.
+    This involves replacing kineviz.db, config.ini, and the estudios/ directory.
+    """
+    project_root = get_project_root()
+    if not backup_zip_path.exists() or not backup_zip_path.is_file():
+        logger.error(f"Backup file not found: {backup_zip_path}")
+        return False
+
+    temp_extract_dir = project_root / f"temp_restore_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    
+    live_db_path = project_root / DB_FILENAME
+    live_config_path = project_root / CONFIG_FILENAME
+    live_studies_dir = project_root / STUDIES_DIR_NAME
+
+    # Paths for backed-up (renamed) live items
+    bak_db_path = project_root / f"{DB_FILENAME}.{timestamp_str()}.bak"
+    bak_config_path = project_root / f"{CONFIG_FILENAME}.{timestamp_str()}.bak"
+    bak_studies_dir = project_root / f"{STUDIES_DIR_NAME}.{timestamp_str()}.bak"
+
+    try:
+        logger.info(f"Starting restoration from backup: {backup_zip_path}")
+        _ensure_dir_exists(temp_extract_dir)
+
+        # 1. Extract backup to temporary directory
+        logger.info(f"Extracting backup to {temp_extract_dir}...")
+        with zipfile.ZipFile(backup_zip_path, 'r') as zf:
+            zf.extractall(temp_extract_dir)
+        logger.info("Backup extracted successfully.")
+
+        extracted_db_path = temp_extract_dir / DB_FILENAME
+        extracted_config_path = temp_extract_dir / CONFIG_FILENAME
+        extracted_studies_dir = temp_extract_dir / STUDIES_DIR_NAME
+
+        # 2. Rename current live items (if they exist)
+        logger.info("Renaming current live items...")
+        if live_db_path.exists():
+            live_db_path.rename(bak_db_path)
+            logger.info(f"Renamed live DB to {bak_db_path}")
+        if live_config_path.exists():
+            live_config_path.rename(bak_config_path)
+            logger.info(f"Renamed live config to {bak_config_path}")
+        if live_studies_dir.exists() and live_studies_dir.is_dir():
+            shutil.move(str(live_studies_dir), str(bak_studies_dir)) # shutil.move can rename dirs
+            logger.info(f"Moved live studies dir to {bak_studies_dir}")
+
+        # 3. Move extracted items to live locations
+        logger.info("Moving extracted items to live locations...")
+        if extracted_db_path.exists():
+            shutil.move(str(extracted_db_path), str(live_db_path))
+            logger.info(f"Restored DB from {extracted_db_path}")
+        else:
+            logger.warning(f"No database file found in backup archive at {extracted_db_path}. DB not restored.")
+
+        if extracted_config_path.exists():
+            shutil.move(str(extracted_config_path), str(live_config_path))
+            logger.info(f"Restored config from {extracted_config_path}")
+        else:
+            logger.warning(f"No config file found in backup archive at {extracted_config_path}. Config not restored.")
+
+        if extracted_studies_dir.exists() and extracted_studies_dir.is_dir():
+            shutil.move(str(extracted_studies_dir), str(live_studies_dir))
+            logger.info(f"Restored studies directory from {extracted_studies_dir}")
+        elif extracted_studies_dir.exists(): # It's a file, not a dir - problematic
+            logger.error(f"Extracted studies path {extracted_studies_dir} is a file, not a directory. Studies not restored.")
+        else:
+            logger.warning(f"No studies directory found in backup archive at {extracted_studies_dir}. Studies not restored.")
+            # Ensure studies directory exists even if not in backup (e.g., for a fresh restore)
+            _ensure_dir_exists(live_studies_dir)
+
+
+        logger.info("Restoration process completed successfully.")
+        return True
+
+    except Exception as e:
+        logger.error(f"Error during backup restoration: {e}", exc_info=True)
+        # Attempt to rollback renames if something went wrong
+        logger.info("Attempting to rollback renames due to restoration error...")
+        try:
+            if bak_db_path.exists() and not live_db_path.exists(): # If live was deleted/moved and bak exists
+                bak_db_path.rename(live_db_path)
+                logger.info(f"Rolled back DB: {bak_db_path} -> {live_db_path}")
+            if bak_config_path.exists() and not live_config_path.exists():
+                bak_config_path.rename(live_config_path)
+                logger.info(f"Rolled back config: {bak_config_path} -> {live_config_path}")
+            if bak_studies_dir.exists() and not live_studies_dir.exists():
+                shutil.move(str(bak_studies_dir), str(live_studies_dir))
+                logger.info(f"Rolled back studies dir: {bak_studies_dir} -> {live_studies_dir}")
+        except Exception as rollback_e:
+            logger.error(f"Error during rollback of renames: {rollback_e}", exc_info=True)
+        return False
+    finally:
+        # 4. Clean up temporary extraction directory
+        if temp_extract_dir.exists():
+            try:
+                shutil.rmtree(temp_extract_dir)
+                logger.info(f"Cleaned up temporary extraction directory: {temp_extract_dir}")
+            except OSError as e:
+                logger.error(f"Error cleaning up temp directory {temp_extract_dir}: {e}")
+
+def timestamp_str() -> str:
+    """Generates a simple timestamp string for backup file suffixes."""
+    return datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+
 if __name__ == '__main__':
     # DB_FILENAME and CONFIG_FILENAME are module-level globals.
     # The 'global' keyword is not needed here and was causing a SyntaxError.

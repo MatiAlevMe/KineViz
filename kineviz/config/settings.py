@@ -28,20 +28,20 @@ class AppSettings:
 
     DEFAULT_SETTINGS = {
         'SETTINGS': {
-            'estudios_por_pagina': '10', # Changed default
+            'estudios_por_pagina': '10',
             'files_per_page': '10',
-            'analysis_items_per_page': '10', # Renamed from pdfs_per_page and changed default
-            'discrete_tables_per_page': '10', # Changed default
+            'analysis_items_per_page': '10',
+            'discrete_tables_per_page': '10',
             'font_scale': '1.0',
             'theme': 'Light',
-            'show_factory_reset_button': 'False', # New setting
-            'enable_hover_tooltips': 'False', # New setting for hover tooltips
-            'max_automatic_backups': '4', # Default max automatic backups
-            'max_manual_backups': '4',     # Default max manual backups
-            'automatic_backup_cooldown_seconds': '60', # Default cooldown
-            'backups_per_page': '10', # Default backups to show per page
-            'enable_automatic_backups': 'False', # New: Enable/disable automatic backups
-            'enable_manual_backups': 'False'     # New: Enable/disable manual backups
+            'show_factory_reset_button': 'False',
+            'enable_hover_tooltips': 'False',
+            'max_automatic_backups': '10', # Changed default
+            'max_manual_backups': '10',     # Changed default
+            'automatic_backup_cooldown_seconds': '60',
+            'backups_per_page': '10',
+            'enable_automatic_backups': 'True', # Changed default
+            'enable_manual_backups': 'True'     # Changed default
         }
         # DESCRIPTOR_ALIASES ya no se gestiona aquí
     }

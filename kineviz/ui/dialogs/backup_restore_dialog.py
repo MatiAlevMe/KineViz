@@ -475,19 +475,45 @@ class BackupRestoreDialog(Toplevel):
             return
 
         try:
-            # Placeholder for actual restoration logic
-            # success = backup_manager.restore_backup(full_backup_path)
-            logger.info(f"Placeholder: Restaurar desde {full_backup_path}")
-            messagebox.showinfo("Restauración (Simulada)", "Funcionalidad de restauración aún no implementada.\n"
-                                f"Se intentaría restaurar desde: {backup_filename}", parent=self)
-            # if success:
-            #     messagebox.showinfo("Éxito", "Sistema restaurado exitosamente.\nSe recomienda reiniciar la aplicación.", parent=self)
-            #     # Potentially trigger app restart or navigate to landing page
-            # else:
-            #     messagebox.showerror("Error", "No se pudo restaurar la copia de seguridad.", parent=self)
+            logger.info(f"Attempting to restore from {full_backup_path}")
+            success = backup_manager.restore_backup(full_backup_path)
+            
+            if success:
+                messagebox.showinfo("Restauración Exitosa", 
+                                    "El sistema ha sido restaurado exitosamente desde la copia de seguridad.\n\n"
+                                    "La aplicación AHORA SE CERRARÁ.\n"
+                                    "Por favor, vuelva a iniciar KineViz manualmente.", 
+                                    parent=self)
+                # Trigger application restart via MainWindow
+                if hasattr(self.parent_window, 'master') and hasattr(self.parent_window.master, 'trigger_app_restart'):
+                    # If parent_window is another dialog, parent_window.master might be MainWindow's root
+                    # This is a bit fragile. A direct reference to MainWindow instance would be better.
+                    # Assuming self.parent_window is the root Tk() instance of MainWindow for now.
+                    if hasattr(self.parent_window, 'trigger_app_restart'): # If parent_window is MainWindow's root
+                         self.parent_window.trigger_app_restart()
+                    else: # Fallback if MainWindow instance is not directly accessible
+                         logger.warning("Could not find trigger_app_restart on parent. User needs to restart manually.")
+                         self.parent_window.quit() # Close the app
+                else: # Fallback if MainWindow instance is not directly accessible
+                    logger.warning("Could not find trigger_app_restart on parent. User needs to restart manually.")
+                    # Try to quit the main application root if possible
+                    if hasattr(self.parent_window, 'quit'): # If parent_window is the root
+                        self.parent_window.quit()
+                    elif hasattr(self.parent_window, 'master') and hasattr(self.parent_window.master, 'quit'):
+                        self.parent_window.master.quit()
+                    else: # Last resort
+                        self.destroy() # Close this dialog, user must close main app
+            else:
+                messagebox.showerror("Error de Restauración", 
+                                     "No se pudo restaurar el sistema desde la copia de seguridad.\n"
+                                     "Consulte los logs para más detalles.", 
+                                     parent=self)
         except Exception as e:
-            logger.error(f"Error restaurando copia de seguridad {backup_filename}: {e}", exc_info=True)
-            messagebox.showerror("Error", f"Ocurrió un error al restaurar la copia de seguridad:\n{e}", parent=self)
+            logger.error(f"Error durante el proceso de restauración de {backup_filename}: {e}", exc_info=True)
+            messagebox.showerror("Error Crítico de Restauración", 
+                                 f"Ocurrió un error crítico durante la restauración:\n{e}\n\n"
+                                 "El estado de la aplicación puede ser inconsistente. Se recomienda revisar los logs.", 
+                                 parent=self)
 
 
     def assign_alias_action(self):
