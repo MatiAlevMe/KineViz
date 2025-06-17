@@ -682,14 +682,11 @@ class DiscreteAnalysisView(ttk.Frame):
         
         self._populate_treeview(self.filtered_tables_data)
         
-        # Enable/disable "Gestor de Análisis Discretos" button based on table availability
+        # "Gestor de Análisis Discretos" button is always enabled.
+        # Popups inside the manager will handle cases with no data.
         if hasattr(self, 'open_manager_button'):
-            if not self.all_tables_data: # Check if any tables were loaded at all
-                self.open_manager_button.config(state=tk.DISABLED)
-                Tooltip(self.open_manager_button, text="No hay tablas de resumen generadas. Genere tablas para habilitar el gestor de análisis.", short_text="No hay tablas.", enabled=self.settings.enable_hover_tooltips)
-            else:
-                self.open_manager_button.config(state=tk.NORMAL)
-                Tooltip(self.open_manager_button, text="Abrir el gestor para crear, ver y eliminar análisis discretos individuales (boxplots, tests estadísticos).", short_text="Gestor análisis.", enabled=self.settings.enable_hover_tooltips)
+            self.open_manager_button.config(state=tk.NORMAL)
+            Tooltip(self.open_manager_button, text="Abrir el gestor para crear, ver y eliminar análisis discretos individuales (boxplots, tests estadísticos).", short_text="Gestor análisis.", enabled=self.settings.enable_hover_tooltips)
 
 
     def clear_filters(self):
@@ -940,13 +937,8 @@ class DiscreteAnalysisView(ttk.Frame):
 
     def open_individual_analysis_manager(self):
         """Abre el diálogo para gestionar análisis individuales."""
-        if not self.all_tables_data:
-            messagebox.showwarning("Sin Tablas de Resumen",
-                                   "No hay tablas de resumen (.xlsx) generadas para este estudio.\n\n"
-                                   "Por favor, genere las tablas de resumen primero usando el botón "
-                                   "'Generar/Actualizar Tablas Resumen' antes de acceder al gestor de análisis.",
-                                   parent=self)
-            return
+        # The check for self.all_tables_data is removed.
+        # IndividualAnalysisManagerDialog will handle cases with no data.
 
         # Import local para evitar dependencia circular si es necesario
         from kineviz.ui.dialogs.individual_analysis_manager_dialog \

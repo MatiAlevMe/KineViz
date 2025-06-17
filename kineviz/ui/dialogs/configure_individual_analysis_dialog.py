@@ -871,10 +871,13 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
                 self._show_final_steps() # Mostrar pasos finales
             else: # Si no hay columnas comunes
                  self._hide_final_steps()
-                 messagebox.showinfo(
+                 messagebox.showwarning( # Changed to showwarning
                      "Sin Columnas Comunes",
-                     "No se encontraron columnas de datos comunes para la "
-                     "combinación de cálculo y grupos seleccionada.",
+                     "No se encontraron columnas de datos comunes para la combinación de cálculo y grupos seleccionada.\n\n"
+                     "Posibles razones:\n"
+                     "- Los grupos seleccionados no comparten ninguna variable numérica en sus tablas de resumen.\n"
+                     "- Las tablas de resumen para los grupos seleccionados podrían estar vacías o corruptas.\n"
+                     "- Algún archivo de tabla de resumen (.xlsx o .csv interno) podría haber sido eliminado o modificado manualmente.",
                      parent=self)
 
 
@@ -1019,6 +1022,16 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
             "fixed_descriptor_display": fixed_descriptor_display, # Guardar display name con alias
         }
 
+
+        # --- Validar mínimo de participantes y diversidad de VIs ---
+        # This validation should ideally be done by AnalysisService before attempting analysis,
+        # or here if we have enough info. For now, let's add a basic check.
+        # This requires knowing how many unique participants contribute to the selected groups
+        # and if they represent at least two different effective VI combinations.
+        # This is complex to check accurately at this stage without querying data.
+        # A simpler check: ensure at least two groups are selected. This is already done.
+        # A more advanced check would involve AnalysisService.
+        # For now, we rely on AnalysisService to handle data sufficiency errors.
 
         # --- Establecer Resultado y Cerrar ---
         # No se llama al servicio aquí. Solo se guarda la configuración.

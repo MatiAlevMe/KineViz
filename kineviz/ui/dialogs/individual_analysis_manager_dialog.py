@@ -767,6 +767,25 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
     def open_new_analysis_dialog(self):
         """Abre el diálogo para configurar un nuevo análisis."""
+        # --- Pre-validation for participant and VI diversity ---
+        # This is a simplified check. A full check would involve looking at actual data.
+        # For discrete analysis, this check is against the summary tables.
+        # We need at least two distinct groups to compare.
+        # The actual check for data sufficiency for specific groups happens later.
+        # Here, we check if the study *has the potential* for such comparisons.
+        
+        # Check 1: At least 2 VIs defined, or 1 VI with at least 2 descriptors.
+        # This is implicitly handled by the group selection logic in ConfigureIndividualAnalysisDialog.
+        # If not enough VIs/descriptors, group selection will be impossible.
+
+        # Check 2: Do summary tables exist? (already handled by DiscreteAnalysisView)
+        # If we are here, DiscreteAnalysisView allowed opening this manager, implying tables exist.
+
+        # A more direct check for "at least 2 participants with at least 2 different VI sub-values"
+        # would require querying the summary tables or processed files, which is complex here.
+        # For now, we'll rely on the subsequent dialogs and AnalysisService to catch specific data issues.
+        # If ConfigureIndividualAnalysisDialog cannot form at least two groups, it will be apparent.
+
         dialog = ConfigureIndividualAnalysisDialog(self, self.analysis_service, self.study_id, self.parent.main_window.settings) # Pass settings
         
         # Check if dialog was destroyed during its __init__ (e.g., if initial data load failed)

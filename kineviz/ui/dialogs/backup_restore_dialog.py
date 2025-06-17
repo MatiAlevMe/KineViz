@@ -22,6 +22,7 @@ class BackupRestoreDialog(Toplevel):
         super().__init__(parent)
         self.parent_window = parent # Store parent for simpledialog if needed
         self.app_settings = app_settings # Store AppSettings instance
+        self.restart_required_after_restore = False # New flag
 
         self.title("Gestión de Copias de Seguridad")
         # Responsive sizing
@@ -45,7 +46,7 @@ class BackupRestoreDialog(Toplevel):
         self.paginated_list = [] # To store the list for the current page
     
         # Filter and sort variables
-        self.filter_type_var = tk.StringVar(value="Manual") # Default to "Manual"
+        self.filter_type_var = tk.StringVar(value="Todos") # Default to "Todos"
         self.search_alias_var = tk.StringVar()
         self.sort_key_var = tk.StringVar(value="Fecha de Creación")
         self.sort_order_asc_var = tk.BooleanVar(value=False) # False for Descending initially
@@ -194,11 +195,11 @@ class BackupRestoreDialog(Toplevel):
         actions_row2_frame.columnconfigure(2, weight=1) # Expanding space
         actions_row2_frame.columnconfigure(3, weight=0) # Assign Alias
         
-        self.btn_create_manual = ttk.Button(actions_row2_frame, text="Crear Copia Manual", command=self.create_manual_backup_action)
+        self.btn_create_manual = ttk.Button(actions_row2_frame, text="Crear Copia Manual", command=self.create_manual_backup_action, style="Celeste.TButton")
         self.btn_create_manual.grid(row=0, column=0, padx=5, sticky="w")
         Tooltip(self.btn_create_manual, "Crea una nueva copia de seguridad manual del estado actual del sistema.", enabled=self.app_settings.enable_hover_tooltips)
 
-        self.btn_restore = ttk.Button(actions_row2_frame, text="Restaurar Seleccionada", command=self.restore_selected_action, state=tk.DISABLED)
+        self.btn_restore = ttk.Button(actions_row2_frame, text="Restaurar Seleccionada", command=self.restore_selected_action, state=tk.DISABLED, style="Green.TButton")
         self.btn_restore.grid(row=0, column=1, padx=5, sticky="w")
         Tooltip(self.btn_restore, "Restaura el sistema al estado de la copia de seguridad seleccionada. ¡Esta acción es irreversible!", enabled=self.app_settings.enable_hover_tooltips)
         
@@ -396,10 +397,30 @@ class BackupRestoreDialog(Toplevel):
         alias = simpledialog.askstring("Alias para Copia Manual", 
                                        "Ingrese un alias opcional para esta copia de seguridad manual:",
                                        parent=self)
-        if alias is not None: # User didn't cancel, alias can be empty string
-            if not self.app_settings.enable_manual_backups:
-                messagebox.showwarning("Deshabilitado", 
-                                       "La creación de copias de seguridad manuales está desactivada en la configuración.", 
+        
+        if alias is None: # User cancelled alias input
+            return
+
+        # First confirmation for creating manual backup
+        confirm_create1 = messagebox.askokcancel("Confirmar Creación - Paso 1 de 2",
+                                     f"¿Está seguro de que desea crear una nueva copia de seguridad manual?\n"
+                                     f"Alias: '{alias.strip() if alias.strip() else '(Sin Alias)'}'",
+                                     icon='question', parent=self)
+        if not confirm_create1:
+            return
+
+        # Second confirmation
+        confirm_create2 = messagebox.askokcancel("Confirmar Creación - Paso 2 de 2",
+                                     "Se procederá a crear la copia de seguridad manual.\n"
+                                     "Esto puede tomar unos momentos dependiendo del tamaño de los datos.",
+                                     icon='info', parent=self)
+        if not confirm_create2:
+            return
+
+        # Proceed with creation if alias was not None (even if empty string) and confirmations passed
+        if not self.app_settings.enable_manual_backups:
+            messagebox.showwarning("Deshabilitado", 
+                                   "La creación de copias de seguridad manuales está desactivada en la configuración.", 
                                        parent=self)
                 return
             try:

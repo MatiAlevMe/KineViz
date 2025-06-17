@@ -243,12 +243,20 @@ def create_backup(backup_type: str, _is_test_mode: bool = False) -> Optional[pat
                 for study_name_dir in studies_dir_path.iterdir():
                     if not study_name_dir.is_dir():
                         continue # Skip files directly under studies_dir_path, looking for study folders
+                    
+                    # Add the study directory itself to the archive
+                    # This ensures empty study folders are backed up.
+                    study_relative_path = study_name_dir.relative_to(project_root)
+                    zf.write(study_name_dir, arcname=study_relative_path) # Add the directory entry
+                    logger.debug(f"Adding study directory to backup: {study_name_dir} as {study_relative_path}")
 
                     # Path: estudios/[NOMBRE_ESTUDIO]
                     
                     # 1. Participant data files (Originals and Processed)
                     for participant_dir in study_name_dir.iterdir():
                         if not participant_dir.is_dir():
+                            # If there are files directly under study_name_dir, they are not per current structure.
+                            # We only back up recognized structure.
                             continue # Skip files, looking for participant folders (e.g., [ID_PARTICIPANTE])
 
                         # Path: estudios/[NOMBRE_ESTUDIO]/[ID_PARTICIPANTE]
@@ -533,6 +541,12 @@ def restore_backup(backup_zip_path: pathlib.Path) -> bool:
             # Ensure studies directory exists even if not in backup (e.g., for a fresh restore)
             _ensure_dir_exists(live_studies_dir)
 
+        # If restoration reached this point, it's considered successful. Clean up .bak files.
+        logger.info("Restoration successful. Cleaning up .bak files...")
+        if bak_db_path.exists(): bak_db_path.unlink(missing_ok=True)
+        if bak_config_path.exists(): bak_config_path.unlink(missing_ok=True)
+        if bak_studies_dir.exists(): shutil.rmtree(bak_studies_dir, ignore_errors=True)
+        logger.info(".bak files cleaned up.")
 
         logger.info("Restoration process completed successfully.")
         return True

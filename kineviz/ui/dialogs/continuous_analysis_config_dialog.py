@@ -114,9 +114,16 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.container_frame.pack(fill=tk.BOTH, expand=True)
         
         self.create_widgets(self.scrollable_frame) # Pass scrollable_frame as parent
-        should_continue_init = self.load_initial_data() 
-
-        if not should_continue_init:
+        
+        # Load initial data and check if successful
+        if not self.load_initial_data():
+            # If load_initial_data returned False, it means it likely called self.destroy()
+            # or encountered a critical error. We should not proceed with further initialization.
+            logger.warning("ContinuousAnalysisConfigDialog: load_initial_data failed. Aborting initialization.")
+            # Ensure self.result is None if dialog is destroyed prematurely
+            if not hasattr(self, 'result'): self.result = None
+            # Do not call self.destroy() here again if load_initial_data already did.
+            # If it didn't, then this return will prevent grab_set etc.
             return 
 
         self.update_idletasks()

@@ -709,6 +709,12 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         # self.delete_button.config(state=tk.NORMAL if can_act_single else tk.DISABLED) # Old single delete button
 
     def _open_new_analysis_dialog(self):
+        # --- Pre-validation for participant and VI diversity ---
+        # For continuous analysis, this check is against processed files.
+        # Similar to discrete, if not enough VIs/descriptors, group selection will be impossible.
+        # A deeper check for participant diversity across VI values is complex here.
+        # Rely on ContinuousAnalysisConfigDialog and AnalysisService.
+        
         # This is where ContinuousAnalysisConfigDialog is launched
         dialog = ContinuousAnalysisConfigDialog(self, self.analysis_service, self.study_id, self.main_window.settings) # Pass settings
         
