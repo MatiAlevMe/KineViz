@@ -6,6 +6,7 @@ from kineviz.config.settings import AppSettings
 from kineviz.ui.widgets.tooltip import Tooltip # Import Tooltip
 from kineviz.ui.dialogs.backup_restore_dialog import BackupRestoreDialog # Import new dialog
 from kineviz.core import backup_manager # Import backup_manager module
+from kineviz.ui.utils.style import get_scaled_font, DEFAULT_FONT_SIZE # Import font utilities
 
 class ConfigDialog(Toplevel):
     """Diálogo para configurar los ajustes de la aplicación."""
