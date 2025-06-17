@@ -114,9 +114,26 @@ class ConfigDialog(Toplevel):
         ttk.Button(button_frame, text="Cancelar", command=self.destroy).grid(row=0, column=1, padx=5, sticky="e")
 
 
-        # After all widgets are created, set a minimum size
+        # After all widgets are created, set a minimum size based on font scale
         self.update_idletasks()
-        self.minsize(500, 420) # Ajustar según sea necesario para las pestañas
+        # Calculate dynamic minsize
+        base_min_width = 500
+        base_min_height = 420 # Adjusted base height to accommodate more content potentially
+        
+        # Increase min_width slightly less aggressively than min_height with font_scale
+        # Ensure font_scale is positive, default to 1.0 if not sensible
+        current_font_scale = 1.0
+        try:
+            current_font_scale = float(self.var_font_scale.get())
+            if current_font_scale <= 0: current_font_scale = 1.0
+        except ValueError:
+            pass # current_font_scale remains 1.0
+
+        dynamic_min_width = int(base_min_width * (1 + (current_font_scale - 1) * 0.25)) # Scale width by 25% of scale delta
+        dynamic_min_height = int(base_min_height * (1 + (current_font_scale - 1) * 0.5)) # Scale height by 50% of scale delta
+        
+        self.minsize(max(base_min_width, dynamic_min_width), max(base_min_height, dynamic_min_height))
+        # self.geometry(f"{max(base_min_width, dynamic_min_width)}x{max(base_min_height, dynamic_min_height)}") # Optionally set initial geometry too
 
     def _create_general_tab_widgets(self, parent_frame: ttk.Frame):
         """Crea los widgets para la pestaña 'General'."""
@@ -244,6 +261,17 @@ class ConfigDialog(Toplevel):
                                              command=lambda: self._show_input_help("Ayuda: Copias de Seguridad por Página", backups_page_long_text))
         backups_page_help_btn.pack(side=tk.LEFT)
         Tooltip(backups_page_help_btn, text=backups_page_long_text, short_text=backups_page_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx +=1 
+
+        # Placeholder labels for testing dialog resizing
+        ttk.Label(parent_frame, text="Placeholder Paginación 1:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        ttk.Entry(parent_frame, textvariable=tk.StringVar(value="Test1")).grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
+        row_idx +=1
+        ttk.Label(parent_frame, text="Placeholder Paginación 2:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        ttk.Entry(parent_frame, textvariable=tk.StringVar(value="Test2")).grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
+        row_idx +=1
+        ttk.Label(parent_frame, text="Placeholder Paginación 3:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        ttk.Entry(parent_frame, textvariable=tk.StringVar(value="Test3")).grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
 
 
     def _create_backups_tab_widgets(self, parent_frame: ttk.Frame):
@@ -384,7 +412,12 @@ class ConfigDialog(Toplevel):
         for label, value_str in inputs_int.items():
             try:
                 value_int = int(value_str)
-                if value_int <= 0:
+                # Allow 0 for max_automatic_backups and max_manual_backups
+                if label in ["Máx. copias automáticas", "Máx. copias manuales"]:
+                    if value_int < 0:
+                        messagebox.showerror("Valor Inválido", f"'{label}' debe ser un número entero no negativo (0 o mayor).", parent=self)
+                        return False
+                elif value_int <= 0: # For other integer settings that must be positive
                     messagebox.showerror("Valor Inválido", f"'{label}' debe ser un número entero positivo.", parent=self)
                     return False
             except ValueError:

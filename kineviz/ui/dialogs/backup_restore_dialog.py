@@ -29,9 +29,9 @@ class BackupRestoreDialog(Toplevel):
         self.all_loaded_backups = [] # To store the full list from backup_manager
         self.current_display_list = [] # To store the currently displayed (filtered/sorted) list
         self.paginated_list = [] # To store the list for the current page
-
+    
         # Filter and sort variables
-        self.filter_type_var = tk.StringVar(value="Todos") # Default to "Todos"
+        self.filter_type_var = tk.StringVar(value="Manual") # Default to "Manual"
         self.search_alias_var = tk.StringVar()
         self.sort_key_var = tk.StringVar(value="Fecha de Creación")
         self.sort_order_asc_var = tk.BooleanVar(value=False) # False for Descending initially
@@ -51,6 +51,7 @@ class BackupRestoreDialog(Toplevel):
     def create_widgets(self):
         main_frame = ttk.Frame(self, padding="10")
         main_frame.pack(fill=tk.BOTH, expand=True)
+        main_frame.columnconfigure(0, weight=1) # Allow the main content column to expand
         # Configure main_frame rows to allow treeview to expand and button rows to take fixed space
         main_frame.rowconfigure(1, weight=1) # Treeview frame
         main_frame.rowconfigure(2, weight=0) # Pagination controls frame
@@ -137,30 +138,45 @@ class BackupRestoreDialog(Toplevel):
         pagination_controls_frame = ttk.Frame(main_frame)
         pagination_controls_frame.grid(row=2, column=0, sticky="ew", pady=(5,0))
         pagination_controls_frame.columnconfigure(0, weight=1) # Previous button
-        pagination_controls_frame.columnconfigure(1, weight=0) # Page label
-        pagination_controls_frame.columnconfigure(2, weight=1) # Next button
+        pagination_controls_frame.columnconfigure(1, weight=0) # Prev button
+        pagination_controls_frame.columnconfigure(2, weight=0) # Page label
+        pagination_controls_frame.columnconfigure(3, weight=0) # Next button
+        pagination_controls_frame.columnconfigure(4, weight=1) # Last button (pushes to right)
 
-        self.btn_prev_page_backups = ttk.Button(pagination_controls_frame, text="<<", command=lambda: self.go_to_backup_page("prev"), style="Nav.TButton")
-        self.btn_prev_page_backups.grid(row=0, column=0, sticky="w", padx=5)
-        self.lbl_page_backups = ttk.Label(pagination_controls_frame, text="Página: 1 / 1")
-        self.lbl_page_backups.grid(row=0, column=1, padx=5)
-        self.btn_next_page_backups = ttk.Button(pagination_controls_frame, text=">>", command=lambda: self.go_to_backup_page("next"), style="Nav.TButton")
-        self.btn_next_page_backups.grid(row=0, column=2, sticky="e", padx=5)
+
+        self.btn_first_page_backups = ttk.Button(pagination_controls_frame, text="<<", command=lambda: self.go_to_backup_page("first"), style="Nav.TButton")
+        self.btn_first_page_backups.grid(row=0, column=0, sticky="w", padx=(5,0))
+        self.btn_prev_page_backups = ttk.Button(pagination_controls_frame, text="<", command=lambda: self.go_to_backup_page("prev"), style="Nav.TButton")
+        self.btn_prev_page_backups.grid(row=0, column=1, sticky="w", padx=(0,5))
         
+        self.lbl_page_backups = ttk.Label(pagination_controls_frame, text="Página: 1 / 1")
+        self.lbl_page_backups.grid(row=0, column=2, padx=5)
+        
+        self.btn_next_page_backups = ttk.Button(pagination_controls_frame, text=">", command=lambda: self.go_to_backup_page("next"), style="Nav.TButton")
+        self.btn_next_page_backups.grid(row=0, column=3, sticky="e", padx=(5,0))
+        self.btn_last_page_backups = ttk.Button(pagination_controls_frame, text=">>", command=lambda: self.go_to_backup_page("last"), style="Nav.TButton")
+        self.btn_last_page_backups.grid(row=0, column=4, sticky="e", padx=(0,5))
+        
+        self.pagination_controls_frame = pagination_controls_frame # Store ref for visibility toggle
+
         # --- Action Buttons Row 2 ---
         actions_row2_frame = ttk.Frame(main_frame)
         actions_row2_frame.grid(row=3, column=0, sticky="ew", pady=(5,0))
-        # Left side
+        actions_row2_frame.columnconfigure(0, weight=0) # Create Manual
+        actions_row2_frame.columnconfigure(1, weight=0) # Restore Selected
+        actions_row2_frame.columnconfigure(2, weight=1) # Expanding space
+        actions_row2_frame.columnconfigure(3, weight=0) # Assign Alias
+        
         self.btn_create_manual = ttk.Button(actions_row2_frame, text="Crear Copia Manual", command=self.create_manual_backup_action)
-        self.btn_create_manual.pack(side=tk.LEFT, padx=5)
+        self.btn_create_manual.grid(row=0, column=0, padx=5, sticky="w")
         Tooltip(self.btn_create_manual, "Crea una nueva copia de seguridad manual del estado actual del sistema.", enabled=self.app_settings.enable_hover_tooltips)
 
         self.btn_restore = ttk.Button(actions_row2_frame, text="Restaurar Seleccionada", command=self.restore_selected_action, state=tk.DISABLED)
-        self.btn_restore.pack(side=tk.LEFT, padx=5)
+        self.btn_restore.grid(row=0, column=1, padx=5, sticky="w")
         Tooltip(self.btn_restore, "Restaura el sistema al estado de la copia de seguridad seleccionada. ¡Esta acción es irreversible!", enabled=self.app_settings.enable_hover_tooltips)
         
         self.btn_assign_alias = ttk.Button(actions_row2_frame, text="Asignar/Editar Alias", command=self.assign_alias_action, state=tk.DISABLED)
-        self.btn_assign_alias.pack(side=tk.LEFT, padx=5) # Keeping it here for now, user didn't specify its new position
+        self.btn_assign_alias.grid(row=0, column=3, padx=5, sticky="e") # Rightmost in this row
         Tooltip(self.btn_assign_alias, "Asigna o edita un alias descriptivo a una copia de seguridad manual seleccionada.", enabled=self.app_settings.enable_hover_tooltips)
 
         # --- Action Buttons Row 3 ---
@@ -281,27 +297,37 @@ class BackupRestoreDialog(Toplevel):
         self.lbl_page_backups.config(text=f"Página: {current_pg} / {total_pg}")
 
         if total_pg <= 1:
-            self.btn_prev_page_backups.config(state=tk.DISABLED)
-            self.btn_next_page_backups.config(state=tk.DISABLED)
-            # Hide pagination if not needed, or just disable buttons
-            self.btn_prev_page_backups.master.grid() # Ensure parent frame is visible
+            # Hide the entire pagination frame if only one page or no items
+            if hasattr(self, 'pagination_controls_frame'): # Check if frame exists
+                 self.pagination_controls_frame.grid_remove()
         else:
-            self.btn_prev_page_backups.master.grid()
+            if hasattr(self, 'pagination_controls_frame'):
+                 self.pagination_controls_frame.grid() # Ensure it's visible
+            self.btn_first_page_backups.config(state=tk.NORMAL if current_pg > 1 else tk.DISABLED)
             self.btn_prev_page_backups.config(state=tk.NORMAL if current_pg > 1 else tk.DISABLED)
             self.btn_next_page_backups.config(state=tk.NORMAL if current_pg < total_pg else tk.DISABLED)
+            self.btn_last_page_backups.config(state=tk.NORMAL if current_pg < total_pg else tk.DISABLED)
             
     def go_to_backup_page(self, direction):
-        """Navigates to the previous or next page of backups."""
+        """Navigates to the first, previous, next, or last page of backups."""
         current_pg = self.current_page_backups.get()
         total_pg = self.total_pages_backups.get()
+        new_page = current_pg
 
-        if direction == "prev" and current_pg > 1:
-            self.current_page_backups.set(current_pg - 1)
+        if direction == "first":
+            new_page = 1
+        elif direction == "prev" and current_pg > 1:
+            new_page = current_pg - 1
         elif direction == "next" and current_pg < total_pg:
-            self.current_page_backups.set(current_pg + 1)
-        else:
-            return # No change
+            new_page = current_pg + 1
+        elif direction == "last":
+            new_page = total_pg
+        
+        if new_page == current_pg and direction not in ["first", "last"]: # Avoid re-render if no change unless forcing first/last
+            if not ( (direction == "first" and current_pg == 1) or (direction == "last" and current_pg == total_pg) ):
+                 return # No change needed
 
+        self.current_page_backups.set(new_page)
         self._populate_treeview()
         self._update_backup_pagination_controls()
 
@@ -335,13 +361,37 @@ class BackupRestoreDialog(Toplevel):
             try:
                 logger.info(f"Attempting to create manual backup with alias: '{alias if alias else 'No Alias'}'")
                 backup_path = backup_manager.create_backup(backup_manager.MANUAL_BACKUPS_SUBDIR)
-                if backup_path:
+                if backup_path: # Backup was created successfully
                     if alias.strip(): # Only add alias if it's not empty
                         backup_manager.add_manual_backup_alias(backup_path.name, alias.strip())
                     messagebox.showinfo("Éxito", f"Copia de seguridad manual '{backup_path.name}' creada exitosamente.", parent=self)
                     self.load_backups()
-                else:
-                    messagebox.showerror("Error", "No se pudo crear la copia de seguridad manual.", parent=self)
+                else: # Backup creation failed or was prevented
+                    # Check if it was due to limit
+                    # settings = AppSettings() # AppSettings is available as self.app_settings
+                    max_manual_bkups = self.app_settings.max_manual_backups
+                    
+                    # Re-fetch existing backups count to be sure about the reason
+                    existing_manual_backups = [
+                        b for b in backup_manager.list_backups() 
+                        if b['type'] == backup_manager.MANUAL_BACKUPS_SUBDIR
+                    ]
+                    num_existing_manual = len(existing_manual_backups)
+
+                    if max_manual_bkups > 0 and num_existing_manual >= max_manual_bkups:
+                        messagebox.showwarning("Límite Alcanzado", 
+                                               f"No se puede crear la copia de seguridad manual.\n"
+                                               f"Se ha alcanzado el límite de {max_manual_bkups} copias manuales.\n\n"
+                                               "Por favor, elimine una copia existente para continuar.", 
+                                               parent=self)
+                    elif max_manual_bkups == 0:
+                         messagebox.showwarning("Deshabilitado",
+                                               "La creación de copias de seguridad manuales está deshabilitada (límite configurado a 0).\n\n"
+                                               "Puede cambiar esta configuración en Archivo > Configuración > Copias de Seguridad.",
+                                               parent=self)
+                    else:
+                        # Generic error if not due to limit (e.g., disk error)
+                        messagebox.showerror("Error", "No se pudo crear la copia de seguridad manual.\nConsulte los logs para más detalles.", parent=self)
             except Exception as e:
                 logger.error(f"Error creando copia manual: {e}", exc_info=True)
                 messagebox.showerror("Error", f"Ocurrió un error al crear la copia manual:\n{e}", parent=self)
@@ -446,7 +496,7 @@ class BackupRestoreDialog(Toplevel):
                                      f"¡ADVERTENCIA FINAL!\n\n"
                                      f"La copia de seguridad manual '{backup_filename}' será eliminada permanentemente.\n"
                                      "¿Está ABSOLUTAMENTE SEGURO de que desea proceder?",
-                                     icon='error', default=messagebox.NO, parent=self) # Default to NO for safety
+                                     icon='error', parent=self) # Removed default=messagebox.NO
         if not confirm2:
             return
         

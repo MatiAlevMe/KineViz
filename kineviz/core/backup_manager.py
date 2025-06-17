@@ -159,21 +159,38 @@ def create_backup(backup_type: str, _is_test_mode: bool = False) -> Optional[pat
             )
             num_existing_manual = len(existing_manual_backups)
 
-            if num_existing_manual >= max_manual_bkups and max_manual_bkups > 0:
-                num_to_delete_manual = num_existing_manual - max_manual_bkups + 1
-                aliases = _load_manual_backup_aliases()
-                
-                for i in range(num_to_delete_manual):
-                    backup_to_delete = existing_manual_backups[i] # Oldest by name
-                    logger.info(f"Max manual backups ({max_manual_bkups}) reached. Deleting oldest: {backup_to_delete.name}")
-                    backup_to_delete.unlink()
-                    if backup_to_delete.name in aliases:
-                        del aliases[backup_to_delete.name]
-                        logger.info(f"Alias for deleted manual backup '{backup_to_delete.name}' removed.")
-                _save_manual_backup_aliases(aliases) # Save updated aliases
-            elif max_manual_bkups == 0: # Delete all if max is 0
-                logger.info("max_manual_backups is 0. Deleting all existing manual backups.")
-                aliases = _load_manual_backup_aliases()
+            if max_manual_bkups > 0 and num_existing_manual >= max_manual_bkups:
+                logger.warning(f"Cannot create new manual backup. Limit of {max_manual_bkups} reached. User must delete an existing manual backup.")
+                # This message should ideally be shown to the user via the UI.
+                # For now, the function will return None, and the UI should handle this.
+                # We can raise a specific exception here if the UI is prepared to catch it.
+                # For simplicity, returning None and relying on UI to check is okay for now.
+                # The UI (BackupRestoreDialog) will need to inform the user.
+                return None # Signal to UI that backup was not created due to limit.
+            elif max_manual_bkups == 0: # If limit is 0, effectively "disabled" but also means "delete all existing if any are found"
+                                        # The original code deleted all if max_manual_bkups == 0.
+                                        # New behavior: if max_manual_bkups is 0, no manual backups can be created.
+                logger.info("Manual backups are disabled (max_manual_backups is 0). Cannot create new manual backup.")
+                return None # Signal to UI
+
+            # Original logic for deleting all if max_manual_bkups == 0 (when creating a new one)
+            # This part is now changed. If max_manual_bkups is 0, creation is disallowed above.
+            # If max_manual_bkups was > 0 but then set to 0, existing backups are not touched by *this* function.
+            # Deletion of all when max_manual_backups is set to 0 should be handled by ConfigDialog/AppSettings setter if desired.
+            # For now, this function only respects the limit for *new* creations.
+
+            # Old code for deleting all if max_manual_bkups == 0:
+            # elif max_manual_bkups == 0: # Delete all if max is 0
+            #     logger.info("max_manual_backups is 0. Deleting all existing manual backups.")
+            #     aliases = _load_manual_backup_aliases()
+            # ... (rest of deletion logic) ...
+            # This behavior is removed from here.
+
+        except Exception as e:
+            logger.error(f"Error during pre-check for manual backup creation: {e}", exc_info=True)
+            return None # Do not proceed if pre-check fails
+    
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
                 changed_aliases = False
                 for old_manual_backup in existing_manual_backups:
                     old_manual_backup.unlink()
