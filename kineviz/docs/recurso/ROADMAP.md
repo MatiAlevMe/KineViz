@@ -333,6 +333,7 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
     2.3 [Pendiente] Configuración para "Deshacer Eliminación".
         - Opción en `ConfigDialog` para habilitar/deshabilitar esta característica.
         - Tooltip explicativo.
+        - Validar manualmente si es que se pueden eliminar todos los estudios junto a la funcionalida de backup de seguridad (rollback/copia manual/auto)
 3. [Hecho] Ayuda en la Interfaz: Añadir Tooltips Adicionales.
 3.1 [Hecho] Añadir tooltips con el mismo icono "i" que se utiliza en la ventana de estudio para explicar las VIs, necesito que estos tooltips explique el formato de cada ventana relevante donde se necesite input del usuario, esto es:
 Editar estudio, crear nuevo estudio, agregar archivos a un estudio, gestor de analisis discretos, gestor de analisis continuos, gestionar alias de sub-valores.
@@ -394,7 +395,7 @@ También agregar imagenes finales del software funcionando
 4.4 [Pendiente] (Cambio Manual) Revisión Final de ortografía de la presentación con V. D.
 Agregar el DEMO y optimizar los tiempos de presentación + añadir los ultimos cambios
 
-## [Omitido] Fase 8: Tareas Omitidas
+## Tareas Omitidas
 8.1 [Omitido] Implementar "Full Two-Way ANOVA"
 Full Two-Way ANOVA: The current "2VIs" mode performs comparisons within a level of a fixed VI (simple main effects). A full two-way ANOVA (e.g., spm1d.stats.anova2 or spm1d.stats.anova2rm for repeated measures) would assess:
 8.1.1 [Omitido] Main effect of VI1 (e.g., "Edad")
@@ -411,8 +412,6 @@ Full Two-Way ANOVA: The current "2VIs" mode performs comparisons within a level 
 8.4.2 [Omititdo] Pruebas de Integración: Probar el flujo completo desde la configuración en la UI hasta la visualización y gestión de los resultados del análisis continuo.
 8.5 [Omitido] Manejo de Floats al Procesar Archivos en un Estudio:
 Que exista la posibilidad de manejar situaciones donde los archivos de entrada esten en float como "Pte03 CMJ 03.txt: could not convert string to float: '5,47567'" en cuyo caso se debería poder convertir al valor convencional de "5.47567".
-8.6 [Omitido] en el dialogo de configuración de análisis discreto y continuo falta arreglar el tooltip hover a Grupos Comparados que por alguna razón no se visualiza correctamente.
-8.7 [Omitido] (Cambio Manúal) Validar manualmente si es que se pueden eliminar todos los estudios junto a la funcionalida de backup de seguridad.
 
 # Arquitectura de KineViz
 
