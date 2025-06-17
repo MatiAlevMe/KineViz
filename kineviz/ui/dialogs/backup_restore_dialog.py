@@ -489,13 +489,17 @@ class BackupRestoreDialog(Toplevel):
                     # If parent_window is another dialog, parent_window.master might be MainWindow's root
                     # This is a bit fragile. A direct reference to MainWindow instance would be better.
                     # Assuming self.parent_window is the root Tk() instance of MainWindow for now.
-                    if hasattr(self.parent_window, 'trigger_app_restart'): # If parent_window is MainWindow's root
-                         self.parent_window.trigger_app_restart()
+                    dialog_parent_check = self.parent_window # Store for clarity
+                    self.destroy() # Close this dialog first
+
+                    if hasattr(dialog_parent_check, 'trigger_app_restart'): # If parent_window is MainWindow's root
+                         dialog_parent_check.trigger_app_restart()
                     else: # Fallback if MainWindow instance is not directly accessible
                          logger.warning("Could not find trigger_app_restart on parent. User needs to restart manually.")
-                         self.parent_window.quit() # Close the app
-                else: # Fallback if MainWindow instance is not directly accessible
-                    logger.warning("Could not find trigger_app_restart on parent. User needs to restart manually.")
+                         if hasattr(dialog_parent_check, 'quit'):
+                             dialog_parent_check.quit() # Close the app
+                else: # Fallback if MainWindow instance is not directly accessible (e.g. parent_window.master path)
+                    logger.warning("Could not find trigger_app_restart on parent. Attempting via master or direct quit.")
                     # Try to quit the main application root if possible
                     # Ensure this dialog is closed BEFORE attempting app restart
                     dialog_parent = self.parent_window # Or self.master, self.parent, depending on Tkinter hierarchy
