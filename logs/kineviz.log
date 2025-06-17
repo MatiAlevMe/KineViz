@@ -39499,3 +39499,274 @@ ValueError: could not convert string to float: '10,8521'
 2025-06-17 14:24:18,769 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
 2025-06-17 14:24:22,016 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
 2025-06-17 14:24:22,016 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:41:16,154 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:41:16,154 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:41:16,528 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:41:16,528 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:41:16,529 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:41:16,531 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:41:16,539 - ERROR - [kineviz.ui.views.main_view] - Error al cargar estudios: StudyRepository.get_studies_paginated() got an unexpected keyword argument 'search_field'
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/views/main_view.py", line 286, in load_studies
+    studies = self.study_service.get_studies_paginated(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/core/services/study_service.py", line 238, in get_studies_paginated
+    studies = self.repo.get_studies_paginated(limit=per_page, offset=offset, search_term=search_term, search_field=search_field if hasattr(self.repo, 'search_field') else "Nombre de Estudio")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: StudyRepository.get_studies_paginated() got an unexpected keyword argument 'search_field'
+2025-06-17 14:42:00,509 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:42:00,510 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:42:00,753 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:42:00,753 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:42:00,754 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:42:00,757 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:42:00,761 - ERROR - [kineviz.ui.views.main_view] - Error al cargar estudios: StudyRepository.get_studies_paginated() got an unexpected keyword argument 'search_field'
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/views/main_view.py", line 286, in load_studies
+    studies = self.study_service.get_studies_paginated(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/core/services/study_service.py", line 238, in get_studies_paginated
+    studies = self.repo.get_studies_paginated(limit=per_page, offset=offset, search_term=search_term, search_field=search_field if hasattr(self.repo, 'search_field') else "Nombre de Estudio")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: StudyRepository.get_studies_paginated() got an unexpected keyword argument 'search_field'
+2025-06-17 14:42:42,117 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:42:42,117 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:42:42,327 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:42:42,327 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:42:42,329 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:42:42,331 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:42:42,336 - ERROR - [kineviz.ui.views.main_view] - Error al cargar estudios: StudyRepository.get_studies_paginated() got an unexpected keyword argument 'search_field'
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/views/main_view.py", line 286, in load_studies
+    studies = self.study_service.get_studies_paginated(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/core/services/study_service.py", line 238, in get_studies_paginated
+    studies = self.repo.get_studies_paginated(limit=per_page, offset=offset, search_term=search_term, search_field=search_field if hasattr(self.repo, 'search_field') else "Nombre de Estudio")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: StudyRepository.get_studies_paginated() got an unexpected keyword argument 'search_field'
+2025-06-17 14:43:29,582 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:43:29,582 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:43:29,779 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:43:29,779 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:43:29,780 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:43:29,782 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:43:29,787 - ERROR - [kineviz.ui.views.main_view] - Error al cargar estudios: StudyRepository.get_studies_paginated() got an unexpected keyword argument 'search_field'
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/views/main_view.py", line 286, in load_studies
+    studies = self.study_service.get_studies_paginated(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/core/services/study_service.py", line 238, in get_studies_paginated
+    studies = self.repo.get_studies_paginated(limit=per_page, offset=offset, search_term=search_term, search_field=search_field if hasattr(self.repo, 'search_field') else "Nombre de Estudio")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: StudyRepository.get_studies_paginated() got an unexpected keyword argument 'search_field'
+2025-06-17 14:47:35,577 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:47:35,578 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:47:35,949 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:47:35,949 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:47:35,951 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:47:35,955 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:47:35,962 - ERROR - [kineviz.ui.views.main_view] - Error al cargar estudios: StudyRepository.get_studies_paginated() got an unexpected keyword argument 'search_field'
+Traceback (most recent call last):
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/ui/views/main_view.py", line 286, in load_studies
+    studies = self.study_service.get_studies_paginated(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arakito/Mati/Codigo/Python/KineViz/kineviz/core/services/study_service.py", line 238, in get_studies_paginated
+    studies = self.repo.get_studies_paginated(limit=per_page, offset=offset, search_term=search_term, search_field=search_field if hasattr(self.repo, 'search_field') else "Nombre de Estudio")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: StudyRepository.get_studies_paginated() got an unexpected keyword argument 'search_field'
+2025-06-17 14:56:00,997 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:56:00,997 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:56:01,416 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:56:01,416 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:56:01,417 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:56:01,420 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:56:06,506 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Comentar Seleccionado' para estudio ID 8
+2025-06-17 14:56:09,329 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Editar Seleccionado' para estudio ID 8
+2025-06-17 14:56:20,245 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Editar Seleccionado' para estudio ID 2
+2025-06-17 14:56:45,366 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 2
+2025-06-17 14:56:45,391 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 14:56:45,391 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 14:56:45,391 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 14:56:52,870 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:56:52,871 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:56:54,849 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 14:56:54,850 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 14:56:54,850 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 14:57:06,427 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:57:07,864 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:57:07,864 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:57:18,695 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:57:20,033 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:57:20,033 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:57:25,961 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:57:27,322 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:57:27,322 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:58:03,233 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:58:03,235 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:58:27,260 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:58:27,260 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:58:27,445 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:58:27,445 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:58:27,447 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:58:27,449 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:58:32,542 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Comentar Seleccionado' para estudio ID 2
+2025-06-17 14:58:42,952 - INFO - [kineviz.database.repositories] - Comentario para estudio ID 2 actualizado.
+2025-06-17 14:58:42,953 - INFO - [kineviz.core.services.study_service] - Comentario actualizado para estudio 2.
+2025-06-17 14:58:42,953 - INFO - [kineviz.ui.dialogs.comment_dialog] - Comentario para estudio 2 guardado.
+2025-06-17 14:58:56,244 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Comentar Seleccionado' para estudio ID 2
+2025-06-17 14:59:00,119 - INFO - [kineviz.database.repositories] - Comentario para estudio ID 2 actualizado.
+2025-06-17 14:59:00,120 - INFO - [kineviz.core.services.study_service] - Comentario actualizado para estudio 2.
+2025-06-17 14:59:00,120 - INFO - [kineviz.ui.dialogs.comment_dialog] - Comentario para estudio 2 guardado.
+2025-06-17 15:09:07,701 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:09:07,701 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:09:08,262 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:09:08,263 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:09:08,264 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:09:08,269 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:09:23,546 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:09:24,886 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:09:24,887 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:09:29,814 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:09:30,933 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:09:30,935 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:09:42,879 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:09:43,919 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:09:43,920 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:13:17,838 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:13:17,839 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:13:18,052 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:13:18,053 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:13:18,053 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:13:18,056 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:13:31,901 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 2
+2025-06-17 15:13:31,923 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 15:13:31,923 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 15:13:31,923 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 15:14:55,806 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:14:55,808 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:15:08,182 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:15:09,222 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 15:15:09,223 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:15:22,413 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:15:23,420 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:15:23,421 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:16:20,099 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:16:21,087 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 15:16:21,088 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:16:43,282 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:16:44,347 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:16:44,348 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:17:27,972 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:17:27,972 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:17:28,371 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:17:28,371 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:17:28,372 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:17:28,374 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:17:32,365 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:17:32,365 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:17:32,524 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:17:32,524 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:17:32,525 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:17:32,526 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:18:25,108 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:18:25,108 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:18:25,327 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:18:25,327 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:18:25,328 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:18:25,331 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:18:56,163 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:18:56,163 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:18:56,358 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:18:56,358 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:18:56,359 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:18:56,361 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:21:05,756 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:21:05,756 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:21:05,956 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:21:05,956 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:21:05,957 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:21:05,959 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:21:15,414 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 2
+2025-06-17 15:21:15,437 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 15:21:15,437 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 15:21:15,437 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 15:22:11,013 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:22:11,013 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:22:11,233 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:22:11,233 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:22:11,234 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:22:11,236 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:22:17,792 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Comentar Seleccionado' para estudio ID 8
+2025-06-17 15:22:20,049 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 15:22:20,060 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 15:22:20,061 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 15:22:20,061 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 15:23:53,880 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:23:53,880 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:23:54,080 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:23:54,080 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:23:54,081 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:23:54,083 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:24:20,840 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:24:20,840 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:24:21,025 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:24:21,025 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:24:21,026 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:24:21,027 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:25:17,150 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:25:17,150 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:25:17,358 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:25:17,358 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:25:17,358 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:25:17,361 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:25:27,963 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:25:29,473 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 15:25:29,474 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:25:38,045 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:25:39,368 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:25:39,370 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:26:33,271 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:26:33,271 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:26:33,523 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:26:33,523 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:26:33,524 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:26:33,526 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:26:41,418 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 15:26:41,419 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 15:26:47,012 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 15:26:47,013 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 15:27:17,033 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:27:17,033 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:27:17,234 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:27:17,234 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:27:17,235 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:27:17,236 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:27:48,094 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:27:48,095 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:27:48,299 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:27:48,299 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:27:48,300 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:27:48,302 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:28:01,222 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 15:28:01,222 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 15:28:53,290 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:28:53,291 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:28:53,499 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:28:53,499 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:28:53,500 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:28:53,502 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:28:57,295 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 15:28:57,307 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 15:28:57,308 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 15:28:57,308 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 15:29:21,016 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:29:21,016 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:29:21,222 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:29:21,222 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:29:21,223 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:29:21,224 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:29:23,830 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 15:29:23,841 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 15:29:23,842 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 15:29:23,842 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 15:29:27,744 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Comentar Seleccionado' para estudio ID 8
