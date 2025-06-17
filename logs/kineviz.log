@@ -39770,3 +39770,1005 @@ TypeError: StudyRepository.get_studies_paginated() got an unexpected keyword arg
 2025-06-17 15:29:23,842 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
 2025-06-17 15:29:23,842 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
 2025-06-17 15:29:27,744 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Comentar Seleccionado' para estudio ID 8
+2025-06-17 15:30:24,422 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:30:24,422 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:30:24,622 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:30:24,623 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:30:24,624 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:30:24,626 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:30:27,149 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 2
+2025-06-17 15:30:27,166 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 15:30:27,167 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 15:30:27,167 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 15:30:28,552 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:30:28,553 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:30:30,371 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 15:30:30,372 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 15:30:30,372 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 15:30:53,881 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:30:53,881 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:30:54,060 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:30:54,060 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:30:54,061 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:30:54,063 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:30:58,157 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 15:30:58,157 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 15:31:09,252 - INFO - [kineviz.ui.dialogs.backup_restore_dialog] - Creando copia de seguridad automática antes de la restauración...
+2025-06-17 15:31:09,254 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:31:09,254 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:31:09,257 - INFO - [kineviz.core.backup_manager] - Max automatic backups (10) reached. Deleting oldest: backup_20250617_103002.zip
+2025-06-17 15:31:09,259 - INFO - [kineviz.core.backup_manager] - Creating backup: /Users/arakito/Mati/Codigo/Python/KineViz/backups/automatic/backup_20250617_153109.zip (Test Mode: False)
+2025-06-17 15:31:09,259 - DEBUG - [kineviz.core.backup_manager] - Adding file to backup: /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db as kineviz.db
+2025-06-17 15:31:09,260 - DEBUG - [kineviz.core.backup_manager] - Adding file to backup: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini as config.ini
+2025-06-17 15:31:09,260 - DEBUG - [kineviz.core.backup_manager] - Selectively adding files from studies directory: /Users/arakito/Mati/Codigo/Python/KineViz/estudios
+2025-06-17 15:31:09,261 - DEBUG - [kineviz.core.backup_manager] - Adding study directory to backup: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/2121 as estudios/2121
+2025-06-17 15:31:09,262 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/2121/Pte03/OG/Pte03 CMJ 01.txt as estudios/2121/Pte03/OG/Pte03 CMJ 01.txt
+2025-06-17 15:31:09,299 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/2121/Pte03/Cinetica/Pte03 CMJ 01_Cinetica.txt as estudios/2121/Pte03/Cinetica/Pte03 CMJ 01_Cinetica.txt
+2025-06-17 15:31:09,317 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/2121/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_eeee_CMJ.xlsx as estudios/2121/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_eeee_CMJ.xlsx
+2025-06-17 15:31:09,317 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/2121/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_eeee_CMJ.xlsx as estudios/2121/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_eeee_CMJ.xlsx
+2025-06-17 15:31:09,318 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/2121/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_eeee_CMJ.xlsx as estudios/2121/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_eeee_CMJ.xlsx
+2025-06-17 15:31:09,318 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/2121/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_eeee_CMJ.csv as estudios/2121/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_eeee_CMJ.csv
+2025-06-17 15:31:09,318 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/2121/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_eeee_CMJ.csv as estudios/2121/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_eeee_CMJ.csv
+2025-06-17 15:31:09,319 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/2121/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_eeee_CMJ.csv as estudios/2121/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_eeee_CMJ.csv
+2025-06-17 15:31:09,319 - DEBUG - [kineviz.core.backup_manager] - Adding study directory to backup: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical as estudios/Estudio de Salto Vertical
+2025-06-17 15:31:09,319 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte05/OG/Pte05 Mayor OS 02.txt as estudios/Estudio de Salto Vertical/Pte05/OG/Pte05 Mayor OS 02.txt
+2025-06-17 15:31:09,334 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte05/OG/Pte05 Mayor OS 03.txt as estudios/Estudio de Salto Vertical/Pte05/OG/Pte05 Mayor OS 03.txt
+2025-06-17 15:31:09,344 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte05/OG/Pte05 Mayor OS 01.txt as estudios/Estudio de Salto Vertical/Pte05/OG/Pte05 Mayor OS 01.txt
+2025-06-17 15:31:09,357 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte05/Cinematica/Pte05 Mayor OS 01_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte05/Cinematica/Pte05 Mayor OS 01_Cinematica.txt
+2025-06-17 15:31:09,362 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte05/Cinematica/Pte05 Mayor OS 02_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte05/Cinematica/Pte05 Mayor OS 02_Cinematica.txt
+2025-06-17 15:31:09,370 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte05/Cinematica/Pte05 Mayor OS 03_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte05/Cinematica/Pte05 Mayor OS 03_Cinematica.txt
+2025-06-17 15:31:09,374 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte05/Cinetica/Pte05 Mayor OS 01_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte05/Cinetica/Pte05 Mayor OS 01_Cinetica.txt
+2025-06-17 15:31:09,382 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte05/Cinetica/Pte05 Mayor OS 02_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte05/Cinetica/Pte05 Mayor OS 02_Cinetica.txt
+2025-06-17 15:31:09,390 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte05/Cinetica/Pte05 Mayor OS 03_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte05/Cinetica/Pte05 Mayor OS 03_Cinetica.txt
+2025-06-17 15:31:09,393 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte02/OG/Pte02 Joven OS 01.txt as estudios/Estudio de Salto Vertical/Pte02/OG/Pte02 Joven OS 01.txt
+2025-06-17 15:31:09,403 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte02/OG/Pte02 Joven OS 03.txt as estudios/Estudio de Salto Vertical/Pte02/OG/Pte02 Joven OS 03.txt
+2025-06-17 15:31:09,419 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte02/OG/Pte02 Joven OS 02.txt as estudios/Estudio de Salto Vertical/Pte02/OG/Pte02 Joven OS 02.txt
+2025-06-17 15:31:09,430 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte02/Cinematica/Pte02 Joven OS 02_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte02/Cinematica/Pte02 Joven OS 02_Cinematica.txt
+2025-06-17 15:31:09,434 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte02/Cinematica/Pte02 Joven OS 03_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte02/Cinematica/Pte02 Joven OS 03_Cinematica.txt
+2025-06-17 15:31:09,441 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte02/Cinematica/Pte02 Joven OS 01_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte02/Cinematica/Pte02 Joven OS 01_Cinematica.txt
+2025-06-17 15:31:09,444 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte02/Cinetica/Pte02 Joven OS 03_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte02/Cinetica/Pte02 Joven OS 03_Cinetica.txt
+2025-06-17 15:31:09,453 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte02/Cinetica/Pte02 Joven OS 02_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte02/Cinetica/Pte02 Joven OS 02_Cinetica.txt
+2025-06-17 15:31:09,460 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte02/Cinetica/Pte02 Joven OS 01_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte02/Cinetica/Pte02 Joven OS 01_Cinetica.txt
+2025-06-17 15:31:09,464 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte03/OG/Pte03 Joven BP 03.txt as estudios/Estudio de Salto Vertical/Pte03/OG/Pte03 Joven BP 03.txt
+2025-06-17 15:31:09,473 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte03/OG/Pte03 Joven BP 02.txt as estudios/Estudio de Salto Vertical/Pte03/OG/Pte03 Joven BP 02.txt
+2025-06-17 15:31:09,493 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte03/OG/Pte03 Joven BP 01.txt as estudios/Estudio de Salto Vertical/Pte03/OG/Pte03 Joven BP 01.txt
+2025-06-17 15:31:09,504 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte03/Cinematica/Pte03 Joven BP 02_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte03/Cinematica/Pte03 Joven BP 02_Cinematica.txt
+2025-06-17 15:31:09,512 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte03/Cinematica/Pte03 Joven BP 03_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte03/Cinematica/Pte03 Joven BP 03_Cinematica.txt
+2025-06-17 15:31:09,515 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte03/Cinematica/Pte03 Joven BP 01_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte03/Cinematica/Pte03 Joven BP 01_Cinematica.txt
+2025-06-17 15:31:09,519 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte03/Cinetica/Pte03 Joven BP 02_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte03/Cinetica/Pte03 Joven BP 02_Cinetica.txt
+2025-06-17 15:31:09,533 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte03/Cinetica/Pte03 Joven BP 03_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte03/Cinetica/Pte03 Joven BP 03_Cinetica.txt
+2025-06-17 15:31:09,538 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte03/Cinetica/Pte03 Joven BP 01_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte03/Cinetica/Pte03 Joven BP 01_Cinetica.txt
+2025-06-17 15:31:09,542 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte04/OG/Pte04 Mayor NP 01.txt as estudios/Estudio de Salto Vertical/Pte04/OG/Pte04 Mayor NP 01.txt
+2025-06-17 15:31:09,550 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte04/OG/Pte04 Mayor NP 03.txt as estudios/Estudio de Salto Vertical/Pte04/OG/Pte04 Mayor NP 03.txt
+2025-06-17 15:31:09,564 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte04/OG/Pte04 Mayor NP 02.txt as estudios/Estudio de Salto Vertical/Pte04/OG/Pte04 Mayor NP 02.txt
+2025-06-17 15:31:09,577 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte04/Cinematica/Pte04 Mayor NP 03_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte04/Cinematica/Pte04 Mayor NP 03_Cinematica.txt
+2025-06-17 15:31:09,583 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte04/Cinematica/Pte04 Mayor NP 02_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte04/Cinematica/Pte04 Mayor NP 02_Cinematica.txt
+2025-06-17 15:31:09,588 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte04/Cinematica/Pte04 Mayor NP 01_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte04/Cinematica/Pte04 Mayor NP 01_Cinematica.txt
+2025-06-17 15:31:09,591 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte04/Cinetica/Pte04 Mayor NP 02_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte04/Cinetica/Pte04 Mayor NP 02_Cinetica.txt
+2025-06-17 15:31:09,596 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte04/Cinetica/Pte04 Mayor NP 03_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte04/Cinetica/Pte04 Mayor NP 03_Cinetica.txt
+2025-06-17 15:31:09,605 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte04/Cinetica/Pte04 Mayor NP 01_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte04/Cinetica/Pte04 Mayor NP 01_Cinetica.txt
+2025-06-17 15:31:09,608 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte08/OG/Pte08 Adulto OS 01.txt as estudios/Estudio de Salto Vertical/Pte08/OG/Pte08 Adulto OS 01.txt
+2025-06-17 15:31:09,620 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte08/OG/Pte08 Adulto OS 03.txt as estudios/Estudio de Salto Vertical/Pte08/OG/Pte08 Adulto OS 03.txt
+2025-06-17 15:31:09,628 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte08/OG/Pte08 Adulto OS 02.txt as estudios/Estudio de Salto Vertical/Pte08/OG/Pte08 Adulto OS 02.txt
+2025-06-17 15:31:09,642 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte08/Cinematica/Pte08 Adulto OS 01_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte08/Cinematica/Pte08 Adulto OS 01_Cinematica.txt
+2025-06-17 15:31:09,647 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte08/Cinematica/Pte08 Adulto OS 03_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte08/Cinematica/Pte08 Adulto OS 03_Cinematica.txt
+2025-06-17 15:31:09,650 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte08/Cinematica/Pte08 Adulto OS 02_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte08/Cinematica/Pte08 Adulto OS 02_Cinematica.txt
+2025-06-17 15:31:09,656 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte08/Cinetica/Pte08 Adulto OS 02_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte08/Cinetica/Pte08 Adulto OS 02_Cinetica.txt
+2025-06-17 15:31:09,663 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte08/Cinetica/Pte08 Adulto OS 03_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte08/Cinetica/Pte08 Adulto OS 03_Cinetica.txt
+2025-06-17 15:31:09,665 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte08/Cinetica/Pte08 Adulto OS 01_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte08/Cinetica/Pte08 Adulto OS 01_Cinetica.txt
+2025-06-17 15:31:09,673 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte01/OG/Pte01 Joven NP 03.txt as estudios/Estudio de Salto Vertical/Pte01/OG/Pte01 Joven NP 03.txt
+2025-06-17 15:31:09,682 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte01/OG/Pte01 Joven NP 02.txt as estudios/Estudio de Salto Vertical/Pte01/OG/Pte01 Joven NP 02.txt
+2025-06-17 15:31:09,700 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte01/OG/Pte01 Joven NP 01.txt as estudios/Estudio de Salto Vertical/Pte01/OG/Pte01 Joven NP 01.txt
+2025-06-17 15:31:09,711 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte01/Cinematica/Pte01 Joven NP 03_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte01/Cinematica/Pte01 Joven NP 03_Cinematica.txt
+2025-06-17 15:31:09,714 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte01/Cinematica/Pte01 Joven NP 02_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte01/Cinematica/Pte01 Joven NP 02_Cinematica.txt
+2025-06-17 15:31:09,721 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte01/Cinematica/Pte01 Joven NP 01_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte01/Cinematica/Pte01 Joven NP 01_Cinematica.txt
+2025-06-17 15:31:09,724 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte01/Cinetica/Pte01 Joven NP 03_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte01/Cinetica/Pte01 Joven NP 03_Cinetica.txt
+2025-06-17 15:31:09,729 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte01/Cinetica/Pte01 Joven NP 02_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte01/Cinetica/Pte01 Joven NP 02_Cinetica.txt
+2025-06-17 15:31:09,741 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte01/Cinetica/Pte01 Joven NP 01_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte01/Cinetica/Pte01 Joven NP 01_Cinetica.txt
+2025-06-17 15:31:09,745 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte06/OG/Pte06 Mayor BP 01.txt as estudios/Estudio de Salto Vertical/Pte06/OG/Pte06 Mayor BP 01.txt
+2025-06-17 15:31:09,757 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte06/OG/Pte06 Mayor BP 03.txt as estudios/Estudio de Salto Vertical/Pte06/OG/Pte06 Mayor BP 03.txt
+2025-06-17 15:31:09,765 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte06/OG/Pte06 Mayor BP 02.txt as estudios/Estudio de Salto Vertical/Pte06/OG/Pte06 Mayor BP 02.txt
+2025-06-17 15:31:09,778 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte06/Cinematica/Pte06 Mayor BP 02_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte06/Cinematica/Pte06 Mayor BP 02_Cinematica.txt
+2025-06-17 15:31:09,785 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte06/Cinematica/Pte06 Mayor BP 03_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte06/Cinematica/Pte06 Mayor BP 03_Cinematica.txt
+2025-06-17 15:31:09,788 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte06/Cinematica/Pte06 Mayor BP 01_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte06/Cinematica/Pte06 Mayor BP 01_Cinematica.txt
+2025-06-17 15:31:09,792 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte06/Cinetica/Pte06 Mayor BP 03_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte06/Cinetica/Pte06 Mayor BP 03_Cinetica.txt
+2025-06-17 15:31:09,795 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte06/Cinetica/Pte06 Mayor BP 02_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte06/Cinetica/Pte06 Mayor BP 02_Cinetica.txt
+2025-06-17 15:31:09,802 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte06/Cinetica/Pte06 Mayor BP 01_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte06/Cinetica/Pte06 Mayor BP 01_Cinetica.txt
+2025-06-17 15:31:09,810 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte07/OG/Pte07 Adulto NP 03.txt as estudios/Estudio de Salto Vertical/Pte07/OG/Pte07 Adulto NP 03.txt
+2025-06-17 15:31:09,818 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte07/OG/Pte07 Adulto NP 02.txt as estudios/Estudio de Salto Vertical/Pte07/OG/Pte07 Adulto NP 02.txt
+2025-06-17 15:31:09,836 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte07/OG/Pte07 Adulto NP 01.txt as estudios/Estudio de Salto Vertical/Pte07/OG/Pte07 Adulto NP 01.txt
+2025-06-17 15:31:09,847 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte07/Cinematica/Pte07 Adulto NP 01_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte07/Cinematica/Pte07 Adulto NP 01_Cinematica.txt
+2025-06-17 15:31:09,850 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte07/Cinematica/Pte07 Adulto NP 02_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte07/Cinematica/Pte07 Adulto NP 02_Cinematica.txt
+2025-06-17 15:31:09,857 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte07/Cinematica/Pte07 Adulto NP 03_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte07/Cinematica/Pte07 Adulto NP 03_Cinematica.txt
+2025-06-17 15:31:09,860 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte07/Cinetica/Pte07 Adulto NP 01_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte07/Cinetica/Pte07 Adulto NP 01_Cinetica.txt
+2025-06-17 15:31:09,864 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte07/Cinetica/Pte07 Adulto NP 02_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte07/Cinetica/Pte07 Adulto NP 02_Cinetica.txt
+2025-06-17 15:31:09,876 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte07/Cinetica/Pte07 Adulto NP 03_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte07/Cinetica/Pte07 Adulto NP 03_Cinetica.txt
+2025-06-17 15:31:09,879 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte09/OG/Pte09 Adulto BP 02.txt as estudios/Estudio de Salto Vertical/Pte09/OG/Pte09 Adulto BP 02.txt
+2025-06-17 15:31:09,898 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte09/OG/Pte09 Adulto BP 03.txt as estudios/Estudio de Salto Vertical/Pte09/OG/Pte09 Adulto BP 03.txt
+2025-06-17 15:31:09,907 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte09/OG/Pte09 Adulto BP 01.txt as estudios/Estudio de Salto Vertical/Pte09/OG/Pte09 Adulto BP 01.txt
+2025-06-17 15:31:09,917 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte09/Cinematica/Pte09 Adulto BP 01_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte09/Cinematica/Pte09 Adulto BP 01_Cinematica.txt
+2025-06-17 15:31:09,921 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte09/Cinematica/Pte09 Adulto BP 02_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte09/Cinematica/Pte09 Adulto BP 02_Cinematica.txt
+2025-06-17 15:31:09,928 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte09/Cinematica/Pte09 Adulto BP 03_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte09/Cinematica/Pte09 Adulto BP 03_Cinematica.txt
+2025-06-17 15:31:09,932 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte09/Cinetica/Pte09 Adulto BP 01_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte09/Cinetica/Pte09 Adulto BP 01_Cinetica.txt
+2025-06-17 15:31:09,935 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte09/Cinetica/Pte09 Adulto BP 03_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte09/Cinetica/Pte09 Adulto BP 03_Cinetica.txt
+2025-06-17 15:31:09,941 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte09/Cinetica/Pte09 Adulto BP 02_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte09/Cinetica/Pte09 Adulto BP 02_Cinetica.txt
+2025-06-17 15:31:09,953 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_NP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_NP.xlsx
+2025-06-17 15:31:09,953 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_OS.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_OS.xlsx
+2025-06-17 15:31:09,954 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_NP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_NP.xlsx
+2025-06-17 15:31:09,954 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_NP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_NP.xlsx
+2025-06-17 15:31:09,954 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_BP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_BP.xlsx
+2025-06-17 15:31:09,955 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_BP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_BP.xlsx
+2025-06-17 15:31:09,955 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Mayor__Peso_OS.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Mayor__Peso_OS.xlsx
+2025-06-17 15:31:09,955 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_OS.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_OS.xlsx
+2025-06-17 15:31:09,955 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Adulto__Peso_BP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Adulto__Peso_BP.xlsx
+2025-06-17 15:31:09,955 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Adulto__Peso_OS.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Adulto__Peso_OS.xlsx
+2025-06-17 15:31:09,956 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_BP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_BP.xlsx
+2025-06-17 15:31:09,956 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_OS.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_OS.xlsx
+2025-06-17 15:31:09,956 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_OS.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_OS.xlsx
+2025-06-17 15:31:09,956 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Mayor__Peso_NP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Mayor__Peso_NP.xlsx
+2025-06-17 15:31:09,957 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_NP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_NP.xlsx
+2025-06-17 15:31:09,957 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_OS.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_OS.xlsx
+2025-06-17 15:31:09,957 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Adulto__Peso_BP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Adulto__Peso_BP.xlsx
+2025-06-17 15:31:09,957 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Adulto__Peso_OS.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Adulto__Peso_OS.xlsx
+2025-06-17 15:31:09,958 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Mayor__Peso_BP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Mayor__Peso_BP.xlsx
+2025-06-17 15:31:09,958 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_BP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_BP.xlsx
+2025-06-17 15:31:09,958 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_OS.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_OS.csv
+2025-06-17 15:31:09,959 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_NP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_NP.csv
+2025-06-17 15:31:09,959 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_NP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_NP.csv
+2025-06-17 15:31:09,959 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_BP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_BP.csv
+2025-06-17 15:31:09,959 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Mayor__Peso_NP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Mayor__Peso_NP.csv
+2025-06-17 15:31:09,961 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_OS.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_OS.csv
+2025-06-17 15:31:09,961 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_OS.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_OS.csv
+2025-06-17 15:31:09,961 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_NP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_NP.csv
+2025-06-17 15:31:09,961 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_BP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_BP.csv
+2025-06-17 15:31:09,962 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Adulto__Peso_BP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Adulto__Peso_BP.csv
+2025-06-17 15:31:09,962 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Adulto__Peso_OS.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Adulto__Peso_OS.csv
+2025-06-17 15:31:09,962 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_BP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_BP.csv
+2025-06-17 15:31:09,962 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_OS.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_OS.csv
+2025-06-17 15:31:09,963 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Adulto__Peso_OS.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Adulto__Peso_OS.csv
+2025-06-17 15:31:09,963 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_BP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_BP.csv
+2025-06-17 15:31:09,963 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_NP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_NP.csv
+2025-06-17 15:31:09,964 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Mayor__Peso_OS.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Mayor__Peso_OS.csv
+2025-06-17 15:31:09,964 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Mayor__Peso_BP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Mayor__Peso_BP.csv
+2025-06-17 15:31:09,964 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Adulto__Peso_BP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Adulto__Peso_BP.csv
+2025-06-17 15:31:09,965 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_OS.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_OS.csv
+2025-06-17 15:31:09,965 - INFO - [kineviz.core.backup_manager] - Backup created successfully: /Users/arakito/Mati/Codigo/Python/KineViz/backups/automatic/backup_20250617_153109.zip
+2025-06-17 15:31:09,966 - DEBUG - [kineviz.core.backup_manager] - Updated _last_automatic_backup_end_time to 2025-06-17 15:31:09.965999
+2025-06-17 15:31:09,966 - DEBUG - [kineviz.core.backup_manager] - Lock file /Users/arakito/Mati/Codigo/Python/KineViz/backups/automatic/.backup_in_progress.lock removed.
+2025-06-17 15:31:13,323 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 15:31:13,323 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 15:31:13,323 - INFO - [kineviz.ui.dialogs.backup_restore_dialog] - Attempting to restore from /Users/arakito/Mati/Codigo/Python/KineViz/backups/automatic/backup_20250617_124109.zip
+2025-06-17 15:31:13,324 - INFO - [kineviz.core.backup_manager] - Starting restoration from backup: /Users/arakito/Mati/Codigo/Python/KineViz/backups/automatic/backup_20250617_124109.zip
+2025-06-17 15:31:13,324 - INFO - [kineviz.core.backup_manager] - Extracting backup to /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250617_153113...
+2025-06-17 15:31:13,396 - INFO - [kineviz.core.backup_manager] - Backup extracted successfully.
+2025-06-17 15:31:13,396 - INFO - [kineviz.core.backup_manager] - Renaming current live items...
+2025-06-17 15:31:13,396 - INFO - [kineviz.core.backup_manager] - Renamed live DB to /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db.20250617153113.bak
+2025-06-17 15:31:13,396 - INFO - [kineviz.core.backup_manager] - Renamed live config to /Users/arakito/Mati/Codigo/Python/KineViz/config.ini.20250617153113.bak
+2025-06-17 15:31:13,396 - INFO - [kineviz.core.backup_manager] - Moved live studies dir to /Users/arakito/Mati/Codigo/Python/KineViz/estudios.20250617153113.bak
+2025-06-17 15:31:13,396 - INFO - [kineviz.core.backup_manager] - Moving extracted items to live locations...
+2025-06-17 15:31:13,397 - INFO - [kineviz.core.backup_manager] - Restored DB from /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250617_153113/kineviz.db
+2025-06-17 15:31:13,397 - INFO - [kineviz.core.backup_manager] - Restored config from /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250617_153113/config.ini
+2025-06-17 15:31:13,397 - INFO - [kineviz.core.backup_manager] - Restored studies directory from /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250617_153113/estudios
+2025-06-17 15:31:13,397 - INFO - [kineviz.core.backup_manager] - Restoration successful. Cleaning up .bak files...
+2025-06-17 15:31:13,412 - INFO - [kineviz.core.backup_manager] - .bak files cleaned up.
+2025-06-17 15:31:13,412 - INFO - [kineviz.core.backup_manager] - Restoration process completed successfully.
+2025-06-17 15:31:13,412 - INFO - [kineviz.core.backup_manager] - Cleaned up temporary extraction directory: /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250617_153113
+2025-06-17 15:33:37,056 - INFO - [kineviz.ui.dialogs.config_dialog] - BackupRestoreDialog indicated a restart is required. Closing ConfigDialog and triggering app restart via MainWindow.
+2025-06-17 15:33:37,072 - INFO - [kineviz.ui.main_window] - MainWindow: Solicitud de reinicio de la aplicación recibida.
+2025-06-17 15:33:37,073 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:33:37,076 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:33:37,088 - INFO - [__main__] - Reinicio de KineViz solicitado.
+2025-06-17 15:33:37,108 - INFO - [__main__] - Reiniciando la aplicación...
+2025-06-17 15:33:37,108 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:33:37,141 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:33:37,141 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:33:37,142 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 15:33:37,142 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:34:17,128 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 15:34:17,129 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:34:43,159 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 15:34:43,159 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 15:39:09,967 - INFO - [kineviz.ui.dialogs.backup_restore_dialog] - Creando copia de seguridad automática antes de la restauración...
+2025-06-17 15:39:09,969 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:39:09,970 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:39:09,974 - INFO - [kineviz.core.backup_manager] - Max automatic backups (10) reached. Deleting oldest: backup_20250617_103136.zip
+2025-06-17 15:39:09,976 - INFO - [kineviz.core.backup_manager] - Creating backup: /Users/arakito/Mati/Codigo/Python/KineViz/backups/automatic/backup_20250617_153909.zip (Test Mode: False)
+2025-06-17 15:39:09,976 - DEBUG - [kineviz.core.backup_manager] - Adding file to backup: /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db as kineviz.db
+2025-06-17 15:39:09,978 - DEBUG - [kineviz.core.backup_manager] - Adding file to backup: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini as config.ini
+2025-06-17 15:39:09,978 - DEBUG - [kineviz.core.backup_manager] - Selectively adding files from studies directory: /Users/arakito/Mati/Codigo/Python/KineViz/estudios
+2025-06-17 15:39:09,979 - DEBUG - [kineviz.core.backup_manager] - Adding study directory to backup: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/2121 as estudios/2121
+2025-06-17 15:39:09,979 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/2121/Pte03/OG/Pte03 CMJ 01.txt as estudios/2121/Pte03/OG/Pte03 CMJ 01.txt
+2025-06-17 15:39:10,017 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/2121/Pte03/Cinetica/Pte03 CMJ 01_Cinetica.txt as estudios/2121/Pte03/Cinetica/Pte03 CMJ 01_Cinetica.txt
+2025-06-17 15:39:10,035 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/2121/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_eeee_CMJ.xlsx as estudios/2121/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_eeee_CMJ.xlsx
+2025-06-17 15:39:10,035 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/2121/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_eeee_CMJ.xlsx as estudios/2121/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_eeee_CMJ.xlsx
+2025-06-17 15:39:10,036 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/2121/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_eeee_CMJ.xlsx as estudios/2121/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_eeee_CMJ.xlsx
+2025-06-17 15:39:10,037 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/2121/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_eeee_CMJ.csv as estudios/2121/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_eeee_CMJ.csv
+2025-06-17 15:39:10,037 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/2121/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_eeee_CMJ.csv as estudios/2121/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_eeee_CMJ.csv
+2025-06-17 15:39:10,038 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/2121/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_eeee_CMJ.csv as estudios/2121/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_eeee_CMJ.csv
+2025-06-17 15:39:10,038 - DEBUG - [kineviz.core.backup_manager] - Adding study directory to backup: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical as estudios/Estudio de Salto Vertical
+2025-06-17 15:39:10,038 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte05/OG/Pte05 Mayor OS 02.txt as estudios/Estudio de Salto Vertical/Pte05/OG/Pte05 Mayor OS 02.txt
+2025-06-17 15:39:10,053 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte05/OG/Pte05 Mayor OS 03.txt as estudios/Estudio de Salto Vertical/Pte05/OG/Pte05 Mayor OS 03.txt
+2025-06-17 15:39:10,062 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte05/OG/Pte05 Mayor OS 01.txt as estudios/Estudio de Salto Vertical/Pte05/OG/Pte05 Mayor OS 01.txt
+2025-06-17 15:39:10,074 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte05/Cinematica/Pte05 Mayor OS 01_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte05/Cinematica/Pte05 Mayor OS 01_Cinematica.txt
+2025-06-17 15:39:10,079 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte05/Cinematica/Pte05 Mayor OS 02_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte05/Cinematica/Pte05 Mayor OS 02_Cinematica.txt
+2025-06-17 15:39:10,086 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte05/Cinematica/Pte05 Mayor OS 03_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte05/Cinematica/Pte05 Mayor OS 03_Cinematica.txt
+2025-06-17 15:39:10,089 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte05/Cinetica/Pte05 Mayor OS 01_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte05/Cinetica/Pte05 Mayor OS 01_Cinetica.txt
+2025-06-17 15:39:10,097 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte05/Cinetica/Pte05 Mayor OS 02_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte05/Cinetica/Pte05 Mayor OS 02_Cinetica.txt
+2025-06-17 15:39:10,105 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte05/Cinetica/Pte05 Mayor OS 03_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte05/Cinetica/Pte05 Mayor OS 03_Cinetica.txt
+2025-06-17 15:39:10,107 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte02/OG/Pte02 Joven OS 01.txt as estudios/Estudio de Salto Vertical/Pte02/OG/Pte02 Joven OS 01.txt
+2025-06-17 15:39:10,117 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte02/OG/Pte02 Joven OS 03.txt as estudios/Estudio de Salto Vertical/Pte02/OG/Pte02 Joven OS 03.txt
+2025-06-17 15:39:10,133 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte02/OG/Pte02 Joven OS 02.txt as estudios/Estudio de Salto Vertical/Pte02/OG/Pte02 Joven OS 02.txt
+2025-06-17 15:39:10,143 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte02/Cinematica/Pte02 Joven OS 02_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte02/Cinematica/Pte02 Joven OS 02_Cinematica.txt
+2025-06-17 15:39:10,147 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte02/Cinematica/Pte02 Joven OS 03_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte02/Cinematica/Pte02 Joven OS 03_Cinematica.txt
+2025-06-17 15:39:10,154 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte02/Cinematica/Pte02 Joven OS 01_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte02/Cinematica/Pte02 Joven OS 01_Cinematica.txt
+2025-06-17 15:39:10,158 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte02/Cinetica/Pte02 Joven OS 03_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte02/Cinetica/Pte02 Joven OS 03_Cinetica.txt
+2025-06-17 15:39:10,167 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte02/Cinetica/Pte02 Joven OS 02_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte02/Cinetica/Pte02 Joven OS 02_Cinetica.txt
+2025-06-17 15:39:10,173 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte02/Cinetica/Pte02 Joven OS 01_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte02/Cinetica/Pte02 Joven OS 01_Cinetica.txt
+2025-06-17 15:39:10,177 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte03/OG/Pte03 Joven BP 03.txt as estudios/Estudio de Salto Vertical/Pte03/OG/Pte03 Joven BP 03.txt
+2025-06-17 15:39:10,186 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte03/OG/Pte03 Joven BP 02.txt as estudios/Estudio de Salto Vertical/Pte03/OG/Pte03 Joven BP 02.txt
+2025-06-17 15:39:10,204 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte03/OG/Pte03 Joven BP 01.txt as estudios/Estudio de Salto Vertical/Pte03/OG/Pte03 Joven BP 01.txt
+2025-06-17 15:39:10,216 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte03/Cinematica/Pte03 Joven BP 02_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte03/Cinematica/Pte03 Joven BP 02_Cinematica.txt
+2025-06-17 15:39:10,223 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte03/Cinematica/Pte03 Joven BP 03_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte03/Cinematica/Pte03 Joven BP 03_Cinematica.txt
+2025-06-17 15:39:10,226 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte03/Cinematica/Pte03 Joven BP 01_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte03/Cinematica/Pte03 Joven BP 01_Cinematica.txt
+2025-06-17 15:39:10,230 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte03/Cinetica/Pte03 Joven BP 02_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte03/Cinetica/Pte03 Joven BP 02_Cinetica.txt
+2025-06-17 15:39:10,242 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte03/Cinetica/Pte03 Joven BP 03_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte03/Cinetica/Pte03 Joven BP 03_Cinetica.txt
+2025-06-17 15:39:10,248 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte03/Cinetica/Pte03 Joven BP 01_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte03/Cinetica/Pte03 Joven BP 01_Cinetica.txt
+2025-06-17 15:39:10,252 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte04/OG/Pte04 Mayor NP 01.txt as estudios/Estudio de Salto Vertical/Pte04/OG/Pte04 Mayor NP 01.txt
+2025-06-17 15:39:10,260 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte04/OG/Pte04 Mayor NP 03.txt as estudios/Estudio de Salto Vertical/Pte04/OG/Pte04 Mayor NP 03.txt
+2025-06-17 15:39:10,274 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte04/OG/Pte04 Mayor NP 02.txt as estudios/Estudio de Salto Vertical/Pte04/OG/Pte04 Mayor NP 02.txt
+2025-06-17 15:39:10,287 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte04/Cinematica/Pte04 Mayor NP 03_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte04/Cinematica/Pte04 Mayor NP 03_Cinematica.txt
+2025-06-17 15:39:10,293 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte04/Cinematica/Pte04 Mayor NP 02_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte04/Cinematica/Pte04 Mayor NP 02_Cinematica.txt
+2025-06-17 15:39:10,298 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte04/Cinematica/Pte04 Mayor NP 01_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte04/Cinematica/Pte04 Mayor NP 01_Cinematica.txt
+2025-06-17 15:39:10,301 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte04/Cinetica/Pte04 Mayor NP 02_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte04/Cinetica/Pte04 Mayor NP 02_Cinetica.txt
+2025-06-17 15:39:10,306 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte04/Cinetica/Pte04 Mayor NP 03_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte04/Cinetica/Pte04 Mayor NP 03_Cinetica.txt
+2025-06-17 15:39:10,315 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte04/Cinetica/Pte04 Mayor NP 01_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte04/Cinetica/Pte04 Mayor NP 01_Cinetica.txt
+2025-06-17 15:39:10,318 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte08/OG/Pte08 Adulto OS 01.txt as estudios/Estudio de Salto Vertical/Pte08/OG/Pte08 Adulto OS 01.txt
+2025-06-17 15:39:10,330 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte08/OG/Pte08 Adulto OS 03.txt as estudios/Estudio de Salto Vertical/Pte08/OG/Pte08 Adulto OS 03.txt
+2025-06-17 15:39:10,338 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte08/OG/Pte08 Adulto OS 02.txt as estudios/Estudio de Salto Vertical/Pte08/OG/Pte08 Adulto OS 02.txt
+2025-06-17 15:39:10,351 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte08/Cinematica/Pte08 Adulto OS 01_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte08/Cinematica/Pte08 Adulto OS 01_Cinematica.txt
+2025-06-17 15:39:10,357 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte08/Cinematica/Pte08 Adulto OS 03_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte08/Cinematica/Pte08 Adulto OS 03_Cinematica.txt
+2025-06-17 15:39:10,360 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte08/Cinematica/Pte08 Adulto OS 02_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte08/Cinematica/Pte08 Adulto OS 02_Cinematica.txt
+2025-06-17 15:39:10,367 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte08/Cinetica/Pte08 Adulto OS 02_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte08/Cinetica/Pte08 Adulto OS 02_Cinetica.txt
+2025-06-17 15:39:10,374 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte08/Cinetica/Pte08 Adulto OS 03_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte08/Cinetica/Pte08 Adulto OS 03_Cinetica.txt
+2025-06-17 15:39:10,376 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte08/Cinetica/Pte08 Adulto OS 01_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte08/Cinetica/Pte08 Adulto OS 01_Cinetica.txt
+2025-06-17 15:39:10,384 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte01/OG/Pte01 Joven NP 03.txt as estudios/Estudio de Salto Vertical/Pte01/OG/Pte01 Joven NP 03.txt
+2025-06-17 15:39:10,393 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte01/OG/Pte01 Joven NP 02.txt as estudios/Estudio de Salto Vertical/Pte01/OG/Pte01 Joven NP 02.txt
+2025-06-17 15:39:10,412 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte01/OG/Pte01 Joven NP 01.txt as estudios/Estudio de Salto Vertical/Pte01/OG/Pte01 Joven NP 01.txt
+2025-06-17 15:39:10,422 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte01/Cinematica/Pte01 Joven NP 03_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte01/Cinematica/Pte01 Joven NP 03_Cinematica.txt
+2025-06-17 15:39:10,425 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte01/Cinematica/Pte01 Joven NP 02_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte01/Cinematica/Pte01 Joven NP 02_Cinematica.txt
+2025-06-17 15:39:10,432 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte01/Cinematica/Pte01 Joven NP 01_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte01/Cinematica/Pte01 Joven NP 01_Cinematica.txt
+2025-06-17 15:39:10,436 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte01/Cinetica/Pte01 Joven NP 03_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte01/Cinetica/Pte01 Joven NP 03_Cinetica.txt
+2025-06-17 15:39:10,441 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte01/Cinetica/Pte01 Joven NP 02_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte01/Cinetica/Pte01 Joven NP 02_Cinetica.txt
+2025-06-17 15:39:10,453 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte01/Cinetica/Pte01 Joven NP 01_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte01/Cinetica/Pte01 Joven NP 01_Cinetica.txt
+2025-06-17 15:39:10,457 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte06/OG/Pte06 Mayor BP 01.txt as estudios/Estudio de Salto Vertical/Pte06/OG/Pte06 Mayor BP 01.txt
+2025-06-17 15:39:10,469 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte06/OG/Pte06 Mayor BP 03.txt as estudios/Estudio de Salto Vertical/Pte06/OG/Pte06 Mayor BP 03.txt
+2025-06-17 15:39:10,478 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte06/OG/Pte06 Mayor BP 02.txt as estudios/Estudio de Salto Vertical/Pte06/OG/Pte06 Mayor BP 02.txt
+2025-06-17 15:39:10,491 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte06/Cinematica/Pte06 Mayor BP 02_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte06/Cinematica/Pte06 Mayor BP 02_Cinematica.txt
+2025-06-17 15:39:10,498 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte06/Cinematica/Pte06 Mayor BP 03_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte06/Cinematica/Pte06 Mayor BP 03_Cinematica.txt
+2025-06-17 15:39:10,502 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte06/Cinematica/Pte06 Mayor BP 01_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte06/Cinematica/Pte06 Mayor BP 01_Cinematica.txt
+2025-06-17 15:39:10,506 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte06/Cinetica/Pte06 Mayor BP 03_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte06/Cinetica/Pte06 Mayor BP 03_Cinetica.txt
+2025-06-17 15:39:10,508 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte06/Cinetica/Pte06 Mayor BP 02_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte06/Cinetica/Pte06 Mayor BP 02_Cinetica.txt
+2025-06-17 15:39:10,515 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte06/Cinetica/Pte06 Mayor BP 01_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte06/Cinetica/Pte06 Mayor BP 01_Cinetica.txt
+2025-06-17 15:39:10,523 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte07/OG/Pte07 Adulto NP 03.txt as estudios/Estudio de Salto Vertical/Pte07/OG/Pte07 Adulto NP 03.txt
+2025-06-17 15:39:10,532 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte07/OG/Pte07 Adulto NP 02.txt as estudios/Estudio de Salto Vertical/Pte07/OG/Pte07 Adulto NP 02.txt
+2025-06-17 15:39:10,551 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte07/OG/Pte07 Adulto NP 01.txt as estudios/Estudio de Salto Vertical/Pte07/OG/Pte07 Adulto NP 01.txt
+2025-06-17 15:39:10,561 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte07/Cinematica/Pte07 Adulto NP 01_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte07/Cinematica/Pte07 Adulto NP 01_Cinematica.txt
+2025-06-17 15:39:10,565 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte07/Cinematica/Pte07 Adulto NP 02_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte07/Cinematica/Pte07 Adulto NP 02_Cinematica.txt
+2025-06-17 15:39:10,572 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte07/Cinematica/Pte07 Adulto NP 03_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte07/Cinematica/Pte07 Adulto NP 03_Cinematica.txt
+2025-06-17 15:39:10,575 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte07/Cinetica/Pte07 Adulto NP 01_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte07/Cinetica/Pte07 Adulto NP 01_Cinetica.txt
+2025-06-17 15:39:10,579 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte07/Cinetica/Pte07 Adulto NP 02_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte07/Cinetica/Pte07 Adulto NP 02_Cinetica.txt
+2025-06-17 15:39:10,591 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte07/Cinetica/Pte07 Adulto NP 03_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte07/Cinetica/Pte07 Adulto NP 03_Cinetica.txt
+2025-06-17 15:39:10,594 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte09/OG/Pte09 Adulto BP 02.txt as estudios/Estudio de Salto Vertical/Pte09/OG/Pte09 Adulto BP 02.txt
+2025-06-17 15:39:10,613 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte09/OG/Pte09 Adulto BP 03.txt as estudios/Estudio de Salto Vertical/Pte09/OG/Pte09 Adulto BP 03.txt
+2025-06-17 15:39:10,622 - DEBUG - [kineviz.core.backup_manager] - Adding original data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte09/OG/Pte09 Adulto BP 01.txt as estudios/Estudio de Salto Vertical/Pte09/OG/Pte09 Adulto BP 01.txt
+2025-06-17 15:39:10,633 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte09/Cinematica/Pte09 Adulto BP 01_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte09/Cinematica/Pte09 Adulto BP 01_Cinematica.txt
+2025-06-17 15:39:10,637 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte09/Cinematica/Pte09 Adulto BP 02_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte09/Cinematica/Pte09 Adulto BP 02_Cinematica.txt
+2025-06-17 15:39:10,644 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte09/Cinematica/Pte09 Adulto BP 03_Cinematica.txt as estudios/Estudio de Salto Vertical/Pte09/Cinematica/Pte09 Adulto BP 03_Cinematica.txt
+2025-06-17 15:39:10,647 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte09/Cinetica/Pte09 Adulto BP 01_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte09/Cinetica/Pte09 Adulto BP 01_Cinetica.txt
+2025-06-17 15:39:10,651 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte09/Cinetica/Pte09 Adulto BP 03_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte09/Cinetica/Pte09 Adulto BP 03_Cinetica.txt
+2025-06-17 15:39:10,656 - DEBUG - [kineviz.core.backup_manager] - Adding processed data file: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Pte09/Cinetica/Pte09 Adulto BP 02_Cinetica.txt as estudios/Estudio de Salto Vertical/Pte09/Cinetica/Pte09 Adulto BP 02_Cinetica.txt
+2025-06-17 15:39:10,669 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_NP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_NP.xlsx
+2025-06-17 15:39:10,670 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_OS.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_OS.xlsx
+2025-06-17 15:39:10,670 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_NP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_NP.xlsx
+2025-06-17 15:39:10,670 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_NP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_NP.xlsx
+2025-06-17 15:39:10,671 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_BP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_BP.xlsx
+2025-06-17 15:39:10,671 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_BP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_BP.xlsx
+2025-06-17 15:39:10,672 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Mayor__Peso_OS.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Mayor__Peso_OS.xlsx
+2025-06-17 15:39:10,672 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_OS.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_OS.xlsx
+2025-06-17 15:39:10,672 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Adulto__Peso_BP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Adulto__Peso_BP.xlsx
+2025-06-17 15:39:10,673 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Adulto__Peso_OS.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Adulto__Peso_OS.xlsx
+2025-06-17 15:39:10,673 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_BP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_BP.xlsx
+2025-06-17 15:39:10,673 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_OS.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_OS.xlsx
+2025-06-17 15:39:10,674 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_OS.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_OS.xlsx
+2025-06-17 15:39:10,674 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Mayor__Peso_NP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Mayor__Peso_NP.xlsx
+2025-06-17 15:39:10,674 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_NP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_NP.xlsx
+2025-06-17 15:39:10,675 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_OS.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_OS.xlsx
+2025-06-17 15:39:10,675 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Adulto__Peso_BP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Adulto__Peso_BP.xlsx
+2025-06-17 15:39:10,676 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Adulto__Peso_OS.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Adulto__Peso_OS.xlsx
+2025-06-17 15:39:10,676 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Mayor__Peso_BP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Mayor__Peso_BP.xlsx
+2025-06-17 15:39:10,676 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_BP.xlsx as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_BP.xlsx
+2025-06-17 15:39:10,677 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_OS.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_OS.csv
+2025-06-17 15:39:10,677 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_NP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_NP.csv
+2025-06-17 15:39:10,677 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_NP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_NP.csv
+2025-06-17 15:39:10,678 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_BP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_BP.csv
+2025-06-17 15:39:10,678 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Mayor__Peso_NP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Mayor__Peso_NP.csv
+2025-06-17 15:39:10,678 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_OS.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_OS.csv
+2025-06-17 15:39:10,679 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_OS.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_OS.csv
+2025-06-17 15:39:10,679 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_NP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_NP.csv
+2025-06-17 15:39:10,680 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_BP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_BP.csv
+2025-06-17 15:39:10,680 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Adulto__Peso_BP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Adulto__Peso_BP.csv
+2025-06-17 15:39:10,680 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Adulto__Peso_OS.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Adulto__Peso_OS.csv
+2025-06-17 15:39:10,680 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_BP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_BP.csv
+2025-06-17 15:39:10,680 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_OS.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_OS.csv
+2025-06-17 15:39:10,681 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Adulto__Peso_OS.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Adulto__Peso_OS.csv
+2025-06-17 15:39:10,681 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_BP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_BP.csv
+2025-06-17 15:39:10,681 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_NP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_NP.csv
+2025-06-17 15:39:10,681 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Mayor__Peso_OS.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Mayor__Peso_OS.csv
+2025-06-17 15:39:10,681 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Mayor__Peso_BP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Mayor__Peso_BP.csv
+2025-06-17 15:39:10,682 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Adulto__Peso_BP.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Adulto__Peso_BP.csv
+2025-06-17 15:39:10,682 - DEBUG - [kineviz.core.backup_manager] - Adding discrete analysis table: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_OS.csv as estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_OS.csv
+2025-06-17 15:39:10,682 - INFO - [kineviz.core.backup_manager] - Backup created successfully: /Users/arakito/Mati/Codigo/Python/KineViz/backups/automatic/backup_20250617_153909.zip
+2025-06-17 15:39:10,682 - DEBUG - [kineviz.core.backup_manager] - Updated _last_automatic_backup_end_time to 2025-06-17 15:39:10.682949
+2025-06-17 15:39:10,683 - DEBUG - [kineviz.core.backup_manager] - Lock file /Users/arakito/Mati/Codigo/Python/KineViz/backups/automatic/.backup_in_progress.lock removed.
+2025-06-17 15:39:16,530 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 15:39:16,530 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 15:39:16,530 - INFO - [kineviz.ui.dialogs.backup_restore_dialog] - Attempting to restore from /Users/arakito/Mati/Codigo/Python/KineViz/backups/automatic/backup_20250617_153109.zip
+2025-06-17 15:39:16,531 - INFO - [kineviz.core.backup_manager] - Starting restoration from backup: /Users/arakito/Mati/Codigo/Python/KineViz/backups/automatic/backup_20250617_153109.zip
+2025-06-17 15:39:16,531 - INFO - [kineviz.core.backup_manager] - Extracting backup to /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250617_153916...
+2025-06-17 15:39:16,613 - INFO - [kineviz.core.backup_manager] - Backup extracted successfully.
+2025-06-17 15:39:16,613 - INFO - [kineviz.core.backup_manager] - Renaming current live items...
+2025-06-17 15:39:16,613 - INFO - [kineviz.core.backup_manager] - Renamed live DB to /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db.20250617153916.bak
+2025-06-17 15:39:16,613 - INFO - [kineviz.core.backup_manager] - Renamed live config to /Users/arakito/Mati/Codigo/Python/KineViz/config.ini.20250617153916.bak
+2025-06-17 15:39:16,613 - INFO - [kineviz.core.backup_manager] - Moved live studies dir to /Users/arakito/Mati/Codigo/Python/KineViz/estudios.20250617153916.bak
+2025-06-17 15:39:16,613 - INFO - [kineviz.core.backup_manager] - Moving extracted items to live locations...
+2025-06-17 15:39:16,614 - INFO - [kineviz.core.backup_manager] - Restored DB from /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250617_153916/kineviz.db
+2025-06-17 15:39:16,614 - INFO - [kineviz.core.backup_manager] - Restored config from /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250617_153916/config.ini
+2025-06-17 15:39:16,614 - INFO - [kineviz.core.backup_manager] - Restored studies directory from /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250617_153916/estudios
+2025-06-17 15:39:16,614 - INFO - [kineviz.core.backup_manager] - Restoration successful. Cleaning up .bak files...
+2025-06-17 15:39:16,628 - INFO - [kineviz.core.backup_manager] - .bak files cleaned up.
+2025-06-17 15:39:16,628 - INFO - [kineviz.core.backup_manager] - Restoration process completed successfully.
+2025-06-17 15:39:16,628 - INFO - [kineviz.core.backup_manager] - Cleaned up temporary extraction directory: /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250617_153916
+2025-06-17 15:39:23,415 - INFO - [kineviz.ui.dialogs.config_dialog] - BackupRestoreDialog indicated a restart is required. Closing ConfigDialog and triggering app restart via MainWindow.
+2025-06-17 15:39:23,433 - INFO - [kineviz.ui.main_window] - MainWindow: Solicitud de reinicio de la aplicación recibida.
+2025-06-17 15:39:23,433 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 15:39:23,434 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:39:23,443 - INFO - [__main__] - Reinicio de KineViz solicitado.
+2025-06-17 15:39:23,455 - INFO - [__main__] - Reiniciando la aplicación...
+2025-06-17 15:39:23,455 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:39:23,485 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:39:23,485 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:39:23,486 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:39:23,486 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:42:49,146 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:42:50,434 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 2.0
+2025-06-17 15:42:50,435 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 20, 'normal')
+2025-06-17 15:43:33,296 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:43:34,426 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:43:34,427 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:44:23,164 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:44:23,164 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:44:23,548 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:44:23,548 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:44:23,549 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:44:23,552 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:44:34,980 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 2
+2025-06-17 15:44:34,995 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 15:44:34,995 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 15:44:34,995 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 15:44:36,452 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:44:36,452 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:44:43,339 - DEBUG - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Loaded VIs for study 2: [{'name': 'Edad', 'descriptors': ['Adulto', 'Joven', 'Mayor'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['OS', 'NP', 'BP'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-17 15:44:43,383 - DEBUG - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Cargados 0 análisis individuales para estudio 2.
+2025-06-17 15:47:59,852 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:47:59,853 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:48:00,057 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:48:00,057 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:48:00,058 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:48:00,061 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:48:32,651 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:48:32,652 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:48:32,839 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:48:32,839 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:48:32,840 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:48:32,841 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:49:01,563 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:49:01,563 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:49:01,730 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:49:01,730 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:49:01,731 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:49:01,732 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:49:08,343 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:49:08,344 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:49:08,518 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:49:08,518 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:49:08,519 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:49:08,520 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:49:20,371 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:49:20,371 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:49:20,552 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:49:20,552 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:49:20,553 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:49:20,554 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:49:37,860 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:49:37,860 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:49:38,024 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:49:38,024 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:49:38,025 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:49:38,027 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:49:50,715 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:49:50,715 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:49:50,888 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:49:50,888 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:49:50,889 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:49:50,890 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:49:55,147 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 2
+2025-06-17 15:49:55,169 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 15:49:55,170 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 15:49:55,170 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 15:50:04,234 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:50:05,405 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 15:50:05,406 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:50:45,872 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:50:45,872 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:50:46,058 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:50:46,058 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:50:46,059 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 15:50:46,062 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:51:07,441 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:51:07,442 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:51:07,616 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:51:07,616 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:51:07,617 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 15:51:07,619 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:51:41,404 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:51:41,404 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:51:41,593 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:51:41,593 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:51:41,594 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 15:51:41,596 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:51:50,185 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:51:50,185 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:51:50,342 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:51:50,342 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:51:50,343 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 15:51:50,345 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:51:58,298 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:51:59,446 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 15:51:59,447 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:52:03,998 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:52:05,028 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:52:05,029 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:52:35,682 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:52:35,682 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:52:35,863 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:52:35,863 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:52:35,864 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:52:35,866 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:53:01,983 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:53:03,019 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 15:53:03,019 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:53:32,377 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:53:32,378 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:53:32,562 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:53:32,562 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:53:32,563 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 15:53:32,565 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:53:53,364 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:53:53,364 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:53:53,556 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:53:53,556 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:53:53,557 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 15:53:53,559 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:54:10,082 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 15:54:10,083 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 15:54:12,605 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 15:54:12,605 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:54:19,099 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:54:20,661 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:54:20,662 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:54:28,484 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:54:29,459 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 15:54:29,460 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:54:38,734 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:54:40,182 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:54:40,183 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:55:14,503 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:55:14,503 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:55:14,705 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:55:14,705 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:55:14,706 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:55:14,709 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:55:19,450 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:55:20,464 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 15:55:20,465 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:55:36,468 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:55:37,852 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:55:37,852 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:55:52,050 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:55:52,050 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:55:52,232 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:55:52,232 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:55:52,233 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:55:52,235 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:56:04,097 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:56:04,097 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:56:04,266 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:56:04,266 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:56:04,267 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:56:04,268 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:56:16,600 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:56:16,600 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:56:16,780 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:56:16,780 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:56:16,781 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:56:16,783 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 15:56:40,811 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 2
+2025-06-17 15:56:40,836 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 15:56:40,836 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 15:56:40,836 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 15:56:56,266 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 15:56:56,267 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 15:56:56,451 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:56:56,451 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 15:56:56,452 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 15:56:56,454 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:00:52,298 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:00:52,298 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:00:52,668 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:00:52,668 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:00:52,670 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:00:52,673 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:03:28,756 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:03:28,756 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:03:28,950 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:03:28,950 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:03:28,950 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:03:28,953 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:03:53,249 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:03:53,249 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:03:53,503 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:03:53,503 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:03:53,504 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:03:53,505 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:04:27,100 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:04:27,100 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:04:27,284 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:04:27,284 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:04:27,286 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:04:27,287 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:04:52,870 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:04:52,871 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:04:53,044 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:04:53,044 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:04:53,045 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:04:53,046 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:05:06,872 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:05:06,872 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:05:07,050 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:05:07,050 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:05:07,051 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:05:07,053 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:12:28,922 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:12:28,923 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:12:29,136 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:12:29,136 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:12:29,137 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:12:29,140 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:13:10,624 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:13:10,624 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:13:10,812 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:13:10,812 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:13:10,813 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:13:10,815 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:13:43,975 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:13:43,975 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:13:44,168 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:13:44,168 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:13:44,169 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:13:44,172 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:13:53,034 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 2
+2025-06-17 16:13:53,052 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 16:13:53,052 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 16:13:53,052 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 16:14:36,184 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:14:36,186 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:14:46,957 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 16:14:46,957 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 16:14:46,957 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 16:14:50,396 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:14:50,396 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:14:55,961 - DEBUG - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Loaded VIs for study 2: [{'name': 'Edad', 'descriptors': ['Adulto', 'Joven', 'Mayor'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['OS', 'NP', 'BP'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-17 16:14:56,009 - DEBUG - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Cargados 0 análisis individuales para estudio 2.
+2025-06-17 16:15:09,606 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 16:15:09,607 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 16:15:09,607 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 16:15:43,453 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:15:44,807 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 16:15:44,808 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:16:21,963 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 2
+2025-06-17 16:16:21,983 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 16:16:21,983 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 16:16:21,983 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 16:17:41,462 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:17:41,462 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:17:41,666 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:17:41,666 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:17:41,667 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 16:17:41,669 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:17:56,919 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:17:56,919 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:17:57,089 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:17:57,090 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:17:57,091 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 16:17:57,092 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:18:36,177 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:18:36,178 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:18:36,348 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:18:36,348 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:18:36,349 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 16:18:36,350 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:18:54,897 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:18:54,897 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:18:55,068 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:18:55,068 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:18:55,069 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 16:18:55,070 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:19:25,218 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:19:25,218 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:19:25,387 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:19:25,387 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:19:25,388 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 16:19:25,389 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:19:44,379 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 2
+2025-06-17 16:19:44,400 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 16:19:44,401 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 16:19:44,401 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 16:19:53,519 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:19:56,246 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:19:56,247 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:20:00,820 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:20:02,111 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 2.0
+2025-06-17 16:20:02,111 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 20, 'normal')
+2025-06-17 16:20:16,407 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 2.0
+2025-06-17 16:20:16,409 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 20, 'normal')
+2025-06-17 16:20:35,001 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:20:36,391 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:20:36,392 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:21:10,052 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 16:21:10,053 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 16:21:14,452 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 2, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 16:21:14,452 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 16:21:15,603 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 16:21:15,603 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 16:21:17,218 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 2, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 16:21:17,218 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 16:21:18,584 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 16:21:18,584 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 16:21:19,535 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 2, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 16:21:19,535 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 16:21:21,035 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 16:21:21,036 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 16:21:35,850 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 2, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 16:21:35,851 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 16:21:51,108 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:21:51,109 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:22:17,824 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:22:17,825 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:22:18,742 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Pin' para estudio ID 2
+2025-06-17 16:22:18,746 - INFO - [kineviz.database.repositories] - Estado de pin para estudio ID 2 actualizado a False.
+2025-06-17 16:22:18,746 - INFO - [kineviz.core.services.study_service] - Estado de pin para estudio 2 cambiado a False.
+2025-06-17 16:22:18,746 - INFO - [kineviz.ui.views.main_view] - Estado de pin para estudio 2 cambiado.
+2025-06-17 16:22:19,316 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Pin' para estudio ID 8
+2025-06-17 16:22:19,319 - INFO - [kineviz.database.repositories] - Estado de pin para estudio ID 8 actualizado a True.
+2025-06-17 16:22:19,319 - INFO - [kineviz.core.services.study_service] - Estado de pin para estudio 8 cambiado a True.
+2025-06-17 16:22:19,319 - INFO - [kineviz.ui.views.main_view] - Estado de pin para estudio 8 cambiado.
+2025-06-17 16:22:27,929 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Comentar Seleccionado' para estudio ID 8
+2025-06-17 16:22:43,708 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:22:43,709 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:23:58,892 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:23:58,892 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:23:59,092 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:23:59,092 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:23:59,093 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:23:59,095 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:24:02,379 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 16:24:02,393 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 16:24:02,394 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 16:24:02,394 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 16:24:27,301 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Loaded VIs for study 8: [{'name': 'eeee', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-17 16:24:27,307 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Cargados 0 análisis continuos para estudio 8.
+2025-06-17 16:26:51,956 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:26:51,956 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:26:52,156 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:26:52,156 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:26:52,157 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:26:52,160 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:27:36,607 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:27:36,607 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:27:36,786 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:27:36,786 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:27:36,787 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:27:36,789 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:27:39,571 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 2
+2025-06-17 16:27:39,591 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 16:27:39,591 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 16:27:39,591 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 16:27:59,456 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:28:00,663 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 16:28:00,664 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:28:06,292 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:28:07,487 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:28:07,487 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:28:24,286 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:28:24,286 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:28:24,489 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:28:24,489 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:28:24,490 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:28:24,493 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:28:26,605 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 16:28:26,615 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 16:28:26,616 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 16:28:26,616 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 16:29:42,017 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:29:42,017 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:29:42,215 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:29:42,215 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:29:42,216 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:29:42,218 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 16:29:44,754 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 2
+2025-06-17 16:29:44,768 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 16:29:44,768 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 16:29:44,768 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 16:39:13,857 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:39:13,857 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:39:14,223 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:39:14,223 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:39:14,224 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:39:17,614 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 16:39:17,625 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 16:39:17,625 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 16:39:17,626 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 16:39:21,578 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Loaded VIs for study 8: [{'name': 'eeee', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-17 16:39:21,583 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Cargados 0 análisis continuos para estudio 8.
+2025-06-17 16:39:29,642 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:39:30,854 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 2.0
+2025-06-17 16:39:34,943 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 16:39:34,958 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 16:39:34,958 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 16:39:34,958 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 16:39:46,832 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Loaded VIs for study 8: [{'name': 'eeee', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-17 16:39:46,837 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Cargados 0 análisis continuos para estudio 8.
+2025-06-17 16:40:12,740 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 16:40:12,754 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 16:40:12,755 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 16:40:12,755 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 16:40:34,948 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 2.0
+2025-06-17 16:40:46,524 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:40:47,590 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:42:07,771 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:42:07,771 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:42:07,984 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:42:07,984 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:42:07,985 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:42:15,207 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 16:42:15,221 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 16:42:15,221 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 16:42:15,221 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 16:42:27,442 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Loaded VIs for study 8: [{'name': 'eeee', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-17 16:42:27,448 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Cargados 0 análisis continuos para estudio 8.
+2025-06-17 16:42:37,980 - INFO - [__main__] - KineViz cerrado normalmente.
+2025-06-17 16:42:37,980 - INFO - [__main__] - Saliendo de KineViz.
+2025-06-17 16:43:52,585 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:43:52,585 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:43:52,776 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:43:52,776 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:43:52,777 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:44:10,557 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:44:10,557 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:44:10,743 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:44:10,743 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:44:10,744 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:48:31,818 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:48:31,818 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:48:32,019 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:48:32,019 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:48:32,020 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:48:35,002 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 16:48:35,012 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 16:48:35,013 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 16:48:35,013 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 16:50:43,031 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:50:43,031 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:50:43,237 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:50:43,237 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:50:43,238 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:50:45,654 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 16:50:45,666 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 16:50:45,666 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 16:50:45,666 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 16:50:50,561 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Loaded VIs for study 8: [{'name': 'eeee', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-17 16:50:50,566 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Cargados 0 análisis continuos para estudio 8.
+2025-06-17 16:55:28,296 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:55:28,296 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:55:28,508 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:55:28,508 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:55:28,509 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:55:31,169 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 16:55:31,182 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 16:55:31,183 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 16:55:31,183 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 16:56:03,203 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:56:03,203 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:56:03,406 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:56:03,406 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:56:03,407 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 16:56:13,185 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:56:14,304 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 2.0
+2025-06-17 16:56:16,107 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 16:56:16,119 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 16:56:16,119 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 16:56:16,119 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 16:56:31,163 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Loaded VIs for study 8: [{'name': 'eeee', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-17 16:56:31,169 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Cargados 0 análisis continuos para estudio 8.
+2025-06-17 16:57:09,422 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 16:57:09,422 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 16:57:09,640 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:57:09,641 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:57:09,642 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 2.0
+2025-06-17 16:57:15,126 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 16:57:16,251 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 2.0
+2025-06-17 16:57:18,208 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 16:57:18,218 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 16:57:18,218 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 16:57:18,218 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 17:06:54,862 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 17:06:54,862 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 17:06:55,231 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:06:55,231 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:06:55,232 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 2.0
+2025-06-17 17:06:57,949 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 17:06:57,962 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 17:06:57,962 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 17:06:57,962 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 17:13:34,327 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 17:13:34,327 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 17:13:34,674 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:13:34,674 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:13:34,675 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 2.0
+2025-06-17 17:13:39,219 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:13:40,528 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-17 17:13:45,130 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 17:13:45,145 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 17:13:45,145 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 17:13:45,146 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 17:14:03,695 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Loaded VIs for study 8: [{'name': 'eeee', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-17 17:14:03,700 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Cargados 0 análisis continuos para estudio 8.
+2025-06-17 17:14:14,120 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:14:15,276 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 17:16:03,528 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 17:16:03,528 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 17:16:03,732 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:16:03,732 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:16:03,733 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 17:16:06,166 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 17:16:06,180 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 17:16:06,181 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 17:16:06,181 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 17:31:01,683 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 17:31:01,683 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 17:31:02,148 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:31:02,149 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:31:02,150 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 17:31:09,538 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:31:11,480 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 2.0
+2025-06-17 17:31:13,387 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 17:31:13,398 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 17:31:13,398 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 17:31:13,398 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 17:31:23,912 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Loaded VIs for study 8: [{'name': 'eeee', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-17 17:31:23,917 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Cargados 0 análisis continuos para estudio 8.
+2025-06-17 17:39:06,648 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 17:39:06,648 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 17:39:07,023 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:39:07,023 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:39:07,024 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 2.0
+2025-06-17 17:39:09,528 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 17:39:09,541 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 17:39:09,541 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 17:39:09,541 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 17:39:20,227 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Loaded VIs for study 8: [{'name': 'eeee', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-17 17:39:20,232 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Cargados 0 análisis continuos para estudio 8.
+2025-06-17 17:40:13,422 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 17:40:13,423 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 17:40:13,605 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:40:13,606 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:40:13,607 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 2.0
+2025-06-17 17:40:17,183 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 17:40:17,196 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 17:40:17,196 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 17:40:17,196 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 17:42:18,376 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 17:42:18,376 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 17:42:18,585 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:42:18,585 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:42:18,586 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 2.0
+2025-06-17 17:42:21,011 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 17:42:21,025 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 17:42:21,025 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 17:42:21,025 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 17:44:43,884 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 17:44:43,884 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 17:44:44,092 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:44:44,092 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:44:44,093 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 2.0
+2025-06-17 17:44:46,449 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 2
+2025-06-17 17:44:46,470 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 17:44:46,470 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 17:44:46,471 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 17:44:58,595 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Loaded VIs for study 2: [{'name': 'Edad', 'descriptors': ['Adulto', 'Joven', 'Mayor'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['OS', 'NP', 'BP'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-17 17:44:58,600 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Cargados 0 análisis continuos para estudio 2.
+2025-06-17 17:47:14,817 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 17:47:14,817 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 17:47:15,030 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:47:15,030 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:47:15,031 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 2.0
+2025-06-17 17:47:17,173 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 17:47:17,187 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 17:47:17,187 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 17:47:17,187 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 17:47:22,112 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Loaded VIs for study 8: [{'name': 'eeee', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-17 17:47:22,115 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Cargados 0 análisis continuos para estudio 8.
+2025-06-17 17:48:16,010 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 17:48:16,011 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 17:48:16,212 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:48:16,212 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:48:16,213 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 2.0
+2025-06-17 17:48:18,088 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 17:48:18,101 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 17:48:18,101 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 17:48:18,101 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 17:48:28,876 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Loaded VIs for study 8: [{'name': 'eeee', 'descriptors': ['CMJ', 'SJ'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-17 17:48:28,880 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Cargados 0 análisis continuos para estudio 8.
+2025-06-17 17:51:39,903 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 17:51:39,904 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 17:51:40,121 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:51:40,121 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:51:40,122 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 2.0
+2025-06-17 17:52:07,968 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 17:52:07,968 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 17:52:08,167 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:52:08,167 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:52:08,168 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 2.0
+2025-06-17 17:52:10,561 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 17:52:10,569 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 17:52:10,569 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 17:52:10,569 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 17:59:28,060 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 17:59:28,061 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 17:59:28,286 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:59:28,286 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 17:59:28,287 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 2.0
+2025-06-17 17:59:31,573 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 17:59:31,588 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 17:59:31,589 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 17:59:31,589 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 18:01:29,500 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 18:01:29,501 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 18:01:29,710 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 18:01:29,710 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 18:01:29,711 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 2.0
+2025-06-17 18:01:33,003 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 8
+2025-06-17 18:01:33,016 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 8
+2025-06-17 18:01:33,016 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 8: {}
+2025-06-17 18:01:33,016 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: CMJ, SJ'
+2025-06-17 18:01:55,658 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 18:01:55,659 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 18:07:27,806 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 18:07:27,806 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 18:07:28,010 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 18:07:28,010 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 18:07:28,010 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 2.0
+2025-06-17 18:07:30,316 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 2
+2025-06-17 18:07:30,332 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 18:07:30,332 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 18:07:30,333 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
