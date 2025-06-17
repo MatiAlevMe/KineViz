@@ -204,7 +204,7 @@ class BackupRestoreDialog(Toplevel):
         
         self.btn_assign_alias = ttk.Button(actions_row2_frame, text="Asignar/Editar Alias", command=self.assign_alias_action, state=tk.DISABLED)
         self.btn_assign_alias.grid(row=0, column=3, padx=5, sticky="e") # Rightmost in this row
-        Tooltip(self.btn_assign_alias, "Asigna o edita un alias descriptivo a una copia de seguridad manual seleccionada.", enabled=self.app_settings.enable_hover_tooltips)
+        Tooltip(self.btn_assign_alias, "Asigna o edita un alias descriptivo a la copia de seguridad seleccionada (manual o automática).", enabled=self.app_settings.enable_hover_tooltips)
 
         # --- Action Buttons Row 3 ---
         actions_row3_frame = ttk.Frame(main_frame)
@@ -386,8 +386,8 @@ class BackupRestoreDialog(Toplevel):
 
         is_manual = (backup_type_display == "Manual")
         
-        self.btn_restore.config(state=tk.NORMAL) # Restore can be done for any type
-        self.btn_assign_alias.config(state=tk.NORMAL if is_manual else tk.DISABLED)
+        self.btn_restore.config(state=tk.NORMAL)
+        self.btn_assign_alias.config(state=tk.NORMAL) # Alias can be assigned to any backup type
         self.btn_delete_manual.config(state=tk.NORMAL if is_manual else tk.DISABLED, style="Danger.TButton" if is_manual else "TButton")
 
 
@@ -407,7 +407,7 @@ class BackupRestoreDialog(Toplevel):
                 backup_path = backup_manager.create_backup(backup_manager.MANUAL_BACKUPS_SUBDIR)
                 if backup_path: # Backup was created successfully
                     if alias.strip(): # Only add alias if it's not empty
-                        backup_manager.add_manual_backup_alias(backup_path.name, alias.strip())
+                        backup_manager.add_backup_alias(backup_manager.MANUAL_BACKUPS_SUBDIR, backup_path.name, alias.strip())
                     messagebox.showinfo("Éxito", f"Copia de seguridad manual '{backup_path.name}' creada exitosamente.", parent=self)
                     self.load_backups()
                 else: # Backup creation failed or was prevented
@@ -497,12 +497,21 @@ class BackupRestoreDialog(Toplevel):
                 else: # Fallback if MainWindow instance is not directly accessible
                     logger.warning("Could not find trigger_app_restart on parent. User needs to restart manually.")
                     # Try to quit the main application root if possible
-                    if hasattr(self.parent_window, 'quit'): # If parent_window is the root
-                        self.parent_window.quit()
-                    elif hasattr(self.parent_window, 'master') and hasattr(self.parent_window.master, 'quit'):
-                        self.parent_window.master.quit()
-                    else: # Last resort
-                        self.destroy() # Close this dialog, user must close main app
+                    # Ensure this dialog is closed BEFORE attempting app restart
+                    dialog_parent = self.parent_window # Or self.master, self.parent, depending on Tkinter hierarchy
+                    self.destroy() # Close this dialog first
+
+                    if hasattr(dialog_parent, 'trigger_app_restart'): # If parent_window is MainWindow's root
+                         dialog_parent.trigger_app_restart()
+                    elif hasattr(dialog_parent, 'master') and hasattr(dialog_parent.master, 'trigger_app_restart'):
+                         dialog_parent.master.trigger_app_restart()
+                    else: # Fallback if MainWindow instance is not directly accessible
+                         logger.warning("Could not find trigger_app_restart on parent. User needs to restart manually.")
+                         # Attempt to quit the app if restart trigger is not found
+                         if hasattr(dialog_parent, 'quit'):
+                             dialog_parent.quit()
+                         elif hasattr(dialog_parent, 'master') and hasattr(dialog_parent.master, 'quit'):
+                             dialog_parent.master.quit()
             else:
                 messagebox.showerror("Error de Restauración", 
                                      "No se pudo restaurar el sistema desde la copia de seguridad.\n"
@@ -525,29 +534,28 @@ class BackupRestoreDialog(Toplevel):
 
         selected_values = self.tree.item(selected_item_id, "values")
         backup_type_display = selected_values[0]
-        current_alias = selected_values[2]
-        backup_filename = selected_values[3]
-
-        if backup_type_display != "Manual":
-            messagebox.showwarning("Tipo Inválido", "Solo se pueden asignar alias a copias de seguridad manuales.", parent=self)
-            return
+        current_alias = selected_values[2] # Alias is at index 2
+        backup_filename = selected_values[3] # Filename is at index 3
+        
+        # Determine internal backup type string (e.g., "automatic" or "manual")
+        backup_type_internal = backup_manager.AUTOMATIC_BACKUPS_SUBDIR if backup_type_display == "Automática" else backup_manager.MANUAL_BACKUPS_SUBDIR
 
         new_alias = simpledialog.askstring("Asignar/Editar Alias", 
-                                           f"Ingrese un nuevo alias para '{backup_filename}':\n(Deje vacío para quitar el alias actual)",
+                                           f"Ingrese un nuevo alias para la copia '{backup_filename}' ({backup_type_display}):\n(Deje vacío para quitar el alias actual)",
                                            initialvalue=current_alias,
                                            parent=self)
 
         if new_alias is not None: # User didn't cancel
             try:
                 if new_alias.strip():
-                    backup_manager.add_manual_backup_alias(backup_filename, new_alias.strip())
+                    backup_manager.add_backup_alias(backup_type_internal, backup_filename, new_alias.strip())
                     messagebox.showinfo("Éxito", f"Alias actualizado para '{backup_filename}'.", parent=self)
                 else: # Empty string means remove alias
-                    backup_manager.remove_manual_backup_alias(backup_filename)
+                    backup_manager.remove_backup_alias(backup_type_internal, backup_filename)
                     messagebox.showinfo("Éxito", f"Alias eliminado para '{backup_filename}'.", parent=self)
                 self.load_backups()
             except Exception as e:
-                logger.error(f"Error asignando alias a {backup_filename}: {e}", exc_info=True)
+                logger.error(f"Error asignando alias a {backup_type_internal}/{backup_filename}: {e}", exc_info=True)
                 messagebox.showerror("Error", f"Ocurrió un error al asignar el alias:\n{e}", parent=self)
 
 
