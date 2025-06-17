@@ -20,6 +20,7 @@ class Tooltip:
         if self.enabled:
             self.widget.bind("<Enter>", self._schedule_show_tooltip)
             self.widget.bind("<Leave>", self._schedule_hide_tooltip)
+            self.widget.bind("<Destroy>", self.destroy, add="+") # Add Destroy binding
         # Removing the ButtonPress binding on the widget to allow its own command to fire.
         # self.widget.bind("<ButtonPress>", self._hide_tooltip_now) 
 
@@ -102,3 +103,30 @@ class Tooltip:
         if self._id_hide:
             self.widget.after_cancel(self._id_hide)
             self._id_hide = None
+
+    def destroy(self, event=None):
+        """Cleans up the tooltip when the parent widget is destroyed."""
+        # Cancel any pending operations
+        self._cancel_tooltip_showing()
+        self._cancel_tooltip_hiding()
+
+        # Destroy the tooltip window if it exists
+        if self.tooltip_window:
+            try:
+                self.tooltip_window.destroy()
+            except tk.TclError: # Window might already be gone
+                pass
+            self.tooltip_window = None
+        
+        # Attempt to unbind, though widget might already be partially destroyed
+        if self.enabled:
+            try:
+                if self.widget.winfo_exists(): # Check if widget still exists
+                    self.widget.unbind("<Enter>")
+                    self.widget.unbind("<Leave>")
+                    self.widget.unbind("<Destroy>") # Unbind self to prevent multiple calls if somehow triggered
+            except tk.TclError:
+                pass # Widget is likely gone
+        
+        self.enabled = False # Mark as no longer active
+        self.widget = None # Clear reference to widget
