@@ -354,10 +354,15 @@ class ConfigDialog(Toplevel):
         
         manage_backups_frame = ttk.Frame(parent_frame)
         manage_backups_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10,5), sticky="w")
-        manage_backups_button = ttk.Button(manage_backups_frame, text="Gestionar Copias de Seguridad", command=self.open_backup_restore_dialog, style="Accent.TButton")
+        manage_backups_button = ttk.Button(
+            manage_backups_frame, 
+            text="Gestionar Copias de Seguridad", 
+            command=self.open_backup_restore_dialog, 
+            style="Accent.TButton",
+            font=get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale, weight="bold") # Set font in constructor
+        )
         manage_backups_button.pack(side=tk.LEFT, padx=(0,5))
-        # Apply font to button if style doesn't cover it
-        manage_backups_button.configure(font=get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale, weight="bold"))
+        # Removed: manage_backups_button.configure(font=...)
 
         manage_backups_long_text = "Abre una nueva ventana para crear, restaurar, renombrar y eliminar copias de seguridad manuales, y ver copias automáticas."
         manage_backups_short_text = "Gestionar copias de seguridad."
@@ -416,9 +421,15 @@ class ConfigDialog(Toplevel):
         # --- Botón Restaurar KineViz a Estado de Fábrica (visibilidad controlada) ---
         self.factory_reset_frame = ttk.Frame(parent_frame) 
         self.factory_reset_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10, 5), sticky="w")
-        factory_reset_button = ttk.Button(self.factory_reset_frame, text="Restaurar KineViz a Estado de Fábrica", command=self.trigger_factory_reset_callback, style="Danger.TButton")
+        factory_reset_button = ttk.Button(
+            self.factory_reset_frame, 
+            text="Restaurar KineViz a Estado de Fábrica", 
+            command=self.trigger_factory_reset_callback, 
+            style="Danger.TButton",
+            font=get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale, weight="bold") # Set font in constructor
+        )
         factory_reset_button.pack(side=tk.LEFT, padx=(0,5))
-        factory_reset_button.configure(font=get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale, weight="bold")) # Apply font
+        # Removed: factory_reset_button.configure(font=...)
         factory_reset_long_text = ("¡ADVERTENCIA! ESTA ACCIÓN ES IRREVERSIBLE.\n\n"
                                    "Restaurar KineViz a estado de fábrica eliminará TODA la información de la aplicación, incluyendo:\n"
                                    "- TODOS los estudios y sus archivos asociados.\n"
