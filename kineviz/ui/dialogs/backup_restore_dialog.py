@@ -524,7 +524,7 @@ class BackupRestoreDialog(Toplevel):
                                     parent=self)
                 self.load_backups() # Refresh list to show new backup
             else:
-                if not messagebox.askretrycancel("Error Pre-Restauración",
+                if not messagebox.askyesno("Error Pre-Restauración",
                                                  "No se pudo crear la copia de seguridad automática antes de la restauración.\n"
                                                  "¿Desea continuar con la restauración SIN esta copia de seguridad adicional?",
                                                  icon='error', parent=self):
