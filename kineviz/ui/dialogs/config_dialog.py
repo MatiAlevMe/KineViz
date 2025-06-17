@@ -339,9 +339,10 @@ class ConfigDialog(Toplevel):
         
         # --- Checkbox "Habilitar copia de seguridad automática al restaurar" ---
         # This goes under "Habilitar copias de seguridad automáticas"
-        self.backup_before_restore_frame = ttk.Frame(parent_frame) # Create it here
-        # Gridding is handled by _toggle_backup_options_visibility
-        
+        self.backup_before_restore_frame = ttk.Frame(parent_frame)
+        self.backup_before_restore_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", padx=(20,5), pady=(5,0))  # Añadido pady y alineación
+        row_idx += 1  # Incrementar el índice aquí para que manual_backup quede después
+
         bbr_cb = ttk.Checkbutton(
             self.backup_before_restore_frame,
             text="Crear copia automática antes de restaurar otra copia",
@@ -409,6 +410,7 @@ class ConfigDialog(Toplevel):
 
     def _toggle_backup_options_visibility(self, event=None):
         """Muestra u oculta las opciones de backup según los checkboxes de habilitación."""
+        bbr_cb = ttk.Checkbutton(
             self.backup_before_restore_frame,
             text="Crear copia automática antes de restaurar otra copia",
             variable=self.var_backup_before_restore
@@ -468,62 +470,7 @@ class ConfigDialog(Toplevel):
         # No column 1 needed if elements span or are packed left
         row_idx = 0
 
-        # --- Switch para mostrar/ocultar botón de Restauración de Fábrica ---
-        show_factory_reset_frame = ttk.Frame(parent_frame)
-        show_factory_reset_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10, 5), sticky="w")
-        show_factory_reset_cb = ttk.Checkbutton(
-            show_factory_reset_frame,
-            text="Mostrar opción de Restauración de Fábrica (Avanzado)",
-            variable=self.var_show_factory_reset,
-            command=self._toggle_factory_reset_visibility
-        )
-        show_factory_reset_cb.pack(side=tk.LEFT, padx=(0,5))
-        show_factory_reset_long_text = ("Activa o desactiva la visibilidad del botón 'Restaurar KineViz a Estado de Fábrica'.\n"
-                                        "Esta opción es peligrosa y está oculta por defecto para prevenir borrados accidentales.")
-        show_factory_reset_short_text = "Muestra/oculta botón de Restauración de Fábrica (Avanzado)."
-        show_factory_reset_help_btn = ttk.Button(show_factory_reset_frame, text="?", width=3, style="Help.TButton",
-                                                 command=lambda: self._show_input_help("Ayuda: Mostrar Restauración de Fábrica", show_factory_reset_long_text))
-        show_factory_reset_help_btn.pack(side=tk.LEFT)
-        Tooltip(show_factory_reset_help_btn, text=show_factory_reset_long_text, short_text=show_factory_reset_short_text, enabled=self.settings.enable_hover_tooltips)
-        row_idx += 1
-        
-        # --- Botón Restablecer Ajustes a Predeterminados ---
-        reset_settings_frame = ttk.Frame(parent_frame)
-        reset_settings_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10, 5), sticky="w")
-        reset_settings_button = ttk.Button(reset_settings_frame, text="Restablecer Ajustes a Predeterminados", command=self.reset_config_settings_to_default_action)
-        reset_settings_button.pack(side=tk.LEFT, padx=(0,5))
-        reset_settings_long_text = ("Revierte todas las configuraciones de la aplicación (opciones en todas las pestañas de esta ventana) "
-                                    "a sus valores originales de fábrica.\n"
-                                    "Esto NO afecta sus estudios, archivos, análisis ni copias de seguridad guardadas.\n"
-                                    "Los cambios se aplicarán inmediatamente y el diálogo se cerrará.")
-        reset_settings_short_text = "Revierte ajustes de la aplicación a predeterminados (no afecta datos)."
-        reset_settings_help_btn = ttk.Button(reset_settings_frame, text="?", width=3, style="Help.TButton",
-                                             command=lambda: self._show_input_help("Ayuda: Restablecer Ajustes a Predeterminados", reset_settings_long_text))
-        reset_settings_help_btn.pack(side=tk.LEFT)
-        Tooltip(reset_settings_help_btn, text=reset_settings_long_text, short_text=reset_settings_short_text, enabled=self.settings.enable_hover_tooltips)
-        row_idx += 1
-
-        # --- Botón Restaurar KineViz a Estado de Fábrica (visibilidad controlada) ---
-        self.factory_reset_frame = ttk.Frame(parent_frame) 
-        self.factory_reset_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10, 5), sticky="w")
-        factory_reset_button = ttk.Button(self.factory_reset_frame, text="Restaurar KineViz a Estado de Fábrica", command=self.trigger_factory_reset_callback, style="Danger.TButton")
-        factory_reset_button.pack(side=tk.LEFT, padx=(0,5))
-        factory_reset_long_text = ("¡ADVERTENCIA! ESTA ACCIÓN ES IRREVERSIBLE.\n\n"
-                                   "Restaurar KineViz a estado de fábrica eliminará TODA la información de la aplicación, incluyendo:\n"
-                                   "- TODOS los estudios y sus archivos asociados.\n"
-                                   "- TODOS los análisis guardados (discretos y continuos).\n"
-                                   "- La base de datos completa de KineViz.\n"
-                                   "- Todas las configuraciones personalizadas se revertirán a los valores iniciales.\n\n"
-                                   "La aplicación podría requerir un reinicio después de esta operación.\n"
-                                   "ÚSELA CON EXTREMA PRECAUCIÓN.")
-        factory_reset_short_text = "¡PELIGRO! Elimina TODOS los datos y estudios. Irreversible."
-        factory_reset_help_btn = ttk.Button(self.factory_reset_frame, text="?", width=3, style="Help.TButton",
-                                            command=lambda: self._show_input_help("Ayuda: Restaurar KineViz a Estado de Fábrica", factory_reset_long_text))
-        factory_reset_help_btn.pack(side=tk.LEFT)
-        Tooltip(factory_reset_help_btn, text=factory_reset_long_text, short_text=factory_reset_short_text, enabled=self.settings.enable_hover_tooltips)
-        row_idx += 1
-
-        # --- Switch para mostrar opciones avanzadas de backup ---
+        # --- Switch para mostrar opciones avanzadas de backup --- (NUEVO ORDEN: PRIMERO)
         show_adv_backup_frame = ttk.Frame(parent_frame)
         show_adv_backup_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10,5), sticky="w")
         show_adv_backup_cb = ttk.Checkbutton(
@@ -536,24 +483,80 @@ class ConfigDialog(Toplevel):
         show_adv_backup_long_text = "Muestra opciones adicionales para la gestión de copias de seguridad, como la limpieza de archivos .bak."
         show_adv_backup_short_text = "Opciones avanzadas de backup."
         show_adv_backup_help_btn = ttk.Button(show_adv_backup_frame, text="?", width=3, style="Help.TButton",
-                                              command=lambda: self._show_input_help("Ayuda: Opciones Avanzadas de Backup", show_adv_backup_long_text))
+                                            command=lambda: self._show_input_help("Ayuda: Opciones Avanzadas de Backup", show_adv_backup_long_text))
         show_adv_backup_help_btn.pack(side=tk.LEFT)
         Tooltip(show_adv_backup_help_btn, text=show_adv_backup_long_text, short_text=show_adv_backup_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
         # --- Botón Limpiar Archivos .bak (visibilidad controlada) ---
         self.clean_bak_files_frame = ttk.Frame(parent_frame)
-        self.clean_bak_files_frame.grid(row=row_idx, column=0, columnspan=2, pady=(5,5), sticky="w", padx=(20,0)) # Indent
+        self.clean_bak_files_frame.grid(row=row_idx, column=0, columnspan=2, pady=(5,10), sticky="w", padx=(20,0)) # Indent
         clean_bak_button = ttk.Button(self.clean_bak_files_frame, text="Limpiar Archivos .bak Residuales", command=self._clean_bak_files_action)
         clean_bak_button.pack(side=tk.LEFT, padx=(0,5))
         clean_bak_long_text = ("Elimina los archivos y carpetas con extensión '.bak' de la raíz del proyecto.\n"
-                               "Estos archivos se crean como medida de seguridad durante las restauraciones.\n"
-                               "Es seguro eliminarlos si la aplicación funciona correctamente y no necesita revertir una restauración fallida.")
+                            "Estos archivos se crean como medida de seguridad durante las restauraciones.\n"
+                            "Es seguro eliminarlos si la aplicación funciona correctamente y no necesita revertir una restauración fallida.")
         clean_bak_short_text = "Eliminar archivos .bak."
         clean_bak_help_btn = ttk.Button(self.clean_bak_files_frame, text="?", width=3, style="Help.TButton",
                                         command=lambda: self._show_input_help("Ayuda: Limpiar Archivos .bak", clean_bak_long_text))
         clean_bak_help_btn.pack(side=tk.LEFT)
         Tooltip(clean_bak_help_btn, text=clean_bak_long_text, short_text=clean_bak_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+
+        # --- Switch para mostrar/ocultar botón de Restauración de Fábrica --- (NUEVO ORDEN: DESPUÉS DE BACKUP)
+        show_factory_reset_frame = ttk.Frame(parent_frame)
+        show_factory_reset_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10,5), sticky="w")
+        show_factory_reset_cb = ttk.Checkbutton(
+            show_factory_reset_frame,
+            text="Mostrar opción de Restauración de Fábrica (Avanzado)",
+            variable=self.var_show_factory_reset,
+            command=self._toggle_factory_reset_visibility
+        )
+        show_factory_reset_cb.pack(side=tk.LEFT, padx=(0,5))
+        show_factory_reset_long_text = ("Activa o desactiva la visibilidad del botón 'Restaurar KineViz a Estado de Fábrica'.\n"
+                                        "Esta opción es peligrosa y está oculta por defecto para prevenir borrados accidentales.")
+        show_factory_reset_short_text = "Muestra/oculta botón de Restauración de Fábrica (Avanzado)."
+        show_factory_reset_help_btn = ttk.Button(show_factory_reset_frame, text="?", width=3, style="Help.TButton",
+                                                command=lambda: self._show_input_help("Ayuda: Mostrar Restauración de Fábrica", show_factory_reset_long_text))
+        show_factory_reset_help_btn.pack(side=tk.LEFT)
+        Tooltip(show_factory_reset_help_btn, text=show_factory_reset_long_text, short_text=show_factory_reset_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+        
+        # --- Botón Restablecer Ajustes a Predeterminados --- (NUEVO ORDEN: DESPUÉS DE MOSTRAR OPCIÓN)
+        reset_settings_frame = ttk.Frame(parent_frame)
+        reset_settings_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10,5), sticky="w")
+        reset_settings_button = ttk.Button(reset_settings_frame, text="Restablecer Ajustes a Predeterminados", command=self.reset_config_settings_to_default_action)
+        reset_settings_button.pack(side=tk.LEFT, padx=(0,5))
+        reset_settings_long_text = ("Revierte todas las configuraciones de la aplicación (opciones en todas las pestañas de esta ventana) "
+                                    "a sus valores originales de fábrica.\n"
+                                    "Esto NO afecta sus estudios, archivos, análisis ni copias de seguridad guardadas.\n"
+                                    "Los cambios se aplicarán inmediatamente y el diálogo se cerrará.")
+        reset_settings_short_text = "Revierte ajustes de la aplicación a predeterminados (no afecta datos)."
+        reset_settings_help_btn = ttk.Button(reset_settings_frame, text="?", width=3, style="Help.TButton",
+                                            command=lambda: self._show_input_help("Ayuda: Restablecer Ajustes a Predeterminados", reset_settings_long_text))
+        reset_settings_help_btn.pack(side=tk.LEFT)
+        Tooltip(reset_settings_help_btn, text=reset_settings_long_text, short_text=reset_settings_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+
+        # --- Botón Restaurar KineViz a Estado de Fábrica (visibilidad controlada) ---
+        self.factory_reset_frame = ttk.Frame(parent_frame) 
+        self.factory_reset_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10,5), sticky="w")
+        factory_reset_button = ttk.Button(self.factory_reset_frame, text="Restaurar KineViz a Estado de Fábrica", command=self.trigger_factory_reset_callback, style="Danger.TButton")
+        factory_reset_button.pack(side=tk.LEFT, padx=(0,5))
+        factory_reset_long_text = ("¡ADVERTENCIA! ESTA ACCIÓN ES IRREVERSIBLE.\n\n"
+                                "Restaurar KineViz a estado de fábrica eliminará TODA la información de la aplicación, incluyendo:\n"
+                                "- TODOS los estudios y sus archivos asociados.\n"
+                                "- TODOS los análisis guardados (discretos y continuos).\n"
+                                "- La base de datos completa de KineViz.\n"
+                                "- Todas las configuraciones personalizadas se revertirán a los valores iniciales.\n\n"
+                                "La aplicación podría requerir un reinicio después de esta operación.\n"
+                                "ÚSELA CON EXTREMA PRECAUCIÓN.")
+        factory_reset_short_text = "¡PELIGRO! Elimina TODOS los datos y estudios. Irreversible."
+        factory_reset_help_btn = ttk.Button(self.factory_reset_frame, text="?", width=3, style="Help.TButton",
+                                            command=lambda: self._show_input_help("Ayuda: Restaurar KineViz a Estado de Fábrica", factory_reset_long_text))
+        factory_reset_help_btn.pack(side=tk.LEFT)
+        Tooltip(factory_reset_help_btn, text=factory_reset_long_text, short_text=factory_reset_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
 
         # Ensure initial visibility is set
         self._toggle_factory_reset_visibility()
@@ -569,11 +572,31 @@ class ConfigDialog(Toplevel):
                 self.clean_bak_files_frame.grid_remove()
     
     def _clean_bak_files_action(self):
-        """Acción para limpiar archivos .bak."""
-        if messagebox.askokcancel("Confirmar Limpieza",
-                                 "¿Está seguro de que desea eliminar todos los archivos y carpetas '.bak' de la raíz del proyecto?\n"
-                                 "Esta acción no se puede deshacer.",
-                                 icon='warning', parent=self):
+        """Acción para limpiar archivos .bak con doble confirmación."""
+        # Primera confirmación
+        confirm1 = messagebox.askokcancel(
+            "Confirmar Limpieza - Paso 1 de 2",
+            "¿Está seguro de que desea eliminar todos los archivos y carpetas '.bak' de la raíz del proyecto?\n\n"
+            "Esta acción no se puede deshacer.",
+            icon='warning', 
+            parent=self
+        )
+        
+        if not confirm1:
+            return
+        
+        # Segunda confirmación (más enfática)
+        confirm2 = messagebox.askokcancel(
+            "Confirmar Limpieza - Paso 2 de 2",
+            "¡ADVERTENCIA FINAL!\n\n"
+            "Está a punto de eliminar permanentemente todos los archivos de respaldo (.bak).\n"
+            "Esta acción es IRREVERSIBLE y podría afectar su capacidad para restaurar datos.\n\n"
+            "¿Está ABSOLUTAMENTE SEGURO de que desea proceder con la limpieza?",
+            icon='error',
+            parent=self
+        )
+        
+        if confirm2:    
             try:
                 # This method will need to be added to backup_manager
                 deleted_count, error_count = backup_manager.cleanup_bak_files() 
