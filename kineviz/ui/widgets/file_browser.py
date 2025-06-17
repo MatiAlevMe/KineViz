@@ -33,10 +33,15 @@ class FileBrowser(ttk.Frame):
 
         self.create_widgets()
         self.load_files() # Carga inicial
+        self.update_font_scaling()
 
     def create_widgets(self):
         # --- Frame para Filtros y Búsqueda ---
-        filter_frame = ttk.Frame(self)
+        # Asegurar estilos en la ventana principal
+        self.configure(style='TFrame')
+
+        # Frame para Filtros
+        filter_frame = ttk.Frame(self, style='TFrame')
         filter_frame.pack(fill=tk.X, pady=(0, 5))
 
         # Búsqueda
@@ -48,16 +53,18 @@ class FileBrowser(ttk.Frame):
 
         # Filtro Tipo
         ttk.Label(filter_frame, text="Tipo:").pack(side=tk.LEFT, padx=(10, 5))
-        type_options = ["Todos", "Processed", "Original"]
-        type_menu = ttk.OptionMenu(filter_frame, self.filter_type_var, type_options[0], *type_options)
-        type_menu.pack(side=tk.LEFT, padx=5)
+        type_options = ["Todos", "Procesados", "Original"]
+        self.type_menu = ttk.Combobox(filter_frame, textvariable=self.filter_type_var, values=type_options, state="readonly", style='TCombobox')
+        self.type_menu.set(type_options[0])  # Establecer el valor por defecto
+        self.type_menu.pack(side=tk.LEFT, padx=5)
 
         # Filtro Tipo de Dato
         ttk.Label(filter_frame, text="Tipo de Dato:").pack(side=tk.LEFT, padx=(10, 5))
         freq_options = ["Todos", "Cinematica", "Cinetica", "Electromiografica", "N/A"]
-        freq_menu = ttk.OptionMenu(filter_frame, self.filter_freq_var, freq_options[0], *freq_options)
-        freq_menu.pack(side=tk.LEFT, padx=5)
-
+        self.freq_menu = ttk.Combobox(filter_frame, textvariable=self.filter_freq_var, values=freq_options, state="readonly", style="TCombobox")
+        self.freq_menu.set(freq_options[0])  # Establecer el valor por defecto
+        self.freq_menu.pack(side=tk.LEFT, padx=5)
+        
         # Botones de Filtro
         apply_button = ttk.Button(filter_frame, text="Aplicar", command=self.apply_filters)
         apply_button.pack(side=tk.LEFT, padx=5)
@@ -70,7 +77,6 @@ class FileBrowser(ttk.Frame):
         refresh_button = ttk.Button(filter_frame, text="Refrescar", command=self.load_files)
         refresh_button.pack(side=tk.LEFT, padx=5)
         Tooltip(refresh_button, text="Recargar la lista de archivos del estudio.", short_text="Recargar lista.", enabled=self.settings.enable_hover_tooltips if self.settings else False)
-
 
         # --- Tabla de Archivos ---
         # Crear tabla de archivos directamente en self (FileBrowser frame)
@@ -89,18 +95,19 @@ class FileBrowser(ttk.Frame):
         self.tree.bind('<ButtonRelease-1>', self.on_tree_click)
         self.tree.bind('<<TreeviewSelect>>', self._on_fb_selection_change)
 
-
         # --- Frame para Paginación ---
         # If a custom parent is provided for pagination, use it. Otherwise, pack locally.
         if self.pagination_parent:
-            self.pagination_frame = ttk.Frame(self.pagination_parent)
-            # Packing of self.pagination_frame is handled by the parent if external.
-            # However, if it's a direct child of pagination_parent, it needs packing here.
-            self.pagination_frame.pack(fill=tk.X, pady=(5, 0)) 
-        else:
             # If pagination is internal, pack it after the tree.
             self.pagination_frame = ttk.Frame(self)
             self.pagination_frame.pack(side=tk.TOP, fill=tk.X, pady=(5, 0), padx=5)
+
+        # Apply styles to comboboxes
+        # self.type_menu.bind("<Enter>", lambda event: self.type_menu.configure(style='Hover.TCombobox'))
+        # self.type_menu.bind("<Leave>", lambda event: self.type_menu.configure(style='TCombobox'))
+
+        # self.freq_menu.bind("<Enter>", lambda event: self.freq_menu.configure(style='Hover.TCombobox'))
+        # self.freq_menu.bind("<Leave>", lambda event: self.freq_menu.configure(style='TCombobox'))
 
     def load_files(self):
         """Carga los archivos filtrados y paginados usando FileService."""
@@ -310,3 +317,25 @@ class FileBrowser(ttk.Frame):
                 messagebox.showerror("Error al Eliminar", f"No se pudo eliminar el archivo:\n{e}", parent=self)
                 # import traceback # Ya no es necesario
                 # traceback.print_exc() # Reemplazado por logger
+    def update_font_scaling(self):
+        if self.settings:
+            scaled_font_tuple = get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale)
+            style = ttk.Style()
+
+            # Update the font of the Treeview
+            style.configure('Treeview.Heading', font=scaled_font_tuple)
+            style.configure('Treeview', font=scaled_font_tuple)
+
+            # Update the font of the TCombobox style
+            style.configure('TCombobox', font=scaled_font_tuple)
+
+            # Update the instances of Combobox
+            self.type_menu.configure(font=scaled_font_tuple)
+            self.freq_menu.configure(font=scaled_font_tuple)
+
+            # Update the font of the dropdown list (Listbox)
+            font_string = f"{scaled_font_tuple[0]} {scaled_font_tuple[1]} {scaled_font_tuple[2]}"
+
+            # Use self.master to refer to the root window
+            self.type_menu.master.option_add("*TCombobox*Listbox.font", font_string)
+            self.freq_menu.master.option_add("*TCombobox*Listbox.font", font_string)

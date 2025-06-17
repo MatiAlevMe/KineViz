@@ -21,7 +21,7 @@ THEMES = {
         "disabled_fg": "#A3A3A3",
         "select_bg": "#0078D7",  # Blue selection
         "select_fg": "#FFFFFF",
-        "treeview_heading_bg": "#E1E1E1",
+        "treeview_heading_bg": "#3078E4",
         "tooltip_bg": "#FFFFE0", # Light yellow for tooltips
         "tooltip_fg": "#000000",
         "danger_bg": "#FF0000", # Red for danger buttons
@@ -34,6 +34,9 @@ THEMES = {
         "celeste_fg": "#000000",
         "hover_bg": "#000000",  # Blanco (background se ilumina en azul)
         "hover_text": "#F0F0F0",  # Blanco (texto cambia a blanco)
+        "treeview_heading_hover_bg": "#F0F0F0",
+        "treeview_heading_hover_text": "#252526",
+        "dropdown_arrow": "#E92222",
     },
     "Oscuro": { # Renamed from "Dark"
         "bg": "#252526",  # Dark gray
@@ -45,7 +48,7 @@ THEMES = {
         "disabled_fg": "#6A6A6A",
         "select_bg": "#007ACC",  # Brighter blue for selection
         "select_fg": "#FFFFFF",
-        "treeview_heading_bg": "#3E3E3E",
+        "treeview_heading_bg": "#830808",
         "tooltip_bg": "#3E3E3E",
         "tooltip_fg": "#F1F1F1",
         "danger_bg": "#CF6679", # Darker red for danger
@@ -58,6 +61,9 @@ THEMES = {
         "celeste_fg": "#DADADA",
         "hover_bg": "#DADADA",  # Blanco (background se ilumina en azul)
         "hover_text": "#252526",  # Negro (texto cambia a negro)
+        "treeview_heading_hover_bg": "#252526",
+        "treeview_heading_hover_text": "#F0F0F0",
+        "dropdown_arrow": "#E92222",
     }
 }
 
@@ -150,7 +156,7 @@ def apply_theme_and_font(root: tk.Tk, style: ttk.Style, theme_name: str, font_sc
 
 
     # --- Entry and Combobox Styles ---
-    # Scaled padding for Entry and Combobox
+    # (Esta sección controla el padding escalado para Entry y Combobox)
     base_padding_x = 3
     base_padding_y = 2
     # Moderate the scaling of padding so it doesn't grow excessively
@@ -168,42 +174,41 @@ def apply_theme_and_font(root: tk.Tk, style: ttk.Style, theme_name: str, font_sc
               foreground=[('disabled', colors['disabled_fg'])],
               fieldbackground=[('disabled', colors['bg'])])
 
+    # Configuración PRINCIPAL del Combobox (controla el widget visible)
     style.configure('TCombobox',
-                    fieldbackground=colors['widget_bg'],
-                    foreground=colors['widget_fg'],
-                    selectbackground=colors['select_bg'], # Background of selected item in dropdown
-                    selectforeground=colors['select_fg'], # Foreground of selected item in dropdown
-                    arrowcolor=colors['fg'],
-                    font=get_scaled_font(DEFAULT_FONT_SIZE, font_scale),
-                    padding=(scaled_padding_x, scaled_padding_y))
+                    fieldbackground=colors['widget_bg'],  # Fondo del campo de texto
+                    foreground=colors['widget_fg'],       # Color del texto
+                    selectbackground=colors['select_bg'], # Fondo del texto seleccionado EN EL DROPDOWN
+                    selectforeground=colors['select_fg'], # Color del texto seleccionado EN EL DROPDOWN
+                    arrowcolor=colors['dropdown_arrow'],              # Color de la flecha del dropdown
+                    font=get_scaled_font(DEFAULT_FONT_SIZE, font_scale), # Fuente del texto
+                    padding=(scaled_padding_x, scaled_padding_y)) # Padding interno
+
+    # Estados del Combobox (disabled)
     style.map('TCombobox',
         foreground=[('disabled', colors['disabled_fg'])],
-        fieldbackground=[('disabled', colors['bg'])],
-        # To theme the dropdown list itself (usually handled by OS or needs Toplevel theming)
-        # 'popdown.background': [('!disabled', colors['widget_bg'])], # This might not work directly
-    )
-    # For Combobox dropdown list. These are global settings.
-    # It's important that these are applied after the theme_use, as some themes might override them.
-    # Also, these settings apply to *all* Listbox widgets used by Comboboxes.
+        fieldbackground=[('disabled', colors['bg'])])
+
+    # Configuración CRÍTICA del DROPDOWN (Listbox)
     try:
-        # Using a tkFont.Font object to get its string representation might be more robust for option_add
+        # 1. Configuración de la FUENTE del dropdown
         tk_scaled_listbox_font = get_font_object(DEFAULT_FONT_SIZE, font_scale)
         font_string_for_option_add = tk_scaled_listbox_font.actual() 
-        # Example: font_string_for_option_add might be {'family': 'Helvetica', 'size': 12, 'weight': 'normal', 'slant': 'roman', 'underline': 0, 'overstrike': 0}
-        # Or sometimes it's a simpler string like "Helvetica 12 normal". Tk can be picky.
-        # For safety, we can construct a simple name string if actual() gives a dict.
+        
         if isinstance(font_string_for_option_add, dict):
-            font_tuple = (font_string_for_option_add['family'], font_string_for_option_add['size'], font_string_for_option_add['weight'])
-            logger.debug(f"Using font tuple for TCombobox*Listbox.font: {font_tuple}")
+            font_tuple = (font_string_for_option_add['family'], 
+                        font_string_for_option_add['size'], 
+                        font_string_for_option_add['weight'])
             root.option_add('*TCombobox*Listbox.font', font_tuple)
-        else: # If it's already a string like "Helvetica 12 normal"
-            logger.debug(f"Using font string for TCombobox*Listbox.font: {font_string_for_option_add}")
+        else:
             root.option_add('*TCombobox*Listbox.font', font_string_for_option_add)
 
-        root.option_add('*TCombobox*Listbox.background', colors['widget_bg'])
-        root.option_add('*TCombobox*Listbox.foreground', colors['widget_fg'])
-        root.option_add('*TCombobox*Listbox.selectBackground', colors['select_bg'])
-        root.option_add('*TCombobox*Listbox.selectForeground', colors['select_fg'])
+        # 2. Configuración de COLORES del dropdown
+        root.option_add('*TCombobox*Listbox.background', colors['widget_bg'])  # Fondo de la lista
+        root.option_add('*TCombobox*Listbox.foreground', colors['widget_fg']) # Texto de los ítems
+        root.option_add('*TCombobox*Listbox.selectBackground', colors['select_bg']) # Ítem seleccionado
+        root.option_add('*TCombobox*Listbox.selectForeground', colors['select_fg']) # Texto seleccionado
+        
     except Exception as e:
         logger.warning(f"Could not apply global TCombobox Listbox styles: {e}")
 
@@ -223,6 +228,10 @@ def apply_theme_and_font(root: tk.Tk, style: ttk.Style, theme_name: str, font_sc
                     foreground=colors['fg'],
                     font=get_scaled_font(TREEVIEW_HEADING_FONT_SIZE, font_scale, weight="bold"),
                     relief='raised')
+    
+    style.map('Treeview.Heading',
+              background=[('active', colors['treeview_heading_hover_bg'])],
+              foreground=[('active', colors['treeview_heading_hover_text'])])
 
     # Adjust Treeview row height based on font size
     treeview_font_obj = get_font_object(DEFAULT_FONT_SIZE, font_scale)
@@ -303,6 +312,15 @@ def apply_theme_and_font(root: tk.Tk, style: ttk.Style, theme_name: str, font_sc
     style.map("TRadiobutton",
               indicatorbackground=[('selected', colors['select_bg']), ('active', colors['widget_bg'])],
               foreground=[('disabled', colors['disabled_fg'])])
+
+    style.configure('Hover.TCombobox',
+                    fieldbackground=colors['hover_bg'],  # Fondo del campo de texto
+                    foreground=colors['hover_text'],       # Color del texto
+                    selectbackground=colors['select_bg'], # Fondo del texto seleccionado EN EL DROPDOWN
+                    selectforeground=colors['select_fg'], # Color del texto seleccionado EN EL DROPDOWN
+                    arrowcolor=colors['dropdown_arrow'],              # Color de la flecha del dropdown
+                    font=get_scaled_font(DEFAULT_FONT_SIZE, font_scale), # Fuente del texto
+                    padding=(scaled_padding_x, scaled_padding_y)) # Padding interno
 
 # Logger for this module (add if not present)
 import logging
