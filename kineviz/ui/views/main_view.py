@@ -22,6 +22,7 @@ class MainView:
         # Variables de estado
         self.current_page = 1
         self.search_term = tk.StringVar()
+        self.search_field_var = tk.StringVar(value="Nombre de Estudio") # Para el dropdown de búsqueda
         self.total_pages = 1
 
         # Crear la interfaz de usuario
@@ -37,8 +38,13 @@ class MainView:
 
         # --- Bottom Fixed Frames (created here, populated by create_ui_content or methods) ---
         # Order of packing matters for side=tk.BOTTOM
-        self.bottom_buttons_container = ttk.Frame(self.frame) # For "Eliminar Todos", "Eliminar Seleccionados", "Crear Nuevo"
-        self.bottom_buttons_container.pack(side=tk.BOTTOM, fill=tk.X, pady=(10, 0)) # pady top
+        # Row 2 of bottom buttons (Delete All, Delete Selected, Create New)
+        self.bottom_buttons_row2_container = ttk.Frame(self.frame)
+        self.bottom_buttons_row2_container.pack(side=tk.BOTTOM, fill=tk.X, pady=(5, 0))
+
+        # Row 1 of bottom buttons (View, Comment, Edit)
+        self.bottom_buttons_row1_container = ttk.Frame(self.frame)
+        self.bottom_buttons_row1_container.pack(side=tk.BOTTOM, fill=tk.X, pady=(5,0))
 
         self.pagination_container = ttk.Frame(self.frame) # For pagination controls
         self.pagination_container.pack(side=tk.BOTTOM, fill=tk.X, pady=(5,0))
@@ -119,8 +125,14 @@ class MainView:
         search_entry = ttk.Entry(self.search_content_frame, textvariable=self.search_term, font=scaled_font_tuple) # Added font
         search_entry.bind("<Return>", lambda event: self.search_studies())
         
+        # Search field dropdown
+        search_field_options = ["Nombre de Estudio", "Comentario"]
+        self.search_field_combo = ttk.Combobox(self.search_content_frame, textvariable=self.search_field_var, values=search_field_options, state="readonly", width=18, font=scaled_font_tuple)
+        self.search_field_combo.set("Nombre de Estudio") # Default value
+        Tooltip(self.search_field_combo, text="Seleccionar campo para la búsqueda.", short_text="Campo de búsqueda.", enabled=self.main_window.settings.enable_hover_tooltips)
+
         search_button = ttk.Button(self.search_content_frame, text="Buscar", command=self.search_studies)
-        Tooltip(search_button, text="Buscar estudios por nombre.", short_text="Buscar estudios.", enabled=self.main_window.settings.enable_hover_tooltips)
+        Tooltip(search_button, text="Buscar estudios por el campo y término seleccionados.", short_text="Buscar estudios.", enabled=self.main_window.settings.enable_hover_tooltips)
 
         clear_button = ttk.Button(self.search_content_frame, text="Limpiar", command=self.clear_search)
         Tooltip(clear_button, text="Limpiar el término de búsqueda y mostrar todos los estudios.", short_text="Limpiar búsqueda.", enabled=self.main_window.settings.enable_hover_tooltips)
@@ -128,52 +140,43 @@ class MainView:
         refresh_button = ttk.Button(self.search_content_frame, text="Refrescar", command=self.load_studies)
         Tooltip(refresh_button, text="Recargar la lista de estudios desde la base de datos.", short_text="Recargar lista.", enabled=self.main_window.settings.enable_hover_tooltips)
         
-        # "?" (MainView Help) button, moved back to this row.
         main_view_help_button = ttk.Button(self.search_content_frame, text="?", width=3,
                                            style="Help.TButton", command=self._show_main_view_help)
         main_view_tooltip_text = "Mostrar ayuda para la ventana principal de estudios."
         Tooltip(main_view_help_button, text=main_view_tooltip_text, short_text=main_view_tooltip_text, enabled=self.main_window.settings.enable_hover_tooltips)
 
-        # Corrected packing order for search elements:
-        # Left side (fixed width for search_entry):
-        search_entry.config(width=20) # Reduced width from 30 to 20
-        search_entry.pack(side=tk.LEFT, padx=(0,5)) # Removed fill=tk.X, expand=True
-        search_button.pack(side=tk.LEFT, padx=(0,10))
+        # Packing order for search elements:
+        search_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True) # Entry takes available space
+        self.search_field_combo.pack(side=tk.LEFT, padx=(0,5))
+        search_button.pack(side=tk.LEFT, padx=(0,5))
         
         # Spacer to push right-aligned buttons to the right
         spacer_frame = ttk.Frame(self.search_content_frame)
-        spacer_frame.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        spacer_frame.pack(side=tk.LEFT, fill=tk.X, expand=True) # This spacer might not be needed if search_entry expands
 
         # Right side (packed in reverse visual order for right alignment)
-        # "?" button is packed first to be the rightmost
         main_view_help_button.pack(side=tk.RIGHT, padx=(0,0)) 
         refresh_button.pack(side=tk.RIGHT, padx=(0,5)) 
         clear_button.pack(side=tk.RIGHT, padx=(0,5))
+
 
         # --- Tabla de Estudios (inside self.scrollable_frame_content) ---
         table_frame = ttk.Frame(self.scrollable_frame_content)
         table_frame.pack(fill=tk.BOTH, expand=True)
 
-        columns = ('Pin', 'Nombre', 'Comentar', 'Ver', 'Editar', 'Eliminar')
-        # Use estudios_por_pagina from main_window settings for Treeview height
+        columns = ('Pin', 'Nombre', 'Comentario') # Removed Ver, Editar, Eliminar
         tree_height = self.main_window.settings.studies_per_page
         self.tree = ttk.Treeview(table_frame, columns=columns, show='headings', style='Treeview', selectmode="extended", height=tree_height)
 
         # Configurar cabeceras
         self.tree.heading('Pin', text='Pin', anchor='center')
         self.tree.heading('Nombre', text='Nombre del Estudio')
-        self.tree.heading('Comentar', text='Comentar', anchor='center') # Cabecera para Comentar
-        self.tree.heading('Ver', text='Ver', anchor='center')
-        self.tree.heading('Editar', text='Editar', anchor='center')
-        self.tree.heading('Eliminar', text='Eliminar', anchor='center')
+        self.tree.heading('Comentario', text='Comentario') # Changed anchor
 
-        # Configurar ancho de columnas (ajustar según necesidad)
+        # Configurar ancho de columnas
         self.tree.column('Pin', width=50, anchor='center', stretch=tk.NO)
-        self.tree.column('Nombre', width=300, stretch=tk.YES) # Ajustar ancho de Nombre
-        self.tree.column('Comentar', width=90, anchor='center', stretch=tk.NO) # Ancho para Comentar
-        self.tree.column('Ver', width=80, anchor='center', stretch=tk.NO)
-        self.tree.column('Editar', width=80, anchor='center', stretch=tk.NO)
-        self.tree.column('Eliminar', width=80, anchor='center', stretch=tk.NO)
+        self.tree.column('Nombre', width=300, stretch=tk.YES)
+        self.tree.column('Comentario', width=300, stretch=tk.YES) # Allow comment to stretch
 
         # Treeview's own scrollbars are removed as the main canvas scrollbars will handle it.
         self.tree.grid(row=0, column=0, sticky='nsew')
@@ -190,24 +193,44 @@ class MainView:
         # --- Paginación (widgets go into self.pagination_container) ---
         # This is populated by self.update_pagination_controls()
 
-        # --- Bottom Buttons (widgets go into self.bottom_buttons_container) ---
-        delete_all_button = ttk.Button(self.bottom_buttons_container, text='Eliminar Todos los Estudios',
+        # --- Bottom Buttons Row 1 (View, Comment | Edit) ---
+        self.view_selected_button = ttk.Button(self.bottom_buttons_row1_container, text='Ver Estudio Seleccionado',
+                                                command=self._view_selected_study, state=tk.DISABLED)
+        self.view_selected_button.pack(side=tk.LEFT, padx=(0, 5))
+        Tooltip(self.view_selected_button, text="Ver los detalles del estudio seleccionado (solo 1 selección).", short_text="Ver seleccionado.", enabled=self.main_window.settings.enable_hover_tooltips)
+
+        self.comment_selected_button = ttk.Button(self.bottom_buttons_row1_container, text='Comentar Estudio Seleccionado',
+                                                   command=self._comment_selected_study, state=tk.DISABLED)
+        self.comment_selected_button.pack(side=tk.LEFT, padx=(0, 5))
+        Tooltip(self.comment_selected_button, text="Añadir o editar el comentario del estudio seleccionado (solo 1 selección).", short_text="Comentar seleccionado.", enabled=self.main_window.settings.enable_hover_tooltips)
+        
+        # Spacer for Row 1
+        ttk.Frame(self.bottom_buttons_row1_container).pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+        self.edit_selected_button = ttk.Button(self.bottom_buttons_row1_container, text='Editar Estudio Seleccionado',
+                                                command=self._edit_selected_study, state=tk.DISABLED)
+        self.edit_selected_button.pack(side=tk.RIGHT, padx=(0,0))
+        Tooltip(self.edit_selected_button, text="Editar los metadatos del estudio seleccionado (solo 1 selección).", short_text="Editar seleccionado.", enabled=self.main_window.settings.enable_hover_tooltips)
+
+
+        # --- Bottom Buttons Row 2 (Delete All, Delete Selected | Create New) ---
+        delete_all_button = ttk.Button(self.bottom_buttons_row2_container, text='Eliminar Todos los Estudios',
                                        command=self._confirm_delete_all_studies, style="Danger.TButton")
         delete_all_button.pack(side=tk.LEFT, padx=(0, 5))
         Tooltip(delete_all_button, text="Eliminar TODOS los estudios y sus datos asociados. ¡Acción irreversible!", short_text="Eliminar todo.", enabled=self.main_window.settings.enable_hover_tooltips)
 
-        self.delete_selected_button = ttk.Button(self.bottom_buttons_container, text='Eliminar Seleccionado(s)',
+        self.delete_selected_button = ttk.Button(self.bottom_buttons_row2_container, text='Eliminar Seleccionado(s)',
                                                  command=self._confirm_delete_selected_studies, style="Danger.TButton", state=tk.DISABLED)
         self.delete_selected_button.pack(side=tk.LEFT, padx=(0, 10))
         Tooltip(self.delete_selected_button, text="Eliminar los estudios seleccionados en la tabla y sus datos asociados.", short_text="Eliminar selección.", enabled=self.main_window.settings.enable_hover_tooltips)
 
-        # Estilo Danger.TButton se asume configurado globalmente
-        create_study_button = ttk.Button(self.bottom_buttons_container, text='Crear Nuevo Estudio',
-                                         command=lambda: self.main_window.show_create_study_dialog(study_to_edit=None), style="Celeste.TButton")
-        create_study_button.pack(side=tk.RIGHT)
-        Tooltip(create_study_button, text="Abrir diálogo para crear un nuevo estudio.", short_text="Nuevo estudio.", enabled=self.main_window.settings.enable_hover_tooltips)
+        # Spacer for Row 2
+        ttk.Frame(self.bottom_buttons_row2_container).pack(side=tk.LEFT, fill=tk.X, expand=True)
         
-        # "?" (MainView Help) button was moved to the search bar area.
+        create_study_button = ttk.Button(self.bottom_buttons_row2_container, text='Crear Nuevo Estudio',
+                                         command=lambda: self.main_window.show_create_study_dialog(study_to_edit=None), style="Celeste.TButton")
+        create_study_button.pack(side=tk.RIGHT, padx=(0,0))
+        Tooltip(create_study_button, text="Abrir diálogo para crear un nuevo estudio.", short_text="Nuevo estudio.", enabled=self.main_window.settings.enable_hover_tooltips)
 
     def _confirm_delete_selected_studies(self):
         """Muestra confirmación y luego elimina los estudios seleccionados."""
@@ -258,35 +281,34 @@ class MainView:
             # Obtener estudios paginados y filtrados
             studies_per_page = self.main_window.estudios_por_pagina
             search_query = self.search_term.get() if self.search_term.get() else None
+            search_field_selected = self.search_field_var.get()
 
             studies = self.study_service.get_studies_paginated(
                 page=self.current_page,
                 per_page=studies_per_page,
-                search_term=search_query
+                search_term=search_query,
+                search_field=search_field_selected # Pass search field
             )
-            total_studies = self.study_service.get_total_studies_count(search_term=search_query)
+            total_studies = self.study_service.get_total_studies_count(search_term=search_query, search_field=search_field_selected)
             self.total_pages = (total_studies // studies_per_page) + (1 if total_studies % studies_per_page else 0)
             self.total_pages = max(1, self.total_pages) # Asegurar al menos 1 página
 
             # Llenar tabla
             for study in studies:
-                # Verificar si la carpeta del estudio existe (opcional pero bueno para consistencia)
                 study_folder_path = Path("estudios") / study['name']
                 if not study_folder_path.exists():
                     logger.warning(f"Carpeta no encontrada para el estudio '{study['name']}' (ID: {study['id']}). El registro puede estar desincronizado.")
-                    # Podríamos eliminar el estudio aquí o marcarlo visualmente
-                    # self.study_service.delete_study(study['id']) # ¡Cuidado con esto!
-                    # continue # Omitir estudio sin carpeta
                 
                 pin_char = "📌" if study.get('is_pinned') else ""
-
+                
+                comment_snippet = study.get('comentario', '') or ""
+                if len(comment_snippet) > 75: # Max length for snippet
+                    comment_snippet = comment_snippet[:72] + "..."
+                
                 self.tree.insert('', tk.END, values=(
                     pin_char,
                     study['name'],
-                    'Comentar', # Texto para el botón Comentar
-                    'Ver',      # Texto para el botón Ver
-                    'Editar',   # Texto para el botón Editar
-                    'Eliminar'  # Texto para el botón Eliminar
+                    comment_snippet # Display comment snippet
                 ), tags=(str(study['id']), study['name'], str(study.get('is_pinned', 0)))) # Guardar ID, nombre y estado de pin
 
             self.update_pagination_controls()
@@ -403,9 +425,22 @@ class MainView:
 
     def _on_selection_change(self, event=None):
         """Actualiza el estado del botón 'Eliminar Seleccionado(s)'."""
-        if self.tree.selection():
+        num_selected = len(self.tree.selection())
+        
+        if num_selected == 1:
+            self.view_selected_button.config(state=tk.NORMAL)
+            self.edit_selected_button.config(state=tk.NORMAL)
+            self.comment_selected_button.config(state=tk.NORMAL)
             self.delete_selected_button.config(state=tk.NORMAL)
-        else:
+        elif num_selected > 1:
+            self.view_selected_button.config(state=tk.DISABLED)
+            self.edit_selected_button.config(state=tk.DISABLED)
+            self.comment_selected_button.config(state=tk.DISABLED)
+            self.delete_selected_button.config(state=tk.NORMAL) # Can delete multiple
+        else: # No selection
+            self.view_selected_button.config(state=tk.DISABLED)
+            self.edit_selected_button.config(state=tk.DISABLED)
+            self.comment_selected_button.config(state=tk.DISABLED)
             self.delete_selected_button.config(state=tk.DISABLED)
 
     def on_tree_click(self, event):
@@ -438,21 +473,8 @@ class MainView:
         if column_index == 0: # Columna "Pin"
             logger.debug(f"Acción 'Pin' para estudio ID {study_id}")
             self.toggle_pin_study(study_id)
-        elif column_index == 1: # Columna "Nombre" - sin acción directa
-            pass
-        elif column_index == 2: # Columna "Comentar"
-            logger.debug(f"Acción 'Comentar' para estudio ID {study_id}")
-            self.main_window.show_comment_dialog(study_id, study_name)
-        elif column_index == 3: # Columna "Ver"
-            logger.debug(f"Acción 'Ver' para estudio ID {study_id}")
-            self.main_window.show_study_view(study_id)
-        elif column_index == 4: # Columna "Editar"
-            logger.debug(f"Acción 'Editar' para estudio ID {study_id}")
-            study_details = {'id': study_id, 'name': study_name}
-            self.main_window.show_create_study_dialog(study_to_edit=study_details)
-        elif column_index == 5: # Columna "Eliminar"
-            logger.debug(f"Acción 'Eliminar' para estudio ID {study_id}")
-            self.delete_study(study_id, study_name)
+        # Other column clicks (Nombre, Comentario) do not trigger actions directly
+        # Actions are handled by buttons below the table.
 
     def toggle_pin_study(self, study_id: int):
         """Alterna el estado de pin de un estudio."""
@@ -475,25 +497,45 @@ class MainView:
             logger.error(f"Error inesperado al cambiar pin para estudio {study_id}: {e}", exc_info=True)
             messagebox.showerror("Error Inesperado", f"Ocurrió un error inesperado:\n{e}", parent=self.root)
 
+    def _get_selected_study_id_and_name(self):
+        """Helper para obtener ID y nombre del estudio ÚNICAMENTE seleccionado."""
+        selected_items = self.tree.selection()
+        if len(selected_items) == 1:
+            item_id = selected_items[0]
+            item_tags = self.tree.item(item_id, "tags")
+            if item_tags:
+                study_id = int(item_tags[0])
+                study_name = item_tags[1]
+                return study_id, study_name
+        return None, None
 
-    def delete_study(self, study_id, study_name):
-        """Solicita confirmación y elimina un estudio."""
-        if messagebox.askyesno("Confirmar Eliminación",
-                               f"¿Está seguro de que desea eliminar el estudio '{study_name}'?\n"
-                               "Esta acción también eliminará su carpeta y todos los archivos asociados.",
-                               icon='warning', parent=self.root):
-            try:
-                self.study_service.delete_study(study_id)
-                messagebox.showinfo("Éxito", f"Estudio '{study_name}' eliminado correctamente.", parent=self.root)
-                self.load_studies() # Recargar la lista
-                # Si después de eliminar no quedan estudios, ir a landing page
-                if not self.study_service.has_studies():
-                    self.main_window.show_landing_page()
-            except Exception as e:
-                logger.error(f"Error al eliminar estudio ID {study_id} ('{study_name}'): {e}", exc_info=True)
-                messagebox.showerror("Error al Eliminar", f"No se pudo eliminar el estudio:\n{e}", parent=self.root)
-                # import traceback # Ya no es necesario
-                # traceback.print_exc() # Reemplazado por logger
+    def _view_selected_study(self):
+        study_id, _ = self._get_selected_study_id_and_name()
+        if study_id is not None:
+            logger.debug(f"Acción 'Ver Seleccionado' para estudio ID {study_id}")
+            self.main_window.show_study_view(study_id)
+        else:
+            messagebox.showwarning("Acción Inválida", "Por favor seleccione un único estudio para ver.", parent=self.root)
+
+    def _edit_selected_study(self):
+        study_id, study_name = self._get_selected_study_id_and_name()
+        if study_id is not None:
+            logger.debug(f"Acción 'Editar Seleccionado' para estudio ID {study_id}")
+            study_details = {'id': study_id, 'name': study_name} # Basic details for dialog
+            self.main_window.show_create_study_dialog(study_to_edit=study_details)
+        else:
+            messagebox.showwarning("Acción Inválida", "Por favor seleccione un único estudio para editar.", parent=self.root)
+
+    def _comment_selected_study(self):
+        study_id, study_name = self._get_selected_study_id_and_name()
+        if study_id is not None:
+            logger.debug(f"Acción 'Comentar Seleccionado' para estudio ID {study_id}")
+            self.main_window.show_comment_dialog(study_id, study_name)
+        else:
+            messagebox.showwarning("Acción Inválida", "Por favor seleccione un único estudio para comentar.", parent=self.root)
+
+    # delete_study method is effectively replaced by _confirm_delete_selected_studies
+    # which handles multiple deletions. Single deletion is a subset of this.
 
     def destroy(self):
         """Destruye el frame principal de esta vista."""

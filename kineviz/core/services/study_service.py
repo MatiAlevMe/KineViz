@@ -61,7 +61,9 @@ class StudyService:
         
         :return: Lista de estudios
         """
-        return self.repo.get_all_studies()
+        studies = self.repo.get_all_studies()
+        # Ensure 'comentario' is part of the returned dict, even if None
+        return [{'id': s['id'], 'name': s['name'], 'is_pinned': s['is_pinned'], 'comentario': s.get('comentario')} for s in studies]
     
     def get_study_details(self, study_id):
         """
@@ -226,21 +228,27 @@ class StudyService:
         :param page: Número de página (base 1).
         :param per_page: Número de estudios por página.
         :param search_term: Término para buscar en el nombre del estudio (opcional).
+        :param search_field: Campo por el cual buscar ("Nombre de Estudio" o "Comentario").
         :return: Lista de diccionarios de estudios para la página solicitada.
         """
         if page < 1:
             page = 1
         offset = (page - 1) * per_page
-        return self.repo.get_studies_paginated(limit=per_page, offset=offset, search_term=search_term)
+        # Pass search_field to repository
+        studies = self.repo.get_studies_paginated(limit=per_page, offset=offset, search_term=search_term, search_field=search_field if hasattr(self.repo, 'search_field') else "Nombre de Estudio")
+        # Ensure 'comentario' is part of the returned dict
+        return [{'id': s['id'], 'name': s['name'], 'is_pinned': s['is_pinned'], 'comentario': s.get('comentario')} for s in studies]
 
-    def get_total_studies_count(self, search_term: str = None):
+
+    def get_total_studies_count(self, search_term: str = None, search_field: str = "Nombre de Estudio"):
         """
-        Obtiene el número total de estudios, opcionalmente filtrado por término de búsqueda.
+        Obtiene el número total de estudios, opcionalmente filtrado por término de búsqueda y campo.
 
-        :param search_term: Término para buscar en el nombre del estudio (opcional).
+        :param search_term: Término para buscar (opcional).
+        :param search_field: Campo por el cual buscar ("Nombre de Estudio" o "Comentario").
         :return: Número total de estudios que coinciden.
         """
-        return self.repo.get_total_studies_count(search_term=search_term)
+        return self.repo.get_total_studies_count(search_term=search_term, search_field=search_field)
 
     def update_study(self, study_id: int, study_data: dict):
         """

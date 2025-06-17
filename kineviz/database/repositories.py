@@ -145,9 +145,10 @@ class StudyRepository:
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             # Order by is_pinned descending, then by name ascending
-            cursor.execute('SELECT id_estudio, nombre_estudio, is_pinned FROM estudios ORDER BY is_pinned DESC, nombre_estudio COLLATE NOCASE ASC')
+            # Fetch comentario as well
+            cursor.execute('SELECT id_estudio, nombre_estudio, is_pinned, comentario FROM estudios ORDER BY is_pinned DESC, nombre_estudio COLLATE NOCASE ASC')
             return [
-                {'id': row[0], 'name': row[1], 'is_pinned': row[2]}
+                {'id': row[0], 'name': row[1], 'is_pinned': row[2], 'comentario': row[3]}
                 for row in cursor.fetchall()
             ]
     
@@ -247,26 +248,31 @@ class StudyRepository:
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
-                query = 'SELECT id_estudio, nombre_estudio, is_pinned FROM estudios'
+                # Fetch comentario as well
+                query = 'SELECT id_estudio, nombre_estudio, is_pinned, comentario FROM estudios'
                 params = []
                 if search_term:
-                    query += ' WHERE nombre_estudio LIKE ?'
+                    # search_field will determine which column to search
+                    # Defaulting to nombre_estudio if search_field is not 'comentario'
+                    search_column = 'comentario' if hasattr(self, 'search_field') and self.search_field == 'Comentario' else 'nombre_estudio'
+                    query += f' WHERE {search_column} LIKE ?'
                     params.append(f'%{search_term}%')
-                # Order by is_pinned descending, then by name ascending
+                
                 query += ' ORDER BY is_pinned DESC, nombre_estudio COLLATE NOCASE ASC LIMIT ? OFFSET ?'
                 params.extend([limit, offset])
 
                 cursor.execute(query, params)
-                return [{'id': row[0], 'name': row[1], 'is_pinned': row[2]} for row in cursor.fetchall()]
+                return [{'id': row[0], 'name': row[1], 'is_pinned': row[2], 'comentario': row[3]} for row in cursor.fetchall()]
         except sqlite3.Error as e:
             logger.error(f"Error al obtener estudios paginados: {e}", exc_info=True)
             return []
 
-    def get_total_studies_count(self, search_term: str = None):
+    def get_total_studies_count(self, search_term: str = None, search_field: str = "Nombre de Estudio"):
         """
-        Cuenta el número total de estudios, opcionalmente filtrado por nombre.
+        Cuenta el número total de estudios, opcionalmente filtrado por nombre o comentario.
 
-        :param search_term: Término de búsqueda para filtrar por nombre (case-insensitive).
+        :param search_term: Término de búsqueda para filtrar (case-insensitive).
+        :param search_field: Campo por el cual buscar ("Nombre de Estudio" o "Comentario").
         :return: Número total de estudios que coinciden.
         """
         try:
@@ -275,7 +281,8 @@ class StudyRepository:
                 query = 'SELECT COUNT(*) FROM estudios'
                 params = []
                 if search_term:
-                    query += ' WHERE nombre_estudio LIKE ?'
+                    search_column = 'comentario' if search_field == 'Comentario' else 'nombre_estudio'
+                    query += f' WHERE {search_column} LIKE ?'
                     params.append(f'%{search_term}%')
 
                 cursor.execute(query, params)

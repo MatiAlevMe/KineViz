@@ -55,6 +55,7 @@ class MainWindow:
 
         self.current_view = None
         self.style = ttk.Style()
+        self.restart_pending = False # Flag para controlar el reinicio de la aplicación
         # self.configure_styles() # Will be called by apply_application_styles
         self.apply_application_styles() # Apply theme and font scale on init
 
@@ -495,3 +496,12 @@ class MainWindow:
                 # import traceback # Ya no es necesario
                 # traceback.print_exc() # Reemplazado por logger
                 messagebox.showerror("Error", f"Error durante el restablecimiento:\n{str(e)}")
+
+    def trigger_app_restart(self):
+        """Prepara la aplicación para un reinicio."""
+        logger.info("MainWindow: Solicitud de reinicio de la aplicación recibida.")
+        self.restart_pending = True
+        if hasattr(self.root, 'quit'):
+            self.root.quit() # Termina el mainloop de Tkinter
+        else:
+            logger.error("MainWindow: self.root no tiene el método quit. No se puede reiniciar programáticamente.")
