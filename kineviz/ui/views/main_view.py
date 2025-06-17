@@ -305,14 +305,15 @@ class MainView:
                 
                 pin_char = "📌" if study.get('is_pinned') else ""
                 
-                comment_snippet = study.get('comentario', '') or ""
-                if len(comment_snippet) > 75: # Max length for snippet
-                    comment_snippet = comment_snippet[:72] + "..."
+                full_comment = study.get('comentario', '') or ""
+                # Removed snipping logic to display the full comment.
+                # The Treeview will handle rendering; horizontal scrollbar is available.
+                # True dynamic row height is not supported by ttk.Treeview easily.
                 
                 self.tree.insert('', tk.END, values=(
                     pin_char,
                     study['name'],
-                    comment_snippet # Display comment snippet
+                    full_comment # Display full comment
                 ), tags=(str(study['id']), study['name'], str(study.get('is_pinned', 0)))) # Guardar ID, nombre y estado de pin
 
             self.update_pagination_controls()

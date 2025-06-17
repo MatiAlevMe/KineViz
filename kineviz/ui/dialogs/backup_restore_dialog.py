@@ -98,8 +98,8 @@ class BackupRestoreDialog(Toplevel):
         
         # Type Filter
         ttk.Label(filter_sort_frame, text="Tipo:").grid(row=0, column=0, padx=(0,5), pady=5, sticky="w")
-        type_combo = ttk.Combobox(filter_sort_frame, textvariable=self.filter_type_var, 
-                                  values=["Todos", "Manual", "Automática"], state="readonly", font=self.scaled_font_tuple) # Added font
+        type_combo = ttk.Combobox(filter_sort_frame, textvariable=self.filter_type_var,
+                                  values=["Todos", "Manual", "Automática", "Respaldo"], state="readonly", font=self.scaled_font_tuple) # Added font
         type_combo.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
         type_combo.bind("<<ComboboxSelected>>", self._apply_filters_and_sort)
 
@@ -244,8 +244,14 @@ class BackupRestoreDialog(Toplevel):
         # 1. Filter
         filtered_list = self.all_loaded_backups
         if filter_type != "Todos":
-            internal_type = backup_manager.MANUAL_BACKUPS_SUBDIR if filter_type == "Manual" else backup_manager.AUTOMATIC_BACKUPS_SUBDIR
-            filtered_list = [b for b in filtered_list if b['type'] == internal_type]
+            internal_type_map = {
+                "Manual": backup_manager.MANUAL_BACKUPS_SUBDIR,
+                "Automática": backup_manager.AUTOMATIC_BACKUPS_SUBDIR,
+                "Respaldo": backup_manager.PRE_RESTORE_BACKUP_SUBDIR
+            }
+            internal_type = internal_type_map.get(filter_type)
+            if internal_type:
+                filtered_list = [b for b in filtered_list if b['type'] == internal_type]
 
         if search_term:
             filtered_list = [
@@ -297,7 +303,15 @@ class BackupRestoreDialog(Toplevel):
         self.paginated_list = self.current_display_list[start_index:end_index]
         
         for backup_item in self.paginated_list:
-            backup_type_display = "Automática" if backup_item['type'] == backup_manager.AUTOMATIC_BACKUPS_SUBDIR else "Manual"
+            if backup_item['type'] == backup_manager.AUTOMATIC_BACKUPS_SUBDIR:
+                backup_type_display = "Automática"
+            elif backup_item['type'] == backup_manager.MANUAL_BACKUPS_SUBDIR:
+                backup_type_display = "Manual"
+            elif backup_item['type'] == backup_manager.PRE_RESTORE_BACKUP_SUBDIR:
+                backup_type_display = "Respaldo"
+            else:
+                backup_type_display = "Desconocido" # Fallback
+
             # Ensure timestamp is a datetime object before formatting
             timestamp_obj = backup_item['timestamp']
             if isinstance(timestamp_obj, datetime.datetime):
@@ -490,14 +504,15 @@ class BackupRestoreDialog(Toplevel):
             return
 
         # Create an automatic backup before restoring, if enabled
-        if self.app_settings.enable_automatic_backups and self.app_settings.backup_before_restore:
-            logger.info("Creando copia de seguridad automática antes de la restauración...")
-            pre_restore_backup_path = backup_manager.create_backup(backup_manager.AUTOMATIC_BACKUPS_SUBDIR)
+        if self.app_settings.enable_automatic_backups and self.app_settings.backup_before_restore: # Note: enable_automatic_backups might be better named, or a new setting for pre-restore type
+            logger.info("Creando copia de respaldo (tipo Respaldo) antes de la restauración...")
+            # Use the new PRE_RESTORE_BACKUP_SUBDIR type
+            pre_restore_backup_path = backup_manager.create_backup(backup_manager.PRE_RESTORE_BACKUP_SUBDIR)
             if pre_restore_backup_path:
-                messagebox.showinfo("Copia de Seguridad Pre-Restauración",
-                                    f"Se ha creado una copia de seguridad automática ('{pre_restore_backup_path.name}') antes de proceder con la restauración.",
+                messagebox.showinfo("Copia de Respaldo Pre-Restauración", # Changed title and type description
+                                    f"Se ha creado una copia de respaldo ('{pre_restore_backup_path.name}') antes de proceder con la restauración.",
                                     parent=self)
-                self.load_backups() # Refresh list to show new auto backup
+                self.load_backups() # Refresh list to show new backup
             else:
                 if not messagebox.askretrycancel("Error Pre-Restauración",
                                                  "No se pudo crear la copia de seguridad automática antes de la restauración.\n"
