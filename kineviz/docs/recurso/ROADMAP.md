@@ -276,7 +276,7 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
         - Funcionalidad del `backup_manager`:
             - `create_backup(backup_type)`: Crea una copia de seguridad de los componentes definidos.
             - Gestión de copias automáticas rotativas: Al crear una nueva copia automática, si se excede `max_automatic_backups` (de `config.ini`), se elimina la más antigua.
-    1.2 [En Progreso] Disparadores y Puntos de Activación para Copias Automáticas.
+    1.2 [Hecho] Disparadores y Puntos de Activación para Copias Automáticas.
         - Disparadores: Operaciones significativas que modifican datos persistentes. Se activarán *antes* de la finalización exitosa de las siguientes operaciónes (Para poder copiar la versión de `kineviz.db` que se neceita).
             - Eliminación de estudio(s).
             - Eliminación de lote de archivos.
