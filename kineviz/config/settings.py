@@ -38,7 +38,8 @@ class AppSettings:
             'enable_hover_tooltips': 'False', # New setting for hover tooltips
             'max_automatic_backups': '4', # Default max automatic backups
             'max_manual_backups': '4',     # Default max manual backups
-            'automatic_backup_cooldown_seconds': '60' # Default cooldown
+            'automatic_backup_cooldown_seconds': '60', # Default cooldown
+            'backups_per_page': '10' # Default backups to show per page
         }
         # DESCRIPTOR_ALIASES ya no se gestiona aquí
     }
