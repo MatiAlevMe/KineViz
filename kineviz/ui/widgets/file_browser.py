@@ -89,9 +89,7 @@ class FileBrowser(ttk.Frame):
             self.tree.column(col, width=100, anchor='w') # Default anchor to 'w'
 
         # Pack the tree directly. It will fill horizontally but not expand vertically beyond its requested height.
-        # expand=True allows horizontal expansion. fill=tk.X ensures it only fills horizontally.
-        # Its height is determined by the 'height' option (files_per_page).
-        self.tree.pack(side=tk.TOP, fill=tk.X, expand=True, pady=(0,5), padx=5)
+        self.tree.pack(side=tk.TOP, fill=tk.BOTH, expand=True, pady=(0,5), padx=5) # Changed to fill=tk.BOTH, expand=True
 
         # Configurar eventos
         self.tree.bind('<ButtonRelease-1>', self.on_tree_click)
