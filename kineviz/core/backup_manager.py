@@ -17,13 +17,14 @@ _last_automatic_backup_end_time: Optional[datetime.datetime] = None
 BACKUPS_DIR_NAME = "backups"
 AUTOMATIC_BACKUPS_SUBDIR = "automatic"
 MANUAL_BACKUPS_SUBDIR = "manual"
+PRE_RESTORE_BACKUP_SUBDIR = "respaldo" # For backups made before a restore operation
 BACKUP_ALIASES_FILENAME = "backup_aliases.json" # General alias file
 
 DB_FILENAME = "kineviz.db"
 CONFIG_FILENAME = "config.ini"
 STUDIES_DIR_NAME = "estudios"
 
-SUPPORTED_BACKUP_TYPES = [AUTOMATIC_BACKUPS_SUBDIR, MANUAL_BACKUPS_SUBDIR]
+SUPPORTED_BACKUP_TYPES = [AUTOMATIC_BACKUPS_SUBDIR, MANUAL_BACKUPS_SUBDIR, PRE_RESTORE_BACKUP_SUBDIR]
 
 
 def get_project_root() -> pathlib.Path:
