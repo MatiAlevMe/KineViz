@@ -39,11 +39,52 @@ class BackupRestoreDialog(Toplevel):
         main_frame = ttk.Frame(self, padding="10")
         main_frame.pack(fill=tk.BOTH, expand=True)
 
+        # --- Filter and Sort Controls Frame ---
+        filter_sort_frame = ttk.LabelFrame(main_frame, text="Filtrar y Ordenar", padding="10")
+        filter_sort_frame.pack(fill=tk.X, pady=(0, 10))
+        filter_sort_frame.columnconfigure(1, weight=1) # Allow search entry to expand
+        filter_sort_frame.columnconfigure(3, weight=1)
+        filter_sort_frame.columnconfigure(5, weight=0) # Sort button
+
+        # Type Filter
+        ttk.Label(filter_sort_frame, text="Tipo:").grid(row=0, column=0, padx=(0,5), pady=5, sticky="w")
+        type_combo = ttk.Combobox(filter_sort_frame, textvariable=self.filter_type_var, 
+                                  values=["Todos", "Manual", "Automática"], state="readonly", width=12)
+        type_combo.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+        type_combo.bind("<<ComboboxSelected>>", self._apply_filters_and_sort)
+
+        # Alias Search
+        ttk.Label(filter_sort_frame, text="Buscar Alias/Nombre:").grid(row=0, column=2, padx=(10,5), pady=5, sticky="w")
+        search_entry = ttk.Entry(filter_sort_frame, textvariable=self.search_alias_var, width=25)
+        search_entry.grid(row=0, column=3, padx=5, pady=5, sticky="ew")
+        search_entry.bind("<Return>", self._apply_filters_and_sort)
+        # Search Button (optional, can rely on Enter or type filter change)
+        # search_button = ttk.Button(filter_sort_frame, text="Buscar", command=self._apply_filters_and_sort)
+        # search_button.grid(row=0, column=4, padx=5, pady=5)
+
+        # Sort Key
+        ttk.Label(filter_sort_frame, text="Ordenar por:").grid(row=1, column=0, padx=(0,5), pady=5, sticky="w")
+        sort_key_combo = ttk.Combobox(filter_sort_frame, textvariable=self.sort_key_var, 
+                                      values=["Fecha de Creación", "Tipo", "Alias"], state="readonly", width=18)
+        sort_key_combo.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+        sort_key_combo.bind("<<ComboboxSelected>>", self._apply_filters_and_sort)
+
+        # Sort Order Button
+        self.sort_order_button = ttk.Button(filter_sort_frame, text="Orden: ↓", command=self._toggle_sort_order, width=10)
+        self.sort_order_button.grid(row=1, column=2, padx=5, pady=5, sticky="w")
+        Tooltip(self.sort_order_button, text="Cambiar orden (Ascendente/Descendente).", enabled=self.app_settings.enable_hover_tooltips)
+        
+        # Apply Filters Button (explicitly)
+        apply_filters_btn = ttk.Button(filter_sort_frame, text="Aplicar", command=self._apply_filters_and_sort)
+        apply_filters_btn.grid(row=1, column=3, padx=(10,5), pady=5, sticky="e") # Align to the right of its column span
+        filter_sort_frame.columnconfigure(3, weight=1) # Make column 3 expand to push button right
+
+
         # --- Treeview para listar backups ---
-        tree_frame = ttk.Frame(main_frame)
+        tree_frame = ttk.Frame(main_frame) # main_frame is the parent
         tree_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 10))
 
-        columns = ("type", "timestamp", "alias", "filename")
+        columns = ("type", "timestamp", "alias", "filename") # Filename is hidden but used for actions
         self.tree = ttk.Treeview(tree_frame, columns=columns, show="headings", selectmode="browse")
         
         self.tree.heading("type", text="Tipo")
@@ -100,27 +141,82 @@ class BackupRestoreDialog(Toplevel):
 
 
     def load_backups(self):
-        """Carga la lista de backups y los muestra en el Treeview."""
+        """Carga la lista completa de backups desde el gestor."""
+        self.all_loaded_backups = backup_manager.list_backups()
+        # Initially, sort by timestamp descending (default from list_backups)
+        self.sort_key_var.set("Fecha de Creación")
+        self.sort_order_asc_var.set(False) # Descending
+        self._update_sort_button_text()
+        self._apply_filters_and_sort()
+
+    def _apply_filters_and_sort(self, event=None):
+        """Filtra y ordena la lista de backups y actualiza el Treeview."""
+        filter_type = self.filter_type_var.get()
+        search_term = self.search_alias_var.get().lower()
+        sort_key = self.sort_key_var.get()
+        sort_asc = self.sort_order_asc_var.get()
+
+        # 1. Filter
+        filtered_list = self.all_loaded_backups
+        if filter_type != "Todos":
+            internal_type = backup_manager.MANUAL_BACKUPS_SUBDIR if filter_type == "Manual" else backup_manager.AUTOMATIC_BACKUPS_SUBDIR
+            filtered_list = [b for b in filtered_list if b['type'] == internal_type]
+
+        if search_term:
+            filtered_list = [
+                b for b in filtered_list 
+                if search_term in b['filename'].lower() or 
+                   (b['alias'] and search_term in b['alias'].lower())
+            ]
+        
+        # 2. Sort
+        if sort_key == "Fecha de Creación":
+            filtered_list.sort(key=lambda b: b['timestamp'], reverse=not sort_asc)
+        elif sort_key == "Tipo":
+            filtered_list.sort(key=lambda b: b['type'], reverse=not sort_asc)
+        elif sort_key == "Alias":
+            # Sort by alias, putting None/empty aliases last or first based on order
+            filtered_list.sort(key=lambda b: (b['alias'] is None, b['alias'] if b['alias'] else ''), reverse=not sort_asc)
+        
+        self.current_display_list = filtered_list
+        self._populate_treeview()
+
+
+    def _toggle_sort_order(self):
+        """Cambia el orden de clasificación y reaplica."""
+        self.sort_order_asc_var.set(not self.sort_order_asc_var.get())
+        self._update_sort_button_text()
+        self._apply_filters_and_sort()
+
+    def _update_sort_button_text(self):
+        """Actualiza el texto del botón de orden."""
+        self.sort_order_button.config(text="Orden: ↑" if self.sort_order_asc_var.get() else "Orden: ↓")
+
+    def _populate_treeview(self):
+        """Populates the treeview with self.current_display_list."""
         for i in self.tree.get_children():
             self.tree.delete(i)
         
-        self.backup_list = backup_manager.list_backups()
-        
-        for backup_item in self.backup_list:
+        for backup_item in self.current_display_list: # Use current_display_list
             backup_type_display = "Automática" if backup_item['type'] == backup_manager.AUTOMATIC_BACKUPS_SUBDIR else "Manual"
-            timestamp_display = backup_item['timestamp'].strftime("%Y-%m-%d %H:%M:%S")
+            # Ensure timestamp is a datetime object before formatting
+            timestamp_obj = backup_item['timestamp']
+            if isinstance(timestamp_obj, datetime.datetime):
+                 timestamp_display = timestamp_obj.strftime("%Y-%m-%d %H:%M:%S")
+            else: # Fallback if timestamp is not as expected (e.g. None or already string)
+                 timestamp_display = str(timestamp_obj) if timestamp_obj else "N/A"
+            
             alias_display = backup_item['alias'] if backup_item['alias'] else ""
             
-            # Store full path or unique identifier if needed for actions
             self.tree.insert("", tk.END, values=(
                 backup_type_display, 
                 timestamp_display, 
                 alias_display,
-                backup_item['filename'] # Store filename for identification
+                backup_item['filename'] 
             ))
-        self.on_backup_selected(None) # Update button states
+        self.on_backup_selected(None)
 
-    def on_backup_selected(self, event):
+    def on_backup_selected(self, event=None):
         """Actualiza el estado de los botones cuando se selecciona un backup."""
         selected_item_id = self.tree.focus() # Obtiene el ID del item seleccionado
         if not selected_item_id:

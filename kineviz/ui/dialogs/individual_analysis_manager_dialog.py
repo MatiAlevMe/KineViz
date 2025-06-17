@@ -768,6 +768,13 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
     def open_new_analysis_dialog(self):
         """Abre el diálogo para configurar un nuevo análisis."""
         dialog = ConfigureIndividualAnalysisDialog(self, self.analysis_service, self.study_id, self.parent.main_window.settings) # Pass settings
+        
+        # Check if dialog was destroyed during its __init__ (e.g., if initial data load failed)
+        if not dialog.winfo_exists():
+            logger.warning("ConfigureIndividualAnalysisDialog was destroyed during initialization. Aborting new analysis configuration.")
+            self.load_analyses() # Refresh list in case state changed before dialog fully closed
+            return 
+
         # Esperar a que el diálogo se cierre y luego refrescar la lista
         self.wait_window(dialog)
         
