@@ -191,8 +191,11 @@ class MainWindow:
         # BackupRestoreDialog needs AppSettings
         from kineviz.ui.dialogs.backup_restore_dialog import BackupRestoreDialog # Local import
         dialog = BackupRestoreDialog(self.root, app_settings=self.settings)
-        # self.root.wait_window(dialog) # Optional: make it modal to the main window
-        # BackupRestoreDialog is a Toplevel, it can manage its own lifecycle.
+        self.root.wait_window(dialog) # Make it modal
+
+        if hasattr(dialog, 'restart_required_after_restore') and dialog.restart_required_after_restore:
+            logger.info("BackupRestoreDialog (from landing) indicated a restart is required. Triggering app restart.")
+            self.trigger_app_restart()
 
     def play_demo_video(self):
         """Intenta reproducir el archivo DEMO.mp4 ubicado en kineviz/assets/."""

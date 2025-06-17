@@ -586,9 +586,24 @@ class ConfigDialog(Toplevel):
         """Abre el diálogo de gestión de copias de seguridad."""
         # Pass self.settings which is an AppSettings instance
         dialog = BackupRestoreDialog(self, app_settings=self.settings)
-        # No wait_window here, as it's a top-level dialog that can be managed independently.
-        # Or, if it should be modal to ConfigDialog:
-        # self.wait_window(dialog) 
+        self.wait_window(dialog) # Make it modal to ConfigDialog
+
+        if hasattr(dialog, 'restart_required_after_restore') and dialog.restart_required_after_restore:
+            logger.info("BackupRestoreDialog indicated a restart is required. Closing ConfigDialog and triggering app restart.")
+            # If ConfigDialog itself was called by MainWindow, MainWindow's wait_window will resume.
+            # We need MainWindow to handle the restart.
+            # A simple way is to destroy ConfigDialog and let MainWindow's logic proceed.
+            # If MainWindow's show_config_dialog needs to know, this flag could be propagated up.
+            # For now, assume MainWindow's reload_settings or similar will handle restart if needed,
+            # or that the restart is directly triggered by MainWindow.
+            # The most direct way is to call MainWindow's restart method if accessible.
+            # Let's assume self.parent is MainWindow's root.
+            if hasattr(self.master, 'trigger_app_restart'): # self.master should be MainWindow's root
+                self.destroy() # Close ConfigDialog
+                self.master.trigger_app_restart()
+            else:
+                logger.warning("ConfigDialog: Could not find trigger_app_restart on master. Restart manually.")
+                self.destroy() # Still close ConfigDialog
 
     def trigger_factory_reset_callback(self):
         """Llama al callback de reseteo de fábrica con doble confirmación."""
