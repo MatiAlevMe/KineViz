@@ -178,7 +178,7 @@ def apply_theme_and_font(root: tk.Tk, style: ttk.Style, theme_name: str, font_sc
                     foreground=colors['widget_fg'],       # Color del texto
                     selectbackground=colors['select_bg'], # Fondo del texto seleccionado EN EL DROPDOWN
                     selectforeground=colors['select_fg'], # Color del texto seleccionado EN EL DROPDOWN
-                    arrowcolor=colors['dropdown_arrow'],              # Color de la flecha del dropdown
+                    arrowcolor=colors['fg'],              # Color de la flecha del dropdown
                     font=get_scaled_font(DEFAULT_FONT_SIZE, font_scale), # Fuente del texto
                     padding=(scaled_padding_x, scaled_padding_y)) # Padding interno
 
