@@ -28,12 +28,18 @@ class BackupRestoreDialog(Toplevel):
 
         self.all_loaded_backups = [] # To store the full list from backup_manager
         self.current_display_list = [] # To store the currently displayed (filtered/sorted) list
+        self.paginated_list = [] # To store the list for the current page
 
         # Filter and sort variables
-        self.filter_type_var = tk.StringVar(value="Manual") # Manual, Automatic, Todos
+        self.filter_type_var = tk.StringVar(value="Todos") # Default to "Todos"
         self.search_alias_var = tk.StringVar()
         self.sort_key_var = tk.StringVar(value="Fecha de Creación")
         self.sort_order_asc_var = tk.BooleanVar(value=False) # False for Descending initially
+
+        # Pagination variables
+        self.current_page_backups = tk.IntVar(value=1)
+        self.total_pages_backups = tk.IntVar(value=1)
+        self.backups_per_page = self.app_settings.backups_per_page # Get from settings
 
         self.create_widgets()
         self.load_backups() # Initial load
@@ -45,14 +51,21 @@ class BackupRestoreDialog(Toplevel):
     def create_widgets(self):
         main_frame = ttk.Frame(self, padding="10")
         main_frame.pack(fill=tk.BOTH, expand=True)
+        # Configure main_frame rows to allow treeview to expand and button rows to take fixed space
+        main_frame.rowconfigure(1, weight=1) # Treeview frame
+        main_frame.rowconfigure(2, weight=0) # Pagination controls frame
+        main_frame.rowconfigure(3, weight=0) # Actions row 2
+        main_frame.rowconfigure(4, weight=0) # Actions row 3
+
 
         # --- Filter and Sort Controls Frame ---
         filter_sort_frame = ttk.LabelFrame(main_frame, text="Filtrar y Ordenar", padding="10")
-        filter_sort_frame.pack(fill=tk.X, pady=(0, 10))
-        filter_sort_frame.columnconfigure(1, weight=1) # Allow search entry to expand
+        filter_sort_frame.grid(row=0, column=0, sticky="ew", pady=(0, 10)) # Use grid
+        filter_sort_frame.columnconfigure(1, weight=1) 
         filter_sort_frame.columnconfigure(3, weight=1)
-        filter_sort_frame.columnconfigure(5, weight=0) # Sort button
-
+        filter_sort_frame.columnconfigure(4, weight=0) # For Clear button
+        filter_sort_frame.columnconfigure(5, weight=0) # For Apply button
+        
         # Type Filter
         ttk.Label(filter_sort_frame, text="Tipo:").grid(row=0, column=0, padx=(0,5), pady=5, sticky="w")
         type_combo = ttk.Combobox(filter_sort_frame, textvariable=self.filter_type_var, 
@@ -81,15 +94,21 @@ class BackupRestoreDialog(Toplevel):
         self.sort_order_button.grid(row=1, column=2, padx=5, pady=5, sticky="w")
         Tooltip(self.sort_order_button, text="Cambiar orden (Ascendente/Descendente).", enabled=self.app_settings.enable_hover_tooltips)
         
+        # Clear Filters Button
+        clear_filters_btn = ttk.Button(filter_sort_frame, text="Limpiar", command=self._reset_filters)
+        clear_filters_btn.grid(row=1, column=3, padx=(5,5), pady=5, sticky="e")
+        Tooltip(clear_filters_btn, text="Restablecer filtros y orden a los valores por defecto.", enabled=self.app_settings.enable_hover_tooltips)
+
         # Apply Filters Button (explicitly)
         apply_filters_btn = ttk.Button(filter_sort_frame, text="Aplicar", command=self._apply_filters_and_sort)
-        apply_filters_btn.grid(row=1, column=3, padx=(10,5), pady=5, sticky="e") # Align to the right of its column span
-        filter_sort_frame.columnconfigure(3, weight=1) # Make column 3 expand to push button right
-
+        apply_filters_btn.grid(row=1, column=4, padx=(0,5), pady=5, sticky="e") # Adjusted column
 
         # --- Treeview para listar backups ---
-        tree_frame = ttk.Frame(main_frame) # main_frame is the parent
-        tree_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 10))
+        tree_frame = ttk.Frame(main_frame)
+        tree_frame.grid(row=1, column=0, sticky="nsew", pady=(0, 10)) # Use grid, sticky nsew
+        tree_frame.rowconfigure(0, weight=1)    # Allow treeview to expand within tree_frame
+        tree_frame.columnconfigure(0, weight=1) # Allow treeview to expand within tree_frame
+
 
         columns = ("type", "timestamp", "alias", "filename") # Filename is hidden but used for actions
         self.tree = ttk.Treeview(tree_frame, columns=columns, show="headings", selectmode="browse")
@@ -106,46 +125,60 @@ class BackupRestoreDialog(Toplevel):
 
         # Scrollbars
         vsb = ttk.Scrollbar(tree_frame, orient="vertical", command=self.tree.yview)
-        vsb.pack(side=tk.RIGHT, fill=tk.Y)
+        vsb.grid(row=0, column=1, sticky="ns") # Use grid
         hsb = ttk.Scrollbar(tree_frame, orient="horizontal", command=self.tree.xview)
-        hsb.pack(side=tk.BOTTOM, fill=tk.X)
+        hsb.grid(row=1, column=0, sticky="ew") # Use grid
         self.tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
         
-        self.tree.pack(fill=tk.BOTH, expand=True)
+        self.tree.grid(row=0, column=0, sticky="nsew") # Use grid
         self.tree.bind("<<TreeviewSelect>>", self.on_backup_selected)
 
+        # --- Pagination Controls Frame (Row 1 of bottom buttons) ---
+        pagination_controls_frame = ttk.Frame(main_frame)
+        pagination_controls_frame.grid(row=2, column=0, sticky="ew", pady=(5,0))
+        pagination_controls_frame.columnconfigure(0, weight=1) # Previous button
+        pagination_controls_frame.columnconfigure(1, weight=0) # Page label
+        pagination_controls_frame.columnconfigure(2, weight=1) # Next button
 
-        # --- Frame para botones de acción ---
-        action_buttons_frame = ttk.Frame(main_frame)
-        action_buttons_frame.pack(fill=tk.X, pady=(5,0))
-
-        self.btn_create_manual = ttk.Button(action_buttons_frame, text="Crear Copia Manual", command=self.create_manual_backup_action)
+        self.btn_prev_page_backups = ttk.Button(pagination_controls_frame, text="<<", command=lambda: self.go_to_backup_page("prev"), style="Nav.TButton")
+        self.btn_prev_page_backups.grid(row=0, column=0, sticky="w", padx=5)
+        self.lbl_page_backups = ttk.Label(pagination_controls_frame, text="Página: 1 / 1")
+        self.lbl_page_backups.grid(row=0, column=1, padx=5)
+        self.btn_next_page_backups = ttk.Button(pagination_controls_frame, text=">>", command=lambda: self.go_to_backup_page("next"), style="Nav.TButton")
+        self.btn_next_page_backups.grid(row=0, column=2, sticky="e", padx=5)
+        
+        # --- Action Buttons Row 2 ---
+        actions_row2_frame = ttk.Frame(main_frame)
+        actions_row2_frame.grid(row=3, column=0, sticky="ew", pady=(5,0))
+        # Left side
+        self.btn_create_manual = ttk.Button(actions_row2_frame, text="Crear Copia Manual", command=self.create_manual_backup_action)
         self.btn_create_manual.pack(side=tk.LEFT, padx=5)
         Tooltip(self.btn_create_manual, "Crea una nueva copia de seguridad manual del estado actual del sistema.", enabled=self.app_settings.enable_hover_tooltips)
 
-        self.btn_restore = ttk.Button(action_buttons_frame, text="Restaurar Seleccionada", command=self.restore_selected_action, state=tk.DISABLED)
+        self.btn_restore = ttk.Button(actions_row2_frame, text="Restaurar Seleccionada", command=self.restore_selected_action, state=tk.DISABLED)
         self.btn_restore.pack(side=tk.LEFT, padx=5)
         Tooltip(self.btn_restore, "Restaura el sistema al estado de la copia de seguridad seleccionada. ¡Esta acción es irreversible!", enabled=self.app_settings.enable_hover_tooltips)
         
-        self.btn_assign_alias = ttk.Button(action_buttons_frame, text="Asignar/Editar Alias", command=self.assign_alias_action, state=tk.DISABLED)
-        self.btn_assign_alias.pack(side=tk.LEFT, padx=5)
+        self.btn_assign_alias = ttk.Button(actions_row2_frame, text="Asignar/Editar Alias", command=self.assign_alias_action, state=tk.DISABLED)
+        self.btn_assign_alias.pack(side=tk.LEFT, padx=5) # Keeping it here for now, user didn't specify its new position
         Tooltip(self.btn_assign_alias, "Asigna o edita un alias descriptivo a una copia de seguridad manual seleccionada.", enabled=self.app_settings.enable_hover_tooltips)
 
-        self.btn_delete_manual = ttk.Button(action_buttons_frame, text="Eliminar Manual", command=self.delete_manual_action, state=tk.DISABLED, style="Danger.TButton")
-        self.btn_delete_manual.pack(side=tk.LEFT, padx=5)
-        Tooltip(self.btn_delete_manual, "Elimina permanentemente la copia de seguridad manual seleccionada.", enabled=self.app_settings.enable_hover_tooltips)
+        # --- Action Buttons Row 3 ---
+        actions_row3_frame = ttk.Frame(main_frame)
+        actions_row3_frame.grid(row=4, column=0, sticky="ew", pady=(5,0))
+        actions_row3_frame.columnconfigure(1, weight=1) # To push refresh and close to the right
 
-        # --- Botón de Cancelar/Cerrar ---
-        bottom_frame = ttk.Frame(main_frame)
-        bottom_frame.pack(fill=tk.X, side=tk.BOTTOM, pady=(10,0))
+        self.btn_delete_manual = ttk.Button(actions_row3_frame, text="Eliminar Manual", command=self.delete_manual_action, state=tk.DISABLED, style="Danger.TButton")
+        self.btn_delete_manual.grid(row=0, column=0, padx=5, sticky="w")
+        Tooltip(self.btn_delete_manual, "Elimina permanentemente la copia de seguridad manual seleccionada.", enabled=self.app_settings.enable_hover_tooltips)
         
-        btn_refresh = ttk.Button(bottom_frame, text="Refrescar Lista", command=self.load_backups)
-        btn_refresh.pack(side=tk.LEFT, padx=5)
+        # Right side of row 3
+        btn_refresh = ttk.Button(actions_row3_frame, text="Refrescar Lista", command=self.load_backups)
+        btn_refresh.grid(row=0, column=2, padx=5, sticky="e")
         Tooltip(btn_refresh, "Vuelve a cargar la lista de copias de seguridad disponibles.", enabled=self.app_settings.enable_hover_tooltips)
 
-        btn_cancel = ttk.Button(bottom_frame, text="Cerrar", command=self.destroy)
-        btn_cancel.pack(side=tk.RIGHT, padx=5)
-
+        btn_cancel = ttk.Button(actions_row3_frame, text="Cerrar", command=self.destroy)
+        btn_cancel.grid(row=0, column=3, padx=5, sticky="e")
 
     def load_backups(self):
         """Carga la lista completa de backups desde el gestor."""
@@ -186,8 +219,18 @@ class BackupRestoreDialog(Toplevel):
             filtered_list.sort(key=lambda b: (b['alias'] is None, b['alias'] if b['alias'] else ''), reverse=not sort_asc)
         
         self.current_display_list = filtered_list
+        self.current_page_backups.set(1) # Reset to first page
         self._populate_treeview()
+        self._update_backup_pagination_controls()
 
+    def _reset_filters(self, event=None):
+        """Resets filter and sort options to their default values and reloads."""
+        self.filter_type_var.set("Todos")
+        self.search_alias_var.set("")
+        self.sort_key_var.set("Fecha de Creación")
+        self.sort_order_asc_var.set(False) # Descending
+        self._update_sort_button_text()
+        self._apply_filters_and_sort()
 
     def _toggle_sort_order(self):
         """Cambia el orden de clasificación y reaplica."""
@@ -200,11 +243,15 @@ class BackupRestoreDialog(Toplevel):
         self.sort_order_button.config(text="Orden: ↑" if self.sort_order_asc_var.get() else "Orden: ↓")
 
     def _populate_treeview(self):
-        """Populates the treeview with self.current_display_list."""
+        """Populates the treeview with the current page of self.current_display_list."""
         for i in self.tree.get_children():
             self.tree.delete(i)
+
+        start_index = (self.current_page_backups.get() - 1) * self.backups_per_page
+        end_index = start_index + self.backups_per_page
+        self.paginated_list = self.current_display_list[start_index:end_index]
         
-        for backup_item in self.current_display_list: # Use current_display_list
+        for backup_item in self.paginated_list:
             backup_type_display = "Automática" if backup_item['type'] == backup_manager.AUTOMATIC_BACKUPS_SUBDIR else "Manual"
             # Ensure timestamp is a datetime object before formatting
             timestamp_obj = backup_item['timestamp']
@@ -221,7 +268,43 @@ class BackupRestoreDialog(Toplevel):
                 alias_display,
                 backup_item['filename'] 
             ))
-        self.on_backup_selected(None)
+        self.on_backup_selected(None) # Update button states
+
+    def _update_backup_pagination_controls(self):
+        """Updates the pagination controls' state and label."""
+        num_items = len(self.current_display_list)
+        self.total_pages_backups.set(max(1, (num_items + self.backups_per_page - 1) // self.backups_per_page))
+        
+        current_pg = self.current_page_backups.get()
+        total_pg = self.total_pages_backups.get()
+
+        self.lbl_page_backups.config(text=f"Página: {current_pg} / {total_pg}")
+
+        if total_pg <= 1:
+            self.btn_prev_page_backups.config(state=tk.DISABLED)
+            self.btn_next_page_backups.config(state=tk.DISABLED)
+            # Hide pagination if not needed, or just disable buttons
+            self.btn_prev_page_backups.master.grid() # Ensure parent frame is visible
+        else:
+            self.btn_prev_page_backups.master.grid()
+            self.btn_prev_page_backups.config(state=tk.NORMAL if current_pg > 1 else tk.DISABLED)
+            self.btn_next_page_backups.config(state=tk.NORMAL if current_pg < total_pg else tk.DISABLED)
+            
+    def go_to_backup_page(self, direction):
+        """Navigates to the previous or next page of backups."""
+        current_pg = self.current_page_backups.get()
+        total_pg = self.total_pages_backups.get()
+
+        if direction == "prev" and current_pg > 1:
+            self.current_page_backups.set(current_pg - 1)
+        elif direction == "next" and current_pg < total_pg:
+            self.current_page_backups.set(current_pg + 1)
+        else:
+            return # No change
+
+        self._populate_treeview()
+        self._update_backup_pagination_controls()
+
 
     def on_backup_selected(self, event=None):
         """Actualiza el estado de los botones cuando se selecciona un backup."""
@@ -350,9 +433,21 @@ class BackupRestoreDialog(Toplevel):
             messagebox.showwarning("Tipo Inválido", "Solo se pueden eliminar copias de seguridad manuales desde aquí.", parent=self)
             return
 
-        if not messagebox.askokcancel("Confirmar Eliminación", 
-                                     f"¿Está seguro de que desea eliminar permanentemente la copia de seguridad manual '{backup_filename}'?",
-                                     icon='warning', parent=self):
+        # First confirmation
+        confirm1 = messagebox.askokcancel("Confirmar Eliminación - Paso 1 de 2",
+                                     f"¿Está seguro de que desea eliminar la copia de seguridad manual '{backup_filename}'?\n\n"
+                                     "Esta acción no se puede deshacer.",
+                                     icon='warning', parent=self)
+        if not confirm1:
+            return
+
+        # Second confirmation
+        confirm2 = messagebox.askokcancel("Confirmar Eliminación - Paso 2 de 2",
+                                     f"¡ADVERTENCIA FINAL!\n\n"
+                                     f"La copia de seguridad manual '{backup_filename}' será eliminada permanentemente.\n"
+                                     "¿Está ABSOLUTAMENTE SEGURO de que desea proceder?",
+                                     icon='error', default=messagebox.NO, parent=self) # Default to NO for safety
+        if not confirm2:
             return
         
         try:
