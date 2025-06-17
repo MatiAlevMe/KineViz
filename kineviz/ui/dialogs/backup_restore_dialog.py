@@ -66,7 +66,7 @@ class BackupRestoreDialog(Toplevel):
         main_frame.pack(fill=tk.BOTH, expand=True)
         main_frame.columnconfigure(0, weight=1) # Allow the main content column to expand
         # Configure main_frame rows to allow treeview to expand and button rows to take fixed space
-        main_frame.rowconfigure(1, weight=1) # Treeview frame
+        main_frame.rowconfigure(1, weight=0) # Treeview frame (DO NOT EXPAND VERTICALLY)
         main_frame.rowconfigure(2, weight=0) # Pagination controls frame
         main_frame.rowconfigure(3, weight=0) # Actions row 2
         main_frame.rowconfigure(4, weight=0) # Actions row 3
@@ -83,13 +83,13 @@ class BackupRestoreDialog(Toplevel):
         # Type Filter
         ttk.Label(filter_sort_frame, text="Tipo:").grid(row=0, column=0, padx=(0,5), pady=5, sticky="w")
         type_combo = ttk.Combobox(filter_sort_frame, textvariable=self.filter_type_var, 
-                                  values=["Todos", "Manual", "Automática"], state="readonly", width=12)
-        type_combo.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+                                  values=["Todos", "Manual", "Automática"], state="readonly") # Removed width
+        type_combo.grid(row=0, column=1, padx=5, pady=5, sticky="ew") # Changed sticky to ew
         type_combo.bind("<<ComboboxSelected>>", self._apply_filters_and_sort)
 
         # Alias Search
         ttk.Label(filter_sort_frame, text="Buscar Alias/Nombre:").grid(row=0, column=2, padx=(10,5), pady=5, sticky="w")
-        search_entry = ttk.Entry(filter_sort_frame, textvariable=self.search_alias_var, width=25)
+        search_entry = ttk.Entry(filter_sort_frame, textvariable=self.search_alias_var) # Removed width
         search_entry.grid(row=0, column=3, padx=5, pady=5, sticky="ew")
         search_entry.bind("<Return>", self._apply_filters_and_sort)
         # Search Button (optional, can rely on Enter or type filter change)
@@ -99,12 +99,12 @@ class BackupRestoreDialog(Toplevel):
         # Sort Key
         ttk.Label(filter_sort_frame, text="Ordenar por:").grid(row=1, column=0, padx=(0,5), pady=5, sticky="w")
         sort_key_combo = ttk.Combobox(filter_sort_frame, textvariable=self.sort_key_var, 
-                                      values=["Fecha de Creación", "Tipo", "Alias"], state="readonly", width=18)
-        sort_key_combo.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+                                      values=["Fecha de Creación", "Tipo", "Alias"], state="readonly") # Removed width
+        sort_key_combo.grid(row=1, column=1, padx=5, pady=5, sticky="ew") # Changed sticky to ew
         sort_key_combo.bind("<<ComboboxSelected>>", self._apply_filters_and_sort)
 
         # Sort Order Button
-        self.sort_order_button = ttk.Button(filter_sort_frame, text="Orden: ↓", command=self._toggle_sort_order, width=10)
+        self.sort_order_button = ttk.Button(filter_sort_frame, text="Orden: ↓", command=self._toggle_sort_order) # Removed width
         self.sort_order_button.grid(row=1, column=2, padx=5, pady=5, sticky="w")
         Tooltip(self.sort_order_button, text="Cambiar orden (Ascendente/Descendente).", enabled=self.app_settings.enable_hover_tooltips)
         
