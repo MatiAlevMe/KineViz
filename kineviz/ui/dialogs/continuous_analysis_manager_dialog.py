@@ -711,9 +711,21 @@ class ContinuousAnalysisManagerDialog(Toplevel):
     def _open_new_analysis_dialog(self):
         # This is where ContinuousAnalysisConfigDialog is launched
         dialog = ContinuousAnalysisConfigDialog(self, self.analysis_service, self.study_id, self.main_window.settings) # Pass settings
+        
+        # Check if dialog was destroyed immediately (e.g. error in its __init__)
+        if not dialog.winfo_exists():
+            logger.error("ContinuousAnalysisConfigDialog fue destruido inmediatamente después de la creación. No se puede esperar.")
+            # Optionally, show a generic error to the user here
+            # messagebox.showerror("Error", "No se pudo abrir el diálogo de configuración de análisis continuo.", parent=self)
+            self.load_analyses() # Refresh list in case something changed or to reset state
+            return
+
         self.wait_window(dialog) # Ensure manager waits for config dialog to close
 
-        if dialog.result: # This will be checked after dialog closes
+        # After wait_window, check if dialog.result exists and if dialog itself wasn't prematurely destroyed
+        # (though winfo_exists might be false now if it closed normally)
+        # The key is whether dialog.result was set.
+        if hasattr(dialog, 'result') and dialog.result:
             logger.info(f"Configuración recibida del diálogo de análisis continuo: {dialog.result}")
             
             # --- Validación de Nombre Duplicado ---

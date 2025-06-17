@@ -16,8 +16,8 @@ _last_automatic_backup_end_time: Optional[datetime.datetime] = None
 # Constants for backup configuration
 BACKUPS_DIR_NAME = "backups"
 AUTOMATIC_BACKUPS_SUBDIR = "automatic"
-MANUAL_BACKUPS_SUBDIR = "manual" # Changed from "manuales"
-MANUAL_BACKUP_ALIASES_FILENAME = "manual_backup_aliases.json"
+MANUAL_BACKUPS_SUBDIR = "manual"
+BACKUP_ALIASES_FILENAME = "backup_aliases.json" # General alias file
 
 DB_FILENAME = "kineviz.db"
 CONFIG_FILENAME = "config.ini"
@@ -340,57 +340,63 @@ def create_backup(backup_type: str, _is_test_mode: bool = False) -> Optional[pat
             except OSError as ose:
                 logger.error(f"Failed to remove lock file {current_lock_file_for_finally}: {ose}")
 
-# --- Alias Management for Manual Backups ---
+# --- Alias Management for Backups ---
 
-def _get_manual_backup_aliases_path() -> pathlib.Path:
-    """Returns the path to the manual backup aliases JSON file."""
-    return get_project_root() / BACKUPS_DIR_NAME / MANUAL_BACKUPS_SUBDIR / MANUAL_BACKUP_ALIASES_FILENAME
+def _get_backup_aliases_path() -> pathlib.Path:
+    """Returns the path to the backup aliases JSON file."""
+    # Aliases file stored directly in the main backups directory
+    return get_project_root() / BACKUPS_DIR_NAME / BACKUP_ALIASES_FILENAME
 
-def _load_manual_backup_aliases() -> dict:
-    """Loads manual backup aliases from the JSON file."""
-    aliases_path = _get_manual_backup_aliases_path()
+def _load_backup_aliases() -> dict:
+    """Loads backup aliases from the JSON file."""
+    aliases_path = _get_backup_aliases_path()
     if aliases_path.exists():
         try:
             with open(aliases_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except (json.JSONDecodeError, OSError) as e:
-            logger.error(f"Error loading manual backup aliases from {aliases_path}: {e}", exc_info=True)
+            logger.error(f"Error loading backup aliases from {aliases_path}: {e}", exc_info=True)
     return {}
 
-def _save_manual_backup_aliases(aliases_data: dict):
-    """Saves manual backup aliases to the JSON file."""
-    aliases_path = _get_manual_backup_aliases_path()
+def _save_backup_aliases(aliases_data: dict):
+    """Saves backup aliases to the JSON file."""
+    aliases_path = _get_backup_aliases_path()
     try:
-        aliases_path.parent.mkdir(parents=True, exist_ok=True) # Ensure manual backup dir exists
+        aliases_path.parent.mkdir(parents=True, exist_ok=True) # Ensure main backups dir exists
         with open(aliases_path, 'w', encoding='utf-8') as f:
             json.dump(aliases_data, f, indent=4)
-        logger.info(f"Manual backup aliases saved to {aliases_path}")
+        logger.info(f"Backup aliases saved to {aliases_path}")
     except OSError as e:
-        logger.error(f"Error saving manual backup aliases to {aliases_path}: {e}", exc_info=True)
+        logger.error(f"Error saving backup aliases to {aliases_path}: {e}", exc_info=True)
 
-def add_manual_backup_alias(backup_filename: str, alias: str) -> bool:
-    """Adds or updates an alias for a manual backup file."""
+def add_backup_alias(backup_type_subdir: str, backup_filename: str, alias: str) -> bool:
+    """Adds or updates an alias for a backup file (manual or automatic)."""
     if not backup_filename.startswith("backup_") or not backup_filename.endswith(".zip"):
-        logger.error(f"Invalid manual backup filename format for alias: {backup_filename}")
+        logger.error(f"Invalid backup filename format for alias: {backup_filename}")
         return False
     if not alias.strip():
         logger.error("Alias cannot be empty or just whitespace.")
         return False
+    
+    # Key in JSON will be "automatic/backup_file.zip" or "manual/backup_file.zip"
+    alias_key = f"{backup_type_subdir}/{backup_filename}"
         
-    aliases = _load_manual_backup_aliases()
-    aliases[backup_filename] = alias.strip()
-    _save_manual_backup_aliases(aliases)
+    aliases = _load_backup_aliases()
+    aliases[alias_key] = alias.strip()
+    _save_backup_aliases(aliases)
+    logger.info(f"Alias for '{alias_key}' set to '{alias.strip()}'.")
     return True
 
-def remove_manual_backup_alias(backup_filename: str) -> bool:
-    """Removes an alias for a manual backup file."""
-    aliases = _load_manual_backup_aliases()
-    if backup_filename in aliases:
-        del aliases[backup_filename]
-        _save_manual_backup_aliases(aliases)
-        logger.info(f"Alias for '{backup_filename}' removed.")
+def remove_backup_alias(backup_type_subdir: str, backup_filename: str) -> bool:
+    """Removes an alias for a backup file."""
+    alias_key = f"{backup_type_subdir}/{backup_filename}"
+    aliases = _load_backup_aliases()
+    if alias_key in aliases:
+        del aliases[alias_key]
+        _save_backup_aliases(aliases)
+        logger.info(f"Alias for '{alias_key}' removed.")
         return True
-    logger.warning(f"No alias found for '{backup_filename}' to remove.")
+    logger.warning(f"No alias found for '{alias_key}' to remove.")
     return False
 
 def delete_manual_backup(backup_filename: str) -> bool:
@@ -402,7 +408,7 @@ def delete_manual_backup(backup_filename: str) -> bool:
     try:
         backup_file_path.unlink()
         logger.info(f"Manual backup file deleted: {backup_file_path}")
-        remove_manual_backup_alias(backup_filename) # Attempt to remove alias if it exists
+        remove_backup_alias(MANUAL_BACKUPS_SUBDIR, backup_filename) # Attempt to remove alias
         return True
     except OSError as e:
         logger.error(f"Error deleting manual backup file {backup_file_path}: {e}", exc_info=True)
@@ -419,7 +425,8 @@ def list_backups() -> list[dict]:
     project_root = get_project_root()
     backup_base_dir = project_root / BACKUPS_DIR_NAME
 
-    manual_aliases = _load_manual_backup_aliases()
+    # Load all aliases (manual and automatic)
+    all_backup_aliases = _load_backup_aliases()
 
     for backup_type_subdir_name in SUPPORTED_BACKUP_TYPES:
         backup_type_path = backup_base_dir / backup_type_subdir_name
@@ -434,9 +441,9 @@ def list_backups() -> list[dict]:
                         ts_str_from_stem = item.stem.replace("backup_", "", 1)
                         timestamp_dt = datetime.datetime.strptime(ts_str_from_stem, "%Y%m%d_%H%M%S")
                         
-                        alias = None
-                        if backup_type_subdir_name == MANUAL_BACKUPS_SUBDIR:
-                            alias = manual_aliases.get(item.name)
+                        # Construct the key used in backup_aliases.json
+                        alias_key = f"{backup_type_subdir_name}/{item.name}"
+                        alias = all_backup_aliases.get(alias_key)
 
                         all_backups.append({
                             "type": backup_type_subdir_name,
