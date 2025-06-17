@@ -17433,3 +17433,225 @@ sqlite3.DatabaseError: file is not a database
 2025-06-16 19:58:05,599 - INFO - [kineviz.database.repositories] - Eliminando directorio del estudio: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Prueba
 2025-06-16 19:58:05,600 - INFO - [kineviz.database.repositories] - Estudio ID 1 eliminado de la base de datos.
 2025-06-16 19:58:05,600 - INFO - [kineviz.core.services.study_service] - Estudio ID 1 eliminado como parte de una operación masiva.
+2025-06-16 20:58:20,920 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 20:58:20,920 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 20:58:22,158 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 20:58:22,158 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 20:58:22,160 - INFO - [kineviz.ui.main_window] - Applying theme: Light, font scale: 1.0
+2025-06-16 20:58:59,807 - INFO - [kineviz.ui.main_window] - Intentando abrir manual de usuario: /Users/arakito/Mati/Codigo/Python/KineViz/kineviz/docs/help/manual_usuario.txt
+2025-06-16 21:07:27,448 - INFO - [kineviz.database.repositories] - Directorio creado para estudio 2: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical
+2025-06-16 21:07:27,450 - INFO - [kineviz.core.services.study_service] - Estudio 2 ('Estudio de Salto Vertical') creado en servicio.
+2025-06-16 21:07:30,583 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Pin' para estudio ID 2
+2025-06-16 21:07:30,587 - INFO - [kineviz.database.repositories] - Estado de pin para estudio ID 2 actualizado a True.
+2025-06-16 21:07:30,587 - INFO - [kineviz.core.services.study_service] - Estado de pin para estudio 2 cambiado a True.
+2025-06-16 21:07:30,587 - INFO - [kineviz.ui.views.main_view] - Estado de pin para estudio 2 cambiado.
+2025-06-16 21:08:49,483 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:08:50,992 - INFO - [kineviz.ui.main_window] - Applying theme: Light, font scale: 1.0
+2025-06-16 21:16:33,558 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 21:16:33,558 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 21:16:34,172 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:16:34,172 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:16:34,173 - INFO - [kineviz.ui.main_window] - Applying theme: Light, font scale: 1.0
+2025-06-16 21:24:37,025 - INFO - [kineviz.ui.main_window] - Applying theme: Light, font scale: 1.0
+2025-06-16 21:25:28,866 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 21:25:28,866 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 21:25:29,439 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:25:29,439 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:25:29,441 - INFO - [kineviz.ui.main_window] - Applying theme: Light, font scale: 1.0
+2025-06-16 21:25:51,025 - INFO - [kineviz.database.repositories] - Directorio creado para estudio 3: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Prueba
+2025-06-16 21:25:51,026 - INFO - [kineviz.core.services.study_service] - Estudio 3 ('Prueba') creado en servicio.
+2025-06-16 21:25:56,363 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:25:56,363 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:25:56,367 - INFO - [kineviz.core.backup_manager] - Max automatic backups (4) reached. Deleting oldest: backup_20250616_195725.zip
+2025-06-16 21:25:56,368 - INFO - [kineviz.core.backup_manager] - Creating backup: /Users/arakito/Mati/Codigo/Python/KineViz/backups/automatic/backup_20250616_212556.zip (Test Mode: False)
+2025-06-16 21:25:56,368 - DEBUG - [kineviz.core.backup_manager] - Adding file to backup: /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db as kineviz.db
+2025-06-16 21:25:56,369 - DEBUG - [kineviz.core.backup_manager] - Adding file to backup: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini as config.ini
+2025-06-16 21:25:56,369 - DEBUG - [kineviz.core.backup_manager] - Selectively adding files from studies directory: /Users/arakito/Mati/Codigo/Python/KineViz/estudios
+2025-06-16 21:25:56,370 - INFO - [kineviz.core.backup_manager] - Backup created successfully: /Users/arakito/Mati/Codigo/Python/KineViz/backups/automatic/backup_20250616_212556.zip
+2025-06-16 21:25:56,370 - DEBUG - [kineviz.core.backup_manager] - Updated _last_automatic_backup_end_time to 2025-06-16 21:25:56.370436
+2025-06-16 21:25:56,370 - DEBUG - [kineviz.core.backup_manager] - Lock file /Users/arakito/Mati/Codigo/Python/KineViz/backups/automatic/.backup_in_progress.lock removed.
+2025-06-16 21:25:56,371 - INFO - [kineviz.database.repositories] - Eliminando directorio del estudio: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Prueba
+2025-06-16 21:25:56,373 - INFO - [kineviz.database.repositories] - Estudio ID 3 eliminado de la base de datos.
+2025-06-16 21:25:56,373 - INFO - [kineviz.core.services.study_service] - Estudio ID 3 eliminado como parte de una operación masiva.
+2025-06-16 21:26:59,353 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 2
+2025-06-16 21:26:59,371 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-16 21:26:59,372 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-16 21:26:59,372 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-16 21:27:00,966 - DEBUG - [kineviz.ui.dialogs.file_dialog] - Estructura VIs cargada en FileDialog para estudio 2: [{'name': 'Edad', 'descriptors': ['Adulto', 'Joven', 'Mayor'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['OS', 'NP', 'BP'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-16 21:27:24,466 - DEBUG - [kineviz.ui.dialogs.file_dialog] - Estructura VIs cargada en FileDialog para estudio 2: [{'name': 'Edad', 'descriptors': ['Adulto', 'Joven', 'Mayor'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['OS', 'NP', 'BP'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-16 21:31:47,793 - INFO - [kineviz.ui.main_window] - Applying theme: Light, font scale: 1.0
+2025-06-16 21:32:06,387 - INFO - [kineviz.ui.main_window] - Intentando abrir manual de usuario: /Users/arakito/Mati/Codigo/Python/KineViz/kineviz/docs/help/manual_usuario.txt
+2025-06-16 21:32:48,756 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 2
+2025-06-16 21:32:48,771 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-16 21:32:48,771 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-16 21:32:48,771 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-16 21:32:53,639 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:32:53,639 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:32:54,718 - DEBUG - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Loaded VIs for study 2: [{'name': 'Edad', 'descriptors': ['Adulto', 'Joven', 'Mayor'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['OS', 'NP', 'BP'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-16 21:32:54,744 - DEBUG - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Cargados 0 análisis individuales para estudio 2.
+2025-06-16 21:33:07,305 - DEBUG - [kineviz.ui.dialogs.configure_individual_analysis_dialog] - Datos iniciales cargados: VIs=['Edad', 'Peso'], Sub-valores={'Edad': ['Adulto', 'Joven', 'Mayor'], 'Peso': ['OS', 'NP', 'BP']}, Alias={}
+2025-06-16 21:33:07,305 - DEBUG - [kineviz.ui.dialogs.configure_individual_analysis_dialog] - Verificando disponibilidad de 'Cinematica' para estudio 2
+2025-06-16 21:33:07,306 - WARNING - [kineviz.ui.dialogs.configure_individual_analysis_dialog] - Directorio de tablas resumen para 'Cinematica' no encontrado en /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas.
+2025-06-16 21:33:16,772 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-16 21:33:16,773 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-16 21:33:16,773 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-16 21:33:31,984 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:33:34,010 - INFO - [kineviz.ui.main_window] - Applying theme: Dark, font scale: 1.0
+2025-06-16 21:33:41,782 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:33:43,064 - INFO - [kineviz.ui.main_window] - Applying theme: Light, font scale: 2.0
+2025-06-16 21:33:53,289 - INFO - [kineviz.config.settings] - Restableciendo configuraciones a valores por defecto...
+2025-06-16 21:33:53,291 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:33:53,291 - INFO - [kineviz.config.settings] - Configuraciones restablecidas y guardadas.
+2025-06-16 21:33:56,133 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:33:57,322 - INFO - [kineviz.ui.main_window] - Applying theme: Light, font scale: 1.0
+2025-06-16 21:34:21,083 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:34:22,297 - INFO - [kineviz.ui.main_window] - Applying theme: Dark, font scale: 1.0
+2025-06-16 21:34:28,014 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:34:29,105 - INFO - [kineviz.ui.main_window] - Applying theme: Dark, font scale: 1.0
+2025-06-16 21:34:33,282 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Comentar' para estudio ID 2
+2025-06-16 21:34:47,797 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Pin' para estudio ID 2
+2025-06-16 21:34:47,801 - INFO - [kineviz.database.repositories] - Estado de pin para estudio ID 2 actualizado a False.
+2025-06-16 21:34:47,802 - INFO - [kineviz.core.services.study_service] - Estado de pin para estudio 2 cambiado a False.
+2025-06-16 21:34:47,802 - INFO - [kineviz.ui.views.main_view] - Estado de pin para estudio 2 cambiado.
+2025-06-16 21:34:48,512 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Pin' para estudio ID 2
+2025-06-16 21:34:48,518 - INFO - [kineviz.database.repositories] - Estado de pin para estudio ID 2 actualizado a True.
+2025-06-16 21:34:48,518 - INFO - [kineviz.core.services.study_service] - Estado de pin para estudio 2 cambiado a True.
+2025-06-16 21:34:48,518 - INFO - [kineviz.ui.views.main_view] - Estado de pin para estudio 2 cambiado.
+2025-06-16 21:35:17,987 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 2
+2025-06-16 21:35:18,003 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-16 21:35:18,004 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-16 21:35:18,004 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-16 21:35:20,967 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:35:20,968 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:35:33,266 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-16 21:35:33,267 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-16 21:35:33,267 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-16 21:35:43,457 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 2
+2025-06-16 21:35:43,469 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-16 21:35:43,469 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-16 21:35:43,470 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-16 21:35:48,614 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:35:48,614 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:36:04,673 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-16 21:36:04,675 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-16 21:36:04,675 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-16 21:36:20,085 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:36:21,937 - INFO - [kineviz.ui.main_window] - Applying theme: Dark, font scale: 2.0
+2025-06-16 21:36:23,651 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 2
+2025-06-16 21:36:23,662 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-16 21:36:23,662 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-16 21:36:23,662 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-16 21:36:38,182 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:36:38,183 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:36:40,752 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-16 21:36:40,753 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-16 21:36:40,753 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-16 21:38:11,019 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:38:12,307 - INFO - [kineviz.ui.main_window] - Applying theme: Dark, font scale: 1.0
+2025-06-16 21:40:42,911 - WARNING - [kineviz.core.backup_manager] - Could not parse timestamp from backup filename 'backup_20250616_195728.zip': time data '20250616' does not match format '%Y%m%d%H%M%S'
+2025-06-16 21:40:42,915 - WARNING - [kineviz.core.backup_manager] - Could not parse timestamp from backup filename 'backup_20250616_195727.zip': time data '20250616' does not match format '%Y%m%d%H%M%S'
+2025-06-16 21:40:42,915 - WARNING - [kineviz.core.backup_manager] - Could not parse timestamp from backup filename 'backup_20250616_212556.zip': time data '20250616' does not match format '%Y%m%d%H%M%S'
+2025-06-16 21:40:42,916 - WARNING - [kineviz.core.backup_manager] - Could not parse timestamp from backup filename 'backup_20250616_195805.zip': time data '20250616' does not match format '%Y%m%d%H%M%S'
+2025-06-16 21:40:42,916 - WARNING - [kineviz.core.backup_manager] - Could not parse timestamp from backup filename 'backup_20250616_194732.zip': time data '20250616' does not match format '%Y%m%d%H%M%S'
+2025-06-16 21:40:42,916 - WARNING - [kineviz.core.backup_manager] - Could not parse timestamp from backup filename 'backup_20250616_194130.zip': time data '20250616' does not match format '%Y%m%d%H%M%S'
+2025-06-16 21:40:42,916 - WARNING - [kineviz.core.backup_manager] - Could not parse timestamp from backup filename 'backup_20250616_195728.zip': time data '20250616' does not match format '%Y%m%d%H%M%S'
+2025-06-16 21:40:42,920 - WARNING - [kineviz.core.backup_manager] - Could not parse timestamp from backup filename 'backup_20250616_163826.zip': time data '20250616' does not match format '%Y%m%d%H%M%S'
+2025-06-16 21:41:19,444 - INFO - [kineviz.ui.dialogs.backup_restore_dialog] - Attempting to create manual backup with alias: 'No Alias'
+2025-06-16 21:41:19,448 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:41:19,448 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:41:19,451 - INFO - [kineviz.core.backup_manager] - Max manual backups (4) reached. Deleting oldest: backup_20250616_163826.zip
+2025-06-16 21:41:19,459 - INFO - [kineviz.core.backup_manager] - Manual backup aliases saved to /Users/arakito/Mati/Codigo/Python/KineViz/backups/manual/manual_backup_aliases.json
+2025-06-16 21:41:19,460 - INFO - [kineviz.core.backup_manager] - Creating backup: /Users/arakito/Mati/Codigo/Python/KineViz/backups/manual/backup_20250616_214119.zip (Test Mode: False)
+2025-06-16 21:41:19,461 - DEBUG - [kineviz.core.backup_manager] - Adding file to backup: /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db as kineviz.db
+2025-06-16 21:41:19,462 - DEBUG - [kineviz.core.backup_manager] - Adding file to backup: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini as config.ini
+2025-06-16 21:41:19,463 - DEBUG - [kineviz.core.backup_manager] - Selectively adding files from studies directory: /Users/arakito/Mati/Codigo/Python/KineViz/estudios
+2025-06-16 21:41:19,464 - INFO - [kineviz.core.backup_manager] - Backup created successfully: /Users/arakito/Mati/Codigo/Python/KineViz/backups/manual/backup_20250616_214119.zip
+2025-06-16 21:41:22,258 - WARNING - [kineviz.core.backup_manager] - Could not parse timestamp from backup filename 'backup_20250616_195728.zip': time data '20250616' does not match format '%Y%m%d%H%M%S'
+2025-06-16 21:41:22,258 - WARNING - [kineviz.core.backup_manager] - Could not parse timestamp from backup filename 'backup_20250616_195727.zip': time data '20250616' does not match format '%Y%m%d%H%M%S'
+2025-06-16 21:41:22,258 - WARNING - [kineviz.core.backup_manager] - Could not parse timestamp from backup filename 'backup_20250616_212556.zip': time data '20250616' does not match format '%Y%m%d%H%M%S'
+2025-06-16 21:41:22,258 - WARNING - [kineviz.core.backup_manager] - Could not parse timestamp from backup filename 'backup_20250616_195805.zip': time data '20250616' does not match format '%Y%m%d%H%M%S'
+2025-06-16 21:41:22,259 - WARNING - [kineviz.core.backup_manager] - Could not parse timestamp from backup filename 'backup_20250616_194732.zip': time data '20250616' does not match format '%Y%m%d%H%M%S'
+2025-06-16 21:41:22,259 - WARNING - [kineviz.core.backup_manager] - Could not parse timestamp from backup filename 'backup_20250616_194130.zip': time data '20250616' does not match format '%Y%m%d%H%M%S'
+2025-06-16 21:41:22,259 - WARNING - [kineviz.core.backup_manager] - Could not parse timestamp from backup filename 'backup_20250616_195728.zip': time data '20250616' does not match format '%Y%m%d%H%M%S'
+2025-06-16 21:41:22,259 - WARNING - [kineviz.core.backup_manager] - Could not parse timestamp from backup filename 'backup_20250616_214119.zip': time data '20250616' does not match format '%Y%m%d%H%M%S'
+2025-06-16 21:41:58,849 - INFO - [kineviz.ui.main_window] - Applying theme: Dark, font scale: 1.0
+2025-06-16 21:53:11,520 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 21:53:11,520 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 21:53:12,716 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:53:12,716 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 21:53:12,718 - INFO - [kineviz.ui.main_window] - Applying theme: Dark, font scale: 1.0
+2025-06-16 21:59:50,430 - INFO - [kineviz.core.backup_manager] - Manual backup file deleted: /Users/arakito/Mati/Codigo/Python/KineViz/backups/manual/backup_20250616_194130.zip
+2025-06-16 21:59:50,439 - WARNING - [kineviz.core.backup_manager] - No alias found for 'backup_20250616_194130.zip' to remove.
+2025-06-16 22:02:39,580 - INFO - [kineviz.core.backup_manager] - Manual backup aliases saved to /Users/arakito/Mati/Codigo/Python/KineViz/backups/manual/manual_backup_aliases.json
+2025-06-16 22:02:53,526 - INFO - [kineviz.core.backup_manager] - Manual backup file deleted: /Users/arakito/Mati/Codigo/Python/KineViz/backups/manual/backup_20250616_194732.zip
+2025-06-16 22:02:53,527 - INFO - [kineviz.core.backup_manager] - Manual backup aliases saved to /Users/arakito/Mati/Codigo/Python/KineViz/backups/manual/manual_backup_aliases.json
+2025-06-16 22:02:53,527 - INFO - [kineviz.core.backup_manager] - Alias for 'backup_20250616_194732.zip' removed.
+2025-06-16 22:11:14,697 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 22:11:14,697 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 22:11:15,306 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 22:11:15,306 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 22:11:15,308 - INFO - [kineviz.ui.main_window] - Applying theme: Dark, font scale: 1.0
+2025-06-16 22:19:50,380 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 22:19:50,380 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 22:19:50,993 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 22:19:50,993 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 22:19:50,995 - INFO - [kineviz.ui.main_window] - Applying theme: Dark, font scale: 1.0
+2025-06-16 22:20:24,303 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 2
+2025-06-16 22:20:24,318 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-16 22:20:24,319 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-16 22:20:24,319 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-16 22:20:25,835 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 22:20:25,835 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 22:20:27,468 - DEBUG - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Loaded VIs for study 2: [{'name': 'Edad', 'descriptors': ['Adulto', 'Joven', 'Mayor'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['OS', 'NP', 'BP'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-16 22:20:27,506 - DEBUG - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Cargados 0 análisis individuales para estudio 2.
+2025-06-16 22:20:29,404 - DEBUG - [kineviz.ui.dialogs.configure_individual_analysis_dialog] - Datos iniciales cargados: VIs=['Edad', 'Peso'], Sub-valores={'Edad': ['Adulto', 'Joven', 'Mayor'], 'Peso': ['OS', 'NP', 'BP']}, Alias={}
+2025-06-16 22:20:29,404 - DEBUG - [kineviz.ui.dialogs.configure_individual_analysis_dialog] - Verificando disponibilidad de 'Cinematica' para estudio 2
+2025-06-16 22:20:29,405 - WARNING - [kineviz.ui.dialogs.configure_individual_analysis_dialog] - Directorio de tablas resumen para 'Cinematica' no encontrado en /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Tablas.
+2025-06-16 22:20:36,799 - WARNING - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - ConfigureIndividualAnalysisDialog was destroyed during initialization. Aborting new analysis configuration.
+2025-06-16 22:20:36,800 - DEBUG - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Cargados 0 análisis individuales para estudio 2.
+2025-06-16 22:21:10,292 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-16 22:21:10,293 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-16 22:21:10,293 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-16 22:21:44,077 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 22:21:44,077 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 22:21:44,638 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 22:21:44,638 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 22:21:44,640 - INFO - [kineviz.ui.main_window] - Applying theme: Dark, font scale: 1.0
+2025-06-16 22:59:07,126 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 22:59:07,126 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 22:59:07,728 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 22:59:07,728 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 22:59:07,730 - INFO - [kineviz.ui.main_window] - Applying theme: Dark, font scale: 1.0
+2025-06-16 23:01:52,048 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 23:01:52,048 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 23:01:52,279 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 23:01:52,279 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 23:01:52,280 - INFO - [kineviz.ui.main_window] - Applying theme: Dark, font scale: 1.0
+2025-06-16 23:04:40,642 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 23:04:40,642 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 23:04:41,125 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 23:04:41,125 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 23:04:41,127 - INFO - [kineviz.ui.main_window] - Applying theme: Dark, font scale: 1.0
+2025-06-16 23:05:56,102 - INFO - [kineviz.core.backup_manager] - Manual backup aliases saved to /Users/arakito/Mati/Codigo/Python/KineViz/backups/manual/manual_backup_aliases.json
+2025-06-16 23:07:58,408 - INFO - [kineviz.ui.main_window] - Applying theme: Dark, font scale: 1.0
+2025-06-16 23:08:05,588 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 23:08:06,825 - INFO - [kineviz.ui.main_window] - Applying theme: Dark, font scale: 2.0
+2025-06-16 23:23:40,722 - INFO - [kineviz.ui.main_window] - Applying theme: Dark, font scale: 2.0
+2025-06-16 23:23:41,845 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 2
+2025-06-16 23:23:41,854 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-16 23:23:41,854 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-16 23:23:41,854 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-16 23:30:21,139 - INFO - [kineviz.ui.main_window] - Applying theme: Dark, font scale: 2.0
+2025-06-16 23:34:04,281 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 23:34:04,281 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 23:34:04,780 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 23:34:04,780 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 23:34:04,782 - INFO - [kineviz.ui.main_window] - Applying theme: Dark, font scale: 2.0
+2025-06-16 23:38:30,631 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 23:38:30,632 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 23:38:30,833 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 23:38:30,833 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 23:38:30,835 - INFO - [kineviz.ui.main_window] - Applying theme: Dark, font scale: 2.0
+2025-06-16 23:38:48,641 - INFO - [kineviz.core.backup_manager] - Manual backup file deleted: /Users/arakito/Mati/Codigo/Python/KineViz/backups/manual/backup_20250616_195728.zip
+2025-06-16 23:38:48,642 - INFO - [kineviz.core.backup_manager] - Manual backup aliases saved to /Users/arakito/Mati/Codigo/Python/KineViz/backups/manual/manual_backup_aliases.json
+2025-06-16 23:38:48,642 - INFO - [kineviz.core.backup_manager] - Alias for 'backup_20250616_195728.zip' removed.
