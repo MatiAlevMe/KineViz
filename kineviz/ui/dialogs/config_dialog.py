@@ -6,6 +6,7 @@ from kineviz.config.settings import AppSettings
 from kineviz.ui.widgets.tooltip import Tooltip # Import Tooltip
 from kineviz.ui.dialogs.backup_restore_dialog import BackupRestoreDialog # Import new dialog
 from kineviz.core import backup_manager # Import backup_manager module
+from kineviz.ui.utils.style import get_scaled_font, DEFAULT_FONT_SIZE # For direct font scaling
 
 class ConfigDialog(Toplevel):
     """Diálogo para configurar los ajustes de la aplicación."""
@@ -42,6 +43,8 @@ class ConfigDialog(Toplevel):
         self.var_enable_automatic_backups = tk.BooleanVar() # New
         self.var_enable_manual_backups = tk.BooleanVar()   # New
 
+        # Calculate scaled font once for direct application
+        self.scaled_font_tuple = get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale)
 
         self.load_current_settings()
         
@@ -150,8 +153,8 @@ class ConfigDialog(Toplevel):
         font_scale_frame = ttk.Frame(parent_frame)
         font_scale_frame.grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5)
         font_scale_options = ["0.8", "0.9", "1.0", "1.1", "1.2", "1.3", "1.5", "1.75", "2.0"]
-        font_scale_combo = ttk.Combobox(font_scale_frame, textvariable=self.var_font_scale, values=font_scale_options, state="readonly") # Removed width
-        font_scale_combo.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True) # Added fill and expand
+        font_scale_combo = ttk.Combobox(font_scale_frame, textvariable=self.var_font_scale, values=font_scale_options, state="readonly", font=self.scaled_font_tuple) # Added font
+        font_scale_combo.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True)
         font_scale_long_text = ("Ajusta el tamaño general del texto en la aplicación.\n"
                                 "1.0 es el tamaño normal. Valores mayores agrandan el texto, menores lo achican.")
         font_scale_short_text = "Ajusta el tamaño del texto en la aplicación."
@@ -166,8 +169,8 @@ class ConfigDialog(Toplevel):
         theme_frame = ttk.Frame(parent_frame)
         theme_frame.grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5)
         theme_options = ["Light", "Dark"]
-        theme_combo = ttk.Combobox(theme_frame, textvariable=self.var_theme, values=theme_options, state="readonly") # Removed width
-        theme_combo.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True) # Added fill and expand
+        theme_combo = ttk.Combobox(theme_frame, textvariable=self.var_theme, values=theme_options, state="readonly", font=self.scaled_font_tuple) # Added font
+        theme_combo.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True)
         theme_long_text = ("Cambia la apariencia visual de la aplicación (colores).\n"
                            "Light: Tema claro (predeterminado).\n"
                            "Dark: Tema oscuro.")
@@ -205,8 +208,8 @@ class ConfigDialog(Toplevel):
         ttk.Label(parent_frame, text="Estudios por página:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
         studies_frame = ttk.Frame(parent_frame)
         studies_frame.grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5) # Changed sticky to ew
-        studies_entry = ttk.Entry(studies_frame, textvariable=self.var_studies_per_page) # Removed width
-        studies_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True) # Added fill and expand
+        studies_entry = ttk.Entry(studies_frame, textvariable=self.var_studies_per_page, font=self.scaled_font_tuple) # Added font
+        studies_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True)
         studies_long_text = "Número de estudios a mostrar por página en la vista principal."
         studies_short_text = "Estudios por página."
         studies_help_btn = ttk.Button(studies_frame, text="?", width=3, style="Help.TButton",
@@ -218,8 +221,8 @@ class ConfigDialog(Toplevel):
         ttk.Label(parent_frame, text="Archivos por página (vista estudio):").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
         files_frame = ttk.Frame(parent_frame)
         files_frame.grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5) # Changed sticky to ew
-        files_entry = ttk.Entry(files_frame, textvariable=self.var_files_per_page) # Removed width
-        files_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True) # Added fill and expand
+        files_entry = ttk.Entry(files_frame, textvariable=self.var_files_per_page, font=self.scaled_font_tuple) # Added font
+        files_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True)
         files_long_text = "Número de archivos a mostrar por página en el navegador de archivos de la vista de estudio."
         files_short_text = "Archivos por página (vista estudio)."
         files_help_btn = ttk.Button(files_frame, text="?", width=3, style="Help.TButton",
@@ -231,8 +234,8 @@ class ConfigDialog(Toplevel):
         ttk.Label(parent_frame, text="Tablas resumen discreto por página:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
         discrete_tables_frame = ttk.Frame(parent_frame)
         discrete_tables_frame.grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5) # Changed sticky to ew
-        discrete_tables_entry = ttk.Entry(discrete_tables_frame, textvariable=self.var_discrete_tables_per_page) # Removed width
-        discrete_tables_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True) # Added fill and expand
+        discrete_tables_entry = ttk.Entry(discrete_tables_frame, textvariable=self.var_discrete_tables_per_page, font=self.scaled_font_tuple) # Added font
+        discrete_tables_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True)
         discrete_tables_long_text = "Número de tablas de resumen (ej. Maximo_Cinematica_...) a mostrar por página en la vista de 'Análisis Discreto'."
         discrete_tables_short_text = "Tablas resumen discreto por página."
         discrete_tables_help_btn = ttk.Button(discrete_tables_frame, text="?", width=3, style="Help.TButton",
@@ -244,8 +247,8 @@ class ConfigDialog(Toplevel):
         ttk.Label(parent_frame, text="Elementos por página (gestores análisis):").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
         analysis_items_frame = ttk.Frame(parent_frame)
         analysis_items_frame.grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5) # Changed sticky to ew
-        analysis_items_entry = ttk.Entry(analysis_items_frame, textvariable=self.var_analysis_items_per_page) # Removed width
-        analysis_items_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True) # Added fill and expand
+        analysis_items_entry = ttk.Entry(analysis_items_frame, textvariable=self.var_analysis_items_per_page, font=self.scaled_font_tuple) # Added font
+        analysis_items_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True)
         analysis_items_long_text = "Número de elementos (análisis guardados) a mostrar por página en los gestores de análisis discreto y continuo."
         analysis_items_short_text = "Elementos por página (gestores análisis)."
         analysis_items_help_btn = ttk.Button(analysis_items_frame, text="?", width=3, style="Help.TButton",
@@ -257,8 +260,8 @@ class ConfigDialog(Toplevel):
         ttk.Label(parent_frame, text="Copias de seguridad por página:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
         backups_page_frame = ttk.Frame(parent_frame)
         backups_page_frame.grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5) # Changed sticky to ew
-        backups_page_entry = ttk.Entry(backups_page_frame, textvariable=self.var_backups_per_page) # Removed width
-        backups_page_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True) # Added fill and expand
+        backups_page_entry = ttk.Entry(backups_page_frame, textvariable=self.var_backups_per_page, font=self.scaled_font_tuple) # Added font
+        backups_page_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True)
         backups_page_long_text = "Número de copias de seguridad a mostrar por página en el gestor de copias de seguridad."
         backups_page_short_text = "Copias de seguridad por página."
         backups_page_help_btn = ttk.Button(backups_page_frame, text="?", width=3, style="Help.TButton",
@@ -300,8 +303,8 @@ class ConfigDialog(Toplevel):
         ttk.Label(self.max_auto_frame, text="Máx. copias automáticas:").pack(side=tk.LEFT, pady=5, padx=0)
         max_auto_entry_frame = ttk.Frame(self.max_auto_frame)
         max_auto_entry_frame.pack(side=tk.LEFT, padx=5, pady=5, fill=tk.X, expand=True) # Added fill and expand
-        max_auto_entry = ttk.Entry(max_auto_entry_frame, textvariable=self.var_max_auto_backups) # Removed width
-        max_auto_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True) # Added fill and expand
+        max_auto_entry = ttk.Entry(max_auto_entry_frame, textvariable=self.var_max_auto_backups, font=self.scaled_font_tuple) # Added font
+        max_auto_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True)
         max_auto_long_text = ("Número máximo de copias de seguridad automáticas a conservar (debe ser > 0).\n"
                               "El límite se aplica cuando se crea una nueva copia automática; las más antiguas se eliminan.")
         max_auto_short_text = "Máx. copias automáticas (>0)."
@@ -317,8 +320,8 @@ class ConfigDialog(Toplevel):
         ttk.Label(self.cooldown_frame, text="Enfriamiento copias automáticas (seg):").pack(side=tk.LEFT, pady=5, padx=0)
         cooldown_entry_frame = ttk.Frame(self.cooldown_frame)
         cooldown_entry_frame.pack(side=tk.LEFT, padx=5, pady=5, fill=tk.X, expand=True) # Added fill and expand
-        cooldown_entry = ttk.Entry(cooldown_entry_frame, textvariable=self.var_auto_backup_cooldown) # Removed width
-        cooldown_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True) # Added fill and expand
+        cooldown_entry = ttk.Entry(cooldown_entry_frame, textvariable=self.var_auto_backup_cooldown, font=self.scaled_font_tuple) # Added font
+        cooldown_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True)
         cooldown_long_text = "Tiempo mínimo (en segundos, >=0) que debe pasar después de una copia automática antes de que se pueda iniciar otra."
         cooldown_short_text = "Enfriamiento copias automáticas (seg, >=0)."
         cooldown_help_btn = ttk.Button(cooldown_entry_frame, text="?", width=3, style="Help.TButton",
@@ -351,8 +354,8 @@ class ConfigDialog(Toplevel):
         ttk.Label(self.max_manual_frame, text="Máx. copias manuales:").pack(side=tk.LEFT, pady=5, padx=0)
         max_manual_entry_frame = ttk.Frame(self.max_manual_frame)
         max_manual_entry_frame.pack(side=tk.LEFT, padx=5, pady=5, fill=tk.X, expand=True) # Added fill and expand
-        max_manual_entry = ttk.Entry(max_manual_entry_frame, textvariable=self.var_max_manual_backups) # Removed width
-        max_manual_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True) # Added fill and expand
+        max_manual_entry = ttk.Entry(max_manual_entry_frame, textvariable=self.var_max_manual_backups, font=self.scaled_font_tuple) # Added font
+        max_manual_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True)
         max_manual_long_text = ("Número máximo de copias de seguridad manuales a conservar (debe ser > 0).\n"
                                 "Si se alcanza el límite, se impedirá crear nuevas copias hasta liberar espacio.")
         max_manual_short_text = "Máx. copias manuales (>0)."
