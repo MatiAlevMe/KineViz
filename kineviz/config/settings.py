@@ -354,6 +354,15 @@ class AppSettings:
         else:
             self.set_setting('automatic_backup_cooldown_seconds', str(value))
 
+    @property
+    def backups_per_page(self) -> int:
+        """Number of backups to display per page in the backup manager."""
+        return self.get_int_setting('backups_per_page', 10)
+
+    @backups_per_page.setter
+    def backups_per_page(self, value: int):
+        self.set_setting('backups_per_page', str(value))
+
     def reset_to_defaults(self):
          """Restablece las configuraciones en memoria a los valores por defecto."""
          logger.info("Restableciendo configuraciones a valores por defecto...")
