@@ -422,7 +422,7 @@ class BackupRestoreDialog(Toplevel):
             messagebox.showwarning("Deshabilitado", 
                                    "La creación de copias de seguridad manuales está desactivada en la configuración.", 
                                        parent=self)
-                return
+            return
             try:
                 logger.info(f"Attempting to create manual backup with alias: '{alias if alias else 'No Alias'}'")
                 backup_path = backup_manager.create_backup(backup_manager.MANUAL_BACKUPS_SUBDIR)
