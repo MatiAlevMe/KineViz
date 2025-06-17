@@ -31,6 +31,7 @@ class ConfigDialog(Toplevel):
         self.var_files_per_page = StringVar()
         self.var_analysis_items_per_page = StringVar() # Renamed from var_pdfs_per_page
         self.var_discrete_tables_per_page = StringVar() # New variable
+        self.var_backups_per_page = StringVar() # New variable for backup pagination
         self.var_font_scale = StringVar()
         self.var_theme = StringVar()
         self.var_show_factory_reset = tk.BooleanVar() # New variable for the switch
@@ -61,6 +62,7 @@ class ConfigDialog(Toplevel):
         self.var_files_per_page.set(str(self.settings.files_per_page))
         self.var_analysis_items_per_page.set(str(self.settings.analysis_items_per_page)) # Renamed
         self.var_discrete_tables_per_page.set(str(self.settings.discrete_tables_per_page)) # Load new setting
+        self.var_backups_per_page.set(str(self.settings.backups_per_page)) # Load new setting
         self.var_font_scale.set(str(self.settings.font_scale))
         self.var_theme.set(self.settings.theme)
         self.var_show_factory_reset.set(self.settings.show_factory_reset_button) # Load new setting
@@ -229,6 +231,20 @@ class ConfigDialog(Toplevel):
                                              command=lambda: self._show_input_help("Ayuda: Elementos por Página (Gestores de Análisis)", analysis_items_long_text))
         analysis_items_help_btn.pack(side=tk.LEFT)
         Tooltip(analysis_items_help_btn, text=analysis_items_long_text, short_text=analysis_items_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx +=1 # Increment row_idx for the next item
+
+        ttk.Label(parent_frame, text="Copias de seguridad por página:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        backups_page_frame = ttk.Frame(parent_frame)
+        backups_page_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
+        backups_page_entry = ttk.Entry(backups_page_frame, textvariable=self.var_backups_per_page, width=7)
+        backups_page_entry.pack(side=tk.LEFT, padx=(0,5))
+        backups_page_long_text = "Número de copias de seguridad a mostrar por página en el gestor de copias de seguridad."
+        backups_page_short_text = "Copias de seguridad por página."
+        backups_page_help_btn = ttk.Button(backups_page_frame, text="?", width=3, style="Help.TButton",
+                                             command=lambda: self._show_input_help("Ayuda: Copias de Seguridad por Página", backups_page_long_text))
+        backups_page_help_btn.pack(side=tk.LEFT)
+        Tooltip(backups_page_help_btn, text=backups_page_long_text, short_text=backups_page_short_text, enabled=self.settings.enable_hover_tooltips)
+
 
     def _create_backups_tab_widgets(self, parent_frame: ttk.Frame):
         """Crea los widgets para la pestaña 'Copias de Seguridad'."""
@@ -360,6 +376,7 @@ class ConfigDialog(Toplevel):
             "Archivos por página": self.var_files_per_page.get(),
             "Elementos por página (gestores análisis)": self.var_analysis_items_per_page.get(), # Changed label
             "Tablas resumen discreto por página": self.var_discrete_tables_per_page.get(), # New field
+            "Copias de seguridad por página": self.var_backups_per_page.get(), # New field
             "Máx. copias automáticas": self.var_max_auto_backups.get(),
             "Máx. copias manuales": self.var_max_manual_backups.get(),
             "Enfriamiento copias automáticas (seg)": self.var_auto_backup_cooldown.get()
@@ -398,6 +415,7 @@ class ConfigDialog(Toplevel):
             self.settings.files_per_page = int(self.var_files_per_page.get())
             self.settings.analysis_items_per_page = int(self.var_analysis_items_per_page.get()) # Renamed
             self.settings.discrete_tables_per_page = int(self.var_discrete_tables_per_page.get()) # Save new setting
+            self.settings.backups_per_page = int(self.var_backups_per_page.get()) # Save new setting
             self.settings.font_scale = float(self.var_font_scale.get())
             self.settings.theme = self.var_theme.get()
             self.settings.show_factory_reset_button = self.var_show_factory_reset.get() # Save new setting

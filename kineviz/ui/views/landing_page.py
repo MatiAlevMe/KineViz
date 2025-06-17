@@ -46,6 +46,12 @@ class LandingPage:
              ttk.Button(button_frame, text='Ver Estudios Existentes',
                        command=self.main_window.show_main_view, style=button_style).pack(**button_padding)
 
+        ttk.Button(button_frame, text='Restaurar Copia de Seguridad',
+                  command=self.main_window.show_backup_restore_dialog_from_landing, style=button_style).pack(**button_padding)
+
+        ttk.Button(button_frame, text='Reproducir DEMO',
+                  command=self.main_window.play_demo_video, style=button_style).pack(**button_padding)
+
 
     # El método destroy es llamado por MainWindow.clear_window
     def destroy(self):
