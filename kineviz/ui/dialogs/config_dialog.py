@@ -410,23 +410,6 @@ class ConfigDialog(Toplevel):
 
     def _toggle_backup_options_visibility(self, event=None):
         """Muestra u oculta las opciones de backup según los checkboxes de habilitación."""
-        bbr_cb = ttk.Checkbutton(
-            self.backup_before_restore_frame,
-            text="Crear copia automática antes de restaurar otra copia",
-            variable=self.var_backup_before_restore
-        )
-        bbr_cb.pack(side=tk.LEFT, padx=(0,5))
-        bbr_long_text = "Si está activado, se creará una copia de seguridad automática del estado actual del sistema justo antes de que se inicie una operación de restauración. Recomendado."
-        bbr_short_text = "Backup automático pre-restauración."
-        bbr_help_btn = ttk.Button(self.backup_before_restore_frame, text="?", width=3, style="Help.TButton",
-                                     command=lambda: self._show_input_help("Ayuda: Backup Pre-Restauración", bbr_long_text))
-        bbr_help_btn.pack(side=tk.LEFT)
-        Tooltip(bbr_help_btn, text=bbr_long_text, short_text=bbr_short_text, enabled=self.settings.enable_hover_tooltips)
-        row_idx +=1 # Increment after adding this new section
-
-
-    def _toggle_backup_options_visibility(self, event=None):
-        """Muestra u oculta las opciones de backup según los checkboxes de habilitación."""
         show_auto_options = self.var_enable_automatic_backups.get()
         show_manual_options = self.var_enable_manual_backups.get()
 
