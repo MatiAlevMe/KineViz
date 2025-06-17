@@ -39212,3 +39212,290 @@ ValueError: could not convert string to float: '10,8521'
 2025-06-17 13:52:39,967 - INFO - [kineviz.config.settings] - Configuraciones guardadas en /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
 2025-06-17 13:52:41,165 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
 2025-06-17 13:52:41,166 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 13:54:55,312 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 13:54:55,312 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 13:54:55,569 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 13:54:55,569 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 13:54:55,570 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 13:54:55,572 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 13:55:02,478 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 13:55:02,479 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 13:58:49,876 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 13:58:49,876 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 13:58:50,084 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 13:58:50,084 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 13:58:50,085 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 13:58:50,088 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 13:58:54,325 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 13:58:54,325 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 13:59:05,485 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 13:59:05,485 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 13:59:05,652 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 13:59:05,652 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 13:59:05,653 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 13:59:05,655 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 13:59:09,273 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 13:59:09,273 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 13:59:33,249 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 13:59:33,249 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 13:59:33,432 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 13:59:33,432 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 13:59:33,433 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 13:59:33,435 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 13:59:37,040 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 13:59:37,040 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:08:10,247 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:08:10,248 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:08:10,463 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:08:10,463 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:08:10,464 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:08:10,467 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:08:14,056 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:08:14,056 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:08:26,098 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 2, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:08:26,098 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:09:28,430 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:09:28,430 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:09:28,617 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:09:28,617 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:09:28,618 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:09:28,620 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:09:31,598 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:09:31,599 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:09:37,053 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:09:37,054 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:09:47,820 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:09:47,820 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:09:51,321 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:09:51,322 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:11:34,893 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:11:34,893 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:11:35,079 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:11:35,079 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:11:35,080 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:11:35,082 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:12:24,814 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:12:24,814 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:12:24,996 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:12:24,996 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:12:24,997 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:12:24,998 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:12:27,948 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:12:27,948 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:14:31,200 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:14:31,200 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:14:31,430 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:14:31,430 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:14:31,431 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:14:31,433 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:14:35,934 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:14:35,934 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:14:42,454 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 2, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:14:42,454 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:14:55,721 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:14:55,721 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:14:57,337 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 2, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:14:57,337 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:15:15,504 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:15:15,504 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:15:15,701 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:15:15,701 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:15:15,702 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:15:15,705 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:15:19,343 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:15:19,343 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:15:26,802 - INFO - [kineviz.core.backup_manager] - Backup aliases saved to /Users/arakito/Mati/Codigo/Python/KineViz/backups/backup_aliases.json
+2025-06-17 14:15:26,802 - INFO - [kineviz.core.backup_manager] - Alias for 'automatic/backup_20250617_124037.zip' set to 'holaaa'.
+2025-06-17 14:15:28,114 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:15:28,114 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:16:00,567 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:16:00,567 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:16:00,773 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:16:00,773 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:16:00,775 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:16:00,777 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:16:04,284 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:16:04,284 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:16:27,383 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:16:27,384 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:16:27,554 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:16:27,554 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:16:27,555 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:16:27,557 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:16:31,116 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:16:31,116 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:16:39,820 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 2, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:16:39,821 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:17:05,094 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:17:05,095 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:17:05,315 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:17:05,315 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:17:05,317 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:17:05,319 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:17:11,284 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:17:11,285 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:17:14,204 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:17:14,205 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:17:16,358 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:17:16,358 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:17:18,656 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:17:18,656 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:17:37,026 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:17:37,027 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:17:41,909 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:17:41,909 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:17:45,358 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:17:45,358 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:18:01,757 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:18:01,758 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:18:01,943 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:18:01,943 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:18:01,945 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:18:01,947 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:18:05,431 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:18:05,431 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:18:26,452 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:18:26,454 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:18:26,666 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:18:26,666 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:18:26,667 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:18:26,668 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:18:29,780 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:18:29,780 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:18:33,355 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:18:33,355 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:18:49,825 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:18:49,826 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:18:50,005 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:18:50,005 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:18:50,006 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:18:50,008 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:18:53,182 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:18:53,182 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:18:57,989 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:18:57,989 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:19:01,123 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:19:01,124 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:19:04,795 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:19:04,795 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:19:06,822 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:19:06,822 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:19:07,623 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:19:07,623 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:19:09,008 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:19:09,009 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:19:13,546 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:19:13,546 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:19:19,404 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:19:19,405 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:20:23,814 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:20:23,815 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:20:24,014 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:20:24,014 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:20:24,015 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:20:24,017 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:20:28,649 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:20:28,650 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:20:31,439 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:20:31,440 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:20:33,306 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:20:33,306 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:20:36,708 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:20:36,708 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:20:39,257 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:20:39,257 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:20:41,491 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:20:41,491 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:21:02,070 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:21:02,070 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:21:02,270 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:21:02,270 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:21:02,271 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:21:02,273 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:21:05,550 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:21:05,550 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:21:08,123 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:21:08,123 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:21:10,774 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:21:10,774 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:21:36,208 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:21:36,208 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:21:36,406 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:21:36,406 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:21:36,407 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:21:36,409 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:21:39,116 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:21:39,116 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:21:40,870 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:21:40,871 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:21:41,773 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:21:41,774 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:21:42,273 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:21:42,273 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:21:57,239 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:21:57,239 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:21:57,408 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:21:57,408 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:21:57,410 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:21:57,411 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:22:01,466 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:22:01,466 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:22:06,424 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:22:06,424 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:22:12,327 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:22:12,327 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:22:12,507 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:22:12,507 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:22:12,508 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:22:12,510 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:22:24,014 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:22:24,014 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:22:24,203 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:22:24,203 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:22:24,205 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:22:24,207 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:22:26,831 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:22:26,832 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:22:30,123 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:22:30,123 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:22:48,729 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:22:48,729 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:22:48,920 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:22:48,920 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:22:48,921 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:22:48,922 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:22:50,506 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver' para estudio ID 2
+2025-06-17 14:22:50,525 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 14:22:50,526 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 14:22:50,526 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 14:22:54,693 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:22:54,693 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:23:00,487 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 14:23:00,487 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 14:23:00,487 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 14:23:04,909 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:23:04,909 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:23:08,306 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:23:08,306 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:23:10,378 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:23:10,379 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:23:40,283 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:23:40,284 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:23:40,472 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:23:40,472 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:23:40,474 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:23:40,476 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:23:44,581 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:23:44,582 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:24:11,455 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 14:24:11,455 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 14:24:11,657 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:24:11,657 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 14:24:11,659 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 14:24:11,660 - DEBUG - [kineviz.ui.utils.style] - Using font tuple for TCombobox*Listbox.font: ('Helvetica', 10, 'normal')
+2025-06-17 14:24:15,305 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:24:15,306 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:24:18,768 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 2, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:24:18,769 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-17 14:24:22,016 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 2, Items: 13, Per Page: 10
+2025-06-17 14:24:22,016 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.

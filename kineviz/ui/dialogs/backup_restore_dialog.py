@@ -376,9 +376,9 @@ class BackupRestoreDialog(Toplevel):
         """Actualiza el estado de los botones cuando se selecciona un backup."""
         selected_item_id = self.tree.focus() # Obtiene el ID del item seleccionado
         if not selected_item_id:
-            self.btn_restore.config(state=tk.DISABLED, style="TButton") # Revert to default style when disabled
+            self.btn_restore.config(state=tk.DISABLED) # Revert to default style when disabled
             self.btn_assign_alias.config(state=tk.DISABLED)
-            self.btn_delete_manual.config(state=tk.DISABLED, style="TButton") # Revert to default style
+            self.btn_delete_manual.config(state=tk.DISABLED) # Revert to default style
             return
 
         selected_values = self.tree.item(selected_item_id, "values")
@@ -389,7 +389,7 @@ class BackupRestoreDialog(Toplevel):
         # "Eliminar Manual" is enabled only if a manual backup is selected.
         self.btn_restore.config(state=tk.NORMAL, style="Green.TButton")
         self.btn_assign_alias.config(state=tk.NORMAL) 
-        self.btn_delete_manual.config(state=tk.NORMAL if is_manual else tk.DISABLED, style="Danger.TButton" if is_manual else "TButton")
+        self.btn_delete_manual.config(state=tk.NORMAL if is_manual else tk.DISABLED, style="Danger.TButton")
 
 
     def create_manual_backup_action(self):
