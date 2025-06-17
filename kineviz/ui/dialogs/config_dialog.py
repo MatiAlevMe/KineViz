@@ -4,6 +4,8 @@ from tkinter import ttk, Toplevel, messagebox, StringVar
 # Importar AppSettings para type hinting
 from kineviz.config.settings import AppSettings
 from kineviz.ui.widgets.tooltip import Tooltip # Import Tooltip
+from kineviz.ui.dialogs.backup_restore_dialog import BackupRestoreDialog # Import new dialog
+from kineviz.core import backup_manager # Import backup_manager module
 
 class ConfigDialog(Toplevel):
     """Diálogo para configurar los ajustes de la aplicación."""
@@ -33,6 +35,10 @@ class ConfigDialog(Toplevel):
         self.var_theme = StringVar()
         self.var_show_factory_reset = tk.BooleanVar() # New variable for the switch
         self.var_enable_hover_tooltips = tk.BooleanVar() # New variable for hover tooltips
+        self.var_max_auto_backups = StringVar()
+        self.var_max_manual_backups = StringVar()
+        self.var_auto_backup_cooldown = StringVar()
+
 
         self.load_current_settings()
         
@@ -59,6 +65,9 @@ class ConfigDialog(Toplevel):
         self.var_theme.set(self.settings.theme)
         self.var_show_factory_reset.set(self.settings.show_factory_reset_button) # Load new setting
         self.var_enable_hover_tooltips.set(self.settings.enable_hover_tooltips) # Load new setting
+        self.var_max_auto_backups.set(str(self.settings.max_automatic_backups))
+        self.var_max_manual_backups.set(str(self.settings.max_manual_backups))
+        self.var_auto_backup_cooldown.set(str(self.settings.automatic_backup_cooldown_seconds))
 
     def create_widgets(self):
         """Crea los widgets del diálogo."""
@@ -164,6 +173,60 @@ class ConfigDialog(Toplevel):
         Tooltip(theme_help_btn, text=theme_long_text, short_text=theme_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
+        # --- Backup Settings ---
+        ttk.Label(main_frame, text="Máx. copias automáticas:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        max_auto_frame = ttk.Frame(main_frame)
+        max_auto_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
+        max_auto_entry = ttk.Entry(max_auto_frame, textvariable=self.var_max_auto_backups, width=7)
+        max_auto_entry.pack(side=tk.LEFT, padx=(0,5))
+        max_auto_long_text = "Número máximo de copias de seguridad automáticas a conservar (0 para desactivar y eliminar todas)."
+        max_auto_short_text = "Máx. copias automáticas."
+        max_auto_help_btn = ttk.Button(max_auto_frame, text="?", width=3, style="Help.TButton",
+                                       command=lambda: self._show_input_help("Ayuda: Máx. Copias Automáticas", max_auto_long_text))
+        max_auto_help_btn.pack(side=tk.LEFT)
+        Tooltip(max_auto_help_btn, text=max_auto_long_text, short_text=max_auto_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+
+        ttk.Label(main_frame, text="Máx. copias manuales:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        max_manual_frame = ttk.Frame(main_frame)
+        max_manual_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
+        max_manual_entry = ttk.Entry(max_manual_frame, textvariable=self.var_max_manual_backups, width=7)
+        max_manual_entry.pack(side=tk.LEFT, padx=(0,5))
+        max_manual_long_text = "Número máximo de copias de seguridad manuales a conservar (0 para desactivar y eliminar todas)."
+        max_manual_short_text = "Máx. copias manuales."
+        max_manual_help_btn = ttk.Button(max_manual_frame, text="?", width=3, style="Help.TButton",
+                                         command=lambda: self._show_input_help("Ayuda: Máx. Copias Manuales", max_manual_long_text))
+        max_manual_help_btn.pack(side=tk.LEFT)
+        Tooltip(max_manual_help_btn, text=max_manual_long_text, short_text=max_manual_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+
+        ttk.Label(main_frame, text="Enfriamiento copias automáticas (seg):").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        cooldown_frame = ttk.Frame(main_frame)
+        cooldown_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
+        cooldown_entry = ttk.Entry(cooldown_frame, textvariable=self.var_auto_backup_cooldown, width=7)
+        cooldown_entry.pack(side=tk.LEFT, padx=(0,5))
+        cooldown_long_text = "Tiempo mínimo (en segundos) que debe pasar después de una copia automática antes de que se pueda iniciar otra. 0 para permitir inmediatamente después de que termine la anterior (si no hay bloqueo)."
+        cooldown_short_text = "Enfriamiento copias automáticas (seg)."
+        cooldown_help_btn = ttk.Button(cooldown_frame, text="?", width=3, style="Help.TButton",
+                                       command=lambda: self._show_input_help("Ayuda: Enfriamiento Copias Automáticas", cooldown_long_text))
+        cooldown_help_btn.pack(side=tk.LEFT)
+        Tooltip(cooldown_help_btn, text=cooldown_long_text, short_text=cooldown_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+        
+        # --- Botón para abrir diálogo de gestión de backups ---
+        manage_backups_frame = ttk.Frame(main_frame)
+        manage_backups_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10,5), sticky="w")
+        manage_backups_button = ttk.Button(manage_backups_frame, text="Gestionar Copias de Seguridad", command=self.open_backup_restore_dialog)
+        manage_backups_button.pack(side=tk.LEFT, padx=(0,5))
+        manage_backups_long_text = "Abre una nueva ventana para crear, restaurar, renombrar y eliminar copias de seguridad manuales, y ver copias automáticas."
+        manage_backups_short_text = "Gestionar copias de seguridad."
+        manage_backups_help_btn = ttk.Button(manage_backups_frame, text="?", width=3, style="Help.TButton",
+                                             command=lambda: self._show_input_help("Ayuda: Gestionar Copias de Seguridad", manage_backups_long_text))
+        manage_backups_help_btn.pack(side=tk.LEFT)
+        Tooltip(manage_backups_help_btn, text=manage_backups_long_text, short_text=manage_backups_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx +=1
+
+
         # --- Switch para habilitar/deshabilitar tooltips por hover ---
         enable_tooltips_frame = ttk.Frame(main_frame)
         enable_tooltips_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10, 5), sticky="w")
@@ -260,7 +323,10 @@ class ConfigDialog(Toplevel):
             "Estudios por página": self.var_studies_per_page.get(),
             "Archivos por página": self.var_files_per_page.get(),
             "Elementos por página (gestores análisis)": self.var_analysis_items_per_page.get(), # Changed label
-            "Tablas resumen discreto por página": self.var_discrete_tables_per_page.get() # New field
+            "Tablas resumen discreto por página": self.var_discrete_tables_per_page.get(), # New field
+            "Máx. copias automáticas": self.var_max_auto_backups.get(),
+            "Máx. copias manuales": self.var_max_manual_backups.get(),
+            "Enfriamiento copias automáticas (seg)": self.var_auto_backup_cooldown.get()
         }
         for label, value_str in inputs_int.items():
             try:
@@ -300,6 +366,9 @@ class ConfigDialog(Toplevel):
             self.settings.theme = self.var_theme.get()
             self.settings.show_factory_reset_button = self.var_show_factory_reset.get() # Save new setting
             self.settings.enable_hover_tooltips = self.var_enable_hover_tooltips.get() # Save new setting
+            self.settings.max_automatic_backups = int(self.var_max_auto_backups.get())
+            self.settings.max_manual_backups = int(self.var_max_manual_backups.get())
+            self.settings.automatic_backup_cooldown_seconds = int(self.var_auto_backup_cooldown.get())
 
             # Guardar en el archivo config.ini
             self.settings.save_settings()
@@ -338,6 +407,14 @@ class ConfigDialog(Toplevel):
                 self.factory_reset_frame.grid()
             else:
                 self.factory_reset_frame.grid_remove()
+
+    def open_backup_restore_dialog(self):
+        """Abre el diálogo de gestión de copias de seguridad."""
+        # Pass self.settings which is an AppSettings instance
+        dialog = BackupRestoreDialog(self, app_settings=self.settings)
+        # No wait_window here, as it's a top-level dialog that can be managed independently.
+        # Or, if it should be modal to ConfigDialog:
+        # self.wait_window(dialog) 
 
     def trigger_factory_reset_callback(self):
         """Llama al callback de reseteo de fábrica con doble confirmación."""
