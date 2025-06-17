@@ -470,7 +470,16 @@ class BackupRestoreDialog(Toplevel):
         selected_values = self.tree.item(selected_item_id, "values")
         backup_filename = selected_values[3] # Filename is at index 3
         backup_type_display = selected_values[0]
-        backup_type_internal = backup_manager.AUTOMATIC_BACKUPS_SUBDIR if backup_type_display == "Automática" else backup_manager.MANUAL_BACKUPS_SUBDIR
+
+        if backup_type_display == "Automática":
+            backup_type_internal = backup_manager.AUTOMATIC_BACKUPS_SUBDIR
+        elif backup_type_display == "Manual":
+            backup_type_internal = backup_manager.MANUAL_BACKUPS_SUBDIR
+        elif backup_type_display == "Respaldo":
+            backup_type_internal = backup_manager.PRE_RESTORE_BACKUP_SUBDIR
+        else:
+            messagebox.showerror("Error Desconocido", f"Tipo de backup desconocido: {backup_type_display}", parent=self)
+            return
         
         if backup_type_internal == backup_manager.MANUAL_BACKUPS_SUBDIR and \
            not self.app_settings.enable_manual_backups:
@@ -503,10 +512,10 @@ class BackupRestoreDialog(Toplevel):
         if not confirm_restore2:
             return
 
-        # Create an automatic backup before restoring, if enabled
-        if self.app_settings.enable_automatic_backups and self.app_settings.backup_before_restore: # Note: enable_automatic_backups might be better named, or a new setting for pre-restore type
-            logger.info("Creando copia de respaldo (tipo Respaldo) antes de la restauración...")
-            # Use the new PRE_RESTORE_BACKUP_SUBDIR type
+        # Create a "respaldo" backup before restoring, if enabled in settings
+        # Assuming new AppSettings: enable_pre_restore_backups, max_pre_restore_backups, pre_restore_backup_cooldown_seconds
+        if self.app_settings.get_bool_setting('enable_pre_restore_backups', True): # Default to True if not set
+            logger.info("Creando copia de seguridad tipo 'Respaldo' antes de la restauración...")
             pre_restore_backup_path = backup_manager.create_backup(backup_manager.PRE_RESTORE_BACKUP_SUBDIR)
             if pre_restore_backup_path:
                 messagebox.showinfo("Copia de Respaldo Pre-Restauración", # Changed title and type description
