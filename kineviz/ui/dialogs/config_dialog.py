@@ -433,13 +433,11 @@ class ConfigDialog(Toplevel):
         reset_settings_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10, 5), sticky="w")
         reset_settings_button = ttk.Button(reset_settings_frame, text="Restablecer Ajustes a Predeterminados", command=self.reset_config_settings_to_default_action)
         reset_settings_button.pack(side=tk.LEFT, padx=(0,5))
-        reset_settings_long_text = ("Revierte todas las opciones de esta ventana (elementos por página, fuente, tema) "
+        reset_settings_long_text = ("Revierte todas las configuraciones de la aplicación (opciones en todas las pestañas de esta ventana) "
                                     "a sus valores originales de fábrica.\n"
-                                    "Esto NO afecta sus estudios ni datos guardados.\n"
-                                    "Los cambios se aplicarán inmediatamente al archivo de configuración. "
-                                    "Haga clic en 'Guardar' para cerrar este diálogo con los ajustes predeterminados aplicados, "
-                                    "o 'Cancelar' para cerrar sin aplicar otros cambios que haya hecho manualmente antes de presionar este botón.")
-        reset_settings_short_text = "Revierte ajustes de esta ventana a predeterminados (no afecta datos)."
+                                    "Esto NO afecta sus estudios, archivos, análisis ni copias de seguridad guardadas.\n"
+                                    "Los cambios se aplicarán inmediatamente y el diálogo se cerrará.")
+        reset_settings_short_text = "Revierte ajustes de la aplicación a predeterminados (no afecta datos)."
         reset_settings_help_btn = ttk.Button(reset_settings_frame, text="?", width=3, style="Help.TButton",
                                              command=lambda: self._show_input_help("Ayuda: Restablecer Ajustes a Predeterminados", reset_settings_long_text))
         reset_settings_help_btn.pack(side=tk.LEFT)
