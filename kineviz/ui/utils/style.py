@@ -32,7 +32,7 @@ THEMES = {
         "green_fg": "#FFFFFF",
         "celeste_bg": "#AFEEEE", # Pale turquoise
         "celeste_fg": "#000000",
-        "hover_bg": "#000000",  # Blue (background se ilumina en azul)
+        "hover_bg": "#000000",  # Blanco (background se ilumina en azul)
         "hover_text": "#F0F0F0",  # Blanco (texto cambia a blanco)
     },
     "Oscuro": { # Renamed from "Dark"
@@ -52,11 +52,11 @@ THEMES = {
         "danger_fg": "#000000",
         "help_bg": "#1E5A96",   # Darker blue for help
         "help_fg": "#FFFFFF",
-        "green_bg": "#1F7A3B",  # Darker green
+        "green_bg": "#004516",  # Darker green
         "green_fg": "#FFFFFF",
-        "celeste_bg": "#4A7070", # Darker turquoise
+        "celeste_bg": "#285151", # Darker turquoise
         "celeste_fg": "#DADADA",
-        "hover_bg": "#DADADA",  # Brighter Blue (background se ilumina en azul)
+        "hover_bg": "#DADADA",  # Blanco (background se ilumina en azul)
         "hover_text": "#252526",  # Negro (texto cambia a negro)
     }
 }
