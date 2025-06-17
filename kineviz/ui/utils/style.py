@@ -146,11 +146,20 @@ def apply_theme_and_font(root: tk.Tk, style: ttk.Style, theme_name: str, font_sc
 
 
     # --- Entry and Combobox Styles ---
+    # Scaled padding for Entry and Combobox
+    base_padding_x = 3
+    base_padding_y = 2
+    # Moderate the scaling of padding so it doesn't grow excessively
+    padding_scale_factor = 1 + (font_scale - 1) * 0.4 
+    scaled_padding_x = max(1, int(base_padding_x * padding_scale_factor))
+    scaled_padding_y = max(1, int(base_padding_y * padding_scale_factor))
+
     style.configure('TEntry',
                     fieldbackground=colors['widget_bg'],
                     foreground=colors['widget_fg'],
                     insertcolor=colors['fg'], # Cursor color
-                    font=get_scaled_font(DEFAULT_FONT_SIZE, font_scale))
+                    font=get_scaled_font(DEFAULT_FONT_SIZE, font_scale),
+                    padding=(scaled_padding_x, scaled_padding_y))
     style.map('TEntry',
               foreground=[('disabled', colors['disabled_fg'])],
               fieldbackground=[('disabled', colors['bg'])])
@@ -161,7 +170,8 @@ def apply_theme_and_font(root: tk.Tk, style: ttk.Style, theme_name: str, font_sc
                     selectbackground=colors['select_bg'], # Background of selected item in dropdown
                     selectforeground=colors['select_fg'], # Foreground of selected item in dropdown
                     arrowcolor=colors['fg'],
-                    font=get_scaled_font(DEFAULT_FONT_SIZE, font_scale))
+                    font=get_scaled_font(DEFAULT_FONT_SIZE, font_scale),
+                    padding=(scaled_padding_x, scaled_padding_y))
     style.map('TCombobox',
         foreground=[('disabled', colors['disabled_fg'])],
         fieldbackground=[('disabled', colors['bg'])],
