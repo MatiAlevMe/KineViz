@@ -30,7 +30,7 @@ class BackupRestoreDialog(Toplevel):
         self.current_display_list = [] # To store the currently displayed (filtered/sorted) list
 
         # Filter and sort variables
-        self.filter_type_var = tk.StringVar(value="Todos") # Manual, Automatic, Todos
+        self.filter_type_var = tk.StringVar(value="Manual") # Manual, Automatic, Todos
         self.search_alias_var = tk.StringVar()
         self.sort_key_var = tk.StringVar(value="Fecha de Creación")
         self.sort_order_asc_var = tk.BooleanVar(value=False) # False for Descending initially
