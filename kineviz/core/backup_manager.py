@@ -16,6 +16,7 @@ _last_automatic_backup_end_time: Optional[datetime.datetime] = None
 BACKUPS_DIR_NAME = "backups"
 AUTOMATIC_BACKUPS_SUBDIR = "automatic"
 MANUAL_BACKUPS_SUBDIR = "manual" # Changed from "manuales"
+MANUAL_BACKUP_ALIASES_FILENAME = "manual_backup_aliases.json"
 
 DB_FILENAME = "kineviz.db"
 CONFIG_FILENAME = "config.ini"
@@ -66,6 +67,7 @@ def create_backup(backup_type: str) -> Optional[pathlib.Path]:
         The Path object to the created backup ZIP file, or None if an error occurred.
     """
     from kineviz.config.settings import AppSettings # Import AppSettings locally
+    global _last_automatic_backup_end_time # Needed for automatic backup logic
 
     if backup_type not in SUPPORTED_BACKUP_TYPES:
         logger.error(f"Invalid backup_type: '{backup_type}'. Must be one of {SUPPORTED_BACKUP_TYPES}.")
@@ -80,11 +82,12 @@ def create_backup(backup_type: str) -> Optional[pathlib.Path]:
 
     # Manage rolling backups, cooldown, and locking for automatic backups
     if backup_type == AUTOMATIC_BACKUPS_SUBDIR:
-        global _last_automatic_backup_end_time # Declare global to modify it
+        # global _last_automatic_backup_end_time # Already declared global when assigned
         try:
-            settings = AppSettings()
-            max_backups = settings.max_automatic_backups
-            cooldown_seconds = settings.get_int_setting('automatic_backup_cooldown_seconds', 60)
+            settings = AppSettings() # Load settings
+            max_auto_backups = settings.max_automatic_backups # Use property
+            cooldown_seconds = settings.automatic_backup_cooldown_seconds # Use property
+            
             lock_file_path = backup_destination_subdir / ".backup_in_progress.lock"
 
             # 1. Check for lock file (another backup in progress)
@@ -111,13 +114,13 @@ def create_backup(backup_type: str) -> Optional[pathlib.Path]:
             
                 # This logic needs to be inside the try block
                 num_existing = len(existing_backups)
-                if num_existing >= max_backups and max_backups > 0: # max_backups > 0 to prevent deleting all if set to 0
-                    num_to_delete = num_existing - max_backups + 1
+                if num_existing >= max_auto_backups and max_auto_backups > 0: # Use max_auto_backups
+                    num_to_delete = num_existing - max_auto_backups + 1
                     for i in range(num_to_delete):
                         old_backup = existing_backups[i]
-                        logger.info(f"Max automatic backups ({max_backups}) reached. Deleting oldest: {old_backup.name}")
+                        logger.info(f"Max automatic backups ({max_auto_backups}) reached. Deleting oldest: {old_backup.name}")
                         old_backup.unlink()
-                elif max_backups == 0: # If max_backups is 0, delete all existing automatic backups
+                elif max_auto_backups == 0: # If max_auto_backups is 0, delete all existing automatic backups
                     logger.info("max_automatic_backups is 0. Deleting all existing automatic backups.")
                     for old_backup in existing_backups:
                         old_backup.unlink()
@@ -143,7 +146,45 @@ def create_backup(backup_type: str) -> Optional[pathlib.Path]:
             # Let's assume if settings fail, we skip the backup to be safe.
             logger.error(f"Critical error setting up automatic backup parameters (AppSettings or paths): {e}. Aborting backup.", exc_info=True)
             return None
+    
+    elif backup_type == MANUAL_BACKUPS_SUBDIR:
+        try:
+            settings = AppSettings()
+            max_manual_bkups = settings.max_manual_backups
+            
+            existing_manual_backups = sorted(
+                [f for f in backup_destination_subdir.glob("backup_*.zip") if f.is_file()],
+                key=lambda f: f.name # Sort by name (timestamp)
+            )
+            num_existing_manual = len(existing_manual_backups)
 
+            if num_existing_manual >= max_manual_bkups and max_manual_bkups > 0:
+                num_to_delete_manual = num_existing_manual - max_manual_bkups + 1
+                aliases = _load_manual_backup_aliases()
+                
+                for i in range(num_to_delete_manual):
+                    backup_to_delete = existing_manual_backups[i] # Oldest by name
+                    logger.info(f"Max manual backups ({max_manual_bkups}) reached. Deleting oldest: {backup_to_delete.name}")
+                    backup_to_delete.unlink()
+                    if backup_to_delete.name in aliases:
+                        del aliases[backup_to_delete.name]
+                        logger.info(f"Alias for deleted manual backup '{backup_to_delete.name}' removed.")
+                _save_manual_backup_aliases(aliases) # Save updated aliases
+            elif max_manual_bkups == 0: # Delete all if max is 0
+                logger.info("max_manual_backups is 0. Deleting all existing manual backups.")
+                aliases = _load_manual_backup_aliases()
+                changed_aliases = False
+                for old_manual_backup in existing_manual_backups:
+                    old_manual_backup.unlink()
+                    if old_manual_backup.name in aliases:
+                        del aliases[old_manual_backup.name]
+                        changed_aliases = True
+                if changed_aliases:
+                    _save_manual_backup_aliases(aliases)
+
+        except Exception as e:
+            logger.error(f"Error during rolling manual backup management: {e}", exc_info=True)
+            # Decide if we should proceed. For now, proceed.
 
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     zip_filename = f"backup_{timestamp}.zip"
@@ -286,6 +327,118 @@ def create_backup(backup_type: str) -> Optional[pathlib.Path]:
                 logger.debug(f"Lock file {current_lock_file_for_finally} removed.")
             except OSError as ose:
                 logger.error(f"Failed to remove lock file {current_lock_file_for_finally}: {ose}")
+
+# --- Alias Management for Manual Backups ---
+
+def _get_manual_backup_aliases_path() -> pathlib.Path:
+    """Returns the path to the manual backup aliases JSON file."""
+    return get_project_root() / BACKUPS_DIR_NAME / MANUAL_BACKUPS_SUBDIR / MANUAL_BACKUP_ALIASES_FILENAME
+
+def _load_manual_backup_aliases() -> dict:
+    """Loads manual backup aliases from the JSON file."""
+    aliases_path = _get_manual_backup_aliases_path()
+    if aliases_path.exists():
+        try:
+            with open(aliases_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except (json.JSONDecodeError, OSError) as e:
+            logger.error(f"Error loading manual backup aliases from {aliases_path}: {e}", exc_info=True)
+    return {}
+
+def _save_manual_backup_aliases(aliases_data: dict):
+    """Saves manual backup aliases to the JSON file."""
+    aliases_path = _get_manual_backup_aliases_path()
+    try:
+        aliases_path.parent.mkdir(parents=True, exist_ok=True) # Ensure manual backup dir exists
+        with open(aliases_path, 'w', encoding='utf-8') as f:
+            json.dump(aliases_data, f, indent=4)
+        logger.info(f"Manual backup aliases saved to {aliases_path}")
+    except OSError as e:
+        logger.error(f"Error saving manual backup aliases to {aliases_path}: {e}", exc_info=True)
+
+def add_manual_backup_alias(backup_filename: str, alias: str) -> bool:
+    """Adds or updates an alias for a manual backup file."""
+    if not backup_filename.startswith("backup_") or not backup_filename.endswith(".zip"):
+        logger.error(f"Invalid manual backup filename format for alias: {backup_filename}")
+        return False
+    if not alias.strip():
+        logger.error("Alias cannot be empty or just whitespace.")
+        return False
+        
+    aliases = _load_manual_backup_aliases()
+    aliases[backup_filename] = alias.strip()
+    _save_manual_backup_aliases(aliases)
+    return True
+
+def remove_manual_backup_alias(backup_filename: str) -> bool:
+    """Removes an alias for a manual backup file."""
+    aliases = _load_manual_backup_aliases()
+    if backup_filename in aliases:
+        del aliases[backup_filename]
+        _save_manual_backup_aliases(aliases)
+        logger.info(f"Alias for '{backup_filename}' removed.")
+        return True
+    logger.warning(f"No alias found for '{backup_filename}' to remove.")
+    return False
+
+def delete_manual_backup(backup_filename: str) -> bool:
+    """Deletes a specific manual backup file and its alias."""
+    backup_file_path = get_project_root() / BACKUPS_DIR_NAME / MANUAL_BACKUPS_SUBDIR / backup_filename
+    if not backup_file_path.exists() or not backup_file_path.is_file():
+        logger.error(f"Manual backup file not found: {backup_file_path}")
+        return False
+    try:
+        backup_file_path.unlink()
+        logger.info(f"Manual backup file deleted: {backup_file_path}")
+        remove_manual_backup_alias(backup_filename) # Attempt to remove alias if it exists
+        return True
+    except OSError as e:
+        logger.error(f"Error deleting manual backup file {backup_file_path}: {e}", exc_info=True)
+        return False
+
+# --- Listing Backups ---
+
+def list_backups() -> list[dict]:
+    """
+    Lists all available backups, both automatic and manual.
+    Returns a list of dictionaries, each representing a backup.
+    """
+    all_backups = []
+    project_root = get_project_root()
+    backup_base_dir = project_root / BACKUPS_DIR_NAME
+
+    manual_aliases = _load_manual_backup_aliases()
+
+    for backup_type_subdir_name in SUPPORTED_BACKUP_TYPES:
+        backup_type_path = backup_base_dir / backup_type_subdir_name
+        if backup_type_path.exists() and backup_type_path.is_dir():
+            for item in backup_type_path.glob("backup_*.zip"):
+                if item.is_file():
+                    try:
+                        # Extract timestamp from filename backup_YYYYMMDD_HHMMSS.zip
+                        ts_str = item.name.split('_')[1].split('.')[0]
+                        timestamp_dt = datetime.datetime.strptime(ts_str, "%Y%m%d%H%M%S")
+                        
+                        alias = None
+                        if backup_type_subdir_name == MANUAL_BACKUPS_SUBDIR:
+                            alias = manual_aliases.get(item.name)
+
+                        all_backups.append({
+                            "type": backup_type_subdir_name,
+                            "path": item,
+                            "filename": item.name,
+                            "timestamp": timestamp_dt,
+                            "alias": alias
+                        })
+                    except (IndexError, ValueError) as e:
+                        logger.warning(f"Could not parse timestamp from backup filename '{item.name}': {e}")
+                        # Add with a None timestamp or skip? For now, skip.
+                        continue
+    
+    # Sort by timestamp, most recent first
+    all_backups.sort(key=lambda b: b["timestamp"], reverse=True)
+    return all_backups
+
 
 if __name__ == '__main__':
     # DB_FILENAME and CONFIG_FILENAME are module-level globals.
