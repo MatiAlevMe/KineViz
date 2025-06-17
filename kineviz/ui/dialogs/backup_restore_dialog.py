@@ -26,10 +26,17 @@ class BackupRestoreDialog(Toplevel):
         self.geometry("800x500") # Initial size
         self.minsize(600, 400)
 
-        self.backup_list = [] # To store data from backup_manager.list_backups()
+        self.all_loaded_backups = [] # To store the full list from backup_manager
+        self.current_display_list = [] # To store the currently displayed (filtered/sorted) list
+
+        # Filter and sort variables
+        self.filter_type_var = tk.StringVar(value="Todos") # Manual, Automatic, Todos
+        self.search_alias_var = tk.StringVar()
+        self.sort_key_var = tk.StringVar(value="Fecha de Creación")
+        self.sort_order_asc_var = tk.BooleanVar(value=False) # False for Descending initially
 
         self.create_widgets()
-        self.load_backups()
+        self.load_backups() # Initial load
 
         self.transient(parent)
         self.grab_set()
