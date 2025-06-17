@@ -301,7 +301,8 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
         - Tooltip de ayuda para la opción en `ConfigDialog`.
         - (Opcional) Checkbox para activar/desactivar el auto backup (desactivado por defecto) en `ConfigDialog`.
     1.4 [Hecho] Configuración Adicional y Mejoras UI para Backups.
-        - [Hecho] `ConfigDialog`: Opciones para `max_automatic_backups`, `max_manual_backups` y `automatic_backup_cooldown_seconds`.
+        - [Hecho] `ConfigDialog`: Opciones para `max_automatic_backups`, `max_manual_backups` y `automatic_backup_cooldown_seconds`. Tooltips actualizados para clarificar comportamiento de eliminación.
+        - [Hecho] `ConfigDialog`: Refactorizada con pestañas (`ttk.Notebook`) y marco desplazable para mejor organización y manejo de contenido extenso/escalado de fuente.
         - [Pendiente] Paginación en `BackupRestoreDialog` si la lista de backups es larga (Algo así como mostrar 4 archivos por paguina, si hay más de 4 aparece la paguinación).
         - [Hecho] Adaptación a cambios de tamaño de texto y tooltips en `BackupRestoreDialog`.
         - [Hecho] Validación robusta de `config.ini` al cargar, revirtiendo a valores por defecto en caso de corrupción o valores inválidos.

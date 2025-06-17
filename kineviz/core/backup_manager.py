@@ -417,8 +417,11 @@ def list_backups() -> list[dict]:
                 if item.is_file():
                     try:
                         # Extract timestamp from filename backup_YYYYMMDD_HHMMSS.zip
-                        ts_str = item.name.split('_')[1].split('.')[0]
-                        timestamp_dt = datetime.datetime.strptime(ts_str, "%Y%m%d%H%M%S")
+                        # Corrected timestamp parsing:
+                        # item.stem is "backup_YYYYMMDD_HHMMSS"
+                        # remove "backup_" prefix
+                        ts_str_from_stem = item.stem.replace("backup_", "", 1)
+                        timestamp_dt = datetime.datetime.strptime(ts_str_from_stem, "%Y%m%d_%H%M%S")
                         
                         alias = None
                         if backup_type_subdir_name == MANUAL_BACKUPS_SUBDIR:
