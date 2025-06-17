@@ -32,6 +32,8 @@ THEMES = {
         "green_fg": "#FFFFFF",
         "celeste_bg": "#AFEEEE", # Pale turquoise
         "celeste_fg": "#000000",
+        "hover_bg": "#000000",  # Blue (background se ilumina en azul)
+        "hover_text": "#F0F0F0",  # Blanco (texto cambia a blanco)
     },
     "Oscuro": { # Renamed from "Dark"
         "bg": "#252526",  # Dark gray
@@ -54,6 +56,8 @@ THEMES = {
         "green_fg": "#FFFFFF",
         "celeste_bg": "#4A7070", # Darker turquoise
         "celeste_fg": "#DADADA",
+        "hover_bg": "#DADADA",  # Brighter Blue (background se ilumina en azul)
+        "hover_text": "#252526",  # Negro (texto cambia a negro)
     }
 }
 
@@ -269,7 +273,7 @@ def apply_theme_and_font(root: tk.Tk, style: ttk.Style, theme_name: str, font_sc
                     thickness=int(20 * min(1.5, font_scale)), # Scale thickness a bit
                     background=colors['green_bg'], # Color of the bar
                     troughcolor=colors['widget_bg']) # Color of the trough
-
+    
     # Checkbutton & Radiobutton
     style.configure("TCheckbutton",
                     background=colors['bg'],
@@ -278,9 +282,17 @@ def apply_theme_and_font(root: tk.Tk, style: ttk.Style, theme_name: str, font_sc
                     indicatormargin=5,
                     font=get_scaled_font(DEFAULT_FONT_SIZE, font_scale))
     style.map("TCheckbutton",
-              indicatorbackground=[('selected', colors['select_bg']), ('active', colors['widget_bg'])],
-              foreground=[('disabled', colors['disabled_fg']), ('active', colors['select_bg'] if theme_name == "Claro" else colors['fg'])], # Change text color on active/hover for Claro
-              background=[('active', colors['bg'])]) # Ensure background doesn't change weirdly
+            indicatorbackground=[
+                ('selected', colors['select_bg']),
+                ('active', colors['widget_bg'])  # Color del checkbox al pasar el cursor
+            ],
+            foreground=[
+                ('disabled', colors['disabled_fg']),
+                ('active', colors['hover_text'])  # Color del texto al pasar el cursor
+            ],
+            background=[
+                ('active', colors['hover_bg'])  # Fondo no cambia
+            ])
 
     style.configure("TRadiobutton",
                     background=colors['bg'],
