@@ -40781,3 +40781,17 @@ TypeError: StudyRepository.get_studies_paginated() got an unexpected keyword arg
 2025-06-17 18:09:21,964 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
 2025-06-17 18:09:21,964 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
 2025-06-17 18:09:21,967 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 18:10:04,043 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 18:10:04,043 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 18:10:04,255 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 18:10:04,255 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 18:10:04,256 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 2.0
+2025-06-17 18:10:48,846 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 18:10:48,847 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 18:10:49,029 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 18:10:49,029 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 18:10:49,030 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 2.0
+2025-06-17 18:10:51,181 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 2
+2025-06-17 18:10:51,198 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 18:10:51,198 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 18:10:51,198 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
