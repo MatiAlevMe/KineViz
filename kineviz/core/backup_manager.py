@@ -422,6 +422,49 @@ def delete_manual_backup(backup_filename: str) -> bool:
         logger.error(f"Error deleting manual backup file {backup_file_path}: {e}", exc_info=True)
         return False
 
+def delete_specific_automatic_backup(backup_filename: str) -> bool:
+    """Deletes a specific automatic backup file and its alias."""
+    backup_file_path = get_project_root() / BACKUPS_DIR_NAME / AUTOMATIC_BACKUPS_SUBDIR / backup_filename
+    if not backup_file_path.exists() or not backup_file_path.is_file():
+        logger.error(f"Automatic backup file not found: {backup_file_path}")
+        return False
+    try:
+        backup_file_path.unlink()
+        logger.info(f"Automatic backup file deleted: {backup_file_path}")
+        remove_backup_alias(AUTOMATIC_BACKUPS_SUBDIR, backup_filename) # Attempt to remove alias
+        return True
+    except OSError as e:
+        logger.error(f"Error deleting automatic backup file {backup_file_path}: {e}", exc_info=True)
+        return False
+
+def cleanup_bak_files() -> tuple[int, int]:
+    """
+    Deletes all .bak files and directories from the project root.
+    These are typically created during restore operations.
+    Returns: (deleted_count, error_count)
+    """
+    project_root = get_project_root()
+    deleted_count = 0
+    error_count = 0
+    logger.info(f"Iniciando limpieza de archivos/carpetas .bak en: {project_root}")
+
+    for item in project_root.glob("*.bak"):
+        try:
+            if item.is_file():
+                item.unlink()
+                logger.info(f"Archivo .bak eliminado: {item}")
+                deleted_count += 1
+            elif item.is_dir():
+                shutil.rmtree(item)
+                logger.info(f"Carpeta .bak eliminada: {item}")
+                deleted_count += 1
+        except OSError as e:
+            logger.error(f"Error eliminando {item}: {e}")
+            error_count += 1
+    
+    logger.info(f"Limpieza de .bak completada. Eliminados: {deleted_count}, Errores: {error_count}")
+    return deleted_count, error_count
+
 # --- Listing Backups ---
 
 def list_backups() -> list[dict]:

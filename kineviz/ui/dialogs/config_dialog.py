@@ -7,6 +7,9 @@ from kineviz.ui.widgets.tooltip import Tooltip # Import Tooltip
 from kineviz.ui.dialogs.backup_restore_dialog import BackupRestoreDialog # Import new dialog
 from kineviz.core import backup_manager # Import backup_manager module
 from kineviz.ui.utils.style import get_scaled_font, DEFAULT_FONT_SIZE # For direct font scaling
+import logging # Import logging
+
+logger = logging.getLogger(__name__) # Add logger for this module
 
 class ConfigDialog(Toplevel):
     """Diálogo para configurar los ajustes de la aplicación."""
@@ -40,8 +43,10 @@ class ConfigDialog(Toplevel):
         self.var_max_auto_backups = StringVar()
         self.var_max_manual_backups = StringVar()
         self.var_auto_backup_cooldown = StringVar()
-        self.var_enable_automatic_backups = tk.BooleanVar() # New
-        self.var_enable_manual_backups = tk.BooleanVar()   # New
+        self.var_enable_automatic_backups = tk.BooleanVar()
+        self.var_enable_manual_backups = tk.BooleanVar()
+        self.var_show_advanced_backup_opts = tk.BooleanVar() # New
+        self.var_backup_before_restore = tk.BooleanVar()     # New
 
         # Calculate scaled font once for direct application
         self.scaled_font_tuple = get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale)
@@ -75,8 +80,10 @@ class ConfigDialog(Toplevel):
         self.var_max_auto_backups.set(str(self.settings.max_automatic_backups))
         self.var_max_manual_backups.set(str(self.settings.max_manual_backups))
         self.var_auto_backup_cooldown.set(str(self.settings.automatic_backup_cooldown_seconds))
-        self.var_enable_automatic_backups.set(self.settings.enable_automatic_backups) # Load new
-        self.var_enable_manual_backups.set(self.settings.enable_manual_backups)     # Load new
+        self.var_enable_automatic_backups.set(self.settings.enable_automatic_backups)
+        self.var_enable_manual_backups.set(self.settings.enable_manual_backups)
+        self.var_show_advanced_backup_opts.set(self.settings.show_advanced_backup_options) # Load new
+        self.var_backup_before_restore.set(self.settings.backup_before_restore)         # Load new
 
     def create_widgets(self):
         """Crea los widgets del diálogo usando un Notebook para pestañas."""
@@ -380,6 +387,25 @@ class ConfigDialog(Toplevel):
         # Call to set initial visibility
         self._toggle_backup_options_visibility()
 
+        # --- Checkbox "Habilitar copia de seguridad automática al restaurar" ---
+        # This goes under "Habilitar copias de seguridad automáticas"
+        self.backup_before_restore_frame = ttk.Frame(parent_frame)
+        self.backup_before_restore_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", padx=(20,5), pady=0) # Indent
+        
+        bbr_cb = ttk.Checkbutton(
+            self.backup_before_restore_frame,
+            text="Crear copia automática antes de restaurar otra copia",
+            variable=self.var_backup_before_restore
+        )
+        bbr_cb.pack(side=tk.LEFT, padx=(0,5))
+        bbr_long_text = "Si está activado, se creará una copia de seguridad automática del estado actual del sistema justo antes de que se inicie una operación de restauración. Recomendado."
+        bbr_short_text = "Backup automático pre-restauración."
+        bbr_help_btn = ttk.Button(self.backup_before_restore_frame, text="?", width=3, style="Help.TButton",
+                                     command=lambda: self._show_input_help("Ayuda: Backup Pre-Restauración", bbr_long_text))
+        bbr_help_btn.pack(side=tk.LEFT)
+        Tooltip(bbr_help_btn, text=bbr_long_text, short_text=bbr_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx +=1 # Increment after adding this new section
+
 
     def _toggle_backup_options_visibility(self, event=None):
         """Muestra u oculta las opciones de backup según los checkboxes de habilitación."""
@@ -397,6 +423,10 @@ class ConfigDialog(Toplevel):
         if hasattr(self, 'max_manual_frame'):
             if show_manual_options: self.max_manual_frame.grid()
             else: self.max_manual_frame.grid_remove()
+
+        if hasattr(self, 'backup_before_restore_frame'): # New frame for backup_before_restore
+            if show_auto_options: self.backup_before_restore_frame.grid() # Show if auto backups are enabled
+            else: self.backup_before_restore_frame.grid_remove()
         
         if hasattr(self, 'manage_backups_frame'):
             if show_auto_options or show_manual_options: self.manage_backups_frame.grid()
@@ -462,8 +492,74 @@ class ConfigDialog(Toplevel):
                                             command=lambda: self._show_input_help("Ayuda: Restaurar KineViz a Estado de Fábrica", factory_reset_long_text))
         factory_reset_help_btn.pack(side=tk.LEFT)
         Tooltip(factory_reset_help_btn, text=factory_reset_long_text, short_text=factory_reset_short_text, enabled=self.settings.enable_hover_tooltips)
-        # Ensure the factory reset button's visibility is correctly set initially
+        row_idx += 1
+
+        # --- Switch para mostrar opciones avanzadas de backup ---
+        show_adv_backup_frame = ttk.Frame(parent_frame)
+        show_adv_backup_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10,5), sticky="w")
+        show_adv_backup_cb = ttk.Checkbutton(
+            show_adv_backup_frame,
+            text="Mostrar opciones avanzadas de copias de seguridad",
+            variable=self.var_show_advanced_backup_opts,
+            command=self._toggle_advanced_backup_options_visibility
+        )
+        show_adv_backup_cb.pack(side=tk.LEFT, padx=(0,5))
+        show_adv_backup_long_text = "Muestra opciones adicionales para la gestión de copias de seguridad, como la limpieza de archivos .bak."
+        show_adv_backup_short_text = "Opciones avanzadas de backup."
+        show_adv_backup_help_btn = ttk.Button(show_adv_backup_frame, text="?", width=3, style="Help.TButton",
+                                              command=lambda: self._show_input_help("Ayuda: Opciones Avanzadas de Backup", show_adv_backup_long_text))
+        show_adv_backup_help_btn.pack(side=tk.LEFT)
+        Tooltip(show_adv_backup_help_btn, text=show_adv_backup_long_text, short_text=show_adv_backup_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+
+        # --- Botón Limpiar Archivos .bak (visibilidad controlada) ---
+        self.clean_bak_files_frame = ttk.Frame(parent_frame)
+        self.clean_bak_files_frame.grid(row=row_idx, column=0, columnspan=2, pady=(5,5), sticky="w", padx=(20,0)) # Indent
+        clean_bak_button = ttk.Button(self.clean_bak_files_frame, text="Limpiar Archivos .bak Residuales", command=self._clean_bak_files_action)
+        clean_bak_button.pack(side=tk.LEFT, padx=(0,5))
+        clean_bak_long_text = ("Elimina los archivos y carpetas con extensión '.bak' de la raíz del proyecto.\n"
+                               "Estos archivos se crean como medida de seguridad durante las restauraciones.\n"
+                               "Es seguro eliminarlos si la aplicación funciona correctamente y no necesita revertir una restauración fallida.")
+        clean_bak_short_text = "Eliminar archivos .bak."
+        clean_bak_help_btn = ttk.Button(self.clean_bak_files_frame, text="?", width=3, style="Help.TButton",
+                                        command=lambda: self._show_input_help("Ayuda: Limpiar Archivos .bak", clean_bak_long_text))
+        clean_bak_help_btn.pack(side=tk.LEFT)
+        Tooltip(clean_bak_help_btn, text=clean_bak_long_text, short_text=clean_bak_short_text, enabled=self.settings.enable_hover_tooltips)
+
+        # Ensure initial visibility is set
         self._toggle_factory_reset_visibility()
+        self._toggle_advanced_backup_options_visibility()
+
+
+    def _toggle_advanced_backup_options_visibility(self, event=None):
+        """Muestra u oculta las opciones avanzadas de backup."""
+        if hasattr(self, 'clean_bak_files_frame'):
+            if self.var_show_advanced_backup_opts.get():
+                self.clean_bak_files_frame.grid()
+            else:
+                self.clean_bak_files_frame.grid_remove()
+    
+    def _clean_bak_files_action(self):
+        """Acción para limpiar archivos .bak."""
+        if messagebox.askokcancel("Confirmar Limpieza",
+                                 "¿Está seguro de que desea eliminar todos los archivos y carpetas '.bak' de la raíz del proyecto?\n"
+                                 "Esta acción no se puede deshacer.",
+                                 icon='warning', parent=self):
+            try:
+                # This method will need to be added to backup_manager
+                deleted_count, error_count = backup_manager.cleanup_bak_files() 
+                if error_count > 0:
+                    messagebox.showwarning("Limpieza Parcial", 
+                                           f"Se eliminaron {deleted_count} archivos/carpetas .bak.\n"
+                                           f"No se pudieron eliminar {error_count} elementos (ver logs).", 
+                                           parent=self)
+                elif deleted_count > 0:
+                    messagebox.showinfo("Limpieza Completada", f"Se eliminaron {deleted_count} archivos/carpetas .bak.", parent=self)
+                else:
+                    messagebox.showinfo("Limpieza Completada", "No se encontraron archivos .bak para eliminar.", parent=self)
+            except Exception as e:
+                logger.error(f"Error durante la limpieza de archivos .bak: {e}", exc_info=True)
+                messagebox.showerror("Error", f"Ocurrió un error al limpiar los archivos .bak:\n{e}", parent=self)
 
 
     def validate_input(self) -> bool:
@@ -535,8 +631,10 @@ class ConfigDialog(Toplevel):
             self.settings.show_factory_reset_button = self.var_show_factory_reset.get()
             self.settings.enable_hover_tooltips = self.var_enable_hover_tooltips.get()
             
-            self.settings.enable_automatic_backups = self.var_enable_automatic_backups.get() # Save new
-            self.settings.enable_manual_backups = self.var_enable_manual_backups.get()       # Save new
+            self.settings.enable_automatic_backups = self.var_enable_automatic_backups.get()
+            self.settings.enable_manual_backups = self.var_enable_manual_backups.get()
+            self.settings.show_advanced_backup_options = self.var_show_advanced_backup_opts.get() # Save new
+            self.settings.backup_before_restore = self.var_backup_before_restore.get()         # Save new
             
             # Only save max/cooldown if they are valid (they should be if validation passed)
             self.settings.max_automatic_backups = int(self.var_max_auto_backups.get())
