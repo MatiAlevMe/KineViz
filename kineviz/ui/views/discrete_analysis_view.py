@@ -159,12 +159,12 @@ class DiscreteAnalysisView(ttk.Frame):
         generate_tables_button.pack(side=tk.LEFT, padx=5)
         Tooltip(generate_tables_button, text="Genera o actualiza las tablas de resumen (.xlsx) con cálculos (Max, Min, Rango) para los datos procesados.", short_text="Generar tablas.", enabled=self.settings.enable_hover_tooltips)
 
-        open_manager_button = ttk.Button(
-            action_frame, text="Gestor de Análisis Discretos", # Texto del botón cambiado
+        self.open_manager_button = ttk.Button( # Store as instance variable
+            action_frame, text="Gestor de Análisis Discretos",
             command=self.open_individual_analysis_manager, style="Green.TButton"
         )
-        open_manager_button.pack(side=tk.LEFT, padx=5)
-        Tooltip(open_manager_button, text="Abrir el gestor para crear, ver y eliminar análisis discretos individuales (boxplots, tests estadísticos).", short_text="Gestor análisis.", enabled=self.settings.enable_hover_tooltips)
+        self.open_manager_button.pack(side=tk.LEFT, padx=5)
+        Tooltip(self.open_manager_button, text="Abrir el gestor para crear, ver y eliminar análisis discretos individuales (boxplots, tests estadísticos).", short_text="Gestor análisis.", enabled=self.settings.enable_hover_tooltips)
 
         # TODO: Añadir botón "Reporte General" (Fase 6)
 
@@ -681,6 +681,16 @@ class DiscreteAnalysisView(ttk.Frame):
         self.current_page = 1 # Reset to first page after filtering
         
         self._populate_treeview(self.filtered_tables_data)
+        
+        # Enable/disable "Gestor de Análisis Discretos" button based on table availability
+        if hasattr(self, 'open_manager_button'):
+            if not self.all_tables_data: # Check if any tables were loaded at all
+                self.open_manager_button.config(state=tk.DISABLED)
+                Tooltip(self.open_manager_button, text="No hay tablas de resumen generadas. Genere tablas para habilitar el gestor de análisis.", short_text="No hay tablas.", enabled=self.settings.enable_hover_tooltips)
+            else:
+                self.open_manager_button.config(state=tk.NORMAL)
+                Tooltip(self.open_manager_button, text="Abrir el gestor para crear, ver y eliminar análisis discretos individuales (boxplots, tests estadísticos).", short_text="Gestor análisis.", enabled=self.settings.enable_hover_tooltips)
+
 
     def clear_filters(self):
         """Limpia los filtros y la búsqueda, y recarga la tabla."""
@@ -930,14 +940,21 @@ class DiscreteAnalysisView(ttk.Frame):
 
     def open_individual_analysis_manager(self):
         """Abre el diálogo para gestionar análisis individuales."""
+        if not self.all_tables_data:
+            messagebox.showwarning("Sin Tablas de Resumen",
+                                   "No hay tablas de resumen (.xlsx) generadas para este estudio.\n\n"
+                                   "Por favor, genere las tablas de resumen primero usando el botón "
+                                   "'Generar/Actualizar Tablas Resumen' antes de acceder al gestor de análisis.",
+                                   parent=self)
+            return
+
         # Import local para evitar dependencia circular si es necesario
         from kineviz.ui.dialogs.individual_analysis_manager_dialog \
             import IndividualAnalysisManagerDialog
         # Pasar self.analysis_service y self.study_id
-        _dialog = IndividualAnalysisManagerDialog(self, self.analysis_service,
-                                                  self.study_id)
-        # _dialog.grab_set()  # Hacer modal si se desea
-        # Se usa _dialog para evitar F841, aunque no se use después
+        # The parent for IndividualAnalysisManagerDialog should be self (DiscreteAnalysisView)
+        # and it will access main_window via self.parent.main_window
+        _dialog = IndividualAnalysisManagerDialog(self, self.analysis_service, self.study_id)
 
     def _open_summary_tables_folder(self):
         """Abre la carpeta donde se guardan las tablas de resumen discreto."""

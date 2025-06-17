@@ -118,6 +118,41 @@ class StudyView:
         discrete_analysis_button.pack(side=tk.RIGHT, padx=(0, 5)) # Adjusted padding
         Tooltip(discrete_analysis_button, text="Abrir la interfaz de gestión y generación de análisis discretos (tablas resumen, boxplots).", short_text="Análisis discreto.", enabled=self.main_window.settings.enable_hover_tooltips)
 
+        # Check if there are any processed files to enable analysis buttons
+        # This is a basic check. More specific checks (e.g., for specific frequencies) could be added.
+        has_processed_files = False
+        try:
+            # Check for any file in any 'processed' directory type (Cinematica, Cinetica, etc.)
+            # A more efficient check might involve querying FileService or StudyService
+            # for a summary of available processed data types.
+            # For now, a simple check for existence of any processed file.
+            study_path = self.file_service._get_study_path(self.study_id) # Get base path for the study
+            if study_path.exists():
+                for participant_folder in study_path.iterdir():
+                    if participant_folder.is_dir():
+                        for data_type_folder in participant_folder.iterdir():
+                            if data_type_folder.is_dir() and data_type_folder.name != "OG": # Check processed folders
+                                if any(data_type_folder.iterdir()): # Check if folder is not empty
+                                    has_processed_files = True
+                                    break
+                        if has_processed_files:
+                            break
+            
+            if not has_processed_files:
+                logger.info(f"Estudio {self.study_id}: No se encontraron archivos procesados. Botones de análisis deshabilitados.")
+                discrete_analysis_button.config(state=tk.DISABLED)
+                continuous_analysis_button.config(state=tk.DISABLED)
+                Tooltip(discrete_analysis_button, text="No hay archivos procesados en el estudio para realizar análisis discretos.", short_text="No hay datos.", enabled=self.main_window.settings.enable_hover_tooltips)
+                Tooltip(continuous_analysis_button, text="No hay archivos procesados en el estudio para realizar análisis continuos.", short_text="No hay datos.", enabled=self.main_window.settings.enable_hover_tooltips)
+
+        except Exception as e_check:
+            logger.error(f"Error al verificar archivos procesados para estudio {self.study_id}: {e_check}", exc_info=True)
+            # Optionally disable buttons if check fails, or allow user to proceed with caution
+            discrete_analysis_button.config(state=tk.DISABLED)
+            continuous_analysis_button.config(state=tk.DISABLED)
+            Tooltip(discrete_analysis_button, text="Error al verificar datos procesados. Análisis deshabilitado.", short_text="Error datos.", enabled=self.main_window.settings.enable_hover_tooltips)
+            Tooltip(continuous_analysis_button, text="Error al verificar datos procesados. Análisis deshabilitado.", short_text="Error datos.", enabled=self.main_window.settings.enable_hover_tooltips)
+
 
         # --- Header Row 2 (also in top_fixed_header_actions_frame) ---
         header_frame_row2 = ttk.Frame(self.top_fixed_header_actions_frame)
