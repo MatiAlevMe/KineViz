@@ -70,80 +70,62 @@ class ConfigDialog(Toplevel):
         self.var_auto_backup_cooldown.set(str(self.settings.automatic_backup_cooldown_seconds))
 
     def create_widgets(self):
-        """Crea los widgets del diálogo."""
-        main_frame = ttk.Frame(self, padding="20")
-        main_frame.pack(fill=tk.BOTH, expand=True)
+        """Crea los widgets del diálogo usando un Notebook para pestañas."""
+        # Frame principal que contendrá el Notebook y los botones Guardar/Cancelar
+        outer_frame = ttk.Frame(self, padding="10")
+        outer_frame.pack(fill=tk.BOTH, expand=True)
 
-        # Configurar grid layout
-        main_frame.columnconfigure(0, weight=1) # Allow label column to take some space
-        main_frame.columnconfigure(1, weight=3) # Give more weight to widget column for expansion
+        # Crear el Notebook
+        notebook = ttk.Notebook(outer_frame)
+        notebook.pack(fill=tk.BOTH, expand=True, pady=(0, 10))
 
+        # --- Pestaña General ---
+        tab_general = ttk.Frame(notebook, padding="10")
+        notebook.add(tab_general, text="General")
+        self._create_general_tab_widgets(tab_general)
+
+        # --- Pestaña Paginación ---
+        tab_pagination = ttk.Frame(notebook, padding="10")
+        notebook.add(tab_pagination, text="Paginación")
+        self._create_pagination_tab_widgets(tab_pagination)
+
+        # --- Pestaña Copias de Seguridad ---
+        tab_backups = ttk.Frame(notebook, padding="10")
+        notebook.add(tab_backups, text="Copias de Seguridad")
+        self._create_backups_tab_widgets(tab_backups)
+        
+        # --- Pestaña Avanzado ---
+        tab_advanced = ttk.Frame(notebook, padding="10")
+        notebook.add(tab_advanced, text="Avanzado")
+        self._create_advanced_tab_widgets(tab_advanced)
+
+        # --- Botones Guardar/Cancelar (fuera del Notebook) ---
+        button_frame = ttk.Frame(outer_frame)
+        button_frame.pack(fill=tk.X, side=tk.BOTTOM, pady=(10,0)) # Empaquetar al final
+        
+        # Centrar botones en el button_frame
+        button_frame.columnconfigure(0, weight=1) # Columna vacía para empujar a la derecha
+        button_frame.columnconfigure(1, weight=0) # Columna para Guardar
+        button_frame.columnconfigure(2, weight=0) # Columna para Cancelar
+
+        ttk.Button(button_frame, text="Guardar", command=self.save_settings).grid(row=0, column=2, padx=5, sticky="e")
+        ttk.Button(button_frame, text="Cancelar", command=self.destroy).grid(row=0, column=1, padx=5, sticky="e")
+
+
+        # After all widgets are created, set a minimum size
+        self.update_idletasks()
+        self.minsize(500, 420) # Ajustar según sea necesario para las pestañas
+
+    def _create_general_tab_widgets(self, parent_frame: ttk.Frame):
+        """Crea los widgets para la pestaña 'General'."""
+        parent_frame.columnconfigure(0, weight=1)
+        parent_frame.columnconfigure(1, weight=3)
         row_idx = 0
 
-        # --- Campos de Configuración ---
-        ttk.Label(main_frame, text="Estudios por página:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
-        studies_frame = ttk.Frame(main_frame)
-        studies_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
-        studies_entry = ttk.Entry(studies_frame, textvariable=self.var_studies_per_page, width=7)
-        studies_entry.pack(side=tk.LEFT, padx=(0,5))
-        studies_long_text = "Número de estudios a mostrar por página en la vista principal."
-        studies_short_text = "Estudios por página." # Example short text
-        studies_help_btn = ttk.Button(studies_frame, text="?", width=3, style="Help.TButton",
-                                      command=lambda: self._show_input_help("Ayuda: Estudios por Página", studies_long_text))
-        studies_help_btn.pack(side=tk.LEFT)
-        Tooltip(studies_help_btn, text=studies_long_text, short_text=studies_short_text, enabled=self.settings.enable_hover_tooltips)
-        row_idx += 1
-
-        ttk.Label(main_frame, text="Archivos por página (vista estudio):").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
-        files_frame = ttk.Frame(main_frame)
-        files_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
-        files_entry = ttk.Entry(files_frame, textvariable=self.var_files_per_page, width=7)
-        files_entry.pack(side=tk.LEFT, padx=(0,5))
-        files_long_text = "Número de archivos a mostrar por página en el navegador de archivos de la vista de estudio."
-        files_short_text = "Archivos por página (vista estudio)."
-        files_help_btn = ttk.Button(files_frame, text="?", width=3, style="Help.TButton",
-                                    command=lambda: self._show_input_help("Ayuda: Archivos por Página", files_long_text))
-        files_help_btn.pack(side=tk.LEFT)
-        Tooltip(files_help_btn, text=files_long_text, short_text=files_short_text, enabled=self.settings.enable_hover_tooltips)
-        row_idx += 1
-
-        # "Elementos por página (gestores análisis)" block is moved from here.
-
-        ttk.Label(main_frame, text="Tablas resumen discreto por página:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
-        discrete_tables_frame = ttk.Frame(main_frame)
-        discrete_tables_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
-        discrete_tables_entry = ttk.Entry(discrete_tables_frame, textvariable=self.var_discrete_tables_per_page, width=7)
-        discrete_tables_entry.pack(side=tk.LEFT, padx=(0,5))
-        discrete_tables_long_text = "Número de tablas de resumen (ej. Maximo_Cinematica_...) a mostrar por página en la vista de 'Análisis Discreto'."
-        discrete_tables_short_text = "Tablas resumen discreto por página."
-        discrete_tables_help_btn = ttk.Button(discrete_tables_frame, text="?", width=3, style="Help.TButton",
-                                              command=lambda: self._show_input_help("Ayuda: Tablas de Resumen Discreto por Página", discrete_tables_long_text))
-        discrete_tables_help_btn.pack(side=tk.LEFT)
-        Tooltip(discrete_tables_help_btn, text=discrete_tables_long_text, short_text=discrete_tables_short_text, enabled=self.settings.enable_hover_tooltips)
-        row_idx += 1
-
-        # Moved "Elementos por página (gestores análisis)" to be after "Tablas resumen discreto por página"
-        # This was previously before "Tamaño de Fuente" and after "Archivos por página"
-        # The original block for "Elementos por página (gestores análisis)" is removed from its old position
-        # and re-inserted here.
-
-        ttk.Label(main_frame, text="Elementos por página (gestores análisis):").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5) # Changed label
-        analysis_items_frame = ttk.Frame(main_frame) # Renamed frame
-        analysis_items_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
-        analysis_items_entry = ttk.Entry(analysis_items_frame, textvariable=self.var_analysis_items_per_page, width=7) # Changed variable
-        analysis_items_entry.pack(side=tk.LEFT, padx=(0,5))
-        analysis_items_long_text = "Número de elementos (análisis guardados) a mostrar por página en los gestores de análisis discreto y continuo."
-        analysis_items_short_text = "Elementos por página (gestores análisis)."
-        analysis_items_help_btn = ttk.Button(analysis_items_frame, text="?", width=3, style="Help.TButton",
-                                             command=lambda: self._show_input_help("Ayuda: Elementos por Página (Gestores de Análisis)", analysis_items_long_text))
-        analysis_items_help_btn.pack(side=tk.LEFT)
-        Tooltip(analysis_items_help_btn, text=analysis_items_long_text, short_text=analysis_items_short_text, enabled=self.settings.enable_hover_tooltips)
-        row_idx += 1
-        
         # --- Tamaño de Fuente ---
-        ttk.Label(main_frame, text="Tamaño de Fuente (escala):").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
-        font_scale_frame = ttk.Frame(main_frame)
-        font_scale_frame.grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5) # Use ew for combobox
+        ttk.Label(parent_frame, text="Tamaño de Fuente (escala):").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        font_scale_frame = ttk.Frame(parent_frame)
+        font_scale_frame.grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5)
         font_scale_options = ["0.8", "0.9", "1.0", "1.1", "1.2", "1.3", "1.5", "1.75", "2.0"]
         font_scale_combo = ttk.Combobox(font_scale_frame, textvariable=self.var_font_scale, values=font_scale_options, width=5, state="readonly")
         font_scale_combo.pack(side=tk.LEFT, padx=(0,5))
@@ -157,10 +139,10 @@ class ConfigDialog(Toplevel):
         row_idx += 1
 
         # --- Tema de Aplicación ---
-        ttk.Label(main_frame, text="Tema de Aplicación:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
-        theme_frame = ttk.Frame(main_frame)
-        theme_frame.grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5) # Use ew for combobox
-        theme_options = ["Light", "Dark"] # Add more themes as they are defined
+        ttk.Label(parent_frame, text="Tema de Aplicación:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        theme_frame = ttk.Frame(parent_frame)
+        theme_frame.grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5)
+        theme_options = ["Light", "Dark"]
         theme_combo = ttk.Combobox(theme_frame, textvariable=self.var_theme, values=theme_options, width=10, state="readonly")
         theme_combo.pack(side=tk.LEFT, padx=(0,5))
         theme_long_text = ("Cambia la apariencia visual de la aplicación (colores).\n"
@@ -172,65 +154,10 @@ class ConfigDialog(Toplevel):
         theme_help_btn.pack(side=tk.LEFT)
         Tooltip(theme_help_btn, text=theme_long_text, short_text=theme_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
-
-        # --- Backup Settings ---
-        ttk.Label(main_frame, text="Máx. copias automáticas:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
-        max_auto_frame = ttk.Frame(main_frame)
-        max_auto_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
-        max_auto_entry = ttk.Entry(max_auto_frame, textvariable=self.var_max_auto_backups, width=7)
-        max_auto_entry.pack(side=tk.LEFT, padx=(0,5))
-        max_auto_long_text = "Número máximo de copias de seguridad automáticas a conservar (0 para desactivar y eliminar todas)."
-        max_auto_short_text = "Máx. copias automáticas."
-        max_auto_help_btn = ttk.Button(max_auto_frame, text="?", width=3, style="Help.TButton",
-                                       command=lambda: self._show_input_help("Ayuda: Máx. Copias Automáticas", max_auto_long_text))
-        max_auto_help_btn.pack(side=tk.LEFT)
-        Tooltip(max_auto_help_btn, text=max_auto_long_text, short_text=max_auto_short_text, enabled=self.settings.enable_hover_tooltips)
-        row_idx += 1
-
-        ttk.Label(main_frame, text="Máx. copias manuales:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
-        max_manual_frame = ttk.Frame(main_frame)
-        max_manual_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
-        max_manual_entry = ttk.Entry(max_manual_frame, textvariable=self.var_max_manual_backups, width=7)
-        max_manual_entry.pack(side=tk.LEFT, padx=(0,5))
-        max_manual_long_text = "Número máximo de copias de seguridad manuales a conservar (0 para desactivar y eliminar todas)."
-        max_manual_short_text = "Máx. copias manuales."
-        max_manual_help_btn = ttk.Button(max_manual_frame, text="?", width=3, style="Help.TButton",
-                                         command=lambda: self._show_input_help("Ayuda: Máx. Copias Manuales", max_manual_long_text))
-        max_manual_help_btn.pack(side=tk.LEFT)
-        Tooltip(max_manual_help_btn, text=max_manual_long_text, short_text=max_manual_short_text, enabled=self.settings.enable_hover_tooltips)
-        row_idx += 1
-
-        ttk.Label(main_frame, text="Enfriamiento copias automáticas (seg):").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
-        cooldown_frame = ttk.Frame(main_frame)
-        cooldown_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
-        cooldown_entry = ttk.Entry(cooldown_frame, textvariable=self.var_auto_backup_cooldown, width=7)
-        cooldown_entry.pack(side=tk.LEFT, padx=(0,5))
-        cooldown_long_text = "Tiempo mínimo (en segundos) que debe pasar después de una copia automática antes de que se pueda iniciar otra. 0 para permitir inmediatamente después de que termine la anterior (si no hay bloqueo)."
-        cooldown_short_text = "Enfriamiento copias automáticas (seg)."
-        cooldown_help_btn = ttk.Button(cooldown_frame, text="?", width=3, style="Help.TButton",
-                                       command=lambda: self._show_input_help("Ayuda: Enfriamiento Copias Automáticas", cooldown_long_text))
-        cooldown_help_btn.pack(side=tk.LEFT)
-        Tooltip(cooldown_help_btn, text=cooldown_long_text, short_text=cooldown_short_text, enabled=self.settings.enable_hover_tooltips)
-        row_idx += 1
         
-        # --- Botón para abrir diálogo de gestión de backups ---
-        manage_backups_frame = ttk.Frame(main_frame)
-        manage_backups_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10,5), sticky="w")
-        manage_backups_button = ttk.Button(manage_backups_frame, text="Gestionar Copias de Seguridad", command=self.open_backup_restore_dialog)
-        manage_backups_button.pack(side=tk.LEFT, padx=(0,5))
-        manage_backups_long_text = "Abre una nueva ventana para crear, restaurar, renombrar y eliminar copias de seguridad manuales, y ver copias automáticas."
-        manage_backups_short_text = "Gestionar copias de seguridad."
-        manage_backups_help_btn = ttk.Button(manage_backups_frame, text="?", width=3, style="Help.TButton",
-                                             command=lambda: self._show_input_help("Ayuda: Gestionar Copias de Seguridad", manage_backups_long_text))
-        manage_backups_help_btn.pack(side=tk.LEFT)
-        Tooltip(manage_backups_help_btn, text=manage_backups_long_text, short_text=manage_backups_short_text, enabled=self.settings.enable_hover_tooltips)
-        row_idx +=1
-
-
         # --- Switch para habilitar/deshabilitar tooltips por hover ---
-        enable_tooltips_frame = ttk.Frame(main_frame)
+        enable_tooltips_frame = ttk.Frame(parent_frame)
         enable_tooltips_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10, 5), sticky="w")
-        
         enable_tooltips_cb = ttk.Checkbutton(
             enable_tooltips_frame,
             text="Habilitar Tooltips por Hover (Accesibilidad)",
@@ -245,12 +172,131 @@ class ConfigDialog(Toplevel):
                                               command=lambda: self._show_input_help("Ayuda: Habilitar Tooltips por Hover", enable_tooltips_long_text))
         enable_tooltips_help_btn.pack(side=tk.LEFT)
         Tooltip(enable_tooltips_help_btn, text=enable_tooltips_long_text, short_text=enable_tooltips_short_text, enabled=self.settings.enable_hover_tooltips)
+
+    def _create_pagination_tab_widgets(self, parent_frame: ttk.Frame):
+        """Crea los widgets para la pestaña 'Paginación'."""
+        parent_frame.columnconfigure(0, weight=1)
+        parent_frame.columnconfigure(1, weight=3)
+        row_idx = 0
+
+        ttk.Label(parent_frame, text="Estudios por página:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        studies_frame = ttk.Frame(parent_frame)
+        studies_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
+        studies_entry = ttk.Entry(studies_frame, textvariable=self.var_studies_per_page, width=7)
+        studies_entry.pack(side=tk.LEFT, padx=(0,5))
+        studies_long_text = "Número de estudios a mostrar por página en la vista principal."
+        studies_short_text = "Estudios por página."
+        studies_help_btn = ttk.Button(studies_frame, text="?", width=3, style="Help.TButton",
+                                      command=lambda: self._show_input_help("Ayuda: Estudios por Página", studies_long_text))
+        studies_help_btn.pack(side=tk.LEFT)
+        Tooltip(studies_help_btn, text=studies_long_text, short_text=studies_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
-        # --- Switch para mostrar/ocultar botón de Restauración de Fábrica ---
-        show_factory_reset_frame = ttk.Frame(main_frame)
-        show_factory_reset_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10, 5), sticky="w")
+        ttk.Label(parent_frame, text="Archivos por página (vista estudio):").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        files_frame = ttk.Frame(parent_frame)
+        files_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
+        files_entry = ttk.Entry(files_frame, textvariable=self.var_files_per_page, width=7)
+        files_entry.pack(side=tk.LEFT, padx=(0,5))
+        files_long_text = "Número de archivos a mostrar por página en el navegador de archivos de la vista de estudio."
+        files_short_text = "Archivos por página (vista estudio)."
+        files_help_btn = ttk.Button(files_frame, text="?", width=3, style="Help.TButton",
+                                    command=lambda: self._show_input_help("Ayuda: Archivos por Página", files_long_text))
+        files_help_btn.pack(side=tk.LEFT)
+        Tooltip(files_help_btn, text=files_long_text, short_text=files_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+
+        ttk.Label(parent_frame, text="Tablas resumen discreto por página:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        discrete_tables_frame = ttk.Frame(parent_frame)
+        discrete_tables_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
+        discrete_tables_entry = ttk.Entry(discrete_tables_frame, textvariable=self.var_discrete_tables_per_page, width=7)
+        discrete_tables_entry.pack(side=tk.LEFT, padx=(0,5))
+        discrete_tables_long_text = "Número de tablas de resumen (ej. Maximo_Cinematica_...) a mostrar por página en la vista de 'Análisis Discreto'."
+        discrete_tables_short_text = "Tablas resumen discreto por página."
+        discrete_tables_help_btn = ttk.Button(discrete_tables_frame, text="?", width=3, style="Help.TButton",
+                                              command=lambda: self._show_input_help("Ayuda: Tablas de Resumen Discreto por Página", discrete_tables_long_text))
+        discrete_tables_help_btn.pack(side=tk.LEFT)
+        Tooltip(discrete_tables_help_btn, text=discrete_tables_long_text, short_text=discrete_tables_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+
+        ttk.Label(parent_frame, text="Elementos por página (gestores análisis):").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        analysis_items_frame = ttk.Frame(parent_frame)
+        analysis_items_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
+        analysis_items_entry = ttk.Entry(analysis_items_frame, textvariable=self.var_analysis_items_per_page, width=7)
+        analysis_items_entry.pack(side=tk.LEFT, padx=(0,5))
+        analysis_items_long_text = "Número de elementos (análisis guardados) a mostrar por página en los gestores de análisis discreto y continuo."
+        analysis_items_short_text = "Elementos por página (gestores análisis)."
+        analysis_items_help_btn = ttk.Button(analysis_items_frame, text="?", width=3, style="Help.TButton",
+                                             command=lambda: self._show_input_help("Ayuda: Elementos por Página (Gestores de Análisis)", analysis_items_long_text))
+        analysis_items_help_btn.pack(side=tk.LEFT)
+        Tooltip(analysis_items_help_btn, text=analysis_items_long_text, short_text=analysis_items_short_text, enabled=self.settings.enable_hover_tooltips)
+
+    def _create_backups_tab_widgets(self, parent_frame: ttk.Frame):
+        """Crea los widgets para la pestaña 'Copias de Seguridad'."""
+        parent_frame.columnconfigure(0, weight=1)
+        parent_frame.columnconfigure(1, weight=3)
+        row_idx = 0
+
+        ttk.Label(parent_frame, text="Máx. copias automáticas:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        max_auto_frame = ttk.Frame(parent_frame)
+        max_auto_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
+        max_auto_entry = ttk.Entry(max_auto_frame, textvariable=self.var_max_auto_backups, width=7)
+        max_auto_entry.pack(side=tk.LEFT, padx=(0,5))
+        max_auto_long_text = ("Número máximo de copias de seguridad automáticas a conservar (0 para desactivar y eliminar todas).\n"
+                              "El límite se aplica cuando se crea una nueva copia automática; las más antiguas se eliminan en ese momento.")
+        max_auto_short_text = "Máx. copias automáticas (limpieza en nueva creación)."
+        max_auto_help_btn = ttk.Button(max_auto_frame, text="?", width=3, style="Help.TButton",
+                                       command=lambda: self._show_input_help("Ayuda: Máx. Copias Automáticas", max_auto_long_text))
+        max_auto_help_btn.pack(side=tk.LEFT)
+        Tooltip(max_auto_help_btn, text=max_auto_long_text, short_text=max_auto_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+
+        ttk.Label(parent_frame, text="Máx. copias manuales:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        max_manual_frame = ttk.Frame(parent_frame)
+        max_manual_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
+        max_manual_entry = ttk.Entry(max_manual_frame, textvariable=self.var_max_manual_backups, width=7)
+        max_manual_entry.pack(side=tk.LEFT, padx=(0,5))
+        max_manual_long_text = ("Número máximo de copias de seguridad manuales a conservar (0 para desactivar y eliminar todas).\n"
+                                "El límite se aplica cuando se crea una nueva copia manual; las más antiguas se eliminan en ese momento.")
+        max_manual_short_text = "Máx. copias manuales (limpieza en nueva creación)."
+        max_manual_help_btn = ttk.Button(max_manual_frame, text="?", width=3, style="Help.TButton",
+                                         command=lambda: self._show_input_help("Ayuda: Máx. Copias Manuales", max_manual_long_text))
+        max_manual_help_btn.pack(side=tk.LEFT)
+        Tooltip(max_manual_help_btn, text=max_manual_long_text, short_text=max_manual_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+
+        ttk.Label(parent_frame, text="Enfriamiento copias automáticas (seg):").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
+        cooldown_frame = ttk.Frame(parent_frame)
+        cooldown_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
+        cooldown_entry = ttk.Entry(cooldown_frame, textvariable=self.var_auto_backup_cooldown, width=7)
+        cooldown_entry.pack(side=tk.LEFT, padx=(0,5))
+        cooldown_long_text = "Tiempo mínimo (en segundos) que debe pasar después de una copia automática antes de que se pueda iniciar otra. 0 para permitir inmediatamente después de que termine la anterior (si no hay bloqueo)."
+        cooldown_short_text = "Enfriamiento copias automáticas (seg)."
+        cooldown_help_btn = ttk.Button(cooldown_frame, text="?", width=3, style="Help.TButton",
+                                       command=lambda: self._show_input_help("Ayuda: Enfriamiento Copias Automáticas", cooldown_long_text))
+        cooldown_help_btn.pack(side=tk.LEFT)
+        Tooltip(cooldown_help_btn, text=cooldown_long_text, short_text=cooldown_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
         
+        manage_backups_frame = ttk.Frame(parent_frame)
+        manage_backups_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10,5), sticky="w")
+        manage_backups_button = ttk.Button(manage_backups_frame, text="Gestionar Copias de Seguridad", command=self.open_backup_restore_dialog)
+        manage_backups_button.pack(side=tk.LEFT, padx=(0,5))
+        manage_backups_long_text = "Abre una nueva ventana para crear, restaurar, renombrar y eliminar copias de seguridad manuales, y ver copias automáticas."
+        manage_backups_short_text = "Gestionar copias de seguridad."
+        manage_backups_help_btn = ttk.Button(manage_backups_frame, text="?", width=3, style="Help.TButton",
+                                             command=lambda: self._show_input_help("Ayuda: Gestionar Copias de Seguridad", manage_backups_long_text))
+        manage_backups_help_btn.pack(side=tk.LEFT)
+        Tooltip(manage_backups_help_btn, text=manage_backups_long_text, short_text=manage_backups_short_text, enabled=self.settings.enable_hover_tooltips)
+
+    def _create_advanced_tab_widgets(self, parent_frame: ttk.Frame):
+        """Crea los widgets para la pestaña 'Avanzado'."""
+        parent_frame.columnconfigure(0, weight=1) # Allow labels/buttons to take space
+        # No column 1 needed if elements span or are packed left
+        row_idx = 0
+
+        # --- Switch para mostrar/ocultar botón de Restauración de Fábrica ---
+        show_factory_reset_frame = ttk.Frame(parent_frame)
+        show_factory_reset_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10, 5), sticky="w")
         show_factory_reset_cb = ttk.Checkbutton(
             show_factory_reset_frame,
             text="Mostrar opción de Restauración de Fábrica (Avanzado)",
@@ -268,7 +314,7 @@ class ConfigDialog(Toplevel):
         row_idx += 1
         
         # --- Botón Restablecer Ajustes a Predeterminados ---
-        reset_settings_frame = ttk.Frame(main_frame)
+        reset_settings_frame = ttk.Frame(parent_frame)
         reset_settings_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10, 5), sticky="w")
         reset_settings_button = ttk.Button(reset_settings_frame, text="Restablecer Ajustes a Predeterminados", command=self.reset_config_settings_to_default_action)
         reset_settings_button.pack(side=tk.LEFT, padx=(0,5))
@@ -286,7 +332,7 @@ class ConfigDialog(Toplevel):
         row_idx += 1
 
         # --- Botón Restaurar KineViz a Estado de Fábrica (visibilidad controlada) ---
-        self.factory_reset_frame = ttk.Frame(main_frame) # Make it an instance variable
+        self.factory_reset_frame = ttk.Frame(parent_frame) 
         self.factory_reset_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10, 5), sticky="w")
         factory_reset_button = ttk.Button(self.factory_reset_frame, text="Restaurar KineViz a Estado de Fábrica", command=self.trigger_factory_reset_callback, style="Danger.TButton")
         factory_reset_button.pack(side=tk.LEFT, padx=(0,5))
@@ -303,19 +349,9 @@ class ConfigDialog(Toplevel):
                                             command=lambda: self._show_input_help("Ayuda: Restaurar KineViz a Estado de Fábrica", factory_reset_long_text))
         factory_reset_help_btn.pack(side=tk.LEFT)
         Tooltip(factory_reset_help_btn, text=factory_reset_long_text, short_text=factory_reset_short_text, enabled=self.settings.enable_hover_tooltips)
-        row_idx += 1
+        # Ensure the factory reset button's visibility is correctly set initially
+        self._toggle_factory_reset_visibility()
 
-        # --- Botones Guardar/Cancelar ---
-        button_frame = ttk.Frame(main_frame)
-        button_frame.grid(row=row_idx, column=0, columnspan=2, sticky="se", pady=(20, 0)) # sticky "se" y pady mayor
-        main_frame.rowconfigure(row_idx, weight=1) # Permite que este frame se expanda si hay espacio extra
-
-        ttk.Button(button_frame, text="Guardar", command=self.save_settings).pack(side=tk.RIGHT, padx=5)
-        ttk.Button(button_frame, text="Cancelar", command=self.destroy).pack(side=tk.RIGHT)
-
-        # After all widgets are created, set a minimum size based on their initial requested size
-        self.update_idletasks() # Ensure Tkinter has processed widget sizes
-        self.minsize(450, 380) # Set a reasonable fixed minimum size
 
     def validate_input(self) -> bool:
         """Valida que los valores ingresados sean enteros positivos."""
