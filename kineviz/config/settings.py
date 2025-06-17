@@ -39,7 +39,9 @@ class AppSettings:
             'max_automatic_backups': '4', # Default max automatic backups
             'max_manual_backups': '4',     # Default max manual backups
             'automatic_backup_cooldown_seconds': '60', # Default cooldown
-            'backups_per_page': '10' # Default backups to show per page
+            'backups_per_page': '10', # Default backups to show per page
+            'enable_automatic_backups': 'False', # New: Enable/disable automatic backups
+            'enable_manual_backups': 'False'     # New: Enable/disable manual backups
         }
         # DESCRIPTOR_ALIASES ya no se gestiona aquí
     }
@@ -91,27 +93,52 @@ class AppSettings:
             # Use properties for their built-in validation logic where possible
             # For settings that are just retrieved with get_int_setting, etc.,
             # we need to replicate or enhance the validation here if properties don't cover it.
-            
-            # Integer positive values
-            positive_int_settings = ['estudios_por_pagina', 'files_per_page', 
-                                     'analysis_items_per_page', 'discrete_tables_per_page']
-            for key in positive_int_settings:
-                val = self.get_int_setting(key, -1) # Use -1 to detect if it was invalid
-                if val <= 0: # Properties might default, but direct check is stricter for validation
+
+            # Integer positive values (must be > 0)
+            strictly_positive_int_settings = [
+                'estudios_por_pagina', 'files_per_page',
+                'analysis_items_per_page', 'discrete_tables_per_page',
+                'backups_per_page', # Added backups_per_page here
+                # max_automatic_backups and max_manual_backups are now also strictly positive if enabled
+            ]
+            for key in strictly_positive_int_settings:
+                val = self.get_int_setting(key, -1)
+                if val <= 0:
                     raw_val = self.config.get('SETTINGS', key, fallback=None)
-                    logger.error(f"Config validation failed: '{key}' must be a positive integer, got '{raw_val}'.")
-                    return False
-            
-            # Max backups (non-negative)
-            non_negative_int_settings = ['max_automatic_backups', 'max_manual_backups', 
-                                         'automatic_backup_cooldown_seconds']
-            for key in non_negative_int_settings:
-                val = self.get_int_setting(key, -1) # Use -1 to detect if it was invalid
-                if val < 0: # Properties might default, but direct check is stricter
-                    raw_val = self.config.get('SETTINGS', key, fallback=None)
-                    logger.error(f"Config validation failed: '{key}' must be a non-negative integer, got '{raw_val}'.")
+                    logger.error(f"Config validation failed: '{key}' must be a positive integer (>0), got '{raw_val}'.")
                     return False
 
+            # Max backups (must be > 0 if enabled, otherwise value doesn't strictly matter but should be valid int)
+            if self.get_bool_setting('enable_automatic_backups', False):
+                if self.get_int_setting('max_automatic_backups', -1) <= 0:
+                    raw_val = self.config.get('SETTINGS', 'max_automatic_backups', fallback=None)
+                    logger.error(f"Config validation failed: 'max_automatic_backups' must be a positive integer (>0) when enabled, got '{raw_val}'.")
+                    return False
+            else: # Check it's a valid integer even if not enabled
+                 if self.get_int_setting('max_automatic_backups', -1) < 0 : # Allow 0 if we decide, but user asked for positive
+                    raw_val = self.config.get('SETTINGS', 'max_automatic_backups', fallback=None)
+                    logger.error(f"Config validation failed: 'max_automatic_backups' must be a non-negative integer, got '{raw_val}'.")
+                    return False
+
+
+            if self.get_bool_setting('enable_manual_backups', False):
+                if self.get_int_setting('max_manual_backups', -1) <= 0:
+                    raw_val = self.config.get('SETTINGS', 'max_manual_backups', fallback=None)
+                    logger.error(f"Config validation failed: 'max_manual_backups' must be a positive integer (>0) when enabled, got '{raw_val}'.")
+                    return False
+            else: # Check it's a valid integer even if not enabled
+                if self.get_int_setting('max_manual_backups', -1) < 0:
+                    raw_val = self.config.get('SETTINGS', 'max_manual_backups', fallback=None)
+                    logger.error(f"Config validation failed: 'max_manual_backups' must be a non-negative integer, got '{raw_val}'.")
+                    return False
+
+
+            # Cooldown (non-negative integer)
+            if self.get_int_setting('automatic_backup_cooldown_seconds', -1) < 0:
+                raw_val = self.config.get('SETTINGS', 'automatic_backup_cooldown_seconds', fallback=None)
+                logger.error(f"Config validation failed: 'automatic_backup_cooldown_seconds' must be a non-negative integer, got '{raw_val}'.")
+                return False
+            
             # Font scale (positive float)
             font_scale_val_str = self.get_setting('font_scale', '0.0')
             if float(font_scale_val_str) <= 0:
@@ -124,12 +151,15 @@ class AppSettings:
                 logger.error(f"Config validation failed: 'theme' must be one of ['Light', 'Dark'], got '{theme_val}'.")
                 return False
             
-            # Booleans (show_factory_reset_button, enable_hover_tooltips)
+            # Booleans (show_factory_reset_button, enable_hover_tooltips, enable_automatic_backups, enable_manual_backups)
             # get_bool_setting handles parse errors by returning fallback, so we check if the raw string is valid.
-            boolean_settings = ['show_factory_reset_button', 'enable_hover_tooltips']
+            boolean_settings = [
+                'show_factory_reset_button', 'enable_hover_tooltips',
+                'enable_automatic_backups', 'enable_manual_backups'
+            ]
             for key in boolean_settings:
                 raw_val = self.config.get('SETTINGS', key, fallback=None)
-                if raw_val is None or raw_val.lower() not in ('true', 'yes', '1', 'on', 'false', 'no', '0', 'off'):
+                if raw_val is None or raw_val.lower() not in ('true', 'yes', '1', 'on', 'false', 'no', '0', 'off', ''): # Allow empty string as false for robustness
                     logger.error(f"Config validation failed: '{key}' has an invalid boolean value '{raw_val}'.")
                     return False
 
@@ -362,6 +392,24 @@ class AppSettings:
     @backups_per_page.setter
     def backups_per_page(self, value: int):
         self.set_setting('backups_per_page', str(value))
+
+    @property
+    def enable_automatic_backups(self) -> bool:
+        """Controls if automatic backups are enabled."""
+        return self.get_bool_setting('enable_automatic_backups', False)
+
+    @enable_automatic_backups.setter
+    def enable_automatic_backups(self, value: bool):
+        self.set_setting('enable_automatic_backups', str(value))
+
+    @property
+    def enable_manual_backups(self) -> bool:
+        """Controls if manual backups are enabled."""
+        return self.get_bool_setting('enable_manual_backups', False)
+
+    @enable_manual_backups.setter
+    def enable_manual_backups(self, value: bool):
+        self.set_setting('enable_manual_backups', str(value))
 
     def reset_to_defaults(self):
          """Restablece las configuraciones en memoria a los valores por defecto."""

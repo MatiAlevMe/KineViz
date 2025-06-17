@@ -70,6 +70,8 @@ def create_backup(backup_type: str, _is_test_mode: bool = False) -> Optional[pat
     from kineviz.config.settings import AppSettings # Import AppSettings locally
     global _last_automatic_backup_end_time # Needed for automatic backup logic
 
+    settings = AppSettings() # Load settings at the beginning
+
     if backup_type not in SUPPORTED_BACKUP_TYPES:
         logger.error(f"Invalid backup_type: '{backup_type}'. Must be one of {SUPPORTED_BACKUP_TYPES}.")
         return None
@@ -82,12 +84,14 @@ def create_backup(backup_type: str, _is_test_mode: bool = False) -> Optional[pat
         return None
 
     # Manage rolling backups, cooldown, and locking for automatic backups
-    if backup_type == AUTOMATIC_BACKUPS_SUBDIR and not _is_test_mode: # Add _is_test_mode check
-        # global _last_automatic_backup_end_time # Already declared global when assigned
+    if backup_type == AUTOMATIC_BACKUPS_SUBDIR and not _is_test_mode:
+        if not settings.enable_automatic_backups:
+            logger.info("Automatic backups are disabled in settings. Skipping automatic backup creation.")
+            return None
         try:
-            settings = AppSettings() # Load settings
-            max_auto_backups = settings.max_automatic_backups # Use property
-            cooldown_seconds = settings.automatic_backup_cooldown_seconds # Use property
+            # settings = AppSettings() # Already loaded
+            max_auto_backups = settings.max_automatic_backups
+            cooldown_seconds = settings.automatic_backup_cooldown_seconds
             
             lock_file_path = backup_destination_subdir / ".backup_in_progress.lock"
 
@@ -149,8 +153,12 @@ def create_backup(backup_type: str, _is_test_mode: bool = False) -> Optional[pat
             return None
     
     elif backup_type == MANUAL_BACKUPS_SUBDIR:
+        if not settings.enable_manual_backups: # Check if manual backups are enabled
+            logger.info("Manual backups are disabled in settings. Skipping manual backup creation.")
+            # UI should ideally prevent calling this, but double check here.
+            return None
         try:
-            settings = AppSettings()
+            # settings = AppSettings() # Already loaded
             max_manual_bkups = settings.max_manual_backups
             
             existing_manual_backups = sorted(

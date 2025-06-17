@@ -39,6 +39,8 @@ class ConfigDialog(Toplevel):
         self.var_max_auto_backups = StringVar()
         self.var_max_manual_backups = StringVar()
         self.var_auto_backup_cooldown = StringVar()
+        self.var_enable_automatic_backups = tk.BooleanVar() # New
+        self.var_enable_manual_backups = tk.BooleanVar()   # New
 
 
         self.load_current_settings()
@@ -70,6 +72,8 @@ class ConfigDialog(Toplevel):
         self.var_max_auto_backups.set(str(self.settings.max_automatic_backups))
         self.var_max_manual_backups.set(str(self.settings.max_manual_backups))
         self.var_auto_backup_cooldown.set(str(self.settings.automatic_backup_cooldown_seconds))
+        self.var_enable_automatic_backups.set(self.settings.enable_automatic_backups) # Load new
+        self.var_enable_manual_backups.set(self.settings.enable_manual_backups)     # Load new
 
     def create_widgets(self):
         """Crea los widgets del diálogo usando un Notebook para pestañas."""
@@ -263,74 +267,138 @@ class ConfigDialog(Toplevel):
         Tooltip(backups_page_help_btn, text=backups_page_long_text, short_text=backups_page_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx +=1 
 
-        # Placeholder labels for testing dialog resizing
-        ttk.Label(parent_frame, text="Placeholder Paginación 1:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
-        ttk.Entry(parent_frame, textvariable=tk.StringVar(value="Test1")).grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
-        row_idx +=1
-        ttk.Label(parent_frame, text="Placeholder Paginación 2:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
-        ttk.Entry(parent_frame, textvariable=tk.StringVar(value="Test2")).grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
-        row_idx +=1
-        ttk.Label(parent_frame, text="Placeholder Paginación 3:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
-        ttk.Entry(parent_frame, textvariable=tk.StringVar(value="Test3")).grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
+        # Placeholder labels for testing dialog resizing (REMOVED)
 
 
     def _create_backups_tab_widgets(self, parent_frame: ttk.Frame):
         """Crea los widgets para la pestaña 'Copias de Seguridad'."""
         parent_frame.columnconfigure(0, weight=1)
-        parent_frame.columnconfigure(1, weight=3)
+        parent_frame.columnconfigure(1, weight=3) # Column for entry fields
         row_idx = 0
 
-        ttk.Label(parent_frame, text="Máx. copias automáticas:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
-        max_auto_frame = ttk.Frame(parent_frame)
-        max_auto_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
-        max_auto_entry = ttk.Entry(max_auto_frame, textvariable=self.var_max_auto_backups, width=7)
+        # --- Enable/Disable Automatic Backups ---
+        auto_backup_enable_frame = ttk.Frame(parent_frame)
+        auto_backup_enable_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", pady=(5,0))
+        auto_backup_cb = ttk.Checkbutton(
+            auto_backup_enable_frame,
+            text="Habilitar copias de seguridad automáticas",
+            variable=self.var_enable_automatic_backups,
+            command=self._toggle_backup_options_visibility
+        )
+        auto_backup_cb.pack(side=tk.LEFT, padx=(0,5))
+        auto_backup_enable_long_text = "Activa o desactiva la creación automática de copias de seguridad en momentos clave (ej. antes de eliminaciones)."
+        auto_backup_enable_short_text = "Habilitar/deshabilitar copias automáticas."
+        auto_backup_enable_help_btn = ttk.Button(auto_backup_enable_frame, text="?", width=3, style="Help.TButton",
+                                                 command=lambda: self._show_input_help("Ayuda: Habilitar Copias Automáticas", auto_backup_enable_long_text))
+        auto_backup_enable_help_btn.pack(side=tk.LEFT)
+        Tooltip(auto_backup_enable_help_btn, text=auto_backup_enable_long_text, short_text=auto_backup_enable_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+
+        # --- Max Automatic Backups (conditionally visible) ---
+        self.max_auto_frame = ttk.Frame(parent_frame) # Store as instance variable
+        self.max_auto_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", padx=(20,5), pady=0) # Indent
+        ttk.Label(self.max_auto_frame, text="Máx. copias automáticas:").pack(side=tk.LEFT, pady=5, padx=0)
+        max_auto_entry_frame = ttk.Frame(self.max_auto_frame)
+        max_auto_entry_frame.pack(side=tk.LEFT, padx=5, pady=5)
+        max_auto_entry = ttk.Entry(max_auto_entry_frame, textvariable=self.var_max_auto_backups, width=7)
         max_auto_entry.pack(side=tk.LEFT, padx=(0,5))
-        max_auto_long_text = ("Número máximo de copias de seguridad automáticas a conservar (0 para desactivar y eliminar todas).\n"
-                              "El límite se aplica cuando se crea una nueva copia automática; las más antiguas se eliminan en ese momento.")
-        max_auto_short_text = "Máx. copias automáticas (limpieza en nueva creación)."
-        max_auto_help_btn = ttk.Button(max_auto_frame, text="?", width=3, style="Help.TButton",
+        max_auto_long_text = ("Número máximo de copias de seguridad automáticas a conservar (debe ser > 0).\n"
+                              "El límite se aplica cuando se crea una nueva copia automática; las más antiguas se eliminan.")
+        max_auto_short_text = "Máx. copias automáticas (>0)."
+        max_auto_help_btn = ttk.Button(max_auto_entry_frame, text="?", width=3, style="Help.TButton",
                                        command=lambda: self._show_input_help("Ayuda: Máx. Copias Automáticas", max_auto_long_text))
         max_auto_help_btn.pack(side=tk.LEFT)
         Tooltip(max_auto_help_btn, text=max_auto_long_text, short_text=max_auto_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
-        ttk.Label(parent_frame, text="Máx. copias manuales:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
-        max_manual_frame = ttk.Frame(parent_frame)
-        max_manual_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
-        max_manual_entry = ttk.Entry(max_manual_frame, textvariable=self.var_max_manual_backups, width=7)
-        max_manual_entry.pack(side=tk.LEFT, padx=(0,5))
-        max_manual_long_text = ("Número máximo de copias de seguridad manuales a conservar (0 para desactivar y eliminar todas).\n"
-                                "El límite se aplica cuando se crea una nueva copia manual; las más antiguas se eliminan en ese momento.")
-        max_manual_short_text = "Máx. copias manuales (limpieza en nueva creación)."
-        max_manual_help_btn = ttk.Button(max_manual_frame, text="?", width=3, style="Help.TButton",
-                                         command=lambda: self._show_input_help("Ayuda: Máx. Copias Manuales", max_manual_long_text))
-        max_manual_help_btn.pack(side=tk.LEFT)
-        Tooltip(max_manual_help_btn, text=max_manual_long_text, short_text=max_manual_short_text, enabled=self.settings.enable_hover_tooltips)
-        row_idx += 1
-
-        ttk.Label(parent_frame, text="Enfriamiento copias automáticas (seg):").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
-        cooldown_frame = ttk.Frame(parent_frame)
-        cooldown_frame.grid(row=row_idx, column=1, sticky="w", pady=5, padx=5)
-        cooldown_entry = ttk.Entry(cooldown_frame, textvariable=self.var_auto_backup_cooldown, width=7)
+        # --- Automatic Backup Cooldown (conditionally visible) ---
+        self.cooldown_frame = ttk.Frame(parent_frame) # Store as instance variable
+        self.cooldown_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", padx=(20,5), pady=0) # Indent
+        ttk.Label(self.cooldown_frame, text="Enfriamiento copias automáticas (seg):").pack(side=tk.LEFT, pady=5, padx=0)
+        cooldown_entry_frame = ttk.Frame(self.cooldown_frame)
+        cooldown_entry_frame.pack(side=tk.LEFT, padx=5, pady=5)
+        cooldown_entry = ttk.Entry(cooldown_entry_frame, textvariable=self.var_auto_backup_cooldown, width=7)
         cooldown_entry.pack(side=tk.LEFT, padx=(0,5))
-        cooldown_long_text = "Tiempo mínimo (en segundos) que debe pasar después de una copia automática antes de que se pueda iniciar otra. 0 para permitir inmediatamente después de que termine la anterior (si no hay bloqueo)."
-        cooldown_short_text = "Enfriamiento copias automáticas (seg)."
-        cooldown_help_btn = ttk.Button(cooldown_frame, text="?", width=3, style="Help.TButton",
+        cooldown_long_text = "Tiempo mínimo (en segundos, >=0) que debe pasar después de una copia automática antes de que se pueda iniciar otra."
+        cooldown_short_text = "Enfriamiento copias automáticas (seg, >=0)."
+        cooldown_help_btn = ttk.Button(cooldown_entry_frame, text="?", width=3, style="Help.TButton",
                                        command=lambda: self._show_input_help("Ayuda: Enfriamiento Copias Automáticas", cooldown_long_text))
         cooldown_help_btn.pack(side=tk.LEFT)
         Tooltip(cooldown_help_btn, text=cooldown_long_text, short_text=cooldown_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
+
+        # --- Enable/Disable Manual Backups ---
+        manual_backup_enable_frame = ttk.Frame(parent_frame)
+        manual_backup_enable_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", pady=(10,0))
+        manual_backup_cb = ttk.Checkbutton(
+            manual_backup_enable_frame,
+            text="Habilitar copias de seguridad manuales",
+            variable=self.var_enable_manual_backups,
+            command=self._toggle_backup_options_visibility
+        )
+        manual_backup_cb.pack(side=tk.LEFT, padx=(0,5))
+        manual_backup_enable_long_text = "Permite la creación y gestión manual de copias de seguridad."
+        manual_backup_enable_short_text = "Habilitar/deshabilitar copias manuales."
+        manual_backup_enable_help_btn = ttk.Button(manual_backup_enable_frame, text="?", width=3, style="Help.TButton",
+                                                 command=lambda: self._show_input_help("Ayuda: Habilitar Copias Manuales", manual_backup_enable_long_text))
+        manual_backup_enable_help_btn.pack(side=tk.LEFT)
+        Tooltip(manual_backup_enable_help_btn, text=manual_backup_enable_long_text, short_text=manual_backup_enable_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
         
-        manage_backups_frame = ttk.Frame(parent_frame)
-        manage_backups_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10,5), sticky="w")
-        manage_backups_button = ttk.Button(manage_backups_frame, text="Gestionar Copias de Seguridad", command=self.open_backup_restore_dialog)
+        # --- Max Manual Backups (conditionally visible) ---
+        self.max_manual_frame = ttk.Frame(parent_frame) # Store as instance variable
+        self.max_manual_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", padx=(20,5), pady=0) # Indent
+        ttk.Label(self.max_manual_frame, text="Máx. copias manuales:").pack(side=tk.LEFT, pady=5, padx=0)
+        max_manual_entry_frame = ttk.Frame(self.max_manual_frame)
+        max_manual_entry_frame.pack(side=tk.LEFT, padx=5, pady=5)
+        max_manual_entry = ttk.Entry(max_manual_entry_frame, textvariable=self.var_max_manual_backups, width=7)
+        max_manual_entry.pack(side=tk.LEFT, padx=(0,5))
+        max_manual_long_text = ("Número máximo de copias de seguridad manuales a conservar (debe ser > 0).\n"
+                                "Si se alcanza el límite, se impedirá crear nuevas copias hasta liberar espacio.")
+        max_manual_short_text = "Máx. copias manuales (>0)."
+        max_manual_help_btn = ttk.Button(max_manual_entry_frame, text="?", width=3, style="Help.TButton",
+                                         command=lambda: self._show_input_help("Ayuda: Máx. Copias Manuales", max_manual_long_text))
+        max_manual_help_btn.pack(side=tk.LEFT)
+        Tooltip(max_manual_help_btn, text=max_manual_long_text, short_text=max_manual_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+        
+        # --- Manage Backups Button (conditionally visible) ---
+        self.manage_backups_frame = ttk.Frame(parent_frame) # Store as instance variable
+        self.manage_backups_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10,5), sticky="w")
+        manage_backups_button = ttk.Button(self.manage_backups_frame, text="Gestionar Copias de Seguridad", command=self.open_backup_restore_dialog)
         manage_backups_button.pack(side=tk.LEFT, padx=(0,5))
-        manage_backups_long_text = "Abre una nueva ventana para crear, restaurar, renombrar y eliminar copias de seguridad manuales, y ver copias automáticas."
+        manage_backups_long_text = "Abre una nueva ventana para crear, restaurar y gestionar copias de seguridad."
         manage_backups_short_text = "Gestionar copias de seguridad."
-        manage_backups_help_btn = ttk.Button(manage_backups_frame, text="?", width=3, style="Help.TButton",
+        manage_backups_help_btn = ttk.Button(self.manage_backups_frame, text="?", width=3, style="Help.TButton",
                                              command=lambda: self._show_input_help("Ayuda: Gestionar Copias de Seguridad", manage_backups_long_text))
         manage_backups_help_btn.pack(side=tk.LEFT)
         Tooltip(manage_backups_help_btn, text=manage_backups_long_text, short_text=manage_backups_short_text, enabled=self.settings.enable_hover_tooltips)
+
+        # Call to set initial visibility
+        self._toggle_backup_options_visibility()
+
+
+    def _toggle_backup_options_visibility(self, event=None):
+        """Muestra u oculta las opciones de backup según los checkboxes de habilitación."""
+        show_auto_options = self.var_enable_automatic_backups.get()
+        show_manual_options = self.var_enable_manual_backups.get()
+
+        if hasattr(self, 'max_auto_frame'):
+            if show_auto_options: self.max_auto_frame.grid()
+            else: self.max_auto_frame.grid_remove()
+        
+        if hasattr(self, 'cooldown_frame'):
+            if show_auto_options: self.cooldown_frame.grid()
+            else: self.cooldown_frame.grid_remove()
+
+        if hasattr(self, 'max_manual_frame'):
+            if show_manual_options: self.max_manual_frame.grid()
+            else: self.max_manual_frame.grid_remove()
+        
+        if hasattr(self, 'manage_backups_frame'):
+            if show_auto_options or show_manual_options: self.manage_backups_frame.grid()
+            else: self.manage_backups_frame.grid_remove()
+
 
     def _create_advanced_tab_widgets(self, parent_frame: ttk.Frame):
         """Crea los widgets para la pestaña 'Avanzado'."""
@@ -412,13 +480,25 @@ class ConfigDialog(Toplevel):
         for label, value_str in inputs_int.items():
             try:
                 value_int = int(value_str)
-                # Allow 0 for max_automatic_backups and max_manual_backups
-                if label in ["Máx. copias automáticas", "Máx. copias manuales"]:
-                    if value_int < 0:
-                        messagebox.showerror("Valor Inválido", f"'{label}' debe ser un número entero no negativo (0 o mayor).", parent=self)
+                is_max_auto_backup = (label == "Máx. copias automáticas")
+                is_max_manual_backup = (label == "Máx. copias manuales")
+                is_cooldown = (label == "Enfriamiento copias automáticas (seg)")
+
+                if (is_max_auto_backup and self.var_enable_automatic_backups.get()) or \
+                   (is_max_manual_backup and self.var_enable_manual_backups.get()):
+                    if value_int <= 0: # Must be > 0 if enabled
+                        messagebox.showerror("Valor Inválido", f"'{label}' debe ser un número entero positivo (>0) cuando está habilitado.", parent=self)
+                        return False
+                elif is_max_auto_backup or is_max_manual_backup: # If disabled, still validate it's a number >= 0 (or >=1 if we prefer)
+                    if value_int < 1: # Let's enforce >=1 even if disabled, for simplicity, or adjust if 0 is ok when disabled
+                        messagebox.showerror("Valor Inválido", f"'{label}' debe ser un número entero positivo (>=1).", parent=self)
+                        return False
+                elif is_cooldown:
+                    if value_int < 0: # Cooldown can be 0
+                        messagebox.showerror("Valor Inválido", f"'{label}' debe ser un número entero no negativo (>=0).", parent=self)
                         return False
                 elif value_int <= 0: # For other integer settings that must be positive
-                    messagebox.showerror("Valor Inválido", f"'{label}' debe ser un número entero positivo.", parent=self)
+                    messagebox.showerror("Valor Inválido", f"'{label}' debe ser un número entero positivo (>0).", parent=self)
                     return False
             except ValueError:
                 messagebox.showerror("Valor Inválido", f"'{label}' debe ser un número entero válido.", parent=self)
@@ -451,8 +531,13 @@ class ConfigDialog(Toplevel):
             self.settings.backups_per_page = int(self.var_backups_per_page.get()) # Save new setting
             self.settings.font_scale = float(self.var_font_scale.get())
             self.settings.theme = self.var_theme.get()
-            self.settings.show_factory_reset_button = self.var_show_factory_reset.get() # Save new setting
-            self.settings.enable_hover_tooltips = self.var_enable_hover_tooltips.get() # Save new setting
+            self.settings.show_factory_reset_button = self.var_show_factory_reset.get()
+            self.settings.enable_hover_tooltips = self.var_enable_hover_tooltips.get()
+            
+            self.settings.enable_automatic_backups = self.var_enable_automatic_backups.get() # Save new
+            self.settings.enable_manual_backups = self.var_enable_manual_backups.get()       # Save new
+            
+            # Only save max/cooldown if they are valid (they should be if validation passed)
             self.settings.max_automatic_backups = int(self.var_max_auto_backups.get())
             self.settings.max_manual_backups = int(self.var_max_manual_backups.get())
             self.settings.automatic_backup_cooldown_seconds = int(self.var_auto_backup_cooldown.get())
