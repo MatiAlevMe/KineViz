@@ -234,8 +234,8 @@ class StudyService:
         if page < 1:
             page = 1
         offset = (page - 1) * per_page
-        # Pass search_field to repository
-        studies = self.repo.get_studies_paginated(limit=per_page, offset=offset, search_term=search_term, search_field=search_field if hasattr(self.repo, 'search_field') else "Nombre de Estudio")
+        # Call repository method; search_field is handled by the service or not supported by this repo method for pagination
+        studies = self.repo.get_studies_paginated(limit=per_page, offset=offset, search_term=search_term)
         # Ensure 'comentario' is part of the returned dict
         return [{'id': s['id'], 'name': s['name'], 'is_pinned': s['is_pinned'], 'comentario': s.get('comentario')} for s in studies]
 
