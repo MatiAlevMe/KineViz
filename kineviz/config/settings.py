@@ -37,7 +37,8 @@ class AppSettings:
             'show_factory_reset_button': 'False', # New setting
             'enable_hover_tooltips': 'False', # New setting for hover tooltips
             'max_automatic_backups': '4', # Default max automatic backups
-            'max_manual_backups': '4'     # Default max manual backups
+            'max_manual_backups': '4',     # Default max manual backups
+            'automatic_backup_cooldown_seconds': '60' # Default cooldown
         }
         # DESCRIPTOR_ALIASES ya no se gestiona aquí
     }
@@ -244,6 +245,23 @@ class AppSettings:
     @max_manual_backups.setter
     def max_manual_backups(self, value: int):
         self.set_setting('max_manual_backups', str(value))
+
+    @property
+    def automatic_backup_cooldown_seconds(self) -> int:
+        """Cooldown period in seconds for automatic backups. Must be non-negative."""
+        value = self.get_int_setting('automatic_backup_cooldown_seconds', 60)
+        if value < 0:
+            logger.warning(f"Invalid negative value '{value}' for 'automatic_backup_cooldown_seconds'. Using default 60.")
+            return 60
+        return value
+
+    @automatic_backup_cooldown_seconds.setter
+    def automatic_backup_cooldown_seconds(self, value: int):
+        if value < 0:
+            logger.warning(f"Attempted to set invalid negative value '{value}' for 'automatic_backup_cooldown_seconds'. Setting to 0 instead.")
+            self.set_setting('automatic_backup_cooldown_seconds', '0')
+        else:
+            self.set_setting('automatic_backup_cooldown_seconds', str(value))
 
     def reset_to_defaults(self):
          """Restablece las configuraciones en memoria a los valores por defecto."""
