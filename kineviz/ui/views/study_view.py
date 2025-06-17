@@ -32,10 +32,11 @@ class StudyView:
         self.top_fixed_study_details_frame.pack(side=tk.TOP, fill=tk.X, pady=(0,10))
 
         # --- Bottom Fixed Frames (Order of packing matters for visual order) ---
-        self.bottom_fixed_delete_buttons_frame = ttk.Frame(self.frame)
-        self.bottom_fixed_delete_buttons_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(10,0))
-
-        self.bottom_fixed_pagination_frame = ttk.Frame(self.frame)
+        # Row 1 of bottom buttons (Delete All, Delete Selected | View Selected File)
+        self.bottom_fixed_file_actions_frame = ttk.Frame(self.frame)
+        self.bottom_fixed_file_actions_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(5,0))
+        
+        self.bottom_fixed_pagination_frame = ttk.Frame(self.frame) # Pagination will be above file actions
         self.bottom_fixed_pagination_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=(5,0))
         
         # --- Scrollable Middle Area (Canvas) ---
@@ -179,9 +180,10 @@ class StudyView:
         self.file_browser.pack(fill=tk.BOTH, expand=True) # FileBrowser itself fills the scrollable area
         self.file_browser.bind("<<FileBrowserSelectionChanged>>", self._on_file_browser_selection_changed)
 
-        # --- Populate Bottom Fixed Delete Buttons Frame ---
+        # --- Populate Bottom Fixed File Actions Frame ---
+        # Row 1: “Eliminar Todos los Archivos del Estudio”, “Eliminar Archivo(s) Seleccionado(s)” | “Ver Archivo Seleccionado”
         delete_all_files_button = ttk.Button(
-            self.bottom_fixed_delete_buttons_frame,
+            self.bottom_fixed_file_actions_frame,
             text="Eliminar Todos los Archivos del Estudio",
             command=self._confirm_delete_all_files,
             style="Danger.TButton"
@@ -190,24 +192,47 @@ class StudyView:
         Tooltip(delete_all_files_button, text="Eliminar TODOS los archivos (originales y procesados) de este estudio. ¡Acción irreversible!", short_text="Eliminar todos los archivos.", enabled=self.main_window.settings.enable_hover_tooltips)
 
         self.delete_selected_files_button = ttk.Button(
-            self.bottom_fixed_delete_buttons_frame,
+            self.bottom_fixed_file_actions_frame,
             text="Eliminar Archivo(s) Seleccionado(s)",
             command=self._confirm_delete_selected_files_from_browser,
             style="Danger.TButton",
             state=tk.DISABLED
         )
-        self.delete_selected_files_button.pack(side=tk.LEFT, padx=(0, 5))
+        self.delete_selected_files_button.pack(side=tk.LEFT, padx=(0, 10)) # Increased padx
         Tooltip(self.delete_selected_files_button, text="Eliminar los archivos seleccionados en la lista.", short_text="Eliminar seleccionados.", enabled=self.main_window.settings.enable_hover_tooltips)
+
+        # Spacer
+        ttk.Frame(self.bottom_fixed_file_actions_frame).pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+        self.view_selected_file_button = ttk.Button(
+            self.bottom_fixed_file_actions_frame,
+            text="Ver Archivo Seleccionado",
+            command=self._view_selected_file_from_browser,
+            state=tk.DISABLED
+        )
+        self.view_selected_file_button.pack(side=tk.RIGHT, padx=(0,0))
+        Tooltip(self.view_selected_file_button, text="Abrir el archivo seleccionado con la aplicación predeterminada (solo 1 selección).", short_text="Ver seleccionado.", enabled=self.main_window.settings.enable_hover_tooltips)
         
         # Llamar a update_alias_display después de que todo esté creado
         self.update_alias_display()
 
     def _on_file_browser_selection_changed(self, event=None):
-        """Actualiza el estado del botón 'Eliminar Archivo(s) Seleccionado(s)'."""
-        if self.file_browser and self.file_browser.get_selected_file_paths():
+        """Actualiza el estado de los botones de acción de archivos."""
+        if not self.file_browser:
+            return
+        
+        selected_paths = self.file_browser.get_selected_file_paths()
+        num_selected = len(selected_paths)
+
+        if num_selected == 1:
             self.delete_selected_files_button.config(state=tk.NORMAL)
-        else:
+            self.view_selected_file_button.config(state=tk.NORMAL)
+        elif num_selected > 1:
+            self.delete_selected_files_button.config(state=tk.NORMAL)
+            self.view_selected_file_button.config(state=tk.DISABLED)
+        else: # No selection
             self.delete_selected_files_button.config(state=tk.DISABLED)
+            self.view_selected_file_button.config(state=tk.DISABLED)
 
     def _confirm_delete_selected_files_from_browser(self):
         """Muestra confirmación y elimina los archivos seleccionados en FileBrowser."""
@@ -231,6 +256,18 @@ class StudyView:
                 logger.error(f"Error al eliminar archivos seleccionados del estudio {self.study_id}: {e}", exc_info=True)
                 messagebox.showerror("Error al Eliminar", f"No se pudieron eliminar los archivos seleccionados:\n{e}", parent=self.frame)
                 self.refresh_file_list() # Recargar también en caso de error parcial
+    
+    def _view_selected_file_from_browser(self):
+        """Abre el archivo seleccionado en FileBrowser con la app predeterminada."""
+        if not self.file_browser:
+            return
+        selected_paths = self.file_browser.get_selected_file_paths()
+        if len(selected_paths) == 1:
+            file_to_view = selected_paths[0]
+            self.file_browser.view_file(file_to_view) # Use FileBrowser's existing method
+        else:
+            messagebox.showwarning("Acción Inválida", "Por favor seleccione un único archivo para ver.", parent=self.frame)
+
 
     def _confirm_delete_all_files(self):
         """Muestra confirmación y luego elimina todos los archivos del estudio."""
