@@ -4,6 +4,7 @@ import pathlib
 import shutil
 import time # Added for cooldown
 import zipfile
+import json # Added for alias management
 from typing import Optional
 
 # Configure logger for this module
