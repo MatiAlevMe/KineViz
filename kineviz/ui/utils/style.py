@@ -172,8 +172,20 @@ def apply_theme_and_font(root: tk.Tk, style: ttk.Style, theme_name: str, font_sc
     # It's important that these are applied after the theme_use, as some themes might override them.
     # Also, these settings apply to *all* Listbox widgets used by Comboboxes.
     try:
-        scaled_listbox_font = get_scaled_font(DEFAULT_FONT_SIZE, font_scale) # Use the same scaled font
-        root.option_add('*TCombobox*Listbox.font', scaled_listbox_font)
+        # Using a tkFont.Font object to get its string representation might be more robust for option_add
+        tk_scaled_listbox_font = get_font_object(DEFAULT_FONT_SIZE, font_scale)
+        font_string_for_option_add = tk_scaled_listbox_font.actual() 
+        # Example: font_string_for_option_add might be {'family': 'Helvetica', 'size': 12, 'weight': 'normal', 'slant': 'roman', 'underline': 0, 'overstrike': 0}
+        # Or sometimes it's a simpler string like "Helvetica 12 normal". Tk can be picky.
+        # For safety, we can construct a simple name string if actual() gives a dict.
+        if isinstance(font_string_for_option_add, dict):
+            font_tuple = (font_string_for_option_add['family'], font_string_for_option_add['size'], font_string_for_option_add['weight'])
+            logger.debug(f"Using font tuple for TCombobox*Listbox.font: {font_tuple}")
+            root.option_add('*TCombobox*Listbox.font', font_tuple)
+        else: # If it's already a string like "Helvetica 12 normal"
+            logger.debug(f"Using font string for TCombobox*Listbox.font: {font_string_for_option_add}")
+            root.option_add('*TCombobox*Listbox.font', font_string_for_option_add)
+
         root.option_add('*TCombobox*Listbox.background', colors['widget_bg'])
         root.option_add('*TCombobox*Listbox.foreground', colors['widget_fg'])
         root.option_add('*TCombobox*Listbox.selectBackground', colors['select_bg'])

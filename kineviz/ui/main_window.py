@@ -185,6 +185,48 @@ class MainWindow:
         self.current_view = StudyView(self.root, self, study_id, self.file_service)
         # El pack/grid se maneja dentro de StudyView
 
+    def show_backup_restore_dialog_from_landing(self):
+        """Muestra el diálogo de gestión de copias de seguridad, invocado desde la landing page."""
+        # Similar a show_config_dialog, pero para BackupRestoreDialog
+        # BackupRestoreDialog needs AppSettings
+        from kineviz.ui.dialogs.backup_restore_dialog import BackupRestoreDialog # Local import
+        dialog = BackupRestoreDialog(self.root, app_settings=self.settings)
+        # self.root.wait_window(dialog) # Optional: make it modal to the main window
+        # BackupRestoreDialog is a Toplevel, it can manage its own lifecycle.
+
+    def play_demo_video(self):
+        """Intenta reproducir el archivo DEMO.mp4 ubicado en kineviz/assets/."""
+        from kineviz.config.settings import get_resource_path # Local import
+        
+        demo_video_relative_path = Path("kineviz") / "assets" / "DEMO.mp4"
+        video_path = get_resource_path(demo_video_relative_path)
+
+        if not video_path.exists() or not video_path.is_file():
+            logger.error(f"Archivo DEMO.mp4 no encontrado en la ruta esperada: {video_path}")
+            messagebox.showerror("Error", f"El archivo DEMO.mp4 no se encontró en:\n{video_path}", parent=self.root)
+            return
+
+        try:
+            logger.info(f"Intentando reproducir video DEMO: {video_path}")
+            if sys.platform == 'win32':
+                os.startfile(video_path)
+            elif sys.platform == 'darwin': # macOS
+                subprocess.run(['open', str(video_path)], check=True)
+            else: # Linux, etc.
+                subprocess.run(['xdg-open', str(video_path)], check=True)
+        except FileNotFoundError:
+             messagebox.showerror("Error", f"No se pudo encontrar el archivo del video DEMO:\n'{video_path}'", parent=self.root)
+             logger.error(f"Archivo del video DEMO no encontrado al intentar abrir: {video_path}", exc_info=True)
+        except PermissionError:
+             messagebox.showerror("Error", f"No tiene permisos para acceder al archivo del video DEMO:\n'{video_path}'", parent=self.root)
+             logger.error(f"Permiso denegado al abrir el video DEMO: {video_path}", exc_info=True)
+        except subprocess.CalledProcessError as e:
+             logger.error(f"Comando para abrir el video DEMO {video_path} falló: {e}", exc_info=True)
+             messagebox.showerror("Error", f"El comando para abrir el video DEMO falló:\n{e}", parent=self.root)
+        except Exception as e:
+            logger.error(f"Error inesperado al abrir el video DEMO {video_path}: {e}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudo abrir el video DEMO '{video_path}':\n{str(e)}", parent=self.root)
+
     def show_discrete_analysis_view(self, study_id: int):
         """Muestra la vista para el análisis discreto (Fase 6)."""
         self.clear_window()
