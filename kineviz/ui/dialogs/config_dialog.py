@@ -568,8 +568,9 @@ class ConfigDialog(Toplevel):
                 self._toggle_factory_reset_visibility() # Actualizar visibilidad del botón de fábrica
                 messagebox.showinfo("Ajustes Restablecidos",
                                     "Los ajustes de configuración han sido restablecidos a sus valores predeterminados y guardados.\n"
-                                    "Puede cerrar este diálogo con 'Guardar' o 'Cancelar'.",
+                                    "El diálogo se cerrará.",
                                     parent=self)
+                self.destroy() # Close the dialog after resetting
             except Exception as e:
                 messagebox.showerror("Error", f"No se pudieron restablecer los ajustes:\n{e}", parent=self)
 
@@ -618,11 +619,42 @@ class ConfigDialog(Toplevel):
                     self.reset_callback() # Llama a MainWindow.reset_to_defaults
                     # MainWindow.reset_to_defaults se encarga de mensajes y de cerrar/reiniciar la app si es necesario.
                     # El diálogo de configuración se cerrará si el reseteo es exitoso y la app se reinicia o va a landing.
-                    self.destroy() # Cerrar este diálogo
+                    # self.destroy() # ConfigDialog will destroy itself if reset_callback leads to app exit
                 except Exception as e:
                      messagebox.showerror("Error Crítico", f"Ocurrió un error catastrófico durante la restauración de fábrica:\n{e}", parent=self)
         else:
             messagebox.showwarning("No Implementado", "La función de restauración de fábrica no está conectada.", parent=self)
+
+
+    def trigger_app_restart(self):
+        """Attempts to restart the application."""
+        logger.info("Attempting to restart the application...")
+        try:
+            # Ensure all Tkinter windows are properly closed if possible
+            # self.root.quit() # This might be too abrupt or not work if called from a child
+            
+            # Path to the Python interpreter and the script
+            python_executable = sys.executable
+            script_path = Path(sys.argv[0]).resolve() # sys.argv[0] is the main script
+
+            logger.info(f"Restarting with: {python_executable} {script_path}")
+            
+            # Close the current Tkinter root window before restarting
+            # This is important to release resources and avoid issues on some OS
+            self.root.destroy() # Destroy the root window
+
+            # Replace the current process with a new one
+            os.execl(python_executable, python_executable, str(script_path))
+            
+        except Exception as e:
+            logger.error(f"Failed to restart application: {e}", exc_info=True)
+            messagebox.showerror("Error de Reinicio",
+                                 "No se pudo reiniciar la aplicación automáticamente.\n"
+                                 "Por favor, ciérrela y vuelva a abrirla manualmente.",
+                                 parent=None) # No parent if root is destroyed
+            # If execl fails, the original process continues. We should exit it.
+            sys.exit(1) # Exit with an error code
+
 
 # Para pruebas directas (si es necesario)
 if __name__ == '__main__':
