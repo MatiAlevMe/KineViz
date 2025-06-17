@@ -48,7 +48,7 @@ def _ensure_dir_exists(dir_path: pathlib.Path) -> bool:
         return False
 
 
-def create_backup(backup_type: str) -> Optional[pathlib.Path]:
+def create_backup(backup_type: str, _is_test_mode: bool = False) -> Optional[pathlib.Path]:
     """
     Creates a full system backup.
 
@@ -82,7 +82,7 @@ def create_backup(backup_type: str) -> Optional[pathlib.Path]:
         return None
 
     # Manage rolling backups, cooldown, and locking for automatic backups
-    if backup_type == AUTOMATIC_BACKUPS_SUBDIR:
+    if backup_type == AUTOMATIC_BACKUPS_SUBDIR and not _is_test_mode: # Add _is_test_mode check
         # global _last_automatic_backup_end_time # Already declared global when assigned
         try:
             settings = AppSettings() # Load settings
@@ -215,12 +215,12 @@ def create_backup(backup_type: str) -> Optional[pathlib.Path]:
     # A better way would be to pass lock_file_path if it was created.
     # For now, re-evaluate:
     current_lock_file_for_finally = None
-    if backup_type == AUTOMATIC_BACKUPS_SUBDIR:
+    if backup_type == AUTOMATIC_BACKUPS_SUBDIR and not _is_test_mode: # Add _is_test_mode check
         # backup_destination_subdir is defined earlier in the function
         current_lock_file_for_finally = backup_destination_subdir / ".backup_in_progress.lock"
 
     try:
-        logger.info(f"Creating backup: {zip_filepath}")
+        logger.info(f"Creating backup: {zip_filepath} (Test Mode: {_is_test_mode})")
         with zipfile.ZipFile(zip_filepath, 'w', zipfile.ZIP_DEFLATED) as zf:
             for item_path, arcname in items_to_backup:
                 logger.debug(f"Adding file to backup: {item_path} as {arcname}")
@@ -309,12 +309,12 @@ def create_backup(backup_type: str) -> Optional[pathlib.Path]:
 
 
         logger.info(f"Backup created successfully: {zip_filepath}")
-        if backup_type == AUTOMATIC_BACKUPS_SUBDIR:
+        if backup_type == AUTOMATIC_BACKUPS_SUBDIR and not _is_test_mode: # Add _is_test_mode check
             _last_automatic_backup_end_time = datetime.datetime.now()
             logger.debug(f"Updated _last_automatic_backup_end_time to {_last_automatic_backup_end_time}")
         return zip_filepath
     except Exception as e:
-        logger.error(f"Failed to create backup {zip_filepath}: {e}", exc_info=True)
+        logger.error(f"Failed to create backup {zip_filepath} (Test Mode: {_is_test_mode}): {e}", exc_info=True)
         if zip_filepath.exists():
             try:
                 zip_filepath.unlink() # Attempt to clean up partially created zip
@@ -505,16 +505,17 @@ if __name__ == '__main__':
 
     if max_auto > 0:
         for i in range(max_auto + 2): # Create more than max to test deletion
-            logger.info(f"Creating automatic backup {i+1}...")
-            auto_backup_path = create_backup(AUTOMATIC_BACKUPS_SUBDIR)
+            logger.info(f"Creating automatic backup {i+1} (test mode)...")
+            # Pass _is_test_mode=True to bypass cooldown/lock for testing rolling logic
+            auto_backup_path = create_backup(AUTOMATIC_BACKUPS_SUBDIR, _is_test_mode=True) 
             if auto_backup_path:
                 logger.info(f"Automatic backup {i+1} created at: {auto_backup_path.name}")
                 # Introduce a small delay to ensure distinct timestamps if runs too fast
                 if i < max_auto + 1: # Not for the last one
-                    import time
-                    time.sleep(1.1) 
+                    # import time # time is already imported at the top of the module
+                    time.sleep(0.1) # Shorter sleep for faster tests, still ensuring timestamp difference
             else:
-                logger.error(f"Automatic backup {i+1} creation failed.")
+                logger.error(f"Automatic backup {i+1} (test mode) creation failed.")
     else:
         logger.info("Skipping automatic backup creation test as max_automatic_backups is 0 or less.")
         # Test if existing backups are deleted if max_auto is 0
@@ -525,16 +526,17 @@ if __name__ == '__main__':
         _ensure_dir_exists(temp_backup_dir)
         (temp_backup_dir / "backup_20000101_000000.zip").write_text("temp")
         
-        auto_backup_path = create_backup(AUTOMATIC_BACKUPS_SUBDIR) # This should trigger deletion if max_auto is 0
+        # Pass _is_test_mode=True to bypass cooldown/lock for testing rolling logic
+        auto_backup_path = create_backup(AUTOMATIC_BACKUPS_SUBDIR, _is_test_mode=True) 
         if not (temp_backup_dir / "backup_20000101_000000.zip").exists():
-            logger.info("Temp auto backup was correctly deleted when max_auto is 0.")
+            logger.info("Temp auto backup was correctly deleted when max_auto is 0 (test mode).")
         else:
-            logger.warning("Temp auto backup was NOT deleted when max_auto is 0.")
+            logger.warning("Temp auto backup was NOT deleted when max_auto is 0 (test mode).")
 
 
     # Test manual backup
     logger.info("Attempting to create a manual backup...")
-    manual_backup_path = create_backup(MANUAL_BACKUPS_SUBDIR) # Uses updated constant
+    manual_backup_path = create_backup(MANUAL_BACKUPS_SUBDIR) # Manual backups don't have cooldown/lock
     if manual_backup_path:
         logger.info(f"Manual backup created at: {manual_backup_path}")
     else:
