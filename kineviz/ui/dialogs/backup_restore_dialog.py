@@ -23,8 +23,21 @@ class BackupRestoreDialog(Toplevel):
         self.app_settings = app_settings # Store AppSettings instance
 
         self.title("Gestión de Copias de Seguridad")
-        self.geometry("800x500") # Initial size
-        self.minsize(600, 400)
+        # Responsive sizing
+        base_min_width = 600 
+        base_min_height = 400 
+        base_geom_width = 800
+        base_geom_height = 500
+        current_font_scale = self.app_settings.font_scale
+
+        dynamic_min_width = int(base_min_width * (1 + (current_font_scale - 1) * 0.30))
+        dynamic_min_height = int(base_min_height * (1 + (current_font_scale - 1) * 0.50))
+        self.minsize(max(base_min_width, dynamic_min_width), max(base_min_height, dynamic_min_height))
+
+        initial_geom_width = int(base_geom_width * (1 + (current_font_scale - 1) * 0.25))
+        initial_geom_height = int(base_geom_height * (1 + (current_font_scale - 1) * 0.45))
+        self.geometry(f"{max(base_geom_width, initial_geom_width)}x{max(base_geom_height, initial_geom_height)}")
+
 
         self.all_loaded_backups = [] # To store the full list from backup_manager
         self.current_display_list = [] # To store the currently displayed (filtered/sorted) list
@@ -284,6 +297,15 @@ class BackupRestoreDialog(Toplevel):
                 alias_display,
                 backup_item['filename'] 
             ))
+        
+        # Dynamic Treeview height
+        # Show rows for a full page, or fewer if less than a page of items. Min 1 row.
+        # If paginated_list is empty, display_count will be 0, so max(1,0) is 1.
+        # If paginated_list has items, it will be len(self.paginated_list).
+        # This makes the treeview shrink if there are few items.
+        display_count = len(self.paginated_list)
+        self.tree.config(height=max(1, display_count))
+
         self.on_backup_selected(None) # Update button states
 
     def _update_backup_pagination_controls(self):
@@ -295,12 +317,15 @@ class BackupRestoreDialog(Toplevel):
         total_pg = self.total_pages_backups.get()
 
         self.lbl_page_backups.config(text=f"Página: {current_pg} / {total_pg}")
+        logger.debug(f"Updating pagination: Current Page: {current_pg}, Total Pages: {total_pg}, Items: {num_items}, Per Page: {self.backups_per_page}")
 
         if total_pg <= 1:
+            logger.debug("Hiding pagination controls.")
             # Hide the entire pagination frame if only one page or no items
             if hasattr(self, 'pagination_controls_frame'): # Check if frame exists
                  self.pagination_controls_frame.grid_remove()
         else:
+            logger.debug("Showing pagination controls.")
             if hasattr(self, 'pagination_controls_frame'):
                  self.pagination_controls_frame.grid() # Ensure it's visible
             self.btn_first_page_backups.config(state=tk.NORMAL if current_pg > 1 else tk.DISABLED)
@@ -358,6 +383,11 @@ class BackupRestoreDialog(Toplevel):
                                        "Ingrese un alias opcional para esta copia de seguridad manual:",
                                        parent=self)
         if alias is not None: # User didn't cancel, alias can be empty string
+            if not self.app_settings.enable_manual_backups:
+                messagebox.showwarning("Deshabilitado", 
+                                       "La creación de copias de seguridad manuales está desactivada en la configuración.", 
+                                       parent=self)
+                return
             try:
                 logger.info(f"Attempting to create manual backup with alias: '{alias if alias else 'No Alias'}'")
                 backup_path = backup_manager.create_backup(backup_manager.MANUAL_BACKUPS_SUBDIR)
@@ -408,6 +438,19 @@ class BackupRestoreDialog(Toplevel):
         backup_type_display = selected_values[0]
         backup_type_internal = backup_manager.AUTOMATIC_BACKUPS_SUBDIR if backup_type_display == "Automática" else backup_manager.MANUAL_BACKUPS_SUBDIR
         
+        if backup_type_internal == backup_manager.MANUAL_BACKUPS_SUBDIR and \
+           not self.app_settings.enable_manual_backups:
+            messagebox.showwarning("Deshabilitado", 
+                                   "La restauración de copias de seguridad manuales está desactivada en la configuración.", 
+                                   parent=self)
+            return
+        if backup_type_internal == backup_manager.AUTOMATIC_BACKUPS_SUBDIR and \
+           not self.app_settings.enable_automatic_backups:
+            messagebox.showwarning("Deshabilitado", 
+                                   "La restauración de copias de seguridad automáticas está desactivada en la configuración.", 
+                                   parent=self)
+            return
+
         full_backup_path = backup_manager.get_project_root() / backup_manager.BACKUPS_DIR_NAME / backup_type_internal / backup_filename
 
         if not messagebox.askokcancel("Confirmar Restauración", 
