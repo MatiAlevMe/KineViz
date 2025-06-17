@@ -17417,3 +17417,19 @@ sqlite3.DatabaseError: file is not a database
 2025-06-16 19:42:33,972 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
 2025-06-16 19:42:33,972 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
 2025-06-16 19:42:33,974 - INFO - [kineviz.ui.main_window] - Applying theme: Light, font scale: 1.0
+2025-06-16 19:57:46,673 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-16 19:57:46,674 - INFO - [__main__] - Iniciando KineViz...
+2025-06-16 19:57:47,194 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 19:57:47,194 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 19:57:47,195 - INFO - [kineviz.ui.main_window] - Applying theme: Light, font scale: 1.0
+2025-06-16 19:58:05,592 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 19:58:05,592 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-16 19:58:05,594 - INFO - [kineviz.core.backup_manager] - Max automatic backups (4) reached. Deleting oldest: backup_20250616_195724.zip
+2025-06-16 19:58:05,595 - INFO - [kineviz.core.backup_manager] - Creating backup: /Users/arakito/Mati/Codigo/Python/KineViz/backups/automatic/backup_20250616_195805.zip
+2025-06-16 19:58:05,595 - DEBUG - [kineviz.core.backup_manager] - Adding file to backup: /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db as kineviz.db
+2025-06-16 19:58:05,596 - DEBUG - [kineviz.core.backup_manager] - Adding file to backup: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini as config.ini
+2025-06-16 19:58:05,596 - DEBUG - [kineviz.core.backup_manager] - Selectively adding files from studies directory: /Users/arakito/Mati/Codigo/Python/KineViz/estudios
+2025-06-16 19:58:05,598 - INFO - [kineviz.core.backup_manager] - Backup created successfully: /Users/arakito/Mati/Codigo/Python/KineViz/backups/automatic/backup_20250616_195805.zip
+2025-06-16 19:58:05,599 - INFO - [kineviz.database.repositories] - Eliminando directorio del estudio: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Prueba
+2025-06-16 19:58:05,600 - INFO - [kineviz.database.repositories] - Estudio ID 1 eliminado de la base de datos.
+2025-06-16 19:58:05,600 - INFO - [kineviz.core.services.study_service] - Estudio ID 1 eliminado como parte de una operación masiva.
