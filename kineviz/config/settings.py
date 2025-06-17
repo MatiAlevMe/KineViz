@@ -63,6 +63,84 @@ class AppSettings:
         self.config = configparser.ConfigParser()
         self.load_settings()
 
+    def _validate_loaded_config(self) -> bool:
+        """
+        Validates the currently loaded self.config against DEFAULT_SETTINGS.
+        Checks for missing keys, extra keys, and unparseable/out-of-range values.
+        Returns True if valid, False otherwise.
+        """
+        if 'SETTINGS' not in self.config:
+            logger.error("Config validation failed: [SETTINGS] section missing.")
+            return False
+
+        default_keys = set(self.DEFAULT_SETTINGS['SETTINGS'].keys())
+        loaded_keys = set(self.config['SETTINGS'].keys())
+
+        if loaded_keys != default_keys:
+            missing_keys = default_keys - loaded_keys
+            extra_keys = loaded_keys - default_keys
+            if missing_keys:
+                logger.error(f"Config validation failed: Missing keys in [SETTINGS]: {missing_keys}")
+            if extra_keys:
+                logger.error(f"Config validation failed: Extra keys in [SETTINGS]: {extra_keys}")
+            return False
+
+        # Validate each setting's value and type
+        try:
+            # Use properties for their built-in validation logic where possible
+            # For settings that are just retrieved with get_int_setting, etc.,
+            # we need to replicate or enhance the validation here if properties don't cover it.
+            
+            # Integer positive values
+            positive_int_settings = ['estudios_por_pagina', 'files_per_page', 
+                                     'analysis_items_per_page', 'discrete_tables_per_page']
+            for key in positive_int_settings:
+                val = self.get_int_setting(key, -1) # Use -1 to detect if it was invalid
+                if val <= 0: # Properties might default, but direct check is stricter for validation
+                    raw_val = self.config.get('SETTINGS', key, fallback=None)
+                    logger.error(f"Config validation failed: '{key}' must be a positive integer, got '{raw_val}'.")
+                    return False
+            
+            # Max backups (non-negative)
+            non_negative_int_settings = ['max_automatic_backups', 'max_manual_backups', 
+                                         'automatic_backup_cooldown_seconds']
+            for key in non_negative_int_settings:
+                val = self.get_int_setting(key, -1) # Use -1 to detect if it was invalid
+                if val < 0: # Properties might default, but direct check is stricter
+                    raw_val = self.config.get('SETTINGS', key, fallback=None)
+                    logger.error(f"Config validation failed: '{key}' must be a non-negative integer, got '{raw_val}'.")
+                    return False
+
+            # Font scale (positive float)
+            font_scale_val_str = self.get_setting('font_scale', '0.0')
+            if float(font_scale_val_str) <= 0:
+                logger.error(f"Config validation failed: 'font_scale' must be a positive float, got '{font_scale_val_str}'.")
+                return False
+
+            # Theme (specific strings)
+            theme_val = self.get_setting('theme', '')
+            if theme_val not in ['Light', 'Dark']: # Add more valid themes if they exist
+                logger.error(f"Config validation failed: 'theme' must be one of ['Light', 'Dark'], got '{theme_val}'.")
+                return False
+            
+            # Booleans (show_factory_reset_button, enable_hover_tooltips)
+            # get_bool_setting handles parse errors by returning fallback, so we check if the raw string is valid.
+            boolean_settings = ['show_factory_reset_button', 'enable_hover_tooltips']
+            for key in boolean_settings:
+                raw_val = self.config.get('SETTINGS', key, fallback=None)
+                if raw_val is None or raw_val.lower() not in ('true', 'yes', '1', 'on', 'false', 'no', '0', 'off'):
+                    logger.error(f"Config validation failed: '{key}' has an invalid boolean value '{raw_val}'.")
+                    return False
+
+        except ValueError: # Catch float conversion errors for font_scale
+            logger.error("Config validation failed: Error converting a numeric setting value.", exc_info=True)
+            return False
+        except Exception as e: # Catch any other unexpected error during validation
+            logger.error(f"Unexpected error during config validation: {e}", exc_info=True)
+            return False
+            
+        return True
+
     def _ensure_config_exists(self):
         """Crea el archivo config.ini con valores por defecto si no existe."""
         if not self.config_path.exists():
@@ -81,25 +159,37 @@ class AppSettings:
                 # Podríamos lanzar una excepción aquí o continuar con valores en memoria
 
     def load_settings(self):
-        """Carga las configuraciones desde el archivo config.ini."""
+        """Carga las configuraciones desde el archivo config.ini.
+        Si el archivo no existe, está corrupto, o contiene valores inválidos/extras,
+        se restablecerá a los valores por defecto.
+        """
         self._ensure_config_exists() # Asegura que el archivo exista antes de leer
+        
+        needs_reset = False
         try:
             self.config.read(self.config_path, encoding='utf-8')
-            # Validar/asegurar sección [SETTINGS] si es necesario
-            if 'SETTINGS' not in self.config:
-                logger.warning("Sección [SETTINGS] no encontrada en config.ini. Usando valores por defecto.")
-                self.config['SETTINGS'] = self.DEFAULT_SETTINGS['SETTINGS']
-            # Ya no se necesita asegurar DESCRIPTOR_ALIASES aquí
-
+            if not self._validate_loaded_config():
+                logger.warning(f"Validación de {self.config_path} fallida. Se restablecerá a valores por defecto.")
+                needs_reset = True
         except configparser.Error as e:
-            logger.error(f"Error leyendo {self.config_path}: {e}. Usando valores por defecto.", exc_info=True)
-            # Resetear a valores por defecto en memoria si hay error de lectura
-            self.config = configparser.ConfigParser()
-            self.config.read_dict(self.DEFAULT_SETTINGS)
-        except Exception as e:
-            logger.error(f"Error inesperado cargando configuraciones: {e}. Usando valores por defecto.", exc_info=True)
-            self.config = configparser.ConfigParser()
-            self.config.read_dict(self.DEFAULT_SETTINGS)
+            logger.error(f"Error parseando {self.config_path}: {e}. Se restablecerá a valores por defecto.", exc_info=True)
+            needs_reset = True
+        except Exception as e: # Catch other unexpected errors during read or initial validation
+            logger.error(f"Error inesperado cargando configuraciones desde {self.config_path}: {e}. Se restablecerá a valores por defecto.", exc_info=True)
+            needs_reset = True
+
+        if needs_reset:
+            self.reset_to_defaults() # This saves the defaults to disk
+            # Re-read the now default config file
+            try:
+                self.config.read(self.config_path, encoding='utf-8')
+                logger.info(f"Configuración recargada desde {self.config_path} después del reseteo.")
+            except Exception as e_reread:
+                # This should ideally not happen if reset_to_defaults works
+                logger.critical(f"Error crítico: No se pudo recargar config.ini después de resetear: {e_reread}. La aplicación puede estar inestable.", exc_info=True)
+                # Fallback to in-memory defaults if re-read fails catastrophically
+                self.config = configparser.ConfigParser()
+                self.config.read_dict(self.DEFAULT_SETTINGS)
 
 
     def save_settings(self):

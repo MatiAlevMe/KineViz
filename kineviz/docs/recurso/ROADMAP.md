@@ -289,22 +289,23 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
             - `StudyService`: `delete_study`, `delete_studies_by_ids`, `delete_all_studies`.
             - `FileService`: `delete_file`, `delete_selected_files`, `delete_all_files_in_study`.
             - `AnalysisService`: `delete_individual_analysis`, `delete_selected_individual_analyses`, `delete_all_individual_analyses`, `delete_continuous_analysis`, `delete_selected_continuous_analyses`, `delete_all_continuous_analyses`, `delete_all_discrete_summary_tables`, `delete_selected_discrete_summary_tables`.
-    1.3 [En Progreso] UI para Gestión de Copias de Seguridad (`BackupRestoreDialog`).
+    1.3 [Hecho] UI para Gestión de Copias de Seguridad (`BackupRestoreDialog`).
         - Acceso: Opción "Gestión de Copias de Seguridad" en `ConfigDialog`.
         - Funcionalidades:
-            - Listar copias de seguridad (automáticas y manuales) en tabla (Columnas: Tipo, Fecha Creación, Alias).
-            - "Crear Copia Manual": Crea una copia manual. Gestión de límite `max_manual_backups` (de `config.ini`); si se excede, solicitar eliminación de una existente.
-            - "Restaurar Seleccionada": Restaura el sistema completo (`kineviz.db`, `config.ini`, `estudios/` selectivo) desde la copia ZIP elegida. Requiere doble confirmación.
-            - "Asignar Alias a Manual": Permite nombrar copias manuales.
+            - [Hecho] Listar copias de seguridad (automáticas y manuales) en tabla (Columnas: Tipo, Fecha Creación, Alias).
+            - [Hecho] "Crear Copia Manual": Crea una copia manual. Gestión de límite `max_manual_backups` (de `config.ini`); si se excede, se elimina la más antigua automáticamente. Permite asignar alias al crear.
+            - [En Progreso] "Restaurar Seleccionada": Restaura el sistema completo (`kineviz.db`, `config.ini`, `estudios/` selectivo) desde la copia ZIP elegida. Requiere doble confirmación. (Lógica de restauración no implementada).
+            - [Hecho] "Asignar Alias a Manual": Permite nombrar copias manuales.
             - "Eliminar Manual Seleccionada": Elimina una copia manual. Requiere doble confirmación.
             - "Cancelar".
         - Tooltip de ayuda para la opción en `ConfigDialog`.
         - (Opcional) Checkbox para activar/desactivar el auto backup (desactivado por defecto) en `ConfigDialog`.
-    1.4 [En Progreso] Configuración Adicional y Mejoras UI para Backups.
-        - `ConfigDialog`: Opciones para `max_automatic_backups` y `max_manual_backups`.
-        - Paginación en `BackupRestoreDialog` si la lista de backups es larga (Algo así como mostrar 4 archivos por paguina, si hay más de 4 aparece la paguinación).
-        - Adaptación a cambios de tamaño de texto y tooltips en `BackupRestoreDialog`.
-    1.5 [En Progreso] Logging para Operaciones de Backup.
+    1.4 [Hecho] Configuración Adicional y Mejoras UI para Backups.
+        - [Hecho] `ConfigDialog`: Opciones para `max_automatic_backups`, `max_manual_backups` y `automatic_backup_cooldown_seconds`.
+        - [Pendiente] Paginación en `BackupRestoreDialog` si la lista de backups es larga (Algo así como mostrar 4 archivos por paguina, si hay más de 4 aparece la paguinación).
+        - [Hecho] Adaptación a cambios de tamaño de texto y tooltips en `BackupRestoreDialog`.
+        - [Hecho] Validación robusta de `config.ini` al cargar, revirtiendo a valores por defecto en caso de corrupción o valores inválidos.
+    1.5 [Hecho] Logging para Operaciones de Backup.
         - Registrar eventos significativos (creación iniciada/completada/fallida, eliminación de copia antigua).
 2. [En Progreso] Funcionalidad "Deshacer Eliminación" (Undo Delete).
     2.1 [Pendiente] Lógica Central para "Deshacer Eliminación".
