@@ -175,12 +175,12 @@ class ConfigDialog(Toplevel):
         ttk.Label(parent_frame, text="Tema de Aplicación:").grid(row=row_idx, column=0, sticky="w", pady=5, padx=5)
         theme_frame = ttk.Frame(parent_frame)
         theme_frame.grid(row=row_idx, column=1, sticky="ew", pady=5, padx=5)
-        theme_options = ["Light", "Dark"]
+        theme_options = ["Claro", "Oscuro"] # Changed theme names
         theme_combo = ttk.Combobox(theme_frame, textvariable=self.var_theme, values=theme_options, state="readonly", font=self.scaled_font_tuple) # Added font
         theme_combo.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True)
         theme_long_text = ("Cambia la apariencia visual de la aplicación (colores).\n"
-                           "Light: Tema claro (predeterminado).\n"
-                           "Dark: Tema oscuro.")
+                           "Claro: Tema claro (predeterminado).\n"
+                           "Oscuro: Tema oscuro.")
         theme_short_text = "Cambia la apariencia visual (colores)."
         theme_help_btn = ttk.Button(theme_frame, text="?", width=3, style="Help.TButton",
                                     command=lambda: self._show_input_help("Ayuda: Tema de Aplicación", theme_long_text))
@@ -336,6 +336,25 @@ class ConfigDialog(Toplevel):
         cooldown_help_btn.pack(side=tk.LEFT)
         Tooltip(cooldown_help_btn, text=cooldown_long_text, short_text=cooldown_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
+        
+        # --- Checkbox "Habilitar copia de seguridad automática al restaurar" ---
+        # This goes under "Habilitar copias de seguridad automáticas"
+        self.backup_before_restore_frame = ttk.Frame(parent_frame) # Create it here
+        # Gridding is handled by _toggle_backup_options_visibility
+        
+        bbr_cb = ttk.Checkbutton(
+            self.backup_before_restore_frame,
+            text="Crear copia automática antes de restaurar otra copia",
+            variable=self.var_backup_before_restore
+        )
+        bbr_cb.pack(side=tk.LEFT, padx=(0,5))
+        bbr_long_text = "Si está activado, se creará una copia de seguridad automática del estado actual del sistema justo antes de que se inicie una operación de restauración. Recomendado."
+        bbr_short_text = "Backup automático pre-restauración."
+        bbr_help_btn = ttk.Button(self.backup_before_restore_frame, text="?", width=3, style="Help.TButton",
+                                     command=lambda: self._show_input_help("Ayuda: Backup Pre-Restauración", bbr_long_text))
+        bbr_help_btn.pack(side=tk.LEFT)
+        Tooltip(bbr_help_btn, text=bbr_long_text, short_text=bbr_short_text, enabled=self.settings.enable_hover_tooltips)
+        # row_idx will be incremented by _toggle_backup_options_visibility if this frame is shown
 
         # --- Enable/Disable Manual Backups ---
         manual_backup_enable_frame = ttk.Frame(parent_frame)
@@ -387,12 +406,9 @@ class ConfigDialog(Toplevel):
         # Call to set initial visibility
         self._toggle_backup_options_visibility()
 
-        # --- Checkbox "Habilitar copia de seguridad automática al restaurar" ---
-        # This goes under "Habilitar copias de seguridad automáticas"
-        self.backup_before_restore_frame = ttk.Frame(parent_frame)
-        self.backup_before_restore_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", padx=(20,5), pady=0) # Indent
-        
-        bbr_cb = ttk.Checkbutton(
+
+    def _toggle_backup_options_visibility(self, event=None):
+        """Muestra u oculta las opciones de backup según los checkboxes de habilitación."""
             self.backup_before_restore_frame,
             text="Crear copia automática antes de restaurar otra copia",
             variable=self.var_backup_before_restore
@@ -417,8 +433,21 @@ class ConfigDialog(Toplevel):
             else: self.max_auto_frame.grid_remove()
         
         if hasattr(self, 'cooldown_frame'):
-            if show_auto_options: self.cooldown_frame.grid()
-            else: self.cooldown_frame.grid_remove()
+            if show_auto_options: 
+                self.cooldown_frame.grid()
+                # Place backup_before_restore_frame after cooldown_frame if auto_options are shown
+                if hasattr(self, 'backup_before_restore_frame'):
+                    # Determine the row of cooldown_frame and place backup_before_restore_frame in the next row
+                    cooldown_grid_info = self.cooldown_frame.grid_info()
+                    next_row_for_bbr = int(cooldown_grid_info.get('row', 0)) + 1 # Default to 0 if not found
+                    self.backup_before_restore_frame.grid(row=next_row_for_bbr, column=0, columnspan=2, sticky="w", padx=(20,5), pady=0)
+            else: 
+                self.cooldown_frame.grid_remove()
+                if hasattr(self, 'backup_before_restore_frame'): # Also hide this if auto options are off
+                    self.backup_before_restore_frame.grid_remove()
+
+        # Visibility for backup_before_restore_frame is now handled above, tied to cooldown_frame's visibility.
+        # The old block for backup_before_restore_frame is removed.
 
         if hasattr(self, 'max_manual_frame'):
             if show_manual_options: self.max_manual_frame.grid()

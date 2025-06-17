@@ -212,9 +212,9 @@ class BackupRestoreDialog(Toplevel):
         actions_row3_frame.grid(row=4, column=0, sticky="ew", pady=(5,0))
         actions_row3_frame.columnconfigure(1, weight=1) # To push refresh and close to the right
 
-        self.btn_delete_selected = ttk.Button(actions_row3_frame, text="Eliminar Seleccionado", command=self._delete_selected_backup_action, state=tk.DISABLED, style="Danger.TButton")
-        self.btn_delete_selected.grid(row=0, column=0, padx=5, sticky="w")
-        Tooltip(self.btn_delete_selected, "Elimina permanentemente la copia de seguridad seleccionada (manual, automática o rollback).", enabled=self.app_settings.enable_hover_tooltips)
+        self.btn_delete_manual = ttk.Button(actions_row3_frame, text="Eliminar Manual", command=self._delete_manual_backup_action, state=tk.DISABLED, style="Danger.TButton")
+        self.btn_delete_manual.grid(row=0, column=0, padx=5, sticky="w")
+        Tooltip(self.btn_delete_manual, "Elimina permanentemente la copia de seguridad manual seleccionada.", enabled=self.app_settings.enable_hover_tooltips)
         
         # Right side of row 3
         btn_refresh = ttk.Button(actions_row3_frame, text="Refrescar Lista", command=self.load_backups)
@@ -378,7 +378,7 @@ class BackupRestoreDialog(Toplevel):
         if not selected_item_id:
             self.btn_restore.config(state=tk.DISABLED, style="TButton") # Revert to default style when disabled
             self.btn_assign_alias.config(state=tk.DISABLED)
-            self.btn_delete_selected.config(state=tk.DISABLED, style="TButton") # Revert to default style
+            self.btn_delete_manual.config(state=tk.DISABLED, style="TButton") # Revert to default style
             return
 
         selected_values = self.tree.item(selected_item_id, "values")
@@ -386,11 +386,10 @@ class BackupRestoreDialog(Toplevel):
         # backup_filename = selected_values[3] # Filename is at index 3
 
         is_manual = (backup_type_display == "Manual")
-        # "Eliminar Seleccionado" is always enabled if something is selected.
-        # Its style will be Danger.TButton if enabled.
+        # "Eliminar Manual" is enabled only if a manual backup is selected.
         self.btn_restore.config(state=tk.NORMAL, style="Green.TButton")
         self.btn_assign_alias.config(state=tk.NORMAL) 
-        self.btn_delete_selected.config(state=tk.NORMAL, style="Danger.TButton")
+        self.btn_delete_manual.config(state=tk.NORMAL if is_manual else tk.DISABLED, style="Danger.TButton" if is_manual else "TButton")
 
 
     def create_manual_backup_action(self):
@@ -485,7 +484,7 @@ class BackupRestoreDialog(Toplevel):
                                      f"ADVERTENCIA: Está a punto de reemplazar TODOS los datos actuales con la copia '{backup_filename}'.\n\n"
                                      "Esta acción NO SE PUEDE DESHACER.\n\n"
                                      "¿Está ABSOLUTAMENTE SEGURO de que desea proceder con la restauración?",
-                                     icon='error', default=messagebox.NO, parent=self)
+                                     icon='error', parent=self) # Removed default=messagebox.NO
         if not confirm_restore2:
             return
 
@@ -583,64 +582,48 @@ class BackupRestoreDialog(Toplevel):
                 messagebox.showerror("Error", f"Ocurrió un error al asignar el alias:\n{e}", parent=self)
 
 
-    def _delete_selected_backup_action(self):
-        """Acción para eliminar una copia de seguridad seleccionada (manual, automática, o rollback)."""
+    def _delete_manual_backup_action(self): # Renamed from _delete_selected_backup_action
+        """Acción para eliminar una copia de seguridad manual seleccionada."""
         selected_item_id = self.tree.focus()
         if not selected_item_id:
-            messagebox.showwarning("Sin Selección", "Por favor, seleccione una copia de seguridad para eliminar.", parent=self)
+            messagebox.showwarning("Sin Selección", "Por favor, seleccione una copia de seguridad manual para eliminar.", parent=self)
             return
 
         selected_values = self.tree.item(selected_item_id, "values")
-        backup_type_display = selected_values[0] # "Manual", "Automática", "Rollback Candidate"
-        backup_filename = selected_values[3] # Original filename
+        backup_type_display = selected_values[0]
+        backup_filename = selected_values[3]
 
-        # Determine internal type for backup_manager
-        backup_type_internal = None
-        if backup_type_display == "Manual":
-            backup_type_internal = backup_manager.MANUAL_BACKUPS_SUBDIR
-        elif backup_type_display == "Automática":
-            backup_type_internal = backup_manager.AUTOMATIC_BACKUPS_SUBDIR
-        # Add "Rollback Candidate" if/when implemented
-        # elif backup_type_display == "Rollback Candidate":
-        #     backup_type_internal = "rollback" # Or however rollback candidates are identified
-
-        if not backup_type_internal:
-            messagebox.showerror("Error Interno", f"Tipo de copia de seguridad desconocido: {backup_type_display}", parent=self)
+        if backup_type_display != "Manual": # Only allow deleting manual backups
+            messagebox.showwarning("Tipo Inválido", "Solo se pueden eliminar copias de seguridad manuales desde esta opción.", parent=self)
             return
 
-        # Confirmation
-        confirm_msg = (f"¿Está seguro de que desea eliminar permanentemente la copia de seguridad '{backup_filename}' ({backup_type_display})?\n\n"
-                       "Esta acción no se puede deshacer.")
-        if not messagebox.askokcancel("Confirmar Eliminación", confirm_msg, icon='warning', parent=self):
+        # First confirmation
+        confirm1 = messagebox.askokcancel("Confirmar Eliminación - Paso 1 de 2",
+                                     f"¿Está seguro de que desea eliminar la copia de seguridad manual '{backup_filename}'?\n\n"
+                                     "Esta acción no se puede deshacer.",
+                                     icon='warning', parent=self)
+        if not confirm1:
             return
-        
-        # Second confirmation for non-automatic, or if we want it for all deletions via this button
-        if backup_type_internal != backup_manager.AUTOMATIC_BACKUPS_SUBDIR: # Stricter for manual/rollback
-            confirm2 = messagebox.askokcancel("Confirmar Eliminación - ¡ADVERTENCIA FINAL!",
-                                         f"La copia '{backup_filename}' será eliminada permanentemente.\n"
-                                         "¿Está ABSOLUTAMENTE SEGURO?",
-                                         icon='error', default=messagebox.NO, parent=self)
-            if not confirm2:
-                return
+
+        # Second confirmation
+        confirm2 = messagebox.askokcancel("Confirmar Eliminación - Paso 2 de 2",
+                                     f"¡ADVERTENCIA FINAL!\n\n"
+                                     f"La copia de seguridad manual '{backup_filename}' será eliminada permanentemente.\n"
+                                     "¿Está ABSOLUTAMENTE SEGURO de que desea proceder?",
+                                     icon='error', parent=self)
+        if not confirm2:
+            return
         
         try:
-            success = False
-            if backup_type_internal == backup_manager.MANUAL_BACKUPS_SUBDIR:
-                success = backup_manager.delete_manual_backup(backup_filename)
-            elif backup_type_internal == backup_manager.AUTOMATIC_BACKUPS_SUBDIR:
-                # Need a new method in backup_manager for this, as auto backups are usually rotated.
-                # For now, let's assume such a method exists or will be added.
-                success = backup_manager.delete_specific_automatic_backup(backup_filename)
-            # Add logic for "rollback" type if implemented
-
+            success = backup_manager.delete_manual_backup(backup_filename) # Call existing method
             if success:
-                messagebox.showinfo("Éxito", f"Copia de seguridad '{backup_filename}' eliminada.", parent=self)
+                messagebox.showinfo("Éxito", f"Copia de seguridad manual '{backup_filename}' eliminada.", parent=self)
                 self.load_backups()
             else:
-                messagebox.showerror("Error", f"No se pudo eliminar la copia de seguridad '{backup_filename}'.", parent=self)
+                messagebox.showerror("Error", f"No se pudo eliminar la copia de seguridad manual '{backup_filename}'.", parent=self)
         except Exception as e:
-            logger.error(f"Error eliminando copia de seguridad {backup_filename}: {e}", exc_info=True)
-            messagebox.showerror("Error", f"Ocurrió un error al eliminar la copia:\n{e}", parent=self)
+            logger.error(f"Error eliminando copia manual {backup_filename}: {e}", exc_info=True)
+            messagebox.showerror("Error", f"Ocurrió un error al eliminar la copia manual:\n{e}", parent=self)
 
 
 if __name__ == '__main__':

@@ -11,7 +11,7 @@ TITLE_FONT_SIZE = 18 # Reduced from 24 for better scaling control
 TREEVIEW_HEADING_FONT_SIZE = 10
 
 THEMES = {
-    "Light": {
+    "Claro": { # Renamed from "Light"
         "bg": "#F0F0F0",  # System-like light gray
         "fg": "#000000",  # Black
         "widget_bg": "#FFFFFF", # White for entry fields, treeview
@@ -33,7 +33,7 @@ THEMES = {
         "celeste_bg": "#AFEEEE", # Pale turquoise
         "celeste_fg": "#000000",
     },
-    "Dark": {
+    "Oscuro": { # Renamed from "Dark"
         "bg": "#252526",  # Dark gray
         "fg": "#DADADA",  # Light gray text
         "widget_bg": "#1E1E1E", # Very dark gray for entry fields
@@ -73,10 +73,10 @@ def apply_theme_and_font(root: tk.Tk, style: ttk.Style, theme_name: str, font_sc
     Applies the selected theme and font scaling to the ttk.Style object.
     :param root: The root tk.Tk window, needed for some global style settings like Combobox list.
     :param style: The ttk.Style object.
-    :param theme_name: Name of the theme to apply ('Light', 'Dark').
+    :param theme_name: Name of the theme to apply ('Claro', 'Oscuro').
     :param font_scale: Font scaling factor.
     """
-    colors = THEMES.get(theme_name, THEMES["Light"]) # Default to Light if theme_name is invalid
+    colors = THEMES.get(theme_name, THEMES["Claro"]) # Default to Claro if theme_name is invalid
 
     # Attempt to use 'clam' as it's often more customizable. Fallback if not available.
     try:
@@ -279,7 +279,8 @@ def apply_theme_and_font(root: tk.Tk, style: ttk.Style, theme_name: str, font_sc
                     font=get_scaled_font(DEFAULT_FONT_SIZE, font_scale))
     style.map("TCheckbutton",
               indicatorbackground=[('selected', colors['select_bg']), ('active', colors['widget_bg'])],
-              foreground=[('disabled', colors['disabled_fg'])])
+              foreground=[('disabled', colors['disabled_fg']), ('active', colors['select_bg'] if theme_name == "Claro" else colors['fg'])], # Change text color on active/hover for Claro
+              background=[('active', colors['bg'])]) # Ensure background doesn't change weirdly
 
     style.configure("TRadiobutton",
                     background=colors['bg'],

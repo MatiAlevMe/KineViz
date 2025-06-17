@@ -767,24 +767,43 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
     def open_new_analysis_dialog(self):
         """Abre el diálogo para configurar un nuevo análisis."""
-        # --- Pre-validation for participant and VI diversity ---
-        # This is a simplified check. A full check would involve looking at actual data.
-        # For discrete analysis, this check is against the summary tables.
+        # --- Pre-validation for participant and VI diversity for Discrete Analysis ---
+        # This check is against the summary tables.
         # We need at least two distinct groups to compare.
         # The actual check for data sufficiency for specific groups happens later.
-        # Here, we check if the study *has the potential* for such comparisons.
         
-        # Check 1: At least 2 VIs defined, or 1 VI with at least 2 descriptors.
-        # This is implicitly handled by the group selection logic in ConfigureIndividualAnalysisDialog.
-        # If not enough VIs/descriptors, group selection will be impossible.
+        # Check 1: Do summary tables exist at all?
+        if not self.analysis_service.get_discrete_analysis_tables_path(self.study_id):
+            messagebox.showwarning("Sin Tablas de Resumen",
+                                   "No hay tablas de resumen (.xlsx) generadas para este estudio.\n\n"
+                                   "Por favor, genere las tablas de resumen primero usando el botón "
+                                   "'Generar/Actualizar Tablas Resumen' en la vista de 'Análisis Discreto'.",
+                                   parent=self)
+            return
 
-        # Check 2: Do summary tables exist? (already handled by DiscreteAnalysisView)
-        # If we are here, DiscreteAnalysisView allowed opening this manager, implying tables exist.
-
-        # A more direct check for "at least 2 participants with at least 2 different VI sub-values"
-        # would require querying the summary tables or processed files, which is complex here.
-        # For now, we'll rely on the subsequent dialogs and AnalysisService to catch specific data issues.
-        # If ConfigureIndividualAnalysisDialog cannot form at least two groups, it will be apparent.
+        # Check 2: Potential for at least two comparison groups.
+        # This is a simplified check. A full check would involve looking at actual data.
+        # We query available groups for 'Cinematica' (as it's default/always checked) and any calculation.
+        # If less than 2 groups can be formed, it's likely not possible to do a comparison.
+        try:
+            # Use a common calculation type like "Maximo" for this check.
+            # The frequency is fixed to "Cinematica" for discrete analysis config.
+            available_groups_for_check = self.analysis_service.get_discrete_analysis_groups(
+                self.study_id, frequency="Cinematica" 
+            )
+            if len(available_groups_for_check) < 2:
+                messagebox.showwarning("Datos Insuficientes",
+                                       "No hay suficientes grupos distintos (basados en VIs y sub-valores) en las tablas de resumen "
+                                       "para realizar un análisis comparativo.\n\n"
+                                       "Asegúrese de que el estudio tenga datos procesados para al menos dos condiciones/grupos diferentes.",
+                                       parent=self)
+                return
+        except Exception as e_group_check:
+            logger.error(f"Error al verificar grupos disponibles para pre-validación de análisis discreto: {e_group_check}", exc_info=True)
+            messagebox.showerror("Error de Pre-validación",
+                                 f"Ocurrió un error al verificar la disponibilidad de grupos para el análisis:\n{e_group_check}",
+                                 parent=self)
+            return
 
         dialog = ConfigureIndividualAnalysisDialog(self, self.analysis_service, self.study_id, self.parent.main_window.settings) # Pass settings
         

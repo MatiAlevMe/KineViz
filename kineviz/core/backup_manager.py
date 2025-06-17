@@ -422,21 +422,6 @@ def delete_manual_backup(backup_filename: str) -> bool:
         logger.error(f"Error deleting manual backup file {backup_file_path}: {e}", exc_info=True)
         return False
 
-def delete_specific_automatic_backup(backup_filename: str) -> bool:
-    """Deletes a specific automatic backup file and its alias."""
-    backup_file_path = get_project_root() / BACKUPS_DIR_NAME / AUTOMATIC_BACKUPS_SUBDIR / backup_filename
-    if not backup_file_path.exists() or not backup_file_path.is_file():
-        logger.error(f"Automatic backup file not found: {backup_file_path}")
-        return False
-    try:
-        backup_file_path.unlink()
-        logger.info(f"Automatic backup file deleted: {backup_file_path}")
-        remove_backup_alias(AUTOMATIC_BACKUPS_SUBDIR, backup_filename) # Attempt to remove alias
-        return True
-    except OSError as e:
-        logger.error(f"Error deleting automatic backup file {backup_file_path}: {e}", exc_info=True)
-        return False
-
 def cleanup_bak_files() -> tuple[int, int]:
     """
     Deletes all .bak files and directories from the project root.

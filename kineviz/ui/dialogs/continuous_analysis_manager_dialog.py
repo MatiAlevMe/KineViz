@@ -709,11 +709,47 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         # self.delete_button.config(state=tk.NORMAL if can_act_single else tk.DISABLED) # Old single delete button
 
     def _open_new_analysis_dialog(self):
-        # --- Pre-validation for participant and VI diversity ---
-        # For continuous analysis, this check is against processed files.
-        # Similar to discrete, if not enough VIs/descriptors, group selection will be impossible.
-        # A deeper check for participant diversity across VI values is complex here.
-        # Rely on ContinuousAnalysisConfigDialog and AnalysisService.
+        # --- Pre-validation for participant and VI diversity for Continuous Analysis ---
+        # This check is against processed files for 'Cinematica'.
+        
+        # Check 1: Are there any 'Cinematica' files processed?
+        available_frequencies = self.analysis_service.get_available_frequencies_for_study(self.study_id)
+        if "Cinematica" not in available_frequencies:
+            messagebox.showwarning("Datos No Disponibles",
+                                   "El análisis continuo requiere datos procesados de 'Cinematica'.\n"
+                                   "No se encontraron archivos cinemáticos procesados en este estudio.",
+                                   parent=self)
+            return
+
+        # Check 2: Potential for at least two comparison groups based on VIs.
+        # This is a simplified check.
+        try:
+            # For continuous, groups are formed based on VIs from processed files.
+            # We use get_filtered_discrete_analysis_groups with mode='1VI' and a dummy primary_vi
+            # just to see if *any* groups can be formed. This is an approximation.
+            # A more accurate check would be to see if AnalysisService can form at least two groups
+            # from the actual processed files for 'Cinematica'.
+            # For now, check if there's at least one VI with at least two descriptors.
+            study_details = self.analysis_service.study_service.get_study_details(self.study_id)
+            vis = study_details.get('independent_variables', [])
+            can_form_groups = False
+            if len(vis) >= 2: # If 2+ VIs, high chance of forming groups
+                can_form_groups = True
+            elif len(vis) == 1 and len(vis[0].get('descriptors', [])) >= 2: # If 1 VI with 2+ descriptors
+                can_form_groups = True
+            
+            if not can_form_groups:
+                 messagebox.showwarning("Datos Insuficientes",
+                                       "No hay suficientes Variables Independientes (VIs) o sub-valores definidos "
+                                       "en el estudio para formar al menos dos grupos de comparación para el análisis continuo.",
+                                       parent=self)
+                 return
+        except Exception as e_group_check:
+            logger.error(f"Error al verificar VIs para pre-validación de análisis continuo: {e_group_check}", exc_info=True)
+            messagebox.showerror("Error de Pre-validación",
+                                 f"Ocurrió un error al verificar las VIs para el análisis:\n{e_group_check}",
+                                 parent=self)
+            return
         
         # This is where ContinuousAnalysisConfigDialog is launched
         dialog = ContinuousAnalysisConfigDialog(self, self.analysis_service, self.study_id, self.main_window.settings) # Pass settings

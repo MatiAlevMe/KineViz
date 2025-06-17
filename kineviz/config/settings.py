@@ -33,7 +33,7 @@ class AppSettings:
             'analysis_items_per_page': '10',
             'discrete_tables_per_page': '10',
             'font_scale': '1.0',
-            'theme': 'Light',
+            'theme': 'Claro', # Changed default
             'show_factory_reset_button': 'False',
             'enable_hover_tooltips': 'False',
             'max_automatic_backups': '10', # Changed default
@@ -149,8 +149,8 @@ class AppSettings:
 
             # Theme (specific strings)
             theme_val = self.get_setting('theme', '')
-            if theme_val not in ['Light', 'Dark']: # Add more valid themes if they exist
-                logger.error(f"Config validation failed: 'theme' must be one of ['Light', 'Dark'], got '{theme_val}'.")
+            if theme_val not in ['Claro', 'Oscuro']: # Changed valid themes
+                logger.error(f"Config validation failed: 'theme' must be one of ['Claro', 'Oscuro'], got '{theme_val}'.")
                 return False
             
             # Booleans (show_factory_reset_button, enable_hover_tooltips, enable_automatic_backups, enable_manual_backups)
@@ -327,8 +327,8 @@ class AppSettings:
 
     @property
     def theme(self) -> str:
-        """Tema de la aplicación (ej: 'Light', 'Dark')."""
-        return self.get_setting('theme', 'Light')
+        """Tema de la aplicación (ej: 'Claro', 'Oscuro')."""
+        return self.get_setting('theme', 'Claro') # Changed default
 
     @theme.setter
     def theme(self, value: str):
