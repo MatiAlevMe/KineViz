@@ -40772,3 +40772,12 @@ TypeError: StudyRepository.get_studies_paginated() got an unexpected keyword arg
 2025-06-17 18:07:30,332 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
 2025-06-17 18:07:30,332 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
 2025-06-17 18:07:30,333 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 18:09:19,222 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 18:09:19,222 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 18:09:19,495 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 18:09:19,495 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 18:09:19,496 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 2.0
+2025-06-17 18:09:21,947 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 2
+2025-06-17 18:09:21,964 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 18:09:21,964 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 18:09:21,967 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'

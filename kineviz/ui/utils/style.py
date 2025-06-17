@@ -36,7 +36,6 @@ THEMES = {
         "hover_text": "#F0F0F0",  # Blanco (texto cambia a blanco)
         "treeview_heading_hover_bg": "#F0F0F0",
         "treeview_heading_hover_text": "#252526",
-        "dropdown_arrow": "#E92222",
     },
     "Oscuro": { # Renamed from "Dark"
         "bg": "#252526",  # Dark gray
@@ -63,7 +62,6 @@ THEMES = {
         "hover_text": "#252526",  # Negro (texto cambia a negro)
         "treeview_heading_hover_bg": "#252526",
         "treeview_heading_hover_text": "#F0F0F0",
-        "dropdown_arrow": "#E92222",
     }
 }
 
@@ -318,7 +316,7 @@ def apply_theme_and_font(root: tk.Tk, style: ttk.Style, theme_name: str, font_sc
                     foreground=colors['hover_text'],       # Color del texto
                     selectbackground=colors['select_bg'], # Fondo del texto seleccionado EN EL DROPDOWN
                     selectforeground=colors['select_fg'], # Color del texto seleccionado EN EL DROPDOWN
-                    arrowcolor=colors['dropdown_arrow'],              # Color de la flecha del dropdown
+                    arrowcolor=colors['fg'],              # Color de la flecha del dropdown
                     font=get_scaled_font(DEFAULT_FONT_SIZE, font_scale), # Fuente del texto
                     padding=(scaled_padding_x, scaled_padding_y)) # Padding interno
 
