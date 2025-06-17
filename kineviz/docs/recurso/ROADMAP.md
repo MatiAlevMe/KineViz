@@ -257,7 +257,7 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
 
 ## [En Progreso] Fase 5: Funcionalidades Adicionales
 1. [En Progreso] Sistema Principal de Copias de Seguridad y Restauración.
-    1.1 [En Progreso] Lógica Central de Copias de Seguridad (`backup_manager.py`).
+    1.1 [Hecho] Lógica Central de Copias de Seguridad (`backup_manager.py`).
         - Componentes del sistema a respaldar en cada copia de seguridad:
             - Base de datos: `kineviz.db` (completa, estado actual al momento del backup).
             - Archivo de configuración: `config.ini` (estado actual al momento del backup).
@@ -282,9 +282,9 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
             - Eliminación de lote de archivos.
             - Eliminación de resultados de análisis (discreto/continuo).
         - Puntos de activación (funciones clave donde se invocaría `backup_manager.create_backup('automatic')`):
-            - `StudyService`: `delete_study`, `delete_all_studies`.
-            - `FileService`: `delete_file`, `delete_all_files_in_study`.
-            - `AnalysisService`: `delete_individual_analysis`, `delete_all_individual_analysis`, `delete_continuous_analysis`, `delete_all_continuous_analysis`
+            - `StudyService`: `delete_study`, `delete_studies_by_ids`, `delete_all_studies`.
+            - `FileService`: `delete_file`, `delete_selected_files`, `delete_all_files_in_study`.
+            - `AnalysisService`: `delete_individual_analysis`, `delete_selected_individual_analyses`, `delete_all_individual_analyses`, `delete_continuous_analysis`, `delete_selected_continuous_analyses`, `delete_all_continuous_analyses`, `delete_all_discrete_summary_tables`, `delete_selected_discrete_summary_tables`.
     1.3 [En Progreso] UI para Gestión de Copias de Seguridad (`BackupRestoreDialog`).
         - Acceso: Opción "Gestión de Copias de Seguridad" en `ConfigDialog`.
         - Funcionalidades:
@@ -448,6 +448,7 @@ La aplicación sigue una estructura modular para separar responsabilidades:
 `file_handlers`: Responsable de leer e interpretar archivos de datos crudos (ej. `.txt`), extraer metadatos, identificar el tipo de frecuencia (Cinemática, Cinética, EMG) y realizar el procesamiento inicial para generar archivos estandarizados (incluyendo la adición de una columna "Tiempo").
 `processors`: Contiene funciones de utilidad para la transformación de datos, cálculos estadísticos básicos (máximo, mínimo, rango) sobre DataFrames de pandas, formateo de valores, y normalización temporal de datos (ej. `normalize_temporal_data`).
 `directory_manager`: Gestiona la creación y la estructura de los directorios para los estudios y los pacientes dentro del sistema de archivos.
+`core.backup_manager.py`: Gestiona la creación y administración de copias de seguridad del sistema. Esto incluye el respaldo selectivo del directorio de estudios, la base de datos (`kineviz.db`), y el archivo de configuración (`config.ini`). Implementa la lógica para copias automáticas rotativas y copias manuales.
 `core.exceptions`: Define clases de excepciones personalizadas para un manejo de errores más específico dentro de la aplicación (ej. `FileNotFoundError`, `InvalidFileFormatError`).
 
 3.2 `kineviz.ui` - Capa de Interfaz de Usuario (Tkinter)

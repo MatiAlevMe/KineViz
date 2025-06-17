@@ -104,23 +104,12 @@ class FileService:
 
         return files_on_page, total_matching_files
 
-    def delete_file(self, file_path: Path | str, study_id: int):
+    def _delete_file_no_backup(self, file_path: Path | str, study_id: int):
         """
-        Elimina un archivo específico y limpia directorios vacíos si es necesario.
-
-        :param file_path: Ruta completa (Path o str) del archivo a eliminar.
-        :raises FileNotFoundError: Si el archivo no existe.
-        :param file_path: Ruta completa (Path o str) del archivo a eliminar.
-        :param study_id: ID del estudio al que pertenece el archivo (para obtener ruta base).
-        :raises FileNotFoundError: Si el archivo no existe.
-        :raises OSError: Si ocurre un error al eliminar el archivo o directorio.
+        Core logic to delete a file and clean up empty parent directories. No backup trigger here.
+        Called by public delete_file or batch operations.
         """
-        try:
-            create_backup(backup_type='automatic')
-        except Exception as e_backup:
-            logger.error(f"Error creating automatic backup before deleting file {file_path}: {e_backup}", exc_info=True)
-            # Decide if operation should continue or be aborted. For now, logging and continuing.
-
+        # Backup is now handled by the public method or batch operation
         if isinstance(file_path, str):
             file_path = Path(file_path)
 
@@ -169,6 +158,24 @@ class FileService:
         except OSError as e:
             logger.error(f"Error al eliminar el archivo {file_path}: {e}", exc_info=True)
             raise # Relanzar la excepción
+
+    def delete_file(self, file_path: Path | str, study_id: int):
+        """
+        Elimina un archivo específico, triggering an automatic backup first.
+        Then calls the core logic to delete the file and clean up empty directories.
+
+        :param file_path: Ruta completa (Path o str) del archivo a eliminar.
+        :param study_id: ID del estudio al que pertenece el archivo.
+        :raises FileNotFoundError: Si el archivo no existe.
+        :raises OSError: Si ocurre un error al eliminar el archivo o directorio.
+        """
+        try:
+            create_backup(backup_type='automatic')
+        except Exception as e_backup:
+            logger.error(f"Error creating automatic backup before deleting file {file_path}: {e_backup}", exc_info=True)
+            # Decide if operation should continue or be aborted. For now, logging and continuing.
+        
+        self._delete_file_no_backup(file_path, study_id)
 
     # Removed study_id_from_path as it's unreliable and caused errors.
     # study_id should be passed directly to delete_file.
@@ -728,10 +735,16 @@ class FileService:
         if not file_paths:
             return
 
+        try:
+            create_backup(backup_type='automatic')
+        except Exception as e_backup:
+            logger.error(f"Error creating automatic backup before deleting selected files for study {study_id}: {e_backup}", exc_info=True)
+            # Decide if operation should continue or be aborted. For now, logging and continuing.
+            
         errors = []
         for file_path in file_paths:
             try:
-                self.delete_file(file_path, study_id) # delete_file ya maneja la limpieza de carpetas
+                self._delete_file_no_backup(file_path, study_id) # Call the no-backup version
                 logger.info(f"Archivo {file_path} eliminado como parte de una operación masiva para estudio {study_id}.")
             except Exception as e:
                 logger.error(f"Error eliminando archivo {file_path} en operación masiva para estudio {study_id}: {e}", exc_info=True)
