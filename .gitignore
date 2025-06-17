@@ -6,7 +6,7 @@ __pycache__/
 ## KineViz - Personal Folders & Files
 estudios/
 recursos/
-backup*
+backups/
 .*
 
 ## Build & Dist KineViz (Windows y Mac OS)
