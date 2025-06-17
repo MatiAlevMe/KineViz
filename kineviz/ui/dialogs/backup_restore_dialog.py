@@ -57,6 +57,16 @@ class BackupRestoreDialog(Toplevel):
         self.create_widgets()
         self.load_backups() # Initial load
 
+        # Set initial geometry after widgets are created and data loaded (for reqheight)
+        self.update_idletasks() # Ensure Tkinter has processed widget sizes
+        # Use the previously calculated initial_geom_width
+        # Set height based on requested height of the content
+        calculated_initial_width = int(base_geom_width * (1 + (current_font_scale - 1) * 0.25))
+        # Ensure the width is at least the min_width
+        final_initial_width = max(dynamic_min_width, calculated_initial_width)
+        self.geometry(f"{final_initial_width}x{self.winfo_reqheight()}")
+
+
         self.transient(parent)
         self.grab_set()
         # self.protocol("WM_DELETE_WINDOW", self.destroy) # Default behavior is fine
