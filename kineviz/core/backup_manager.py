@@ -2,6 +2,7 @@ import datetime
 import logging
 import pathlib
 import shutil
+import time # Added for cooldown
 import zipfile
 from typing import Optional
 
@@ -9,6 +10,7 @@ from typing import Optional
 logger = logging.getLogger(__name__)
 
 # AppSettings will be imported locally where needed
+_last_automatic_backup_end_time: Optional[datetime.datetime] = None
 
 # Constants for backup configuration
 BACKUPS_DIR_NAME = "backups"
@@ -76,14 +78,34 @@ def create_backup(backup_type: str) -> Optional[pathlib.Path]:
     if not _ensure_dir_exists(backup_destination_subdir):
         return None
 
-    # Manage rolling backups for automatic backups
+    # Manage rolling backups, cooldown, and locking for automatic backups
     if backup_type == AUTOMATIC_BACKUPS_SUBDIR:
+        global _last_automatic_backup_end_time # Declare global to modify it
         try:
             settings = AppSettings()
             max_backups = settings.max_automatic_backups
+            cooldown_seconds = settings.get_int_setting('automatic_backup_cooldown_seconds', 60)
+            lock_file_path = backup_destination_subdir / ".backup_in_progress.lock"
+
+            # 1. Check for lock file (another backup in progress)
+            if lock_file_path.exists():
+                logger.info(f"Automatic backup skipped: another backup operation is currently in progress (lock file found: {lock_file_path}).")
+                return None
+
+            # 2. Check cooldown period
+            if _last_automatic_backup_end_time:
+                seconds_since_last_backup = (datetime.datetime.now() - _last_automatic_backup_end_time).total_seconds()
+                if seconds_since_last_backup < cooldown_seconds:
+                    logger.info(f"Automatic backup skipped: cooldown period active. {int(seconds_since_last_backup)}s since last backup (cooldown: {cooldown_seconds}s).")
+                    return None
             
-            existing_backups = sorted(
-                [f for f in backup_destination_subdir.glob("backup_*.zip") if f.is_file()],
+            # 3. Create lock file and proceed with backup logic
+            try:
+                lock_file_path.touch() # Create the lock file
+
+                # Rolling backup logic (existing)
+                existing_backups = sorted(
+                    [f for f in backup_destination_subdir.glob("backup_*.zip") if f.is_file()],
                 key=lambda f: f.name
             )
             
@@ -98,11 +120,29 @@ def create_backup(backup_type: str) -> Optional[pathlib.Path]:
                 logger.info("max_automatic_backups is 0. Deleting all existing automatic backups.")
                 for old_backup in existing_backups:
                     old_backup.unlink()
+                # End of original rolling backup logic block
+            
+            except Exception as e: # Catch errors from rolling backup logic or lock file creation
+                logger.error(f"Error during pre-backup management (rolling/locking) for automatic backup: {e}", exc_info=True)
+                if lock_file_path.exists(): # Clean up lock file if created
+                    lock_file_path.unlink()
+                return None # Do not proceed if pre-backup management fails
+            # If we proceed beyond this point, the lock file exists.
+            # The main backup creation will be wrapped in try/finally to remove the lock.
 
-
-        except Exception as e:
-            logger.error(f"Error during rolling backup management: {e}", exc_info=True)
+        except Exception as e: # This outer except is for AppSettings or initial checks
+            logger.error(f"Error during initial setup for automatic backup: {e}", exc_info=True)
             # Decide if we should proceed with backup creation or not. For now, we'll proceed.
+            # However, if lock file logic is above, this might be redundant or need restructuring.
+            # For now, assuming this is for settings load error, and we might still attempt backup without cooldown/rolling.
+            # Corrected: The logic above now returns None on error, so this block might not be hit often with that intent.
+            # This 'except' is for the AppSettings loading or initial cooldown_seconds/lock_file_path setup.
+            # If these fail, we might not be able to enforce lock/cooldown, so log and continue cautiously or abort.
+            # Given the structure, if AppSettings fails, cooldown_seconds might not be set.
+            # Let's assume if settings fail, we skip the backup to be safe.
+            logger.error(f"Critical error setting up automatic backup parameters (AppSettings or paths): {e}. Aborting backup.", exc_info=True)
+            return None
+
 
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     zip_filename = f"backup_{timestamp}.zip"
@@ -126,6 +166,15 @@ def create_backup(backup_type: str) -> Optional[pathlib.Path]:
     if not items_to_backup and not (studies_dir_path.exists() and studies_dir_path.is_dir()):
         logger.error("No items found to backup (database, config, or studies directory). Backup aborted.")
         return None
+
+    # Determine lock_file_path again for the finally block, specific to automatic backups
+    # This is a bit redundant but ensures the finally block has the correct path if it's an automatic backup.
+    # A better way would be to pass lock_file_path if it was created.
+    # For now, re-evaluate:
+    current_lock_file_for_finally = None
+    if backup_type == AUTOMATIC_BACKUPS_SUBDIR:
+        # backup_destination_subdir is defined earlier in the function
+        current_lock_file_for_finally = backup_destination_subdir / ".backup_in_progress.lock"
 
     try:
         logger.info(f"Creating backup: {zip_filepath}")
@@ -217,15 +266,25 @@ def create_backup(backup_type: str) -> Optional[pathlib.Path]:
 
 
         logger.info(f"Backup created successfully: {zip_filepath}")
+        if backup_type == AUTOMATIC_BACKUPS_SUBDIR:
+            _last_automatic_backup_end_time = datetime.datetime.now()
+            logger.debug(f"Updated _last_automatic_backup_end_time to {_last_automatic_backup_end_time}")
         return zip_filepath
     except Exception as e:
-        logger.error(f"Failed to create backup {zip_filepath}: {e}")
+        logger.error(f"Failed to create backup {zip_filepath}: {e}", exc_info=True)
         if zip_filepath.exists():
             try:
                 zip_filepath.unlink() # Attempt to clean up partially created zip
             except OSError as ose:
                 logger.error(f"Failed to delete partial backup file {zip_filepath}: {ose}")
         return None
+    finally:
+        if current_lock_file_for_finally and current_lock_file_for_finally.exists():
+            try:
+                current_lock_file_for_finally.unlink()
+                logger.debug(f"Lock file {current_lock_file_for_finally} removed.")
+            except OSError as ose:
+                logger.error(f"Failed to remove lock file {current_lock_file_for_finally}: {ose}")
 
 if __name__ == '__main__':
     # DB_FILENAME and CONFIG_FILENAME are module-level globals.
