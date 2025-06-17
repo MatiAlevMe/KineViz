@@ -44,9 +44,19 @@ class ConfigDialog(Toplevel):
         self.var_max_manual_backups = StringVar()
         self.var_auto_backup_cooldown = StringVar()
         self.var_enable_automatic_backups = tk.BooleanVar()
+        self.var_max_auto_backups = StringVar()
+        self.var_auto_backup_cooldown = StringVar()
+
+        # Pre-restore ("Respaldo") backup settings
+        self.var_enable_pre_restore_backups = tk.BooleanVar()
+        self.var_max_pre_restore_backups = StringVar()
+        self.var_pre_restore_backup_cooldown = StringVar()
+
+        # Manual backup settings
         self.var_enable_manual_backups = tk.BooleanVar()
+        self.var_max_manual_backups = StringVar()
+        
         self.var_show_advanced_backup_opts = tk.BooleanVar() # New
-        self.var_backup_before_restore = tk.BooleanVar()     # New
 
         # Calculate scaled font once for direct application
         self.scaled_font_tuple = get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale)
@@ -81,9 +91,17 @@ class ConfigDialog(Toplevel):
         self.var_max_manual_backups.set(str(self.settings.max_manual_backups))
         self.var_auto_backup_cooldown.set(str(self.settings.automatic_backup_cooldown_seconds))
         self.var_enable_automatic_backups.set(self.settings.enable_automatic_backups)
+        self.var_max_auto_backups.set(str(self.settings.max_automatic_backups))
+        self.var_auto_backup_cooldown.set(str(self.settings.automatic_backup_cooldown_seconds))
+
+        self.var_enable_pre_restore_backups.set(self.settings.enable_pre_restore_backups)
+        self.var_max_pre_restore_backups.set(str(self.settings.max_pre_restore_backups))
+        self.var_pre_restore_backup_cooldown.set(str(self.settings.pre_restore_backup_cooldown_seconds))
+
         self.var_enable_manual_backups.set(self.settings.enable_manual_backups)
+        self.var_max_manual_backups.set(str(self.settings.max_manual_backups))
+        
         self.var_show_advanced_backup_opts.set(self.settings.show_advanced_backup_options) # Load new
-        self.var_backup_before_restore.set(self.settings.backup_before_restore)         # Load new
 
     def create_widgets(self):
         """Crea los widgets del diálogo usando un Notebook para pestañas."""
@@ -286,7 +304,7 @@ class ConfigDialog(Toplevel):
         parent_frame.columnconfigure(1, weight=3) # Column for entry fields
         row_idx = 0
 
-        # --- Enable/Disable Automatic Backups ---
+        # --- SECTION: Automatic Backups ---
         auto_backup_enable_frame = ttk.Frame(parent_frame)
         auto_backup_enable_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", pady=(5,0))
         auto_backup_cb = ttk.Checkbutton(
@@ -296,7 +314,7 @@ class ConfigDialog(Toplevel):
             command=self._toggle_backup_options_visibility
         )
         auto_backup_cb.pack(side=tk.LEFT, padx=(0,5))
-        auto_backup_enable_long_text = "Activa o desactiva la creación automática de copias de seguridad en momentos clave (ej. antes de eliminaciones)."
+        auto_backup_enable_long_text = "Activa o desactiva la creación automática de copias de seguridad en momentos clave (ej. antes de eliminaciones masivas)."
         auto_backup_enable_short_text = "Habilitar/deshabilitar copias automáticas."
         auto_backup_enable_help_btn = ttk.Button(auto_backup_enable_frame, text="?", width=3, style="Help.TButton",
                                                  command=lambda: self._show_input_help("Ayuda: Habilitar Copias Automáticas", auto_backup_enable_long_text))
@@ -304,13 +322,12 @@ class ConfigDialog(Toplevel):
         Tooltip(auto_backup_enable_help_btn, text=auto_backup_enable_long_text, short_text=auto_backup_enable_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
-        # --- Max Automatic Backups (conditionally visible) ---
-        self.max_auto_frame = ttk.Frame(parent_frame) # Store as instance variable
+        self.max_auto_frame = ttk.Frame(parent_frame)
         self.max_auto_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", padx=(20,5), pady=0) # Indent
         ttk.Label(self.max_auto_frame, text="Máx. copias automáticas:").pack(side=tk.LEFT, pady=5, padx=0)
         max_auto_entry_frame = ttk.Frame(self.max_auto_frame)
-        max_auto_entry_frame.pack(side=tk.LEFT, padx=5, pady=5, fill=tk.X, expand=True) # Added fill and expand
-        max_auto_entry = ttk.Entry(max_auto_entry_frame, textvariable=self.var_max_auto_backups, font=self.scaled_font_tuple) # Added font
+        max_auto_entry_frame.pack(side=tk.LEFT, padx=5, pady=5, fill=tk.X, expand=True)
+        max_auto_entry = ttk.Entry(max_auto_entry_frame, textvariable=self.var_max_auto_backups, font=self.scaled_font_tuple)
         max_auto_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True)
         max_auto_long_text = ("Número máximo de copias de seguridad automáticas a conservar (debe ser > 0).\n"
                               "El límite se aplica cuando se crea una nueva copia automática; las más antiguas se eliminan.")
@@ -321,45 +338,74 @@ class ConfigDialog(Toplevel):
         Tooltip(max_auto_help_btn, text=max_auto_long_text, short_text=max_auto_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
-        # --- Automatic Backup Cooldown (conditionally visible) ---
-        self.cooldown_frame = ttk.Frame(parent_frame) # Store as instance variable
-        self.cooldown_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", padx=(20,5), pady=0) # Indent
-        ttk.Label(self.cooldown_frame, text="Enfriamiento copias automáticas (seg):").pack(side=tk.LEFT, pady=5, padx=0)
-        cooldown_entry_frame = ttk.Frame(self.cooldown_frame)
-        cooldown_entry_frame.pack(side=tk.LEFT, padx=5, pady=5, fill=tk.X, expand=True) # Added fill and expand
-        cooldown_entry = ttk.Entry(cooldown_entry_frame, textvariable=self.var_auto_backup_cooldown, font=self.scaled_font_tuple) # Added font
-        cooldown_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True)
-        cooldown_long_text = "Tiempo mínimo (en segundos, >=0) que debe pasar después de una copia automática antes de que se pueda iniciar otra."
-        cooldown_short_text = "Enfriamiento copias automáticas (seg, >=0)."
-        cooldown_help_btn = ttk.Button(cooldown_entry_frame, text="?", width=3, style="Help.TButton",
-                                       command=lambda: self._show_input_help("Ayuda: Enfriamiento Copias Automáticas", cooldown_long_text))
-        cooldown_help_btn.pack(side=tk.LEFT)
-        Tooltip(cooldown_help_btn, text=cooldown_long_text, short_text=cooldown_short_text, enabled=self.settings.enable_hover_tooltips)
+        self.cooldown_auto_frame = ttk.Frame(parent_frame) # Renamed from self.cooldown_frame
+        self.cooldown_auto_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", padx=(20,5), pady=0) # Indent
+        ttk.Label(self.cooldown_auto_frame, text="Enfriamiento copias automáticas (seg):").pack(side=tk.LEFT, pady=5, padx=0)
+        cooldown_auto_entry_frame = ttk.Frame(self.cooldown_auto_frame)
+        cooldown_auto_entry_frame.pack(side=tk.LEFT, padx=5, pady=5, fill=tk.X, expand=True)
+        cooldown_auto_entry = ttk.Entry(cooldown_auto_entry_frame, textvariable=self.var_auto_backup_cooldown, font=self.scaled_font_tuple)
+        cooldown_auto_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True)
+        cooldown_auto_long_text = "Tiempo mínimo (en segundos, >=0) que debe pasar después de una copia automática antes de que se pueda iniciar otra."
+        cooldown_auto_short_text = "Enfriamiento copias automáticas (seg, >=0)."
+        cooldown_auto_help_btn = ttk.Button(cooldown_auto_entry_frame, text="?", width=3, style="Help.TButton",
+                                       command=lambda: self._show_input_help("Ayuda: Enfriamiento Copias Automáticas", cooldown_auto_long_text))
+        cooldown_auto_help_btn.pack(side=tk.LEFT)
+        Tooltip(cooldown_auto_help_btn, text=cooldown_auto_long_text, short_text=cooldown_auto_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+
+        # --- SECTION: Pre-Restore ("Respaldo") Backups ---
+        pre_restore_enable_frame = ttk.Frame(parent_frame)
+        pre_restore_enable_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", pady=(10,0)) # Add some top padding
+        pre_restore_cb = ttk.Checkbutton(
+            pre_restore_enable_frame,
+            text="Habilitar copias de respaldo (pre-restauración)",
+            variable=self.var_enable_pre_restore_backups,
+            command=self._toggle_backup_options_visibility
+        )
+        pre_restore_cb.pack(side=tk.LEFT, padx=(0,5))
+        pre_restore_enable_long_text = ("Si está activado, se creará una copia de seguridad tipo 'Respaldo' del estado actual del sistema\n"
+                                        "justo antes de que se inicie una operación de restauración desde otra copia. Recomendado.")
+        pre_restore_enable_short_text = "Habilitar/deshabilitar copias de respaldo pre-restauración."
+        pre_restore_enable_help_btn = ttk.Button(pre_restore_enable_frame, text="?", width=3, style="Help.TButton",
+                                                 command=lambda: self._show_input_help("Ayuda: Habilitar Copias de Respaldo", pre_restore_enable_long_text))
+        pre_restore_enable_help_btn.pack(side=tk.LEFT)
+        Tooltip(pre_restore_enable_help_btn, text=pre_restore_enable_long_text, short_text=pre_restore_enable_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+
+        self.max_pre_restore_frame = ttk.Frame(parent_frame)
+        self.max_pre_restore_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", padx=(20,5), pady=0) # Indent
+        ttk.Label(self.max_pre_restore_frame, text="Máx. copias de respaldo:").pack(side=tk.LEFT, pady=5, padx=0)
+        max_pre_restore_entry_frame = ttk.Frame(self.max_pre_restore_frame)
+        max_pre_restore_entry_frame.pack(side=tk.LEFT, padx=5, pady=5, fill=tk.X, expand=True)
+        max_pre_restore_entry = ttk.Entry(max_pre_restore_entry_frame, textvariable=self.var_max_pre_restore_backups, font=self.scaled_font_tuple)
+        max_pre_restore_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True)
+        max_pre_restore_long_text = ("Número máximo de copias de seguridad tipo 'Respaldo' a conservar (debe ser >= 1).\n"
+                                     "El límite se aplica cuando se crea una nueva copia de respaldo; las más antiguas se eliminan.")
+        max_pre_restore_short_text = "Máx. copias de respaldo (>=1)."
+        max_pre_restore_help_btn = ttk.Button(max_pre_restore_entry_frame, text="?", width=3, style="Help.TButton",
+                                              command=lambda: self._show_input_help("Ayuda: Máx. Copias de Respaldo", max_pre_restore_long_text))
+        max_pre_restore_help_btn.pack(side=tk.LEFT)
+        Tooltip(max_pre_restore_help_btn, text=max_pre_restore_long_text, short_text=max_pre_restore_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+
+        self.cooldown_pre_restore_frame = ttk.Frame(parent_frame)
+        self.cooldown_pre_restore_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", padx=(20,5), pady=0) # Indent
+        ttk.Label(self.cooldown_pre_restore_frame, text="Enfriamiento copias de respaldo (seg):").pack(side=tk.LEFT, pady=5, padx=0)
+        cooldown_pre_restore_entry_frame = ttk.Frame(self.cooldown_pre_restore_frame)
+        cooldown_pre_restore_entry_frame.pack(side=tk.LEFT, padx=5, pady=5, fill=tk.X, expand=True)
+        cooldown_pre_restore_entry = ttk.Entry(cooldown_pre_restore_entry_frame, textvariable=self.var_pre_restore_backup_cooldown, font=self.scaled_font_tuple)
+        cooldown_pre_restore_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True)
+        cooldown_pre_restore_long_text = "Tiempo mínimo (en segundos, >=0) que debe pasar después de una copia de respaldo antes de que se pueda iniciar otra."
+        cooldown_pre_restore_short_text = "Enfriamiento copias de respaldo (seg, >=0)."
+        cooldown_pre_restore_help_btn = ttk.Button(cooldown_pre_restore_entry_frame, text="?", width=3, style="Help.TButton",
+                                                   command=lambda: self._show_input_help("Ayuda: Enfriamiento Copias de Respaldo", cooldown_pre_restore_long_text))
+        cooldown_pre_restore_help_btn.pack(side=tk.LEFT)
+        Tooltip(cooldown_pre_restore_help_btn, text=cooldown_pre_restore_long_text, short_text=cooldown_pre_restore_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
         
-        # --- Checkbox "Habilitar copia de seguridad automática al restaurar" ---
-        # This goes under "Habilitar copias de seguridad automáticas"
-        self.backup_before_restore_frame = ttk.Frame(parent_frame)
-        self.backup_before_restore_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", padx=(20,5), pady=(5,0))  # Añadido pady y alineación
-        row_idx += 1  # Incrementar el índice aquí para que manual_backup quede después
-
-        bbr_cb = ttk.Checkbutton(
-            self.backup_before_restore_frame,
-            text="Crear copia automática antes de restaurar otra copia",
-            variable=self.var_backup_before_restore
-        )
-        bbr_cb.pack(side=tk.LEFT, padx=(0,5))
-        bbr_long_text = "Si está activado, se creará una copia de seguridad automática del estado actual del sistema justo antes de que se inicie una operación de restauración. Recomendado."
-        bbr_short_text = "Backup automático pre-restauración."
-        bbr_help_btn = ttk.Button(self.backup_before_restore_frame, text="?", width=3, style="Help.TButton",
-                                     command=lambda: self._show_input_help("Ayuda: Backup Pre-Restauración", bbr_long_text))
-        bbr_help_btn.pack(side=tk.LEFT)
-        Tooltip(bbr_help_btn, text=bbr_long_text, short_text=bbr_short_text, enabled=self.settings.enable_hover_tooltips)
-        # row_idx will be incremented by _toggle_backup_options_visibility if this frame is shown
-
-        # --- Enable/Disable Manual Backups ---
+        # --- SECTION: Manual Backups ---
         manual_backup_enable_frame = ttk.Frame(parent_frame)
-        manual_backup_enable_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", pady=(10,0))
+        manual_backup_enable_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", pady=(10,0)) # Add some top padding
         manual_backup_cb = ttk.Checkbutton(
             manual_backup_enable_frame,
             text="Habilitar copias de seguridad manuales",
@@ -375,13 +421,12 @@ class ConfigDialog(Toplevel):
         Tooltip(manual_backup_enable_help_btn, text=manual_backup_enable_long_text, short_text=manual_backup_enable_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
         
-        # --- Max Manual Backups (conditionally visible) ---
-        self.max_manual_frame = ttk.Frame(parent_frame) # Store as instance variable
+        self.max_manual_frame = ttk.Frame(parent_frame)
         self.max_manual_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", padx=(20,5), pady=0) # Indent
         ttk.Label(self.max_manual_frame, text="Máx. copias manuales:").pack(side=tk.LEFT, pady=5, padx=0)
         max_manual_entry_frame = ttk.Frame(self.max_manual_frame)
-        max_manual_entry_frame.pack(side=tk.LEFT, padx=5, pady=5, fill=tk.X, expand=True) # Added fill and expand
-        max_manual_entry = ttk.Entry(max_manual_entry_frame, textvariable=self.var_max_manual_backups, font=self.scaled_font_tuple) # Added font
+        max_manual_entry_frame.pack(side=tk.LEFT, padx=5, pady=5, fill=tk.X, expand=True)
+        max_manual_entry = ttk.Entry(max_manual_entry_frame, textvariable=self.var_max_manual_backups, font=self.scaled_font_tuple)
         max_manual_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True)
         max_manual_long_text = ("Número máximo de copias de seguridad manuales a conservar (debe ser > 0).\n"
                                 "Si se alcanza el límite, se impedirá crear nuevas copias hasta liberar espacio.")
@@ -392,9 +437,9 @@ class ConfigDialog(Toplevel):
         Tooltip(max_manual_help_btn, text=max_manual_long_text, short_text=max_manual_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
         
-        # --- Manage Backups Button (conditionally visible) ---
-        self.manage_backups_frame = ttk.Frame(parent_frame) # Store as instance variable
-        self.manage_backups_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10,5), sticky="w")
+        # --- SECTION: Manage Backups Button ---
+        self.manage_backups_frame = ttk.Frame(parent_frame)
+        self.manage_backups_frame.grid(row=row_idx, column=0, columnspan=2, pady=(15,5), sticky="w") # Added more top padding
         manage_backups_button = ttk.Button(self.manage_backups_frame, text="Gestionar Copias de Seguridad", command=self.open_backup_restore_dialog)
         manage_backups_button.pack(side=tk.LEFT, padx=(0,5))
         manage_backups_long_text = "Abre una nueva ventana para crear, restaurar y gestionar copias de seguridad."
@@ -411,40 +456,38 @@ class ConfigDialog(Toplevel):
     def _toggle_backup_options_visibility(self, event=None):
         """Muestra u oculta las opciones de backup según los checkboxes de habilitación."""
         show_auto_options = self.var_enable_automatic_backups.get()
+        show_pre_restore_options = self.var_enable_pre_restore_backups.get()
         show_manual_options = self.var_enable_manual_backups.get()
 
+        # Automatic backup options
         if hasattr(self, 'max_auto_frame'):
             if show_auto_options: self.max_auto_frame.grid()
             else: self.max_auto_frame.grid_remove()
         
-        if hasattr(self, 'cooldown_frame'):
-            if show_auto_options: 
-                self.cooldown_frame.grid()
-                # Place backup_before_restore_frame after cooldown_frame if auto_options are shown
-                if hasattr(self, 'backup_before_restore_frame'):
-                    # Determine the row of cooldown_frame and place backup_before_restore_frame in the next row
-                    cooldown_grid_info = self.cooldown_frame.grid_info()
-                    next_row_for_bbr = int(cooldown_grid_info.get('row', 0)) + 1 # Default to 0 if not found
-                    self.backup_before_restore_frame.grid(row=next_row_for_bbr, column=0, columnspan=2, sticky="w", padx=(20,5), pady=0)
-            else: 
-                self.cooldown_frame.grid_remove()
-                if hasattr(self, 'backup_before_restore_frame'): # Also hide this if auto options are off
-                    self.backup_before_restore_frame.grid_remove()
+        if hasattr(self, 'cooldown_auto_frame'): # Renamed from cooldown_frame
+            if show_auto_options: self.cooldown_auto_frame.grid()
+            else: self.cooldown_auto_frame.grid_remove()
 
-        # Visibility for backup_before_restore_frame is now handled above, tied to cooldown_frame's visibility.
-        # The old block for backup_before_restore_frame is removed.
+        # Pre-restore backup options
+        if hasattr(self, 'max_pre_restore_frame'):
+            if show_pre_restore_options: self.max_pre_restore_frame.grid()
+            else: self.max_pre_restore_frame.grid_remove()
 
+        if hasattr(self, 'cooldown_pre_restore_frame'):
+            if show_pre_restore_options: self.cooldown_pre_restore_frame.grid()
+            else: self.cooldown_pre_restore_frame.grid_remove()
+        
+        # Manual backup options
         if hasattr(self, 'max_manual_frame'):
             if show_manual_options: self.max_manual_frame.grid()
             else: self.max_manual_frame.grid_remove()
-
-        if hasattr(self, 'backup_before_restore_frame'): # New frame for backup_before_restore
-            if show_auto_options: self.backup_before_restore_frame.grid() # Show if auto backups are enabled
-            else: self.backup_before_restore_frame.grid_remove()
         
+        # Manage backups button
         if hasattr(self, 'manage_backups_frame'):
-            if show_auto_options or show_manual_options: self.manage_backups_frame.grid()
-            else: self.manage_backups_frame.grid_remove()
+            if show_auto_options or show_pre_restore_options or show_manual_options:
+                self.manage_backups_frame.grid()
+            else:
+                self.manage_backups_frame.grid_remove()
 
 
     def _create_advanced_tab_widgets(self, parent_frame: ttk.Frame):
@@ -606,30 +649,36 @@ class ConfigDialog(Toplevel):
             "Tablas resumen discreto por página": self.var_discrete_tables_per_page.get(), # New field
             "Copias de seguridad por página": self.var_backups_per_page.get(), # New field
             "Máx. copias automáticas": self.var_max_auto_backups.get(),
-            "Máx. copias manuales": self.var_max_manual_backups.get(),
-            "Enfriamiento copias automáticas (seg)": self.var_auto_backup_cooldown.get()
+            "Enfriamiento copias automáticas (seg)": self.var_auto_backup_cooldown.get(),
+            "Máx. copias de respaldo": self.var_max_pre_restore_backups.get(),
+            "Enfriamiento copias de respaldo (seg)": self.var_pre_restore_backup_cooldown.get(),
+            "Máx. copias manuales": self.var_max_manual_backups.get()
         }
         for label, value_str in inputs_int.items():
             try:
                 value_int = int(value_str)
                 is_max_auto_backup = (label == "Máx. copias automáticas")
+                is_cooldown_auto = (label == "Enfriamiento copias automáticas (seg)")
+                is_max_pre_restore_backup = (label == "Máx. copias de respaldo")
+                is_cooldown_pre_restore = (label == "Enfriamiento copias de respaldo (seg)")
                 is_max_manual_backup = (label == "Máx. copias manuales")
-                is_cooldown = (label == "Enfriamiento copias automáticas (seg)")
 
+                # Max values must be > 0 if their respective backup type is enabled, otherwise >= 1
                 if (is_max_auto_backup and self.var_enable_automatic_backups.get()) or \
+                   (is_max_pre_restore_backup and self.var_enable_pre_restore_backups.get()) or \
                    (is_max_manual_backup and self.var_enable_manual_backups.get()):
-                    if value_int <= 0: # Must be > 0 if enabled
+                    if value_int <= 0:
                         messagebox.showerror("Valor Inválido", f"'{label}' debe ser un número entero positivo (>0) cuando está habilitado.", parent=self)
                         return False
-                elif is_max_auto_backup or is_max_manual_backup: # If disabled, still validate it's a number >= 0 (or >=1 if we prefer)
-                    if value_int < 1: # Let's enforce >=1 even if disabled, for simplicity, or adjust if 0 is ok when disabled
+                elif is_max_auto_backup or is_max_pre_restore_backup or is_max_manual_backup:
+                    if value_int < 1: # Enforce >=1 even if disabled
                         messagebox.showerror("Valor Inválido", f"'{label}' debe ser un número entero positivo (>=1).", parent=self)
                         return False
-                elif is_cooldown:
-                    if value_int < 0: # Cooldown can be 0
+                elif is_cooldown_auto or is_cooldown_pre_restore:
+                    if value_int < 0: # Cooldowns can be 0
                         messagebox.showerror("Valor Inválido", f"'{label}' debe ser un número entero no negativo (>=0).", parent=self)
                         return False
-                elif value_int <= 0: # For other integer settings that must be positive
+                elif value_int <= 0: # For other general integer settings (pagination, etc.)
                     messagebox.showerror("Valor Inválido", f"'{label}' debe ser un número entero positivo (>0).", parent=self)
                     return False
             except ValueError:
@@ -666,16 +715,20 @@ class ConfigDialog(Toplevel):
             self.settings.show_factory_reset_button = self.var_show_factory_reset.get()
             self.settings.enable_hover_tooltips = self.var_enable_hover_tooltips.get()
             
+            # Backup settings
             self.settings.enable_automatic_backups = self.var_enable_automatic_backups.get()
-            self.settings.enable_manual_backups = self.var_enable_manual_backups.get()
-            self.settings.show_advanced_backup_options = self.var_show_advanced_backup_opts.get() # Save new
-            self.settings.backup_before_restore = self.var_backup_before_restore.get()         # Save new
-            
-            # Only save max/cooldown if they are valid (they should be if validation passed)
             self.settings.max_automatic_backups = int(self.var_max_auto_backups.get())
-            self.settings.max_manual_backups = int(self.var_max_manual_backups.get())
             self.settings.automatic_backup_cooldown_seconds = int(self.var_auto_backup_cooldown.get())
 
+            self.settings.enable_pre_restore_backups = self.var_enable_pre_restore_backups.get()
+            self.settings.max_pre_restore_backups = int(self.var_max_pre_restore_backups.get())
+            self.settings.pre_restore_backup_cooldown_seconds = int(self.var_pre_restore_backup_cooldown.get())
+            
+            self.settings.enable_manual_backups = self.var_enable_manual_backups.get()
+            self.settings.max_manual_backups = int(self.var_max_manual_backups.get())
+
+            self.settings.show_advanced_backup_options = self.var_show_advanced_backup_opts.get() # Save new
+            
             # Guardar en el archivo config.ini
             self.settings.save_settings()
             messagebox.showinfo("Éxito", "Configuraciones guardadas correctamente.\nAlgunos cambios pueden requerir reiniciar la aplicación para verlos reflejados.", parent=self)

@@ -43,7 +43,10 @@ class AppSettings:
             'enable_automatic_backups': 'True', # Changed default
             'enable_manual_backups': 'True',     # Changed default
             'show_advanced_backup_options': 'False', # New
-            'backup_before_restore': 'True'         # New, default to True
+            # 'backup_before_restore' is replaced by enable_pre_restore_backups
+            'enable_pre_restore_backups': 'True',    # New, for pre-restore backups
+            'max_pre_restore_backups': '10',         # New, max pre-restore backups
+            'pre_restore_backup_cooldown_seconds': '60' # New, cooldown for pre-restore
         }
         # DESCRIPTOR_ALIASES ya no se gestiona aquí
     }
@@ -140,6 +143,23 @@ class AppSettings:
                 raw_val = self.config.get('SETTINGS', 'automatic_backup_cooldown_seconds', fallback=None)
                 logger.error(f"Config validation failed: 'automatic_backup_cooldown_seconds' must be a non-negative integer, got '{raw_val}'.")
                 return False
+
+            # Pre-restore backups settings
+            if self.get_bool_setting('enable_pre_restore_backups', False):
+                if self.get_int_setting('max_pre_restore_backups', -1) <= 0:
+                    raw_val = self.config.get('SETTINGS', 'max_pre_restore_backups', fallback=None)
+                    logger.error(f"Config validation failed: 'max_pre_restore_backups' must be a positive integer (>0) when enabled, got '{raw_val}'.")
+                    return False
+            else: # Check it's a valid integer even if not enabled
+                 if self.get_int_setting('max_pre_restore_backups', -1) < 1 : # Must be at least 1
+                    raw_val = self.config.get('SETTINGS', 'max_pre_restore_backups', fallback=None)
+                    logger.error(f"Config validation failed: 'max_pre_restore_backups' must be a positive integer (>=1), got '{raw_val}'.")
+                    return False
+            
+            if self.get_int_setting('pre_restore_backup_cooldown_seconds', -1) < 0:
+                raw_val = self.config.get('SETTINGS', 'pre_restore_backup_cooldown_seconds', fallback=None)
+                logger.error(f"Config validation failed: 'pre_restore_backup_cooldown_seconds' must be a non-negative integer, got '{raw_val}'.")
+                return False
             
             # Font scale (positive float)
             font_scale_val_str = self.get_setting('font_scale', '0.0')
@@ -158,7 +178,7 @@ class AppSettings:
             boolean_settings = [
                 'show_factory_reset_button', 'enable_hover_tooltips',
                 'enable_automatic_backups', 'enable_manual_backups',
-                'show_advanced_backup_options', 'backup_before_restore' # New
+                'show_advanced_backup_options', 'enable_pre_restore_backups' # Updated
             ]
             for key in boolean_settings:
                 raw_val = self.config.get('SETTINGS', key, fallback=None)
@@ -422,13 +442,60 @@ class AppSettings:
     def show_advanced_backup_options(self, value: bool):
         self.set_setting('show_advanced_backup_options', str(value))
 
-    @property
-    def backup_before_restore(self) -> bool:
-        return self.get_bool_setting('backup_before_restore', True)
+    # Property backup_before_restore is removed, replaced by enable_pre_restore_backups and its related settings
 
-    @backup_before_restore.setter
+    # @property
+    # def backup_before_restore(self) -> bool:
+    #     return self.get_bool_setting('backup_before_restore', True)
+
+    # @backup_before_restore.setter
     def backup_before_restore(self, value: bool):
         self.set_setting('backup_before_restore', str(value))
+
+    # --- New properties for Pre-Restore Backups ---
+    @property
+    def enable_pre_restore_backups(self) -> bool:
+        """Controls if pre-restore backups ('respaldo') are enabled."""
+        return self.get_bool_setting('enable_pre_restore_backups', True)
+
+    @enable_pre_restore_backups.setter
+    def enable_pre_restore_backups(self, value: bool):
+        self.set_setting('enable_pre_restore_backups', str(value))
+
+    @property
+    def max_pre_restore_backups(self) -> int:
+        """Maximum number of pre-restore backups to keep. Must be >= 1."""
+        value = self.get_int_setting('max_pre_restore_backups', 10)
+        if value < 1:
+            logger.warning(f"Invalid value '{value}' for 'max_pre_restore_backups' (must be >= 1). Using default 10.")
+            return 10
+        return value
+
+    @max_pre_restore_backups.setter
+    def max_pre_restore_backups(self, value: int):
+        if value < 1:
+            logger.warning(f"Attempted to set invalid value '{value}' for 'max_pre_restore_backups'. Setting to 1 instead.")
+            self.set_setting('max_pre_restore_backups', '1')
+        else:
+            self.set_setting('max_pre_restore_backups', str(value))
+
+    @property
+    def pre_restore_backup_cooldown_seconds(self) -> int:
+        """Cooldown period in seconds for pre-restore backups. Must be non-negative."""
+        value = self.get_int_setting('pre_restore_backup_cooldown_seconds', 60)
+        if value < 0:
+            logger.warning(f"Invalid negative value '{value}' for 'pre_restore_backup_cooldown_seconds'. Using default 60.")
+            return 60
+        return value
+
+    @pre_restore_backup_cooldown_seconds.setter
+    def pre_restore_backup_cooldown_seconds(self, value: int):
+        if value < 0:
+            logger.warning(f"Attempted to set invalid negative value '{value}' for 'pre_restore_backup_cooldown_seconds'. Setting to 0 instead.")
+            self.set_setting('pre_restore_backup_cooldown_seconds', '0')
+        else:
+            self.set_setting('pre_restore_backup_cooldown_seconds', str(value))
+
 
     def reset_to_defaults(self):
          """Restablece las configuraciones en memoria a los valores por defecto."""
