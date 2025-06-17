@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 # AppSettings will be imported locally where needed
 _last_automatic_backup_end_time: Optional[datetime.datetime] = None
+_last_pre_restore_backup_end_time: Optional[datetime.datetime] = None # For "respaldo" backups
 
 # Constants for backup configuration
 BACKUPS_DIR_NAME = "backups"
@@ -69,7 +70,7 @@ def create_backup(backup_type: str, _is_test_mode: bool = False) -> Optional[pat
         The Path object to the created backup ZIP file, or None if an error occurred.
     """
     from kineviz.config.settings import AppSettings # Import AppSettings locally
-    global _last_automatic_backup_end_time # Needed for automatic backup logic
+    global _last_automatic_backup_end_time, _last_pre_restore_backup_end_time # Needed for backup logic
 
     settings = AppSettings() # Load settings at the beginning
 
@@ -152,7 +153,56 @@ def create_backup(backup_type: str, _is_test_mode: bool = False) -> Optional[pat
             # Let's assume if settings fail, we skip the backup to be safe.
             logger.error(f"Critical error setting up automatic backup parameters (AppSettings or paths): {e}. Aborting backup.", exc_info=True)
             return None
-    
+
+    elif backup_type == PRE_RESTORE_BACKUP_SUBDIR and not _is_test_mode:
+        # Logic for "respaldo" (pre-restore) backups
+        if not settings.get_bool_setting('enable_pre_restore_backups', True): # Default True
+            logger.info("Pre-restore backups ('respaldo') are disabled in settings. Skipping creation.")
+            return None
+        try:
+            max_pre_restore_backups = settings.get_int_setting('max_pre_restore_backups', 10) # Default 10
+            cooldown_seconds = settings.get_int_setting('pre_restore_backup_cooldown_seconds', 60) # Default 60
+            
+            lock_file_path = backup_destination_subdir / ".pre_restore_backup.lock"
+
+            if lock_file_path.exists():
+                logger.info(f"Pre-restore backup skipped: another pre-restore backup operation is currently in progress (lock file found: {lock_file_path}).")
+                return None
+
+            if _last_pre_restore_backup_end_time:
+                seconds_since_last_backup = (datetime.datetime.now() - _last_pre_restore_backup_end_time).total_seconds()
+                if seconds_since_last_backup < cooldown_seconds:
+                    logger.info(f"Pre-restore backup skipped: cooldown period active. {int(seconds_since_last_backup)}s since last backup (cooldown: {cooldown_seconds}s).")
+                    return None
+            
+            try:
+                lock_file_path.touch()
+                existing_backups = sorted(
+                    [f for f in backup_destination_subdir.glob("backup_*.zip") if f.is_file()],
+                    key=lambda f: f.name
+                )
+                num_existing = len(existing_backups)
+                if max_pre_restore_backups > 0 and num_existing >= max_pre_restore_backups:
+                    num_to_delete = num_existing - max_pre_restore_backups + 1
+                    for i in range(num_to_delete):
+                        old_backup = existing_backups[i]
+                        logger.info(f"Max pre-restore backups ({max_pre_restore_backups}) reached. Deleting oldest: {old_backup.name}")
+                        remove_backup_alias(PRE_RESTORE_BACKUP_SUBDIR, old_backup.name) # Remove alias if exists
+                        old_backup.unlink()
+                elif max_pre_restore_backups == 0: # Effectively disables creation if set to 0 after some exist
+                    logger.info("max_pre_restore_backups is 0. Deleting all existing pre-restore backups.")
+                    for old_backup in existing_backups:
+                        remove_backup_alias(PRE_RESTORE_BACKUP_SUBDIR, old_backup.name) # Remove alias if exists
+                        old_backup.unlink()
+            except Exception as e:
+                logger.error(f"Error during pre-backup management for pre-restore backup: {e}", exc_info=True)
+                if lock_file_path.exists():
+                    lock_file_path.unlink()
+                return None
+        except Exception as e:
+            logger.error(f"Critical error setting up pre-restore backup parameters: {e}. Aborting backup.", exc_info=True)
+            return None
+            
     elif backup_type == MANUAL_BACKUPS_SUBDIR:
         if not settings.enable_manual_backups: # Check if manual backups are enabled
             logger.info("Manual backups are disabled in settings. Skipping manual backup creation.")
@@ -227,12 +277,13 @@ def create_backup(backup_type: str, _is_test_mode: bool = False) -> Optional[pat
     # A better way would be to pass lock_file_path if it was created.
     # For now, re-evaluate:
     current_lock_file_for_finally = None
-    if backup_type == AUTOMATIC_BACKUPS_SUBDIR and not _is_test_mode: # Add _is_test_mode check
-        # backup_destination_subdir is defined earlier in the function
+    if backup_type == AUTOMATIC_BACKUPS_SUBDIR and not _is_test_mode:
         current_lock_file_for_finally = backup_destination_subdir / ".backup_in_progress.lock"
+    elif backup_type == PRE_RESTORE_BACKUP_SUBDIR and not _is_test_mode:
+        current_lock_file_for_finally = backup_destination_subdir / ".pre_restore_backup.lock"
 
     try:
-        logger.info(f"Creating backup: {zip_filepath} (Test Mode: {_is_test_mode})")
+        logger.info(f"Creating backup: {zip_filepath} (Type: {backup_type}, Test Mode: {_is_test_mode})")
         with zipfile.ZipFile(zip_filepath, 'w', zipfile.ZIP_DEFLATED) as zf:
             for item_path, arcname in items_to_backup:
                 logger.debug(f"Adding file to backup: {item_path} as {arcname}")
@@ -329,12 +380,15 @@ def create_backup(backup_type: str, _is_test_mode: bool = False) -> Optional[pat
 
 
         logger.info(f"Backup created successfully: {zip_filepath}")
-        if backup_type == AUTOMATIC_BACKUPS_SUBDIR and not _is_test_mode: # Add _is_test_mode check
+        if backup_type == AUTOMATIC_BACKUPS_SUBDIR and not _is_test_mode:
             _last_automatic_backup_end_time = datetime.datetime.now()
             logger.debug(f"Updated _last_automatic_backup_end_time to {_last_automatic_backup_end_time}")
+        elif backup_type == PRE_RESTORE_BACKUP_SUBDIR and not _is_test_mode:
+            _last_pre_restore_backup_end_time = datetime.datetime.now()
+            logger.debug(f"Updated _last_pre_restore_backup_end_time to {_last_pre_restore_backup_end_time}")
         return zip_filepath
     except Exception as e:
-        logger.error(f"Failed to create backup {zip_filepath} (Test Mode: {_is_test_mode}): {e}", exc_info=True)
+        logger.error(f"Failed to create backup {zip_filepath} (Type: {backup_type}, Test Mode: {_is_test_mode}): {e}", exc_info=True)
         if zip_filepath.exists():
             try:
                 zip_filepath.unlink() # Attempt to clean up partially created zip
