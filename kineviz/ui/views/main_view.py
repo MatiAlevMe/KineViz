@@ -52,7 +52,8 @@ class MainView:
 
         # --- Scrollable Area (Canvas in between top and bottom fixed frames) ---
         canvas_container = ttk.Frame(self.frame) # This will take the remaining space
-        canvas_container.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        # Changed to fill=tk.X and expand=False to prevent vertical expansion if content is short
+        canvas_container.pack(side=tk.TOP, fill=tk.X, expand=False)
 
         self.canvas = tk.Canvas(canvas_container, highlightthickness=0)
         v_scrollbar = ttk.Scrollbar(canvas_container, orient=tk.VERTICAL, command=self.canvas.yview)
@@ -193,27 +194,24 @@ class MainView:
         # --- Paginación (widgets go into self.pagination_container) ---
         # This is populated by self.update_pagination_controls()
 
-        # --- Bottom Buttons Row 1 (View, Comment | Edit) ---
-        self.view_selected_button = ttk.Button(self.bottom_buttons_row1_container, text='Ver Estudio Seleccionado',
-                                                command=self._view_selected_study, state=tk.DISABLED)
-        self.view_selected_button.pack(side=tk.LEFT, padx=(0, 5))
-        Tooltip(self.view_selected_button, text="Ver los detalles del estudio seleccionado (solo 1 selección).", short_text="Ver seleccionado.", enabled=self.main_window.settings.enable_hover_tooltips)
+        # --- Bottom Buttons Row 1 (View, Comment | Edit is moved) ---
+        # Spacer to push buttons to the right
+        ttk.Frame(self.bottom_buttons_row1_container).pack(side=tk.LEFT, fill=tk.X, expand=True)
 
         self.comment_selected_button = ttk.Button(self.bottom_buttons_row1_container, text='Comentar Estudio Seleccionado',
                                                    command=self._comment_selected_study, state=tk.DISABLED)
-        self.comment_selected_button.pack(side=tk.LEFT, padx=(0, 5))
+        self.comment_selected_button.pack(side=tk.RIGHT, padx=(0, 5)) # Packed rightmost first
         Tooltip(self.comment_selected_button, text="Añadir o editar el comentario del estudio seleccionado (solo 1 selección).", short_text="Comentar seleccionado.", enabled=self.main_window.settings.enable_hover_tooltips)
+
+        self.view_selected_button = ttk.Button(self.bottom_buttons_row1_container, text='Ver Estudio Seleccionado',
+                                                command=self._view_selected_study, state=tk.DISABLED)
+        self.view_selected_button.pack(side=tk.RIGHT, padx=(0, 5)) # Packed to the left of comment button
+        Tooltip(self.view_selected_button, text="Ver los detalles del estudio seleccionado (solo 1 selección).", short_text="Ver seleccionado.", enabled=self.main_window.settings.enable_hover_tooltips)
         
-        # Spacer for Row 1
-        ttk.Frame(self.bottom_buttons_row1_container).pack(side=tk.LEFT, fill=tk.X, expand=True)
-
-        self.edit_selected_button = ttk.Button(self.bottom_buttons_row1_container, text='Editar Estudio Seleccionado',
-                                                command=self._edit_selected_study, state=tk.DISABLED)
-        self.edit_selected_button.pack(side=tk.RIGHT, padx=(0,0))
-        Tooltip(self.edit_selected_button, text="Editar los metadatos del estudio seleccionado (solo 1 selección).", short_text="Editar seleccionado.", enabled=self.main_window.settings.enable_hover_tooltips)
+        # self.edit_selected_button is moved to Row 2
 
 
-        # --- Bottom Buttons Row 2 (Delete All, Delete Selected | Create New) ---
+        # --- Bottom Buttons Row 2 (Delete All, Delete Selected | Edit, Create New) ---
         delete_all_button = ttk.Button(self.bottom_buttons_row2_container, text='Eliminar Todos los Estudios',
                                        command=self._confirm_delete_all_studies, style="Danger.TButton")
         delete_all_button.pack(side=tk.LEFT, padx=(0, 5))
@@ -227,10 +225,17 @@ class MainView:
         # Spacer for Row 2
         ttk.Frame(self.bottom_buttons_row2_container).pack(side=tk.LEFT, fill=tk.X, expand=True)
         
+        # Create New Study button (now Green) - Packed rightmost
         create_study_button = ttk.Button(self.bottom_buttons_row2_container, text='Crear Nuevo Estudio',
-                                         command=lambda: self.main_window.show_create_study_dialog(study_to_edit=None), style="Celeste.TButton")
+                                         command=lambda: self.main_window.show_create_study_dialog(study_to_edit=None), style="Green.TButton")
         create_study_button.pack(side=tk.RIGHT, padx=(0,0))
         Tooltip(create_study_button, text="Abrir diálogo para crear un nuevo estudio.", short_text="Nuevo estudio.", enabled=self.main_window.settings.enable_hover_tooltips)
+
+        # Edit Selected Study button (moved from Row 1) - Packed to the left of Create New Study
+        self.edit_selected_button = ttk.Button(self.bottom_buttons_row2_container, text='Editar Estudio Seleccionado',
+                                                command=self._edit_selected_study, state=tk.DISABLED)
+        self.edit_selected_button.pack(side=tk.RIGHT, padx=(0,5)) # padx to separate from create_study_button
+        Tooltip(self.edit_selected_button, text="Editar los metadatos del estudio seleccionado (solo 1 selección).", short_text="Editar seleccionado.", enabled=self.main_window.settings.enable_hover_tooltips)
 
     def _confirm_delete_selected_studies(self):
         """Muestra confirmación y luego elimina los estudios seleccionados."""
