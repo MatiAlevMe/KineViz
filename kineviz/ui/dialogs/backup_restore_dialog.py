@@ -9,6 +9,7 @@ import time # For sleep in dummy test
 from kineviz.core import backup_manager 
 from kineviz.config.settings import AppSettings # For AppSettings type hint
 from kineviz.ui.widgets.tooltip import Tooltip
+from kineviz.ui.utils.style import get_scaled_font, DEFAULT_FONT_SIZE # For direct font scaling
 
 # Setup logger for this module if not configured globally for UI
 logger = logging.getLogger(__name__)
@@ -54,6 +55,9 @@ class BackupRestoreDialog(Toplevel):
         self.total_pages_backups = tk.IntVar(value=1)
         self.backups_per_page = self.app_settings.backups_per_page # Get from settings
 
+        # Calculate scaled font once for direct application
+        self.scaled_font_tuple = get_scaled_font(DEFAULT_FONT_SIZE, self.app_settings.font_scale)
+
         self.create_widgets()
         self.load_backups() # Initial load
 
@@ -93,13 +97,13 @@ class BackupRestoreDialog(Toplevel):
         # Type Filter
         ttk.Label(filter_sort_frame, text="Tipo:").grid(row=0, column=0, padx=(0,5), pady=5, sticky="w")
         type_combo = ttk.Combobox(filter_sort_frame, textvariable=self.filter_type_var, 
-                                  values=["Todos", "Manual", "Automática"], state="readonly") # Removed width
-        type_combo.grid(row=0, column=1, padx=5, pady=5, sticky="ew") # Changed sticky to ew
+                                  values=["Todos", "Manual", "Automática"], state="readonly", font=self.scaled_font_tuple) # Added font
+        type_combo.grid(row=0, column=1, padx=5, pady=5, sticky="ew")
         type_combo.bind("<<ComboboxSelected>>", self._apply_filters_and_sort)
 
         # Alias Search
         ttk.Label(filter_sort_frame, text="Buscar Alias/Nombre:").grid(row=0, column=2, padx=(10,5), pady=5, sticky="w")
-        search_entry = ttk.Entry(filter_sort_frame, textvariable=self.search_alias_var) # Removed width
+        search_entry = ttk.Entry(filter_sort_frame, textvariable=self.search_alias_var, font=self.scaled_font_tuple) # Added font
         search_entry.grid(row=0, column=3, padx=5, pady=5, sticky="ew")
         search_entry.bind("<Return>", self._apply_filters_and_sort)
         # Search Button (optional, can rely on Enter or type filter change)
@@ -109,8 +113,8 @@ class BackupRestoreDialog(Toplevel):
         # Sort Key
         ttk.Label(filter_sort_frame, text="Ordenar por:").grid(row=1, column=0, padx=(0,5), pady=5, sticky="w")
         sort_key_combo = ttk.Combobox(filter_sort_frame, textvariable=self.sort_key_var, 
-                                      values=["Fecha de Creación", "Tipo", "Alias"], state="readonly") # Removed width
-        sort_key_combo.grid(row=1, column=1, padx=5, pady=5, sticky="ew") # Changed sticky to ew
+                                      values=["Fecha de Creación", "Tipo", "Alias"], state="readonly", font=self.scaled_font_tuple) # Added font
+        sort_key_combo.grid(row=1, column=1, padx=5, pady=5, sticky="ew")
         sort_key_combo.bind("<<ComboboxSelected>>", self._apply_filters_and_sort)
 
         # Sort Order Button
