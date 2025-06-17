@@ -109,17 +109,18 @@ def create_backup(backup_type: str) -> Optional[pathlib.Path]:
                 key=lambda f: f.name
             )
             
-            num_existing = len(existing_backups)
-            if num_existing >= max_backups and max_backups > 0: # max_backups > 0 to prevent deleting all if set to 0
-                num_to_delete = num_existing - max_backups + 1
-                for i in range(num_to_delete):
-                    old_backup = existing_backups[i]
-                    logger.info(f"Max automatic backups ({max_backups}) reached. Deleting oldest: {old_backup.name}")
-                    old_backup.unlink()
-            elif max_backups == 0: # If max_backups is 0, delete all existing automatic backups
-                logger.info("max_automatic_backups is 0. Deleting all existing automatic backups.")
-                for old_backup in existing_backups:
-                    old_backup.unlink()
+                # This logic needs to be inside the try block
+                num_existing = len(existing_backups)
+                if num_existing >= max_backups and max_backups > 0: # max_backups > 0 to prevent deleting all if set to 0
+                    num_to_delete = num_existing - max_backups + 1
+                    for i in range(num_to_delete):
+                        old_backup = existing_backups[i]
+                        logger.info(f"Max automatic backups ({max_backups}) reached. Deleting oldest: {old_backup.name}")
+                        old_backup.unlink()
+                elif max_backups == 0: # If max_backups is 0, delete all existing automatic backups
+                    logger.info("max_automatic_backups is 0. Deleting all existing automatic backups.")
+                    for old_backup in existing_backups:
+                        old_backup.unlink()
                 # End of original rolling backup logic block
             
             except Exception as e: # Catch errors from rolling backup logic or lock file creation
