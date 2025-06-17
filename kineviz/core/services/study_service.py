@@ -221,7 +221,7 @@ class StudyService:
         # Delega la llamada al repositorio
         return self.repo.count_studies() > 0
 
-    def get_studies_paginated(self, page: int, per_page: int, search_term: str = None):
+    def get_studies_paginated(self, page: int, per_page: int, search_term: str = None, search_field: str = "Nombre de Estudio"):
         """
         Obtiene una lista paginada de estudios, opcionalmente filtrada por término de búsqueda.
 
