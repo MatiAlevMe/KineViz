@@ -276,6 +276,10 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
         - Funcionalidad del `backup_manager`:
             - `create_backup(backup_type)`: Crea una copia de seguridad de los componentes definidos.
             - Gestión de copias automáticas rotativas: Al crear una nueva copia automática, si se excede `max_automatic_backups` (de `config.ini`), se elimina la más antigua.
+            - Cooldown y Bloqueo para Copias Automáticas:
+                - Se utiliza un archivo de bloqueo (`.backup_in_progress.lock`) para prevenir la ejecución concurrente de copias automáticas.
+                - Después de una copia automática exitosa, se activa un período de enfriamiento (configurable, ej. 60s vía `automatic_backup_cooldown_seconds` en `config.ini`) antes de que pueda iniciarse otra copia automática.
+                - Se registran los intentos de copia omitidos debido al bloqueo o al período de enfriamiento.
     1.2 [Hecho] Disparadores y Puntos de Activación para Copias Automáticas.
         - Disparadores: Operaciones significativas que modifican datos persistentes. Se activarán *antes* de la finalización exitosa de las siguientes operaciónes (Para poder copiar la versión de `kineviz.db` que se neceita).
             - Eliminación de estudio(s).
