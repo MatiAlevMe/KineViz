@@ -127,7 +127,7 @@ class StudyView:
         open_study_folder_button.pack(side=tk.LEFT, padx=(0, 10))
         Tooltip(open_study_folder_button, text="Abrir la carpeta de este estudio en el explorador de archivos.", short_text="Abrir carpeta estudio.", enabled=self.main_window.settings.enable_hover_tooltips)
 
-        manage_aliases_button = ttk.Button(header_frame_row2, text="Gestionar Alias de Sub-valores", command=self.manage_descriptor_aliases)
+        manage_aliases_button = ttk.Button(header_frame_row2, text="Gestionar Alias de Sub-valores", command=self.manage_descriptor_aliases, style="Celeste.TButton")
         manage_aliases_button.pack(side=tk.LEFT, padx=(0, 10))
         Tooltip(manage_aliases_button, text="Abrir diálogo para asignar alias a los sub-valores de las VIs de este estudio.", short_text="Gestionar alias.", enabled=self.main_window.settings.enable_hover_tooltips)
 
