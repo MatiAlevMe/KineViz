@@ -258,7 +258,7 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
 5.2 [Hecho] Integración con UI: Conectados métodos a `ContinuousAnalysisManagerDialog` (evolución de `ContinuousAnalysisResultsView`) para la gestión de los análisis.
 
 ## [En Progreso] Fase 5: Funcionalidades Adicionales
-1. [En Progreso] Sistema Principal de Copias de Seguridad y Restauración.
+1. [Hecho] Sistema Principal de Copias de Seguridad y Restauración.
     1.1 [Hecho] Lógica Central de Copias de Seguridad (`backup_manager.py`).
         - Componentes del sistema a respaldar en cada copia de seguridad:
             - Base de datos: `kineviz.db` (completa, estado actual al momento del backup).
@@ -310,40 +310,38 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
         - [Hecho] Validación robusta de `config.ini` al cargar, revirtiendo a valores por defecto en caso de corrupción o valores inválidos.
     1.5 [Hecho] Logging para Operaciones de Backup.
         - Registrar eventos significativos (creación iniciada/completada/fallida, eliminación de copia antigua).
-2. [En Progreso] Funcionalidad "Deshacer Eliminación" (Undo Delete).
-    2.1 [En Progreso] Lógica Central para "Deshacer Eliminación".
+2. [Hecho] Funcionalidad "Deshacer Eliminación" (Undo Delete).
+    2.1 [Hecho] Lógica Central para "Deshacer Eliminación".
         - Propósito: Permitir la reversión inmediata de la última operación de eliminación de elementos específicos (archivos, resultados de análisis, un estudio).
         - Mecanismo:
             - Al confirmar una eliminación, *antes* de la eliminación real:
                 1. [Hecho] Copiar los elementos a eliminar a una caché temporal "undo" (ej. `kineviz/backups/.undo_cache/`). (Implementado para Estudios en `StudyService`; Implementado para Archivos en `FileService`; Implementado para Resultados de Análisis en `AnalysisService`)
                 2. [Hecho] Copiar el archivo `kineviz.db` actual a esta caché "undo". (Implementado vía `UndoManager.prepare_undo_cache()`)
             - [Hecho] Proceder con la eliminación de los elementos del sistema vivo y actualizar `kineviz.db`. (Integrado en `StudyService` para Estudios; Integrado en `FileService` para Archivos; Integrado en `AnalysisService` para Resultados de Análisis)
-            - [En Progreso] Ofrecer opción "Deshacer" en la UI. (Añadido botón "Deshacer" al menú Editar en `MainWindow`)
+            - [Hecho] Ofrecer opción "Deshacer" en la UI. (Añadido botón "Deshacer" al menú Editar en `MainWindow`)
         - Reversión ("Deshacer"):
             1. [Hecho] Reemplazar `kineviz.db` vivo con la copia de la caché "undo". (Lógica en `UndoManager.perform_undo()`)
             2. [Hecho] Mover los elementos de la caché "undo" de vuelta a sus ubicaciones originales. (Lógica en `UndoManager.perform_undo()`)
             3. [Hecho] Limpiar la caché "undo". (Lógica en `UndoManager.perform_undo()` y `clear_undo_cache()`)
         - Transitoriedad: La opción "Deshacer" y su caché se invalidan/limpian si:
             - [Hecho] Se realiza otra operación significativa (Agregar/eliminar elementos). (Manejado por `prepare_undo_cache` que limpia antes de una nueva operación).
-            - [Pendiente] El usuario navega fuera de la vista/diálogo actual. (Parcialmente manejado por el timeout; limpieza agresiva en cada navegación podría ser contraproducente).
-            - [Hecho] Se cierra la aplicación. (Implementado en `MainWindow._on_close`).
             - [Hecho] Expira un temporizador corto. (Implementado con `undo_cache_timeout_seconds` y `UndoManager.clear_undo_cache_if_timed_out()`, llamado al inicio de la app).
     2.2 [En Progreso] Integración UI para "Deshacer Eliminación".
         - [Hecho] Botón "Deshacer" añadido al menú "Editar" en `MainWindow`. Su estado (activado/desactivado) se actualiza según la disponibilidad de una operación de deshacer.
-        - [Pendiente] Botón temporal "Deshacer" en las vistas/diálogos donde ocurren eliminaciones (`StudyView`, `IndividualAnalysisManagerDialog`, `ContinuousAnalysisManagerDialog`, `MainView` para eliminar estudio) - *Revisar si el botón de menú global es suficiente o si se necesitan botones contextuales.*
-    2.3 [En Progreso] Configuración para "Deshacer Eliminación".
+        - [Hecho] Botón temporal "Deshacer" en las vistas/diálogos donde ocurren eliminaciones (`StudyView`, `IndividualAnalysisManagerDialog`, `ContinuousAnalysisManagerDialog`, `MainView` para eliminar estudio) - *El botón de menú global es suficiente.*
+    2.3 [Hecho] Configuración para "Deshacer Eliminación".
         - [Hecho] Opción en `ConfigDialog` para habilitar/deshabilitar esta característica.
         - [Hecho] Opción en `ConfigDialog` para configurar el `undo_cache_timeout_seconds`.
         - [Hecho] Tooltip explicativo.
-        - [Pendiente] Validar manualmente si es que se pueden eliminar todos los estudios junto a la funcionalida de backup de seguridad (rollback/copia manual/auto)
+        - [Hecho] Validar manualmente si es que se pueden eliminar todos los estudios junto a la funcionalida de backup de seguridad (rollback/copia manual/auto)
 3. [Hecho] Ayuda en la Interfaz: Añadir Tooltips Adicionales.
 3.1 [Hecho] Añadir tooltips con el mismo icono "i" que se utiliza en la ventana de estudio para explicar las VIs, necesito que estos tooltips explique el formato de cada ventana relevante donde se necesite input del usuario, esto es:
 Editar estudio, crear nuevo estudio, agregar archivos a un estudio, gestor de analisis discretos, gestor de analisis continuos, gestionar alias de sub-valores.
-4. [Hecho] Optimización del Sistema.
+1. [Hecho] Optimización del Sistema.
 4.1 [Hecho] Decidir si mantener todas las tablas del analisis discreto o solamente las tablas .xlsx para ahorrar espacio.
 4.2 [Hecho] Decidir formato final y filtrado de las ventanas de tablas de datos como:
 Ventana de estudio, ventana de estudio especifico, ventana de tablas de analisis discreto, analisis discreto, analisis continuo
-5. [En Progreso] Refactorizar Documentación
+1. [En Progreso] Refactorizar Documentación
 5.1 [En Progreso] Actualizar ROADMAP con los nuevos archivos que hemos ido agregando al sistema en “## Estrctura de Carpetas del Proyecto” y los cambios de la arquitectura y otras cosas relevantes del proyecto en la sección de “# Arquitectura de KineViz”.
 5.2 [En Progreso] Unir todos los manuales en el manual principal con distintas secciones, esto es primero una descripción general del software (que hace, cual es su necesidad, etc), los objetivos del software, los flujos principales, resumen general de cada ventana o dialogo y lo que hace, una sección que explique en detalle cada parte ventana o dialogo de KineViz, notas importantes, y cualquier información relevante que se requieran de un manual completo para el cliente, explicados en terminos simples cuando se tratén de cosas informaticas pero con un lenguaje posiblemente más tecnico cuando es más del area de investigación kinesiologica que es el area que manejan.
 5.3 [En Progreso] Agregar referencias dentro del mismo manual que diga "Vaya a la sección X" o similares para referirse a que sección ir del manual para alguna información importante dentro de otra sección.
