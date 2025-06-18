@@ -401,9 +401,18 @@ class MainWindow:
     # --- Métodos de Ayuda y Utilidades (Adaptados de KineVizApp) ---
 
     def show_welcome_message(self):
-        """Muestra el mensaje de bienvenida."""
-        messagebox.showinfo("Introducción",
-                          "Bienvenido a KineViz. Esta es una aplicación para la gestión y análisis de estudios kinesiológicos.")
+        """Muestra el mensaje de bienvenida inicial con las opciones disponibles."""
+        messagebox.showinfo(
+            "Bienvenido a KineViz",
+            "KineViz - Sistema de gestión y análisis de estudios kinesiológicos\n\n"
+            "Desarrollado por: Matías Alevropulos\n\n"
+            "Opciones de inicio:\n"
+            "1. Ver DEMO interactivo - Muestra las funcionalidades principales\n"
+            "2. Consultar manual de usuario - Documentación completa de uso\n"
+            "3. Crear nuevo estudio - Acceso directo al módulo principal\n\n"
+            "ℹ️ Durante el uso, busque los iconos '?' para ayuda contextual\n\n"
+            "¡Gracias por elegir KineViz para su práctica profesional!"
+        )
 
     def open_user_manual(self):
         """Abre el manual de usuario con la aplicación predeterminada del sistema."""
