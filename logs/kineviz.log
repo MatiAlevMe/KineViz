@@ -21218,3 +21218,4 @@
 2025-06-18 17:59:18,451 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 1
 2025-06-18 17:59:18,452 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 1: {'BP': 'Bajo peso', 'NP': 'Normopeso'}
 2025-06-18 17:59:18,453 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP (Bajo peso), Joven, Mayor, NP (Normopeso), OS'
+2025-06-18 17:59:49,734 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
