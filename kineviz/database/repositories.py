@@ -253,9 +253,10 @@ class StudyRepository:
                 query = 'SELECT id_estudio, nombre_estudio, is_pinned, comentario FROM estudios'
                 params = []
                 if search_term:
-                    # Determine search_column based on search_field parameter
-                    search_column = 'comentario' if search_field == 'Comentario' else 'nombre_estudio'
-                    query += f' WHERE {search_column} LIKE ?'
+                    if search_field == 'Comentario':
+                        query += ' WHERE COALESCE(comentario, \'\') LIKE ?'
+                    else: # Default to nombre_estudio
+                        query += ' WHERE nombre_estudio LIKE ?'
                     params.append(f'%{search_term}%')
                 
                 query += ' ORDER BY is_pinned DESC, nombre_estudio COLLATE NOCASE ASC LIMIT ? OFFSET ?'
@@ -281,8 +282,10 @@ class StudyRepository:
                 query = 'SELECT COUNT(*) FROM estudios'
                 params = []
                 if search_term:
-                    search_column = 'comentario' if search_field == 'Comentario' else 'nombre_estudio'
-                    query += f' WHERE {search_column} LIKE ?'
+                    if search_field == 'Comentario':
+                        query += ' WHERE COALESCE(comentario, \'\') LIKE ?'
+                    else: # Default to nombre_estudio
+                        query += ' WHERE nombre_estudio LIKE ?'
                     params.append(f'%{search_term}%')
 
                 cursor.execute(query, params)
