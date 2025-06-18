@@ -80,6 +80,9 @@ class MainWindow:
         # --- Crear Menú ---
         self._create_menubar()
 
+        # --- Setup Window Close Protocol ---
+        self.root.protocol("WM_DELETE_WINDOW", self._on_close)
+
         # --- Decidir Vista Inicial (Adaptado de __init__) ---
         if self.study_service.has_studies(): # Necesita método has_studies en StudyService
              self.show_main_view() # Mostrar vista principal si hay estudios
@@ -94,7 +97,7 @@ class MainWindow:
         file_menu = tk.Menu(menubar, tearoff=0)
         file_menu.add_command(label="Configuración...", command=self.show_config_dialog)
         file_menu.add_separator()
-        file_menu.add_command(label="Salir", command=self.root.quit)
+        file_menu.add_command(label="Salir", command=self._on_close) # Use _on_close for consistent shutdown
         menubar.add_cascade(label="Archivo", menu=file_menu)
 
         # --- Menú Editar ---
@@ -587,7 +590,8 @@ class MainWindow:
         """Prepara la aplicación para un reinicio."""
         logger.info("MainWindow: Solicitud de reinicio de la aplicación recibida.")
         self.restart_pending = True
-        if hasattr(self.root, 'quit'):
-            self.root.quit() # Termina el mainloop de Tkinter
+        if hasattr(self.root, 'quit') and hasattr(self.root, 'destroy'):
+            self.root.quit()    # Termina el mainloop de Tkinter
+            self.root.destroy() # Destruye la ventana y libera recursos
         else:
-            logger.error("MainWindow: self.root no tiene el método quit. No se puede reiniciar programáticamente.")
+            logger.error("MainWindow: self.root no tiene el método quit o destroy. No se puede reiniciar programáticamente de forma limpia.")
