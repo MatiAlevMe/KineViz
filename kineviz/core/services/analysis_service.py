@@ -2821,12 +2821,12 @@ class AnalysisService:
                         except OSError as e:
                             logger.error(f"Error eliminando tabla de resumen {table_file_delete} (durante delete_all): {e}", exc_info=True)
                 # Limpiar carpeta de frecuencia si queda vacía
-                if not any(freq_dir.iterdir()):
+                if not any(freq_dir_delete.iterdir()):
                     try:
-                        freq_dir.rmdir()
-                        logger.info(f"Carpeta de frecuencia de tablas vacía eliminada: {freq_dir}")
+                        freq_dir_delete.rmdir()
+                        logger.info(f"Carpeta de frecuencia de tablas vacía eliminada: {freq_dir_delete}")
                     except OSError as e:
-                        logger.error(f"Error eliminando carpeta de frecuencia de tablas vacía {freq_dir}: {e}", exc_info=True)
+                        logger.error(f"Error eliminando carpeta de frecuencia de tablas vacía {freq_dir_delete}: {e}", exc_info=True)
         
         # Limpiar carpeta base "Tablas" si queda vacía
         if tables_base_dir.exists() and not any(tables_base_dir.iterdir()):
@@ -2893,12 +2893,12 @@ class AnalysisService:
                         except OSError as e:
                             logger.error(f"Error eliminando análisis individual {analysis_folder_delete}: {e}", exc_info=True)
                 # Limpiar carpeta de variable si queda vacía
-                if not any(variable_folder.iterdir()):
+                if not any(variable_folder_delete.iterdir()):
                     try:
-                        variable_folder.rmdir()
-                        logger.info(f"Carpeta de variable de análisis individual vacía eliminada: {variable_folder}")
+                        variable_folder_delete.rmdir()
+                        logger.info(f"Carpeta de variable de análisis individual vacía eliminada: {variable_folder_delete}")
                     except OSError as e:
-                        logger.error(f"Error eliminando carpeta de variable vacía {variable_folder}: {e}", exc_info=True)
+                        logger.error(f"Error eliminando carpeta de variable vacía {variable_folder_delete}: {e}", exc_info=True)
         
         # Limpiar carpeta base "Graficos" si queda vacía
         if analyses_base_dir.exists() and not any(analyses_base_dir.iterdir()):
@@ -3002,12 +3002,12 @@ class AnalysisService:
                         except OSError as e:
                             logger.error(f"Error eliminando análisis continuo {analysis_folder_delete_cont}: {e}", exc_info=True)
                 # Limpiar carpeta de variable si queda vacía
-                if not any(variable_folder.iterdir()):
+                if not any(variable_folder_delete_cont.iterdir()):
                     try:
-                        variable_folder.rmdir()
-                        logger.info(f"Carpeta de variable de análisis continuo vacía eliminada: {variable_folder}")
+                        variable_folder_delete_cont.rmdir()
+                        logger.info(f"Carpeta de variable de análisis continuo vacía eliminada: {variable_folder_delete_cont}")
                     except OSError as e:
-                        logger.error(f"Error eliminando carpeta de variable vacía {variable_folder}: {e}", exc_info=True)
+                        logger.error(f"Error eliminando carpeta de variable vacía {variable_folder_delete_cont}: {e}", exc_info=True)
 
         # Limpiar carpeta base "Analisis Continuo" si queda vacía
         if analyses_base_dir.exists() and not any(analyses_base_dir.iterdir()):
