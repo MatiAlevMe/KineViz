@@ -1,7 +1,11 @@
 import json # Importar json
 import logging
+from pathlib import Path # Import Path
 from kineviz.database.repositories import StudyRepository
 from kineviz.core.backup_manager import create_backup # Import for automatic backups
+from kineviz.config.settings import AppSettings # Import AppSettings
+from kineviz.core.undo_manager import UndoManager # Import UndoManager
+
 # El validador antiguo se eliminará, la validación se hará en el diálogo/nuevo validador
 # from kineviz.ui.utils.validators import validate_study_data
 
@@ -13,6 +17,8 @@ class StudyService:
     def __init__(self):
         self.repo = StudyRepository()
         self.db_path = self.repo.db_path # Expose db_path
+        self.settings = AppSettings() # Instantiate AppSettings
+        self.undo_manager = UndoManager(settings=self.settings, study_repository_db_path=str(self.db_path))
 
     def create_study(self, study_data):
         """
@@ -147,6 +153,35 @@ class StudyService:
             logger.error(f"Error inesperado obteniendo comentario para estudio {study_id}: {e}", exc_info=True)
             return None
 
+    def _delete_study_internal(self, study_id: int):
+        """
+        Internal helper to delete a single study, caching it for undo if enabled.
+        Assumes prepare_undo_cache has been called by the public method if part of a batch.
+        """
+        try:
+            study_details = self.repo.get_study_by_id(study_id) # Get details before deletion
+            study_name = study_details['name']
+            # Ensure studies_base_dir is a Path object
+            study_dir_path = Path(self.repo.studies_base_dir) / study_name
+
+            if self.undo_manager.is_undo_enabled():
+                if study_dir_path.exists() and study_dir_path.is_dir():
+                    if not self.undo_manager.cache_item_for_undo(str(study_dir_path), "study_directory"):
+                        # Logged by UndoManager, but we might want to reconsider aborting here in future.
+                        logger.warning(f"Failed to cache study directory {study_dir_path} for undo. Deletion will proceed but undo might be partial.")
+                else:
+                    logger.warning(f"Study directory {study_dir_path} not found or not a directory. Cannot cache for undo. Study ID: {study_id}")
+            
+            self.repo.delete_study(study_id) # This deletes DB record and directory
+            logger.info(f"Study ID {study_id} ('{study_name}') deleted by internal method.")
+
+        except ValueError as ve: # e.g., study not found by get_study_by_id
+            logger.error(f"Error in _delete_study_internal for study ID {study_id}: {ve}", exc_info=True)
+            raise # Re-raise to be handled by the caller
+        except Exception as e:
+            logger.error(f"Unexpected error in _delete_study_internal for study ID {study_id}: {e}", exc_info=True)
+            raise # Re-raise to be handled by the caller
+
     def update_study_comment(self, study_id: int, comment: str | None):
         """
         Actualiza solo el comentario de un estudio específico.
@@ -175,7 +210,7 @@ class StudyService:
 
     def delete_study(self, study_id):
         """
-        Elimina un estudio
+        Elimina un estudio. Triggers automatic backup and prepares undo cache.
         
         :param study_id: ID del estudio a eliminar
         """
@@ -183,9 +218,23 @@ class StudyService:
             create_backup(backup_type='automatic')
         except Exception as e_backup:
             logger.error(f"Error creating automatic backup before deleting study {study_id}: {e_backup}", exc_info=True)
-            # Decide if operation should continue or be aborted. For now, logging and continuing.
+            # Log and continue
 
-        self.repo.delete_study(study_id)
+        if self.undo_manager.is_undo_enabled():
+            if not self.undo_manager.prepare_undo_cache():
+                logger.error(f"Failed to prepare undo cache for deleting study {study_id}. Aborting delete operation.")
+                # Optionally, raise an exception here to stop the operation
+                # For now, if prepare fails, we might still proceed with deletion without undo.
+                # Or, more safely, abort:
+                raise Exception(f"Failed to prepare undo cache for deleting study {study_id}. Deletion aborted.")
+
+        try:
+            self._delete_study_internal(study_id)
+        except Exception as e:
+            logger.error(f"Error during deletion of study {study_id} after undo preparation: {e}", exc_info=True)
+            # If _delete_study_internal fails, the undo cache might be in a prepared state.
+            # It will be cleared on the next prepare_undo_cache call.
+            raise # Re-raise the exception from _delete_study_internal
 
     def delete_studies_by_ids(self, study_ids: list[int]):
         """
@@ -199,19 +248,37 @@ class StudyService:
         if not study_ids:
             return
 
+        # Single backup and undo prep for the entire batch operation
+        try:
+            create_backup(backup_type='automatic')
+        except Exception as e_backup:
+            logger.error(f"Error creating automatic backup before deleting multiple studies: {e_backup}", exc_info=True)
+            # Log and continue
+
+        if self.undo_manager.is_undo_enabled():
+            if not self.undo_manager.prepare_undo_cache():
+                logger.error("Failed to prepare undo cache for deleting multiple studies. Aborting batch delete operation.")
+                raise Exception("Failed to prepare undo cache for batch deletion. Operation aborted.")
+        
         errors = []
         for study_id in study_ids:
             try:
-                self.delete_study(study_id) # Esto ya maneja la eliminación de carpetas
-                logger.info(f"Estudio ID {study_id} eliminado como parte de una operación masiva.")
+                self._delete_study_internal(study_id) # Call internal method directly
+                logger.info(f"Estudio ID {study_id} processed for batch deletion.")
             except Exception as e:
-                logger.error(f"Error eliminando estudio ID {study_id} en operación masiva: {e}", exc_info=True)
-                errors.append(f"Error eliminando estudio ID {study_id}: {e}")
+                logger.error(f"Error deleting study ID {study_id} during batch operation: {e}", exc_info=True)
+                errors.append(f"Error deleting study ID {study_id}: {e}")
+                # Continue with other studies in the batch
         
         if errors:
-            # Podríamos acumular errores y lanzar una excepción agregada o solo loguear.
-            # Por ahora, lanzamos una excepción general si hubo algún error.
-            raise Exception("Ocurrieron errores durante la eliminación masiva de estudios:\n" + "\n".join(errors))
+            # If any error occurred, the undo cache might be for a partially completed operation.
+            # The user should be informed.
+            error_message = "Ocurrieron errores durante la eliminación masiva de estudios:\n" + "\n".join(errors)
+            logger.error(error_message)
+            # Depending on severity, we might want to clear undo cache or leave it.
+            # For now, leave it; perform_undo will attempt to restore what it can.
+            raise Exception(error_message)
+        logger.info(f"Batch deletion of {len(study_ids)} studies completed.")
 
     def has_studies(self):
         """
@@ -412,8 +479,42 @@ class StudyService:
             # Decide if operation should continue or be aborted. For now, logging and continuing.
 
         try:
-            self.repo.delete_all_studies()
+            # Prepare undo cache before getting study details
+            if self.undo_manager.is_undo_enabled():
+                if not self.undo_manager.prepare_undo_cache():
+                    logger.error("Failed to prepare undo cache for deleting all studies. Aborting operation.")
+                    raise Exception("Failed to prepare undo cache for deleting all studies. Operation aborted.")
+
+            # Get all study details to cache their directories
+            all_studies_details = []
+            try:
+                # Need a way to get all study details (id, name) from repo without pagination
+                # Assuming get_all_studies returns list of dicts with 'id' and 'name'
+                all_studies_from_repo = self.repo.get_all_studies()
+                for study_info in all_studies_from_repo:
+                    all_studies_details.append({'id': study_info['id'], 'name': study_info['name']})
+            except Exception as e_fetch:
+                logger.error(f"Error fetching study details for 'delete_all_studies' undo caching: {e_fetch}", exc_info=True)
+                # If we can't get details, we can't cache. Decide whether to proceed with repo.delete_all_studies.
+                # For safety, if undo is enabled and we can't cache, abort.
+                if self.undo_manager.is_undo_enabled():
+                    raise Exception(f"Failed to fetch study details for undo caching. 'Delete all studies' aborted. Error: {e_fetch}")
+                # If undo is not enabled, proceed with deletion.
+
+            if self.undo_manager.is_undo_enabled():
+                for study_detail in all_studies_details:
+                    study_name = study_detail['name']
+                    study_dir_path = Path(self.repo.studies_base_dir) / study_name
+                    if study_dir_path.exists() and study_dir_path.is_dir():
+                        if not self.undo_manager.cache_item_for_undo(str(study_dir_path), "study_directory"):
+                            logger.warning(f"Failed to cache study directory {study_dir_path} for undo during 'delete all'. Deletion will proceed.")
+                    else:
+                        logger.warning(f"Study directory {study_dir_path} not found for caching during 'delete all'.")
+            
+            self.repo.delete_all_studies() # This deletes all records and their corresponding folders
             logger.info("Servicio: Todos los estudios han sido eliminados.")
-        except Exception as e:
+
+        except Exception as e: # Catch errors from repo call or other issues
             logger.error(f"Servicio: Error al eliminar todos los estudios: {e}", exc_info=True)
+            # Undo cache might be prepared. It will be cleared on next successful prepare.
             raise # Relanzar para que la UI maneje el error

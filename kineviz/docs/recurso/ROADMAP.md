@@ -311,14 +311,14 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
     1.5 [Hecho] Logging para Operaciones de Backup.
         - Registrar eventos significativos (creación iniciada/completada/fallida, eliminación de copia antigua).
 2. [En Progreso] Funcionalidad "Deshacer Eliminación" (Undo Delete).
-    2.1 [Pendiente] Lógica Central para "Deshacer Eliminación".
+    2.1 [En Progreso] Lógica Central para "Deshacer Eliminación".
         - Propósito: Permitir la reversión inmediata de la última operación de eliminación de elementos específicos (archivos, resultados de análisis, un estudio).
         - Mecanismo:
             - Al confirmar una eliminación, *antes* de la eliminación real:
-                1. Copiar los elementos a eliminar a una caché temporal "undo" (ej. `kineviz/backups/.undo_cache/`).
-                2. Copiar el archivo `kineviz.db` actual a esta caché "undo".
-            - Proceder con la eliminación de los elementos del sistema vivo y actualizar `kineviz.db`.
-            - Ofrecer opción "Deshacer" en la UI.
+                1. [En Progreso] Copiar los elementos a eliminar a una caché temporal "undo" (ej. `kineviz/backups/.undo_cache/`). (Implementado para Estudios en `StudyService`)
+                2. [En Progreso] Copiar el archivo `kineviz.db` actual a esta caché "undo". (Implementado vía `UndoManager.prepare_undo_cache()`)
+            - [En Progreso] Proceder con la eliminación de los elementos del sistema vivo y actualizar `kineviz.db`. (Integrado en `StudyService` para Estudios)
+            - [Pendiente] Ofrecer opción "Deshacer" en la UI.
         - Reversión ("Deshacer"):
             1. Reemplazar `kineviz.db` vivo con la copia de la caché "undo".
             2. Mover los elementos de la caché "undo" de vuelta a sus ubicaciones originales.
