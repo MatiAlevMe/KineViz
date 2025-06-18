@@ -16,8 +16,8 @@ from kineviz.core.data_processing import processors # Importar processors
 # Importar el validador de nombres de archivo
 from kineviz.ui.utils.validators import validate_filename_for_study_criteria
 
-# Ya no se necesita AppSettings
-# from kineviz.config.settings import AppSettings
+from kineviz.config.settings import AppSettings # Import AppSettings
+from kineviz.core.undo_manager import UndoManager # Import UndoManager
 
 # Importar reportlab
 from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer, Image,
@@ -71,7 +71,9 @@ class AnalysisService:
         """
         self.study_service = study_service
         self.file_service = file_service
-        # self.settings = app_settings # Ya no se guarda referencia a AppSettings
+        self.settings = AppSettings() # Instantiate AppSettings
+        # AnalysisService gets db_path via its study_service instance
+        self.undo_manager = UndoManager(settings=self.settings, study_repository_db_path=str(self.study_service.db_path))
 
     def get_analysis_parameters(self, study_id: int) -> dict:
         """
@@ -773,12 +775,21 @@ class AnalysisService:
         if not report_path.is_file():
             raise ValueError(f"La ruta no es un archivo: {report_path}")
 
+        if self.undo_manager.is_undo_enabled():
+            if not self.undo_manager.prepare_undo_cache():
+                logger.error(f"Failed to prepare undo cache for deleting report {report_path}. Aborting delete operation.")
+                raise Exception(f"Failed to prepare undo cache for deleting report {report_path}. Deletion aborted.")
+            
+            if not self.undo_manager.cache_item_for_undo(str(report_path), "analysis_report_file"):
+                logger.warning(f"Failed to cache report file {report_path} for undo. Deletion will proceed but undo might be partial.")
+
         try:
             report_path.unlink()
             logger.info(f"Reporte eliminado: {report_path}")
         except OSError as e:
             logger.error(f"Error al eliminar el reporte {report_path}: {e}",
                          exc_info=True)
+            # If unlink fails, the undo cache might be prepared. It will be cleared on the next prepare.
             raise
 
     # --- Métodos para Análisis Continuo (Fase 5) ---
@@ -1465,7 +1476,19 @@ class AnalysisService:
             logger.error(f"Error creating automatic backup before deleting continuous analysis {analysis_folder_to_delete.name}: {e_backup}", exc_info=True)
             # Log and continue for now
         
-        self._delete_continuous_analysis_no_backup(analysis_folder_to_delete)
+        if self.undo_manager.is_undo_enabled():
+            if not self.undo_manager.prepare_undo_cache():
+                logger.error(f"Failed to prepare undo cache for deleting continuous analysis {analysis_folder_to_delete}. Aborting delete operation.")
+                raise Exception(f"Failed to prepare undo cache for deleting continuous analysis {analysis_folder_to_delete}. Deletion aborted.")
+
+            if not self.undo_manager.cache_item_for_undo(str(analysis_folder_to_delete), "continuous_analysis_folder"):
+                logger.warning(f"Failed to cache continuous analysis folder {analysis_folder_to_delete} for undo. Deletion will proceed but undo might be partial.")
+        
+        try:
+            self._delete_continuous_analysis_no_backup(analysis_folder_to_delete)
+        except Exception as e:
+            logger.error(f"Error during deletion of continuous analysis {analysis_folder_to_delete} after undo preparation: {e}", exc_info=True)
+            raise
 
     # --- Métodos para Análisis Discreto (Fase 6) ---
 
@@ -1540,7 +1563,21 @@ class AnalysisService:
             logger.error(f"Error creating automatic backup before deleting discrete summary table {table_path_str}: {e_backup}", exc_info=True)
             # Log and continue for now
         
-        self._delete_discrete_summary_table_no_backup(table_path_str)
+        if self.undo_manager.is_undo_enabled():
+            if not self.undo_manager.prepare_undo_cache():
+                logger.error(f"Failed to prepare undo cache for deleting discrete table {table_path_str}. Aborting delete operation.")
+                raise Exception(f"Failed to prepare undo cache for deleting discrete table {table_path_str}. Deletion aborted.")
+
+            # Cache the .xlsx file. The .csv is implicitly handled by DB restore if needed, or not cached if purely derived.
+            # For file system undo, caching the primary user-facing file (.xlsx) is key.
+            if not self.undo_manager.cache_item_for_undo(str(table_path_str), "discrete_summary_table_xlsx"):
+                logger.warning(f"Failed to cache discrete table {table_path_str} for undo. Deletion will proceed but undo might be partial.")
+        
+        try:
+            self._delete_discrete_summary_table_no_backup(table_path_str)
+        except Exception as e:
+            logger.error(f"Error during deletion of discrete table {table_path_str} after undo preparation: {e}", exc_info=True)
+            raise
 
     def _extract_stats_from_processed_file(self, file_path: Path, calculation: str) -> list | None:
         """Lee las últimas líneas de un archivo procesado y extrae la fila de datos para el cálculo especificado."""
@@ -2718,7 +2755,19 @@ class AnalysisService:
             logger.error(f"Error creating automatic backup before deleting individual analysis {analysis_path_to_delete.name}: {e_backup}", exc_info=True)
             # Log and continue for now
         
-        self._delete_individual_analysis_no_backup(analysis_path_to_delete)
+        if self.undo_manager.is_undo_enabled():
+            if not self.undo_manager.prepare_undo_cache():
+                logger.error(f"Failed to prepare undo cache for deleting individual analysis {analysis_path_to_delete}. Aborting delete operation.")
+                raise Exception(f"Failed to prepare undo cache for deleting individual analysis {analysis_path_to_delete}. Deletion aborted.")
+
+            if not self.undo_manager.cache_item_for_undo(str(analysis_path_to_delete), "individual_analysis_folder"):
+                logger.warning(f"Failed to cache individual analysis folder {analysis_path_to_delete} for undo. Deletion will proceed but undo might be partial.")
+        
+        try:
+            self._delete_individual_analysis_no_backup(analysis_path_to_delete)
+        except Exception as e:
+            logger.error(f"Error during deletion of individual analysis {analysis_path_to_delete} after undo preparation: {e}", exc_info=True)
+            raise
 
     def delete_all_discrete_summary_tables(self, study_id: int):
         """
@@ -2736,19 +2785,41 @@ class AnalysisService:
             logger.info(f"No se encontró directorio de tablas de resumen para estudio {study_id}. Nada que eliminar.")
             return 0 # No files deleted
 
+        # Collect all .xlsx files to be deleted for caching
+        files_to_cache_for_undo = []
+        if self.undo_manager.is_undo_enabled():
+            for freq_dir_cache in tables_base_dir.iterdir():
+                if freq_dir_cache.is_dir():
+                    for table_file_cache in freq_dir_cache.iterdir():
+                        if table_file_cache.is_file() and table_file_cache.suffix == '.xlsx':
+                            files_to_cache_for_undo.append(str(table_file_cache))
+            
+            if files_to_cache_for_undo: # Only prepare if there's something to cache
+                if not self.undo_manager.prepare_undo_cache():
+                    logger.error(f"Failed to prepare undo cache for deleting all discrete tables in study {study_id}. Aborting delete operation.")
+                    raise Exception(f"Failed to prepare undo cache for deleting all discrete tables in study {study_id}. Deletion aborted.")
+                
+                for table_to_cache_str in files_to_cache_for_undo:
+                    if not self.undo_manager.cache_item_for_undo(table_to_cache_str, "discrete_summary_table_xlsx"):
+                        logger.warning(f"Failed to cache discrete table {table_to_cache_str} for undo during 'delete all'. Deletion will proceed but undo might be partial.")
+            elif not self.undo_manager.is_undo_enabled(): # If undo disabled, no need to prepare or cache
+                pass
+            else: # Undo enabled, but no files found to cache
+                logger.info(f"Undo enabled, but no .xlsx tables found to cache in {tables_base_dir} for 'delete all'.")
+
+
         deleted_count = 0
         logger.info(f"Iniciando eliminación de todas las tablas de resumen en: {tables_base_dir}")
-        for freq_dir in list(tables_base_dir.iterdir()): # e.g., Cinematica
-            if freq_dir.is_dir():
-                for table_file in list(freq_dir.iterdir()):
-                    if table_file.is_file() and table_file.suffix == '.xlsx':
+        # Iterate again for actual deletion
+        for freq_dir_delete in list(tables_base_dir.iterdir()): 
+            if freq_dir_delete.is_dir():
+                for table_file_delete in list(freq_dir_delete.iterdir()):
+                    if table_file_delete.is_file() and table_file_delete.suffix == '.xlsx':
                         try:
-                            # Call the no-backup version, as backup is done for the whole operation
-                            self._delete_discrete_summary_table_no_backup(str(table_file))
+                            self._delete_discrete_summary_table_no_backup(str(table_file_delete))
                             deleted_count += 1
-                            # Logger message is handled by _delete_discrete_summary_table_no_backup
                         except OSError as e:
-                            logger.error(f"Error eliminando tabla de resumen {table_file} (durante delete_all): {e}", exc_info=True)
+                            logger.error(f"Error eliminando tabla de resumen {table_file_delete} (durante delete_all): {e}", exc_info=True)
                 # Limpiar carpeta de frecuencia si queda vacía
                 if not any(freq_dir.iterdir()):
                     try:
@@ -2785,20 +2856,42 @@ class AnalysisService:
             logger.info(f"No se encontró directorio base de análisis individuales para estudio {study_id}. Nada que eliminar.")
             return 0
 
+        folders_to_cache_for_undo = []
+        if self.undo_manager.is_undo_enabled():
+            for var_folder_cache in analyses_base_dir.iterdir():
+                if var_folder_cache.is_dir():
+                    for analysis_folder_cache in var_folder_cache.iterdir():
+                        if analysis_folder_cache.is_dir():
+                            folders_to_cache_for_undo.append(str(analysis_folder_cache))
+            
+            if folders_to_cache_for_undo:
+                if not self.undo_manager.prepare_undo_cache():
+                    logger.error(f"Failed to prepare undo cache for deleting all individual analyses in study {study_id}. Aborting delete operation.")
+                    raise Exception(f"Failed to prepare undo cache for deleting all individual analyses in study {study_id}. Deletion aborted.")
+
+                for folder_to_cache_str in folders_to_cache_for_undo:
+                    if not self.undo_manager.cache_item_for_undo(folder_to_cache_str, "individual_analysis_folder"):
+                        logger.warning(f"Failed to cache individual analysis folder {folder_to_cache_str} for undo during 'delete all'. Deletion will proceed but undo might be partial.")
+            elif not self.undo_manager.is_undo_enabled():
+                pass
+            else:
+                logger.info(f"Undo enabled, but no individual analysis folders found to cache in {analyses_base_dir} for 'delete all'.")
+
         deleted_count = 0
         logger.info(f"Iniciando eliminación de todos los análisis individuales en: {analyses_base_dir}")
-        # Iterar sobre carpetas de variables (ej: "LAnkleMoment X")
-        for variable_folder in list(analyses_base_dir.iterdir()):
-            if variable_folder.is_dir():
-                # Iterar sobre carpetas de análisis específicos dentro de la carpeta de variable
-                for analysis_folder in list(variable_folder.iterdir()):
-                    if analysis_folder.is_dir(): # Es una carpeta de un análisis individual
+        for variable_folder_delete in list(analyses_base_dir.iterdir()):
+            if variable_folder_delete.is_dir():
+                for analysis_folder_delete in list(variable_folder_delete.iterdir()):
+                    if analysis_folder_delete.is_dir(): 
                         try:
-                            shutil.rmtree(analysis_folder)
+                            # For "delete all", we call shutil.rmtree directly after caching.
+                            # The _delete_individual_analysis_no_backup also calls rmtree,
+                            # but this avoids repeated checks if we already iterated for caching.
+                            shutil.rmtree(analysis_folder_delete)
                             deleted_count += 1
-                            logger.info(f"Análisis individual eliminado: {analysis_folder}")
+                            logger.info(f"Análisis individual eliminado: {analysis_folder_delete}")
                         except OSError as e:
-                            logger.error(f"Error eliminando análisis individual {analysis_folder}: {e}", exc_info=True)
+                            logger.error(f"Error eliminando análisis individual {analysis_folder_delete}: {e}", exc_info=True)
                 # Limpiar carpeta de variable si queda vacía
                 if not any(variable_folder.iterdir()):
                     try:
@@ -2836,9 +2929,18 @@ class AnalysisService:
             logger.error(f"Error creating automatic backup before deleting selected individual analyses: {e_backup}", exc_info=True)
             # Log and continue for now
 
+        if self.undo_manager.is_undo_enabled() and analysis_paths:
+            if not self.undo_manager.prepare_undo_cache():
+                logger.error(f"Failed to prepare undo cache for deleting selected individual analyses. Aborting delete operation.")
+                raise Exception(f"Failed to prepare undo cache for deleting selected individual analyses. Deletion aborted.")
+            
+            for path_to_cache in analysis_paths:
+                if not self.undo_manager.cache_item_for_undo(str(path_to_cache), "individual_analysis_folder"):
+                    logger.warning(f"Failed to cache individual analysis folder {path_to_cache} for undo during 'delete selected'. Deletion will proceed but undo might be partial.")
+        
         for analysis_path in analysis_paths:
             try:
-                self._delete_individual_analysis_no_backup(analysis_path) # Call no-backup version
+                self._delete_individual_analysis_no_backup(analysis_path) 
                 success_count += 1
                 logger.info(f"Análisis individual {analysis_path.name} eliminado como parte de una operación masiva.")
             except Exception as e:
@@ -2866,20 +2968,39 @@ class AnalysisService:
             logger.info(f"No se encontró directorio base de análisis continuos para estudio {study_id}. Nada que eliminar.")
             return 0
 
+        folders_to_cache_for_undo_cont = []
+        if self.undo_manager.is_undo_enabled():
+            for var_folder_cache_cont in analyses_base_dir.iterdir():
+                if var_folder_cache_cont.is_dir():
+                    for analysis_folder_cache_cont in var_folder_cache_cont.iterdir():
+                        if analysis_folder_cache_cont.is_dir():
+                            folders_to_cache_for_undo_cont.append(str(analysis_folder_cache_cont))
+            
+            if folders_to_cache_for_undo_cont:
+                if not self.undo_manager.prepare_undo_cache():
+                    logger.error(f"Failed to prepare undo cache for deleting all continuous analyses in study {study_id}. Aborting delete operation.")
+                    raise Exception(f"Failed to prepare undo cache for deleting all continuous analyses in study {study_id}. Deletion aborted.")
+
+                for folder_to_cache_str_cont in folders_to_cache_for_undo_cont:
+                    if not self.undo_manager.cache_item_for_undo(folder_to_cache_str_cont, "continuous_analysis_folder"):
+                        logger.warning(f"Failed to cache continuous analysis folder {folder_to_cache_str_cont} for undo during 'delete all'. Deletion will proceed but undo might be partial.")
+            elif not self.undo_manager.is_undo_enabled():
+                pass
+            else:
+                logger.info(f"Undo enabled, but no continuous analysis folders found to cache in {analyses_base_dir} for 'delete all'.")
+
         deleted_count = 0
         logger.info(f"Iniciando eliminación de todos los análisis continuos en: {analyses_base_dir}")
-        # Iterar sobre carpetas de variables (ej: "LAnkleMoment X")
-        for variable_folder in list(analyses_base_dir.iterdir()):
-            if variable_folder.is_dir():
-                # Iterar sobre carpetas de análisis específicos dentro de la carpeta de variable
-                for analysis_folder in list(variable_folder.iterdir()):
-                    if analysis_folder.is_dir(): # Es una carpeta de un análisis continuo
+        for variable_folder_delete_cont in list(analyses_base_dir.iterdir()):
+            if variable_folder_delete_cont.is_dir():
+                for analysis_folder_delete_cont in list(variable_folder_delete_cont.iterdir()):
+                    if analysis_folder_delete_cont.is_dir(): 
                         try:
-                            shutil.rmtree(analysis_folder)
+                            shutil.rmtree(analysis_folder_delete_cont)
                             deleted_count += 1
-                            logger.info(f"Análisis continuo eliminado: {analysis_folder}")
+                            logger.info(f"Análisis continuo eliminado: {analysis_folder_delete_cont}")
                         except OSError as e:
-                            logger.error(f"Error eliminando análisis continuo {analysis_folder}: {e}", exc_info=True)
+                            logger.error(f"Error eliminando análisis continuo {analysis_folder_delete_cont}: {e}", exc_info=True)
                 # Limpiar carpeta de variable si queda vacía
                 if not any(variable_folder.iterdir()):
                     try:
@@ -2917,9 +3038,18 @@ class AnalysisService:
             logger.error(f"Error creating automatic backup before deleting selected continuous analyses: {e_backup}", exc_info=True)
             # Log and continue for now
 
+        if self.undo_manager.is_undo_enabled() and analysis_paths:
+            if not self.undo_manager.prepare_undo_cache():
+                logger.error(f"Failed to prepare undo cache for deleting selected continuous analyses. Aborting delete operation.")
+                raise Exception(f"Failed to prepare undo cache for deleting selected continuous analyses. Deletion aborted.")
+            
+            for path_to_cache_cont in analysis_paths:
+                if not self.undo_manager.cache_item_for_undo(str(path_to_cache_cont), "continuous_analysis_folder"):
+                    logger.warning(f"Failed to cache continuous analysis folder {path_to_cache_cont} for undo during 'delete selected'. Deletion will proceed but undo might be partial.")
+
         for analysis_path in analysis_paths:
             try:
-                self._delete_continuous_analysis_no_backup(analysis_path) # Call no-backup version
+                self._delete_continuous_analysis_no_backup(analysis_path) 
                 success_count += 1
                 logger.info(f"Análisis continuo {analysis_path.name} eliminado como parte de una operación masiva.")
             except Exception as e:
@@ -2949,10 +3079,18 @@ class AnalysisService:
             logger.error(f"Error creating automatic backup before deleting selected discrete summary tables: {e_backup}", exc_info=True)
             # Log and continue for now
 
+        if self.undo_manager.is_undo_enabled() and table_paths:
+            if not self.undo_manager.prepare_undo_cache():
+                logger.error(f"Failed to prepare undo cache for deleting selected discrete tables. Aborting delete operation.")
+                raise Exception(f"Failed to prepare undo cache for deleting selected discrete tables. Deletion aborted.")
+            
+            for table_str_to_cache in table_paths:
+                if not self.undo_manager.cache_item_for_undo(table_str_to_cache, "discrete_summary_table_xlsx"):
+                    logger.warning(f"Failed to cache discrete table {table_str_to_cache} for undo during 'delete selected'. Deletion will proceed but undo might be partial.")
+
         for table_path_str in table_paths:
             try:
-                # delete_discrete_summary_table espera un string
-                self._delete_discrete_summary_table_no_backup(table_path_str) # Call no-backup version
+                self._delete_discrete_summary_table_no_backup(table_path_str) 
                 success_count += 1
                 logger.info(f"Tabla de resumen {Path(table_path_str).name} eliminada como parte de una operación masiva.")
             except Exception as e:
