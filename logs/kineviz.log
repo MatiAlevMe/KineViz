@@ -20855,3 +20855,366 @@
 2025-06-18 17:49:45,037 - INFO - [kineviz.config.settings] - Configuraciones restablecidas y guardadas.
 2025-06-18 17:49:45,037 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
 2025-06-18 17:49:46,384 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-18 17:51:01,168 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-18 17:51:01,168 - INFO - [__main__] - Iniciando KineViz...
+2025-06-18 17:51:01,505 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 17:51:01,505 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 17:51:01,506 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz.db': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db
+2025-06-18 17:51:01,506 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-18 17:57:54,723 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-18 17:57:54,723 - INFO - [__main__] - Iniciando KineViz...
+2025-06-18 17:57:55,054 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 17:57:55,054 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 17:57:55,055 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz.db': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db
+2025-06-18 17:57:55,056 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-18 17:58:03,578 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 3, Items: 25, Per Page: 10
+2025-06-18 17:58:03,578 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-18 17:58:11,636 - INFO - [kineviz.ui.dialogs.backup_restore_dialog] - Creando copia de seguridad tipo 'Respaldo' antes de la restauración...
+2025-06-18 17:58:11,637 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 17:58:11,637 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 17:58:11,639 - INFO - [kineviz.core.backup_manager] - Max pre-restore backups (10) reached. Deleting oldest: backup_20250618_012010.zip
+2025-06-18 17:58:11,639 - WARNING - [kineviz.core.backup_manager] - No alias found for 'respaldo/backup_20250618_012010.zip' to remove.
+2025-06-18 17:58:11,641 - INFO - [kineviz.core.backup_manager] - Creating backup: /Users/arakito/Mati/Codigo/Python/KineViz/backups/respaldo/backup_20250618_175811.zip (Type: respaldo, Test Mode: False)
+2025-06-18 17:58:11,642 - DEBUG - [kineviz.core.backup_manager] - Adding file to backup: /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db as kineviz.db
+2025-06-18 17:58:11,642 - DEBUG - [kineviz.core.backup_manager] - Adding file to backup: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini as config.ini
+2025-06-18 17:58:11,643 - DEBUG - [kineviz.core.backup_manager] - Selectively adding files from studies directory: /Users/arakito/Mati/Codigo/Python/KineViz/estudios
+2025-06-18 17:58:11,643 - INFO - [kineviz.core.backup_manager] - Backup created successfully: /Users/arakito/Mati/Codigo/Python/KineViz/backups/respaldo/backup_20250618_175811.zip
+2025-06-18 17:58:11,643 - DEBUG - [kineviz.core.backup_manager] - Updated _last_pre_restore_backup_end_time to 2025-06-18 17:58:11.643439
+2025-06-18 17:58:11,643 - DEBUG - [kineviz.core.backup_manager] - Lock file /Users/arakito/Mati/Codigo/Python/KineViz/backups/respaldo/.pre_restore_backup.lock removed.
+2025-06-18 17:58:12,854 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 3, Items: 25, Per Page: 10
+2025-06-18 17:58:12,855 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-18 17:58:12,855 - INFO - [kineviz.ui.dialogs.backup_restore_dialog] - Attempting to restore from /Users/arakito/Mati/Codigo/Python/KineViz/backups/respaldo/backup_20250618_174941.zip
+2025-06-18 17:58:12,855 - INFO - [kineviz.core.backup_manager] - Starting restoration from backup: /Users/arakito/Mati/Codigo/Python/KineViz/backups/respaldo/backup_20250618_174941.zip
+2025-06-18 17:58:12,855 - INFO - [kineviz.core.backup_manager] - Extracting backup to /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250618_175812...
+2025-06-18 17:58:12,922 - INFO - [kineviz.core.backup_manager] - Backup extracted successfully.
+2025-06-18 17:58:12,922 - INFO - [kineviz.core.backup_manager] - Renaming current live items...
+2025-06-18 17:58:12,922 - INFO - [kineviz.core.backup_manager] - Renamed live DB to /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db.20250618175812.bak
+2025-06-18 17:58:12,923 - INFO - [kineviz.core.backup_manager] - Renamed live config to /Users/arakito/Mati/Codigo/Python/KineViz/config.ini.20250618175812.bak
+2025-06-18 17:58:12,923 - INFO - [kineviz.core.backup_manager] - Moved live studies dir to /Users/arakito/Mati/Codigo/Python/KineViz/estudios.20250618175812.bak
+2025-06-18 17:58:12,923 - INFO - [kineviz.core.backup_manager] - Moving extracted items to live locations...
+2025-06-18 17:58:12,923 - INFO - [kineviz.core.backup_manager] - Restored DB from /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250618_175812/kineviz.db
+2025-06-18 17:58:12,923 - INFO - [kineviz.core.backup_manager] - Restored config from /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250618_175812/config.ini
+2025-06-18 17:58:12,923 - INFO - [kineviz.core.backup_manager] - Restored studies directory from /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250618_175812/estudios
+2025-06-18 17:58:12,923 - INFO - [kineviz.core.backup_manager] - Restoration successful. Cleaning up .bak files...
+2025-06-18 17:58:12,924 - INFO - [kineviz.core.backup_manager] - .bak files cleaned up.
+2025-06-18 17:58:12,924 - INFO - [kineviz.core.backup_manager] - Restoration process completed successfully.
+2025-06-18 17:58:12,924 - INFO - [kineviz.core.backup_manager] - Cleaned up temporary extraction directory: /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250618_175812
+2025-06-18 17:58:14,018 - INFO - [kineviz.ui.main_window] - BackupRestoreDialog (from landing) indicated a restart is required. Triggering app restart.
+2025-06-18 17:58:14,018 - INFO - [kineviz.ui.main_window] - MainWindow: Solicitud de reinicio de la aplicación recibida.
+2025-06-18 17:58:14,028 - INFO - [__main__] - Reinicio de KineViz solicitado.
+2025-06-18 17:58:14,028 - WARNING - [__main__] - Error al destruir la ventana raíz durante el reinicio, puede que ya no exista.
+2025-06-18 17:58:14,028 - INFO - [__main__] - Reiniciando la aplicación...
+2025-06-18 17:58:14,028 - INFO - [__main__] - Iniciando KineViz...
+2025-06-18 17:58:14,062 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 17:58:14,063 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 17:58:14,063 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz.db': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db
+2025-06-18 17:58:14,064 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 1.0
+2025-06-18 17:58:18,967 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 1
+2025-06-18 17:58:18,985 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 1
+2025-06-18 17:58:18,986 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 1: {'BP': 'Bajo peso', 'NP': 'Normopeso'}
+2025-06-18 17:58:18,986 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP (Bajo peso), Joven, Mayor, NP (Normopeso), OS'
+2025-06-18 17:58:42,118 - INFO - [kineviz.ui.views.discrete_analysis_view] - Solicitando generación de tablas discretas para estudio 1
+2025-06-18 17:58:42,119 - INFO - [kineviz.core.services.analysis_service] - Iniciando generación de tablas resumen discreto para estudio 1
+2025-06-18 17:58:42,125 - DEBUG - [kineviz.core.services.analysis_service] - Identificando grupos para estudio 1, frecuencia Cinematica
+2025-06-18 17:58:42,131 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte05 Mayor OS 01_Cinematica.txt' ---
+2025-06-18 17:58:42,131 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,131 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte05 Mayor OS 01'
+2025-06-18 17:58:42,131 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte05', 'Mayor', 'OS', '01']
+2025-06-18 17:58:42,131 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Mayor', 'OS']
+2025-06-18 17:58:42,131 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,131 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Mayor' es válido para VI 'Edad'.
+2025-06-18 17:58:42,131 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'OS' es válido para VI 'Peso'.
+2025-06-18 17:58:42,131 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte05, Sub-valores: ['Mayor', 'OS'], Intento: 1
+2025-06-18 17:58:42,131 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte05 Mayor OS 02_Cinematica.txt' ---
+2025-06-18 17:58:42,131 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,131 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte05 Mayor OS 02'
+2025-06-18 17:58:42,131 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte05', 'Mayor', 'OS', '02']
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Mayor', 'OS']
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Mayor' es válido para VI 'Edad'.
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'OS' es válido para VI 'Peso'.
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte05, Sub-valores: ['Mayor', 'OS'], Intento: 2
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte05 Mayor OS 03_Cinematica.txt' ---
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte05 Mayor OS 03'
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte05', 'Mayor', 'OS', '03']
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Mayor', 'OS']
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Mayor' es válido para VI 'Edad'.
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'OS' es válido para VI 'Peso'.
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte05, Sub-valores: ['Mayor', 'OS'], Intento: 3
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte02 Joven OS 02_Cinematica.txt' ---
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte02 Joven OS 02'
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte02', 'Joven', 'OS', '02']
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Joven', 'OS']
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Joven' es válido para VI 'Edad'.
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'OS' es válido para VI 'Peso'.
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte02, Sub-valores: ['Joven', 'OS'], Intento: 2
+2025-06-18 17:58:42,132 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte02 Joven OS 03_Cinematica.txt' ---
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte02 Joven OS 03'
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte02', 'Joven', 'OS', '03']
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Joven', 'OS']
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Joven' es válido para VI 'Edad'.
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'OS' es válido para VI 'Peso'.
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte02, Sub-valores: ['Joven', 'OS'], Intento: 3
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte02 Joven OS 01_Cinematica.txt' ---
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte02 Joven OS 01'
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte02', 'Joven', 'OS', '01']
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Joven', 'OS']
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Joven' es válido para VI 'Edad'.
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'OS' es válido para VI 'Peso'.
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte02, Sub-valores: ['Joven', 'OS'], Intento: 1
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 Joven BP 02_Cinematica.txt' ---
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 Joven BP 02'
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'Joven', 'BP', '02']
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Joven', 'BP']
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Joven' es válido para VI 'Edad'.
+2025-06-18 17:58:42,133 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'BP' es válido para VI 'Peso'.
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte03, Sub-valores: ['Joven', 'BP'], Intento: 2
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 Joven BP 03_Cinematica.txt' ---
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 Joven BP 03'
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'Joven', 'BP', '03']
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Joven', 'BP']
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Joven' es válido para VI 'Edad'.
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'BP' es válido para VI 'Peso'.
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte03, Sub-valores: ['Joven', 'BP'], Intento: 3
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte03 Joven BP 01_Cinematica.txt' ---
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte03 Joven BP 01'
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte03', 'Joven', 'BP', '01']
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Joven', 'BP']
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Joven' es válido para VI 'Edad'.
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'BP' es válido para VI 'Peso'.
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte03, Sub-valores: ['Joven', 'BP'], Intento: 1
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte04 Mayor NP 03_Cinematica.txt' ---
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte04 Mayor NP 03'
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte04', 'Mayor', 'NP', '03']
+2025-06-18 17:58:42,134 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Mayor', 'NP']
+2025-06-18 17:58:42,135 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,135 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Mayor' es válido para VI 'Edad'.
+2025-06-18 17:58:42,135 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'NP' es válido para VI 'Peso'.
+2025-06-18 17:58:42,135 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte04, Sub-valores: ['Mayor', 'NP'], Intento: 3
+2025-06-18 17:58:42,135 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte04 Mayor NP 02_Cinematica.txt' ---
+2025-06-18 17:58:42,135 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,135 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte04 Mayor NP 02'
+2025-06-18 17:58:42,135 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte04', 'Mayor', 'NP', '02']
+2025-06-18 17:58:42,135 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Mayor', 'NP']
+2025-06-18 17:58:42,135 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,135 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Mayor' es válido para VI 'Edad'.
+2025-06-18 17:58:42,135 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'NP' es válido para VI 'Peso'.
+2025-06-18 17:58:42,135 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte04, Sub-valores: ['Mayor', 'NP'], Intento: 2
+2025-06-18 17:58:42,135 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte04 Mayor NP 01_Cinematica.txt' ---
+2025-06-18 17:58:42,135 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,135 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte04 Mayor NP 01'
+2025-06-18 17:58:42,135 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte04', 'Mayor', 'NP', '01']
+2025-06-18 17:58:42,135 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Mayor', 'NP']
+2025-06-18 17:58:42,135 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,135 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Mayor' es válido para VI 'Edad'.
+2025-06-18 17:58:42,135 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'NP' es válido para VI 'Peso'.
+2025-06-18 17:58:42,135 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte04, Sub-valores: ['Mayor', 'NP'], Intento: 1
+2025-06-18 17:58:42,135 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte08 Adulto OS 01_Cinematica.txt' ---
+2025-06-18 17:58:42,136 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,136 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte08 Adulto OS 01'
+2025-06-18 17:58:42,136 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte08', 'Adulto', 'OS', '01']
+2025-06-18 17:58:42,136 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Adulto', 'OS']
+2025-06-18 17:58:42,136 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,136 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Adulto' es válido para VI 'Edad'.
+2025-06-18 17:58:42,136 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'OS' es válido para VI 'Peso'.
+2025-06-18 17:58:42,136 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte08, Sub-valores: ['Adulto', 'OS'], Intento: 1
+2025-06-18 17:58:42,136 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte08 Adulto OS 03_Cinematica.txt' ---
+2025-06-18 17:58:42,136 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,136 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte08 Adulto OS 03'
+2025-06-18 17:58:42,136 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte08', 'Adulto', 'OS', '03']
+2025-06-18 17:58:42,136 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Adulto', 'OS']
+2025-06-18 17:58:42,136 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,136 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Adulto' es válido para VI 'Edad'.
+2025-06-18 17:58:42,136 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'OS' es válido para VI 'Peso'.
+2025-06-18 17:58:42,136 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte08, Sub-valores: ['Adulto', 'OS'], Intento: 3
+2025-06-18 17:58:42,136 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte08 Adulto OS 02_Cinematica.txt' ---
+2025-06-18 17:58:42,136 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,136 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte08 Adulto OS 02'
+2025-06-18 17:58:42,136 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte08', 'Adulto', 'OS', '02']
+2025-06-18 17:58:42,136 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Adulto', 'OS']
+2025-06-18 17:58:42,136 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,137 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Adulto' es válido para VI 'Edad'.
+2025-06-18 17:58:42,137 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'OS' es válido para VI 'Peso'.
+2025-06-18 17:58:42,137 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte08, Sub-valores: ['Adulto', 'OS'], Intento: 2
+2025-06-18 17:58:42,137 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Joven NP 03_Cinematica.txt' ---
+2025-06-18 17:58:42,137 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,137 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Joven NP 03'
+2025-06-18 17:58:42,137 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Joven', 'NP', '03']
+2025-06-18 17:58:42,137 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Joven', 'NP']
+2025-06-18 17:58:42,137 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,137 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Joven' es válido para VI 'Edad'.
+2025-06-18 17:58:42,137 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'NP' es válido para VI 'Peso'.
+2025-06-18 17:58:42,137 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Sub-valores: ['Joven', 'NP'], Intento: 3
+2025-06-18 17:58:42,137 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Joven NP 02_Cinematica.txt' ---
+2025-06-18 17:58:42,137 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,137 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Joven NP 02'
+2025-06-18 17:58:42,137 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Joven', 'NP', '02']
+2025-06-18 17:58:42,137 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Joven', 'NP']
+2025-06-18 17:58:42,137 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,137 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Joven' es válido para VI 'Edad'.
+2025-06-18 17:58:42,137 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'NP' es válido para VI 'Peso'.
+2025-06-18 17:58:42,137 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Sub-valores: ['Joven', 'NP'], Intento: 2
+2025-06-18 17:58:42,137 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte01 Joven NP 01_Cinematica.txt' ---
+2025-06-18 17:58:42,137 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte01 Joven NP 01'
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte01', 'Joven', 'NP', '01']
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Joven', 'NP']
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Joven' es válido para VI 'Edad'.
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'NP' es válido para VI 'Peso'.
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte01, Sub-valores: ['Joven', 'NP'], Intento: 1
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte06 Mayor BP 02_Cinematica.txt' ---
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte06 Mayor BP 02'
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte06', 'Mayor', 'BP', '02']
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Mayor', 'BP']
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Mayor' es válido para VI 'Edad'.
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'BP' es válido para VI 'Peso'.
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte06, Sub-valores: ['Mayor', 'BP'], Intento: 2
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte06 Mayor BP 03_Cinematica.txt' ---
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte06 Mayor BP 03'
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte06', 'Mayor', 'BP', '03']
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Mayor', 'BP']
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Mayor' es válido para VI 'Edad'.
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'BP' es válido para VI 'Peso'.
+2025-06-18 17:58:42,138 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte06, Sub-valores: ['Mayor', 'BP'], Intento: 3
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte06 Mayor BP 01_Cinematica.txt' ---
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte06 Mayor BP 01'
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte06', 'Mayor', 'BP', '01']
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Mayor', 'BP']
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Mayor' es válido para VI 'Edad'.
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'BP' es válido para VI 'Peso'.
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte06, Sub-valores: ['Mayor', 'BP'], Intento: 1
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte07 Adulto NP 01_Cinematica.txt' ---
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte07 Adulto NP 01'
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte07', 'Adulto', 'NP', '01']
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Adulto', 'NP']
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Adulto' es válido para VI 'Edad'.
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'NP' es válido para VI 'Peso'.
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte07, Sub-valores: ['Adulto', 'NP'], Intento: 1
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte07 Adulto NP 02_Cinematica.txt' ---
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte07 Adulto NP 02'
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte07', 'Adulto', 'NP', '02']
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Adulto', 'NP']
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,139 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Adulto' es válido para VI 'Edad'.
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'NP' es válido para VI 'Peso'.
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte07, Sub-valores: ['Adulto', 'NP'], Intento: 2
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte07 Adulto NP 03_Cinematica.txt' ---
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte07 Adulto NP 03'
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte07', 'Adulto', 'NP', '03']
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Adulto', 'NP']
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Adulto' es válido para VI 'Edad'.
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'NP' es válido para VI 'Peso'.
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte07, Sub-valores: ['Adulto', 'NP'], Intento: 3
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte09 Adulto BP 01_Cinematica.txt' ---
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte09 Adulto BP 01'
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte09', 'Adulto', 'BP', '01']
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Adulto', 'BP']
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Adulto' es válido para VI 'Edad'.
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'BP' es válido para VI 'Peso'.
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte09, Sub-valores: ['Adulto', 'BP'], Intento: 1
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte09 Adulto BP 02_Cinematica.txt' ---
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte09 Adulto BP 02'
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte09', 'Adulto', 'BP', '02']
+2025-06-18 17:58:42,140 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Adulto', 'BP']
+2025-06-18 17:58:42,141 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,141 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Adulto' es válido para VI 'Edad'.
+2025-06-18 17:58:42,141 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'BP' es válido para VI 'Peso'.
+2025-06-18 17:58:42,141 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte09, Sub-valores: ['Adulto', 'BP'], Intento: 2
+2025-06-18 17:58:42,141 - DEBUG - [kineviz.ui.utils.validators] - --- Validando nombre archivo: 'Pte09 Adulto BP 03_Cinematica.txt' ---
+2025-06-18 17:58:42,141 - DEBUG - [kineviz.ui.utils.validators] - VIs definidas: [{'name': 'Edad', 'descriptors': ['Joven', 'Mayor', 'Adulto'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['BP', 'NP', 'OS'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-18 17:58:42,141 - DEBUG - [kineviz.ui.utils.validators] - Nombre base extraído: 'Pte09 Adulto BP 03'
+2025-06-18 17:58:42,141 - DEBUG - [kineviz.ui.utils.validators] - Partes del nombre base: ['Pte09', 'Adulto', 'BP', '03']
+2025-06-18 17:58:42,141 - DEBUG - [kineviz.ui.utils.validators] - Partes intermedias (sub-valores): ['Adulto', 'BP']
+2025-06-18 17:58:42,141 - DEBUG - [kineviz.ui.utils.validators] - Número VIs definidas: 2, Partes intermedias encontradas: 2
+2025-06-18 17:58:42,141 - DEBUG - [kineviz.ui.utils.validators] - Parte 1: 'Adulto' es válido para VI 'Edad'.
+2025-06-18 17:58:42,141 - DEBUG - [kineviz.ui.utils.validators] - Parte 2: 'BP' es válido para VI 'Peso'.
+2025-06-18 17:58:42,141 - DEBUG - [kineviz.ui.utils.validators] - Validación exitosa. Sujeto: Pte09, Sub-valores: ['Adulto', 'BP'], Intento: 3
+2025-06-18 17:58:42,141 - DEBUG - [kineviz.core.services.analysis_service] - Grupos identificados (9): {'Edad=Mayor;Peso=OS', 'Edad=Mayor;Peso=BP', 'Edad=Mayor;Peso=NP', 'Edad=Joven;Peso=NP', 'Edad=Adulto;Peso=NP', 'Edad=Joven;Peso=OS', 'Edad=Joven;Peso=BP', 'Edad=Adulto;Peso=BP', 'Edad=Adulto;Peso=OS'}
+2025-06-18 17:58:42,180 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_OS.csv
+2025-06-18 17:58:42,192 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_OS.xlsx
+2025-06-18 17:58:42,208 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Mayor__Peso_OS.csv
+2025-06-18 17:58:42,216 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Mayor__Peso_OS.xlsx
+2025-06-18 17:58:42,230 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Mayor__Peso_OS.csv
+2025-06-18 17:58:42,238 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Mayor__Peso_OS.xlsx
+2025-06-18 17:58:42,254 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_OS.csv
+2025-06-18 17:58:42,261 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_OS.xlsx
+2025-06-18 17:58:42,275 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_OS.csv
+2025-06-18 17:58:42,282 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_OS.xlsx
+2025-06-18 17:58:42,296 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_OS.csv
+2025-06-18 17:58:42,303 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_OS.xlsx
+2025-06-18 17:58:42,319 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_BP.csv
+2025-06-18 17:58:42,325 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_BP.xlsx
+2025-06-18 17:58:42,340 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_BP.csv
+2025-06-18 17:58:42,347 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_BP.xlsx
+2025-06-18 17:58:42,361 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_BP.csv
+2025-06-18 17:58:42,368 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_BP.xlsx
+2025-06-18 17:58:42,384 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_NP.csv
+2025-06-18 17:58:42,391 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_NP.xlsx
+2025-06-18 17:58:42,404 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Mayor__Peso_NP.csv
+2025-06-18 17:58:42,411 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Mayor__Peso_NP.xlsx
+2025-06-18 17:58:42,425 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Mayor__Peso_NP.csv
+2025-06-18 17:58:42,432 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Mayor__Peso_NP.xlsx
+2025-06-18 17:58:42,448 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Adulto__Peso_OS.csv
+2025-06-18 17:58:42,455 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Adulto__Peso_OS.xlsx
+2025-06-18 17:58:42,469 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Adulto__Peso_OS.csv
+2025-06-18 17:58:42,476 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Adulto__Peso_OS.xlsx
+2025-06-18 17:58:42,490 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_OS.csv
+2025-06-18 17:58:42,497 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_OS.xlsx
+2025-06-18 17:58:42,513 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_NP.csv
+2025-06-18 17:58:42,520 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Joven__Peso_NP.xlsx
+2025-06-18 17:58:42,534 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_NP.csv
+2025-06-18 17:58:42,541 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Joven__Peso_NP.xlsx
+2025-06-18 17:58:42,555 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_NP.csv
+2025-06-18 17:58:42,562 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Joven__Peso_NP.xlsx
+2025-06-18 17:58:42,578 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_BP.csv
+2025-06-18 17:58:42,585 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Mayor__Peso_BP.xlsx
+2025-06-18 17:58:42,599 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Mayor__Peso_BP.csv
+2025-06-18 17:58:42,609 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Mayor__Peso_BP.xlsx
+2025-06-18 17:58:42,624 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Mayor__Peso_BP.csv
+2025-06-18 17:58:42,632 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Mayor__Peso_BP.xlsx
+2025-06-18 17:58:42,649 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Adulto__Peso_NP.csv
+2025-06-18 17:58:42,657 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Adulto__Peso_NP.xlsx
+2025-06-18 17:58:42,672 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Adulto__Peso_NP.csv
+2025-06-18 17:58:42,680 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Adulto__Peso_NP.xlsx
+2025-06-18 17:58:42,695 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_NP.csv
+2025-06-18 17:58:42,702 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_NP.xlsx
+2025-06-18 17:58:42,718 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Adulto__Peso_BP.csv
+2025-06-18 17:58:42,725 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Maximo_Cinematica_Edad_Adulto__Peso_BP.xlsx
+2025-06-18 17:58:42,738 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Adulto__Peso_BP.csv
+2025-06-18 17:58:42,745 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Minimo_Cinematica_Edad_Adulto__Peso_BP.xlsx
+2025-06-18 17:58:42,759 - INFO - [kineviz.core.services.analysis_service] - Tabla CSV interna generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_BP.csv
+2025-06-18 17:58:42,766 - INFO - [kineviz.core.services.analysis_service] - Tabla XLSX generada: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/SaltoVertical Peso Edad/Analisis Discreto/Tablas/Cinematica/Rango_Cinematica_Edad_Adulto__Peso_BP.xlsx
+2025-06-18 17:58:42,766 - INFO - [kineviz.core.services.analysis_service] - Generación tablas discretas finalizada para estudio 1. Éxitos: 27, Errores: 0
+2025-06-18 17:59:18,451 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 1
+2025-06-18 17:59:18,452 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 1: {'BP': 'Bajo peso', 'NP': 'Normopeso'}
+2025-06-18 17:59:18,453 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP (Bajo peso), Joven, Mayor, NP (Normopeso), OS'
