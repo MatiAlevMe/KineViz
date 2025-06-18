@@ -209,7 +209,7 @@ class StudyDialog(Toplevel):
         # Botón para añadir VI (dentro del frame principal, debajo del contenedor scrollable)
         add_iv_button_frame = ttk.Frame(main_frame)
         add_iv_button_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", padx=15, pady=(5,0))
-        self.add_iv_button = ttk.Button(add_iv_button_frame, text="+ Añadir Variable Independiente", command=self.add_independent_variable_ui)
+        self.add_iv_button = ttk.Button(add_iv_button_frame, text="+ Añadir Variable Independiente", style="Celeste.TButton", command=self.add_independent_variable_ui)
         self.add_iv_button.pack()
         # Deshabilitar si estamos editando
         if self.is_editing:
@@ -240,7 +240,7 @@ class StudyDialog(Toplevel):
         # help_button = ttk.Button(button_frame, text="?", width=3, style="Help.TButton", command=self.show_iv_help) # Botón de ayuda eliminado
         # help_button.pack(side=tk.LEFT, padx=(0, 10)) # A la izquierda de Cancelar
 
-        ttk.Button(button_frame, text="Guardar", command=self.save).pack(side=tk.RIGHT, padx=5)
+        ttk.Button(button_frame, text="Guardar", style="Green.TButton", command=self.save).pack(side=tk.RIGHT, padx=5)
         ttk.Button(button_frame, text="Cancelar", command=self.destroy).pack(side=tk.RIGHT)
 
         # Set minsize after widgets are created in scrollable_main_frame
@@ -286,7 +286,7 @@ class StudyDialog(Toplevel):
 
 
         # Botón para añadir sub-valor a ESTA VI
-        add_desc_button = ttk.Button(vi_header_frame, text="+", width=3,
+        add_desc_button = ttk.Button(vi_header_frame, text="+", width=3, style="Celeste.TButton",
                                      command=lambda v=vi_name_var: self.add_descriptor_ui(v))
         add_desc_button.pack(side=tk.LEFT, padx=(0,5))
         if self.is_editing:

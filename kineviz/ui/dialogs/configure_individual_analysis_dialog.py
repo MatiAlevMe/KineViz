@@ -398,7 +398,7 @@ class ConfigureIndividualAnalysisDialog(tk.Toplevel):
         self.button_frame = ttk.Frame(main_frame)
         self.button_frame.grid(row=row_idx, column=0, columnspan=2, sticky="e", pady=10)
         self.button_frame.grid_remove() # Ocultar inicialmente
-        self.save_button = ttk.Button(self.button_frame, text="Aceptar y Guardar Configuración", command=self._save_configuration_and_close, state=tk.DISABLED) # Actualizado comando
+        self.save_button = ttk.Button(self.button_frame, text="Aceptar y Guardar Configuración", command=self._save_configuration_and_close, state=tk.DISABLED, style="Green.TButton") # Actualizado comando
         self.save_button.pack(side=tk.RIGHT, padx=5)
         Tooltip(self.save_button, text="Guardar la configuración actual del análisis y cerrar este diálogo.", short_text="Guardar config.", enabled=self.settings.enable_hover_tooltips)
         cancel_button_individual = ttk.Button(self.button_frame, text="Cancelar", command=self.destroy)

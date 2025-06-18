@@ -71,7 +71,7 @@ class CommentDialog(Toplevel):
         button_frame.pack(fill=tk.X, pady=(10, 0))
 
         ttk.Button(button_frame, text="Cancelar", command=self.destroy).pack(side=tk.RIGHT, padx=(5,0))
-        self.save_button = ttk.Button(button_frame, text="Guardar", command=self.save_comment)
+        self.save_button = ttk.Button(button_frame, text="Guardar", style="Green.TButton", command=self.save_comment)
         self.save_button.pack(side=tk.RIGHT)
 
         # After all widgets are created, set a minimum size

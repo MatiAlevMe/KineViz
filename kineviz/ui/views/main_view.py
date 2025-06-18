@@ -100,13 +100,13 @@ class MainView:
         Tooltip(manual_btn, text=manual_tooltip_text, short_text=manual_tooltip_text, enabled=self.main_window.settings.enable_hover_tooltips)
 
         # 2. Configuración
-        config_btn = ttk.Button(action_button_frame, text='Configuración', command=self.main_window.show_config_dialog)
+        config_btn = ttk.Button(action_button_frame, text='Configuración', command=self.main_window.show_config_dialog, style="Celeste.TButton")
         config_btn.pack(side=tk.RIGHT, padx=5)
         config_tooltip_text = "Abrir el diálogo de configuración de la aplicación."
         Tooltip(config_btn, text=config_tooltip_text, short_text=config_tooltip_text, enabled=self.main_window.settings.enable_hover_tooltips)
 
         # 3. DEMO (Replaces Ayuda - Welcome Message)
-        demo_btn = ttk.Button(action_button_frame, text='DEMO', command=self.main_window.play_demo_video) # Changed text and command
+        demo_btn = ttk.Button(action_button_frame, text='DEMO', command=self.main_window.play_demo_video,style="Celeste.TButton") # Changed text and command
         demo_btn.pack(side=tk.RIGHT, padx=5)
         demo_tooltip_text = "Reproducir el video DEMO de la aplicación." # Updated tooltip
         Tooltip(demo_btn, text=demo_tooltip_text, short_text=demo_tooltip_text, enabled=self.main_window.settings.enable_hover_tooltips)
@@ -131,7 +131,7 @@ class MainView:
         # self.search_field_combo.set("Nombre de Estudio") # Default value
         # Tooltip(self.search_field_combo, text="Seleccionar campo para la búsqueda.", short_text="Campo de búsqueda.", enabled=self.main_window.settings.enable_hover_tooltips)
 
-        search_button = ttk.Button(self.search_content_frame, text="Buscar", command=self.search_studies)
+        search_button = ttk.Button(self.search_content_frame, text="Buscar", command=self.search_studies, style="Celeste.TButton")
         Tooltip(search_button, text="Buscar estudios por nombre.", short_text="Buscar estudios.", enabled=self.main_window.settings.enable_hover_tooltips)
 
         clear_button = ttk.Button(self.search_content_frame, text="Limpiar", command=self.clear_search)
@@ -227,7 +227,7 @@ class MainView:
 
         # Edit Selected Study button (moved from Row 1) - Packed to the left of Create New Study
         self.edit_selected_button = ttk.Button(self.bottom_buttons_row2_container, text='Editar Estudio Seleccionado',
-                                                command=self._edit_selected_study, state=tk.DISABLED, style="Celeste.TButton")
+                                                command=self._edit_selected_study, state=tk.DISABLED)
         self.edit_selected_button.pack(side=tk.RIGHT, padx=(0,5)) # padx to separate from create_study_button
         Tooltip(self.edit_selected_button, text="Editar los metadatos del estudio seleccionado (solo 1 selección).", short_text="Editar seleccionado.", enabled=self.main_window.settings.enable_hover_tooltips)
 
