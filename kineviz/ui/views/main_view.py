@@ -140,7 +140,10 @@ class MainView:
         refresh_button = ttk.Button(self.search_content_frame, text="Refrescar", command=self.load_studies)
         Tooltip(refresh_button, text="Recargar la lista de estudios desde la base de datos.", short_text="Recargar lista.", enabled=self.main_window.settings.enable_hover_tooltips)
         
-        # main_view_help_button ('?') and its tooltip were here, removed.
+        main_view_help_button = ttk.Button(self.search_content_frame, text="?", width=3,
+                                           style="Help.TButton", command=self._show_main_view_help)
+        main_view_tooltip_text = "Mostrar ayuda para la ventana principal de estudios."
+        Tooltip(main_view_help_button, text=main_view_tooltip_text, short_text=main_view_tooltip_text, enabled=self.main_window.settings.enable_hover_tooltips)
 
         # Packing order for search elements:
         search_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True) # Entry takes available space
@@ -152,7 +155,7 @@ class MainView:
         spacer_frame.pack(side=tk.LEFT, fill=tk.X, expand=True) # This spacer might not be needed if search_entry expands
 
         # Right side (packed in reverse visual order for right alignment)
-        # main_view_help_button.pack(side=tk.RIGHT, padx=(0,0)) # Removed packing for '?' button
+        main_view_help_button.pack(side=tk.RIGHT, padx=(0,0)) 
         refresh_button.pack(side=tk.RIGHT, padx=(0,5)) 
         clear_button.pack(side=tk.RIGHT, padx=(0,5))
 
@@ -363,7 +366,28 @@ class MainView:
         page_info_label = ttk.Label(self.pagination_container, text=f"Página {self.current_page} de {self.total_pages}")
         page_info_label.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
 
-    # _show_main_view_help method removed as it's no longer used.
+
+    def _show_main_view_help(self):
+        """Muestra un popup de ayuda para la Vista Principal."""
+        help_title = "Ayuda: Ventana Principal de Estudios"
+        help_message = (
+            "Esta ventana muestra una lista de todos los estudios creados.\n\n"
+            "Funcionalidades Principales:\n"
+            "- Cabecera: Acceso rápido a 'Abrir Carpeta' (de estudios), 'DEMO' (video demostrativo), "
+            "'Configuración' (ajustes de la app), y 'Manual' (manual de usuario).\n"
+            "- Buscar estudios por su nombre.\n"
+            "- Tabla de Estudios: Muestra los estudios con opción de 'Pin' para destacarlos.\n"
+            "- Acciones sobre Estudios Seleccionados (botones inferiores):\n"
+            "  - 'Ver Estudio Seleccionado': Abre la vista detallada del estudio.\n"
+            "  - 'Comentar Estudio Seleccionado': Añade o edita un comentario.\n"
+            "  - 'Editar Estudio Seleccionado': Modifica los metadatos del estudio.\n"
+            "  - 'Eliminar Seleccionado(s)': Elimina los estudios marcados (¡con precaución!).\n"
+            "- 'Crear Nuevo Estudio': Inicia el proceso de creación de un nuevo estudio.\n"
+            "- 'Eliminar Todos los Estudios': Borra todos los estudios existentes (¡acción irreversible!).\n"
+            "- Paginación: Navega entre páginas si hay muchos estudios.\n"
+            "- Menú 'Editar > Deshacer': Si está activado en Configuración, permite revertir la última operación de eliminación."
+        )
+        messagebox.showinfo(help_title, help_message, parent=self.root)
 
     def go_to_page(self, page_number):
         """Navega a una página específica."""
