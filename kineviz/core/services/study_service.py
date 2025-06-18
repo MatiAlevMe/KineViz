@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 MAX_PINNED_STUDIES = 5
 
 class StudyService:
-    def __init__(self):
+    def __init__(self, settings: AppSettings, undo_manager: UndoManager):
         self.repo = StudyRepository()
         self.db_path = self.repo.db_path # Expose db_path
         self.settings = settings # Use passed AppSettings instance
