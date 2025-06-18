@@ -336,6 +336,22 @@ Organizado en pestañas:
 *   **Pestaña Deshacer**:
     *   Habilitar/deshabilitar la función "Deshacer Eliminación".
     *   Tiempo de expiración de la caché de deshacer (segundos).
+*   **Pestaña Avanzado**:
+    *   **Mostrar opciones avanzadas de copias de seguridad**: Permite acceder a funciones como "Limpiar Archivos .bak Residuales". Esta opción debe estar activada para ver el botón de limpieza.
+    *   **Limpiar Archivos .bak Residuales**: (Visible si la opción anterior está activada) Elimina archivos y carpetas temporales con extensión `.bak` que se crean en la raíz del proyecto como medida de seguridad durante las restauraciones. Es seguro eliminarlos si la aplicación funciona correctamente.
+    *   **Habilitar 'Deshacer Eliminación' (Experimental)**: Activa o desactiva la función para revertir la última operación de eliminación soportada. La opción "Deshacer" aparecerá en el menú "Editar" de la ventana principal si está habilitada y hay una operación para deshacer. La información para deshacer es temporal.
+    *   **Timeout caché deshacer (seg)**: (Visible si 'Deshacer Eliminación' está habilitado) Configura el tiempo en segundos para que la caché de "Deshacer Eliminación" se considere expirada. Un valor de 0 deshabilita el chequeo por timeout.
+    *   **Mostrar opción de Restauración de Fábrica (Avanzado)**: Controla la visibilidad del botón "Restaurar KineViz a Estado de Fábrica". Esta opción está oculta por defecto debido a la naturaleza destructiva de la restauración de fábrica.
+    *   **Restablecer Ajustes a Predeterminados**: Revierte todas las configuraciones de la aplicación (las opciones en todas las pestañas de esta ventana de Configuración) a sus valores originales de fábrica. Esto NO afecta sus estudios, archivos, análisis ni copias de seguridad guardadas. Los cambios se aplican inmediatamente y el diálogo se cierra.
+    *   **Restaurar KineViz a Estado de Fábrica**: (Visible si la opción "Mostrar opción de Restauración de Fábrica" está activada)
+        *   **¡ADVERTENCIA! ESTA ACCIÓN ES IRREVERSIBLE.**
+        *   Elimina TODA la información de la aplicación, incluyendo:
+            *   TODOS los estudios y sus archivos asociados.
+            *   TODOS los análisis guardados (discretos y continuos).
+            *   La base de datos completa de KineViz.
+            *   Todas las configuraciones personalizadas se revertirán a los valores iniciales.
+        *   **Copia de Respaldo Previa**: Si la opción "Habilitar copias de respaldo (pre-restauración)" (ubicada en la pestaña "Copias de Seguridad") está activada, KineViz intentará crear una copia de seguridad de tipo 'Respaldo' del estado actual del sistema *antes* de proceder con la restauración de fábrica. Si esta copia de respaldo falla, se le preguntará si desea continuar con la restauración de fábrica de todas formas.
+        *   La aplicación generalmente requiere un reinicio después de esta operación. Úsela con extrema precaución y solo si es absolutamente necesario.
 
 ### 4.9. Diálogo: Gestión de Copias de Seguridad y Restauración
 Permite administrar las copias de seguridad del sistema.
