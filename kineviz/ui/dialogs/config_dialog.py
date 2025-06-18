@@ -548,6 +548,10 @@ class ConfigDialog(Toplevel):
         enable_undo_delete_long_text = (
             "Permite deshacer la última operación de eliminación de estudios, archivos o resultados de análisis.\n"
             "La opción 'Deshacer' aparecerá en el menú 'Editar' si está habilitada y hay una operación para deshacer.\n"
+            "La información para deshacer se guarda en una caché temporal. Esta caché se limpia automáticamente:\n"
+            "1. Al iniciar una nueva operación que pueda ser deshecha (ej. otra eliminación).\n"
+            "2. Si el 'Timeout caché deshacer' está configurado (>0) y el tiempo ha expirado al iniciar la aplicación.\n"
+            "La caché NO se limpia al cambiar de vista o cerrar la aplicación (a menos que el timeout se cumpla al reabrir).\n"
             "Esta función es experimental. Úsela con precaución.\n\n"
             "Nota: La preparación para una *nueva* operación de 'Deshacer' puede requerir un reinicio de la aplicación después de un uso previo o cambio de esta configuración."
         )
@@ -573,11 +577,12 @@ class ConfigDialog(Toplevel):
         undo_timeout_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True)
         
         undo_timeout_long_text = (
-            "Tiempo en segundos antes de que la caché de 'Deshacer Eliminación' se borre automáticamente.\n"
-            "Un valor de 0 deshabilita el timeout (la caché solo se borra en la siguiente operación de eliminación, al cerrar la app, o manualmente).\n"
+            "Tiempo en segundos para que la caché de 'Deshacer Eliminación' se considere expirada.\n"
+            "Si la caché ha expirado al iniciar la aplicación, la opción 'Deshacer' para la sesión anterior no estará disponible.\n"
+            "Un valor de 0 deshabilita este chequeo por timeout (la caché solo se borrará al preparar una nueva operación de deshacer).\n"
             "Recomendado: 60-300 segundos."
         )
-        undo_timeout_short_text = "Timeout para caché de deshacer (seg, 0=sin timeout)."
+        undo_timeout_short_text = "Timeout para caché de deshacer (seg, 0=sin chequeo por timeout)."
         undo_timeout_help_btn = ttk.Button(
             undo_timeout_entry_frame, text="?", width=3, style="Help.TButton",
             command=lambda: self._show_input_help("Ayuda: Timeout Caché Deshacer", undo_timeout_long_text)
