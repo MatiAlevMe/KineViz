@@ -23,7 +23,7 @@ class StudyDialog(Toplevel):
         super().__init__(parent)
         self.study_service = study_service
         self.settings = settings # Store AppSettings instance
-        self.file_service = FileService(study_service) # Necesitamos FileService para buscar archivos
+        self.file_service = FileService(study_service, self.settings) # Necesitamos FileService para buscar archivos
         self.study_to_edit = study_to_edit
         self.on_save_callback = on_save_callback
         self.is_editing = bool(study_to_edit) # Flag para modo edición
