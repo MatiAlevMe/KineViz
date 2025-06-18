@@ -1,7 +1,7 @@
 import tkinter as tk # Importar tk para fill/expand
 from tkinter import ttk, messagebox # Importar messagebox
 import logging # Importar logging
-import webbrowser # Para abrir archivo de ayuda                                                                                     
+# import webbrowser # Para abrir archivo de ayuda - Eliminado, ya no se usa
 from pathlib import Path # Para construir ruta de ayuda  
 # Ya no se necesita PaginatedTable aquí
 from kineviz.ui.widgets.file_browser import FileBrowser
@@ -104,12 +104,12 @@ class StudyView:
         # Spacer to push analysis and help buttons to the right
         ttk.Frame(header_frame_row1).pack(side=tk.LEFT, expand=True, fill=tk.X)
 
-        # Botón Ayuda General (ahora a la izquierda de los botones de análisis)
-        style = ttk.Style() 
-        style.configure("HelpView.TButton", foreground="white", background="green") 
-        help_button_general = ttk.Button(header_frame_row1, text="?", width=3, style="HelpView.TButton", command=self.show_study_view_help)
-        help_button_general.pack(side=tk.RIGHT, padx=(0, 5)) # Adjusted padding
-        Tooltip(help_button_general, text="Abrir el manual de ayuda específico para la vista de estudio.", short_text="Ayuda vista estudio.", enabled=self.main_window.settings.enable_hover_tooltips)
+        # Botón Ayuda General (ahora a la izquierda de los botones de análisis) - Eliminado
+        # style = ttk.Style() 
+        # style.configure("HelpView.TButton", foreground="white", background="green") 
+        # help_button_general = ttk.Button(header_frame_row1, text="?", width=3, style="HelpView.TButton", command=self.show_study_view_help)
+        # help_button_general.pack(side=tk.RIGHT, padx=(0, 5)) # Adjusted padding
+        # Tooltip(help_button_general, text="Abrir el manual de ayuda específico para la vista de estudio.", short_text="Ayuda vista estudio.", enabled=self.main_window.settings.enable_hover_tooltips)
 
         continuous_analysis_button = ttk.Button(header_frame_row1, text="Análisis Continuo", command=lambda: self.main_window.show_continuous_analysis_manager_dialog(self.study_id), style="Green.TButton")
         continuous_analysis_button.pack(side=tk.RIGHT, padx=(0, 5)) # Adjusted padding
