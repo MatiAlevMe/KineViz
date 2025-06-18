@@ -212,7 +212,7 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         filter_action_buttons_frame = ttk.Frame(search_filter_frame)
         filter_action_buttons_frame.grid(row=5, column=0, columnspan=3, sticky="ew", pady=(5,0)) # New row for these buttons
         
-        apply_button_filters = ttk.Button(filter_action_buttons_frame, text="Aplicar Filtros", command=self._apply_filters_and_search)
+        apply_button_filters = ttk.Button(filter_action_buttons_frame, text="Aplicar Filtros", command=self._apply_filters_and_search, style="Celeste.TButton")
         apply_button_filters.pack(side=tk.LEFT, padx=(0,5)) # Adjusted padding
         Tooltip(apply_button_filters, text="Aplicar todos los filtros seleccionados.", short_text="Aplicar filtros.", enabled=self.main_window.settings.enable_hover_tooltips)
 
@@ -227,7 +227,7 @@ class ContinuousAnalysisManagerDialog(Toplevel):
         refresh_button_list.pack(side=tk.RIGHT, padx=(0,0)) # Rightmost, no right padding from itself
         Tooltip(refresh_button_list, text="Recargar la lista de análisis guardados.", short_text="Refrescar lista.", enabled=self.main_window.settings.enable_hover_tooltips)
 
-        search_button_moved_cont = ttk.Button(filter_action_buttons_frame, text="Buscar", command=self._apply_filters_and_search)
+        search_button_moved_cont = ttk.Button(filter_action_buttons_frame, text="Buscar", command=self._apply_filters_and_search, style="Celeste.TButton")
         search_button_moved_cont.pack(side=tk.RIGHT, padx=(0,5)) # To the left of Refresh, 5px padding on its right
         Tooltip(search_button_moved_cont, text="Buscar análisis por nombre o variable analizada.", short_text="Buscar.", enabled=self.main_window.settings.enable_hover_tooltips)
 
@@ -260,15 +260,15 @@ class ContinuousAnalysisManagerDialog(Toplevel):
 
         # --- Populate Bottom Fixed View Actions Frame ---
         # (Ver Gráfico SPM (PNG), Ver Gráfico Interactivo SPM, Ver Configuración, Nuevo Análisis...)
-        self.view_plot_button = ttk.Button(self.bottom_fixed_view_actions_frame, text="Ver Gráfico SPM (PNG)", command=self._view_plot, state=tk.DISABLED)
+        self.view_plot_button = ttk.Button(self.bottom_fixed_view_actions_frame, text="Ver Gráfico SPM (PNG)", command=self._view_plot, state=tk.DISABLED, style="Green.TButton")
         self.view_plot_button.pack(side=tk.LEFT, padx=5)
         Tooltip(self.view_plot_button, text="Abrir el gráfico SPM estático (PNG) del análisis seleccionado.", short_text="Ver gráfico SPM.", enabled=self.main_window.settings.enable_hover_tooltips)
 
-        self.view_interactive_plot_button = ttk.Button(self.bottom_fixed_view_actions_frame, text="Ver Gráfico Interactivo SPM", command=self._view_interactive_plot, state=tk.DISABLED)
+        self.view_interactive_plot_button = ttk.Button(self.bottom_fixed_view_actions_frame, text="Ver Gráfico Interactivo SPM", command=self._view_interactive_plot, state=tk.DISABLED, style="Green.TButton")
         self.view_interactive_plot_button.pack(side=tk.LEFT, padx=5)
         Tooltip(self.view_interactive_plot_button, text="Abrir el gráfico SPM interactivo (HTML) del análisis seleccionado en un navegador.", short_text="Ver interactivo SPM.", enabled=self.main_window.settings.enable_hover_tooltips)
 
-        self.view_config_button = ttk.Button(self.bottom_fixed_view_actions_frame, text="Ver Configuración", command=self._view_config, state=tk.DISABLED)
+        self.view_config_button = ttk.Button(self.bottom_fixed_view_actions_frame, text="Ver Configuración", command=self._view_config, state=tk.DISABLED, style="Celeste.TButton")
         self.view_config_button.pack(side=tk.LEFT, padx=5)
         Tooltip(self.view_config_button, text="Ver la configuración detallada del análisis SPM seleccionado en un archivo de texto.", short_text="Ver config. SPM.", enabled=self.main_window.settings.enable_hover_tooltips)
 
@@ -288,7 +288,7 @@ class ContinuousAnalysisManagerDialog(Toplevel):
 
         ttk.Frame(self.bottom_fixed_folder_actions_frame).pack(side=tk.LEFT, expand=True, fill=tk.X) # Spacer
 
-        new_analysis_button_cont = ttk.Button(self.bottom_fixed_folder_actions_frame, text="Nuevo Análisis...", command=self._open_new_analysis_dialog)
+        new_analysis_button_cont = ttk.Button(self.bottom_fixed_folder_actions_frame, text="Nuevo Análisis...", command=self._open_new_analysis_dialog, style="Green.TButton")
         new_analysis_button_cont.pack(side=tk.RIGHT, padx=5)
         Tooltip(new_analysis_button_cont, text="Abrir el diálogo para configurar y generar un nuevo análisis continuo (SPM).", short_text="Nuevo análisis SPM.", enabled=self.main_window.settings.enable_hover_tooltips)
 

@@ -148,7 +148,7 @@ class ConfigDialog(Toplevel):
         button_frame.columnconfigure(1, weight=0) # Columna para Guardar
         button_frame.columnconfigure(2, weight=0) # Columna para Cancelar
 
-        ttk.Button(button_frame, text="Guardar", command=self.save_settings).grid(row=0, column=2, padx=5, sticky="e")
+        ttk.Button(button_frame, text="Guardar", style="Green.TButton", command=self.save_settings).grid(row=0, column=2, padx=5, sticky="e")
         ttk.Button(button_frame, text="Cancelar", command=self.destroy).grid(row=0, column=1, padx=5, sticky="e")
 
 
@@ -446,7 +446,7 @@ class ConfigDialog(Toplevel):
         # --- SECTION: Manage Backups Button ---
         self.manage_backups_frame = ttk.Frame(parent_frame)
         self.manage_backups_frame.grid(row=row_idx, column=0, columnspan=2, pady=(15,5), sticky="w") # Added more top padding
-        manage_backups_button = ttk.Button(self.manage_backups_frame, text="Gestionar Copias de Seguridad", command=self.open_backup_restore_dialog)
+        manage_backups_button = ttk.Button(self.manage_backups_frame, text="Gestionar Copias de Seguridad", command=self.open_backup_restore_dialog, style="Green.TButton")
         manage_backups_button.pack(side=tk.LEFT, padx=(0,5))
         manage_backups_long_text = "Abre una nueva ventana para crear, restaurar y gestionar copias de seguridad."
         manage_backups_short_text = "Gestionar copias de seguridad."

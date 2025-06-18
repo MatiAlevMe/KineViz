@@ -130,7 +130,7 @@ class BackupRestoreDialog(Toplevel):
         Tooltip(clear_filters_btn, text="Restablecer filtros y orden a los valores por defecto.", enabled=self.app_settings.enable_hover_tooltips)
 
         # Apply Filters Button (explicitly)
-        apply_filters_btn = ttk.Button(filter_sort_frame, text="Aplicar", command=self._apply_filters_and_sort)
+        apply_filters_btn = ttk.Button(filter_sort_frame, text="Aplicar", command=self._apply_filters_and_sort, style="Celeste.TButton")
         apply_filters_btn.grid(row=1, column=4, padx=(0,5), pady=5, sticky="e") # Adjusted column
 
         # --- Treeview para listar backups ---
@@ -196,7 +196,7 @@ class BackupRestoreDialog(Toplevel):
         actions_row2_frame.columnconfigure(2, weight=1) # Expanding space
         actions_row2_frame.columnconfigure(3, weight=0) # Assign Alias
         
-        self.btn_create_manual = ttk.Button(actions_row2_frame, text="Crear Copia Manual", command=self.create_manual_backup_action, style="Celeste.TButton")
+        self.btn_create_manual = ttk.Button(actions_row2_frame, text="Crear Copia Manual", command=self.create_manual_backup_action, style="Green.TButton")
         self.btn_create_manual.grid(row=0, column=0, padx=5, sticky="w")
         Tooltip(self.btn_create_manual, "Crea una nueva copia de seguridad manual del estado actual del sistema.", enabled=self.app_settings.enable_hover_tooltips)
 
@@ -204,7 +204,7 @@ class BackupRestoreDialog(Toplevel):
         self.btn_restore.grid(row=0, column=1, padx=5, sticky="w")
         Tooltip(self.btn_restore, "Restaura el sistema al estado de la copia de seguridad seleccionada. ¡Esta acción es irreversible!", enabled=self.app_settings.enable_hover_tooltips)
         
-        self.btn_assign_alias = ttk.Button(actions_row2_frame, text="Asignar/Editar Alias", command=self.assign_alias_action, state=tk.DISABLED)
+        self.btn_assign_alias = ttk.Button(actions_row2_frame, text="Asignar/Editar Alias", command=self.assign_alias_action, state=tk.DISABLED, style="Celeste.TButton")
         self.btn_assign_alias.grid(row=0, column=3, padx=5, sticky="e") # Rightmost in this row
         Tooltip(self.btn_assign_alias, "Asigna o edita un alias descriptivo a la copia de seguridad seleccionada (manual o automática).", enabled=self.app_settings.enable_hover_tooltips)
 

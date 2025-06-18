@@ -500,7 +500,7 @@ class ContinuousAnalysisConfigDialog(tk.Toplevel):
         self.button_frame = ttk.Frame(main_frame)
         self.button_frame.grid(row=row_idx, column=0, columnspan=2, sticky="e", pady=10)
         self.button_frame.grid_remove()
-        self.save_button = ttk.Button(self.button_frame, text="Generar Gráfico y Guardar", command=self._on_accept, state=tk.DISABLED)
+        self.save_button = ttk.Button(self.button_frame, text="Generar Gráfico y Guardar", command=self._on_accept, state=tk.DISABLED, style="Green.TButton")
         self.save_button.pack(side=tk.RIGHT, padx=5)
         Tooltip(self.save_button, text="Generar el gráfico SPM y guardar la configuración del análisis.", short_text="Generar y guardar.", enabled=self.settings.enable_hover_tooltips)
         cancel_button_continuous = ttk.Button(self.button_frame, text="Cancelar", command=self._on_cancel)
