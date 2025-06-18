@@ -48475,3 +48475,21 @@ TypeError: StudyRepository.get_studies_paginated() got an unexpected keyword arg
 2025-06-17 23:15:59,773 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 3, Items: 23, Per Page: 10
 2025-06-17 23:15:59,773 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
 2025-06-17 23:16:03,123 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 23:25:57,132 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 23:25:57,133 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 23:25:57,624 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 23:25:57,624 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 23:25:57,625 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz.db': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db
+2025-06-17 23:25:57,626 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 23:26:53,029 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 23:26:53,029 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 23:26:53,248 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 23:26:53,248 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 23:26:53,249 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz.db': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db
+2025-06-17 23:26:53,250 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 23:27:38,188 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 23:27:38,189 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 23:27:38,405 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 23:27:38,406 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 23:27:38,406 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz.db': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db
+2025-06-17 23:27:38,407 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
