@@ -902,7 +902,7 @@ class ConfigDialog(Toplevel):
                     self.reset_callback() # Llama a MainWindow.reset_to_defaults
                     # MainWindow.reset_to_defaults se encarga de mensajes y de cerrar/reiniciar la app si es necesario.
                     # El diálogo de configuración se cerrará si el reseteo es exitoso y la app se reinicia o va a landing.
-                    # self.destroy() # ConfigDialog will destroy itself if reset_callback leads to app exit
+                    self.destroy() # ConfigDialog will destroy itself if reset_callback leads to app exit
                 except Exception as e:
                      messagebox.showerror("Error Crítico", f"Ocurrió un error catastrófico durante la restauración de fábrica:\n{e}", parent=self)
         else:
