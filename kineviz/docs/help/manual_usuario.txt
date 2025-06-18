@@ -1,21 +1,14 @@
-# Manual de Usuario KineViz
+# MANUAL DE USUARIO KINEVIZ
+**Versión: 1.2** | **Actualizado: 2025-06-18**
 
-Adicional a este Manual de Usuario, se cuenta con:
-1. **Botón "?"**: Encontrarás ayuda contextual a lo largo del programa mediante botones con el símbolo "?".
-2. **Pequeñas notas**: Al posicionar el cursor sobre las diferentes opciones del programa, aparecerá una breve explicación.
-**Nota**: Esta función viene activada por defecto en la configuración del sistema.
-3. **DEMO**: Video introductorio que muestra algunos flujos de trabajo. Puedes acceder directamente desde el programa.
-4. **Video detallado**: Tutorial detallado sobre el funcionamiento del programa, disponible en: "youtu.be/7p5OsPdvgy8"
-**Nota:** Es un video privado, requiere solicitar permiso para poder visualizar.
-
-**Versión del Manual: 1.0**
-**Fecha de Última Actualización: 2025-06-18**
+---
 
 ## Tabla de Contenidos
 1.  [Introducción](#1-introducción)
     1.1. [¿Qué es KineViz?](#11-qué-es-kineviz)
     1.2. [¿Para Quién es KineViz?](#12-para-quién-es-kineviz)
     1.3. [Necesidad que Cubre](#13-necesidad-que-cubre)
+    1.4. [Recursos adicionales de ayuda](#14-recursos-adicionales-de-ayuda)
 2.  [Objetivos del Software](#2-objetivos-del-software)
 3.  [Flujos Principales de Trabajo](#3-flujos-principales-de-trabajo)
     3.1. [Creación de un Nuevo Estudio](#31-creación-de-un-nuevo-estudio)
@@ -53,12 +46,27 @@ Este software está dirigido a investigadores, profesionales de la kinesiología
 ### 1.3. Necesidad que Cubre
 KineViz aborda la necesidad de un sistema unificado que permita pasar de la recolección de datos crudos a la obtención de resultados analíticos y visualizaciones significativas de manera eficiente y organizada, reduciendo la complejidad de manejar múltiples herramientas y formatos de archivo.
 
+### 1.4. Recursos adicionales de ayuda
+1. **Botón "?"**: Encontrarás ayuda contextual a lo largo del programa mediante botones con el símbolo "?".
+2. **Notas Emergentes**: Al posicionar el cursor sobre las diferentes opciones del programa, aparecerá una breve explicación.
+    ⚠️ **Nota**: Esta función viene activada por defecto en la configuración del sistema.
+3. **DEMO**: Video introductorio que muestra algunos flujos de trabajo. Puedes acceder directamente desde el programa.
+4. **Video detallado**: Tutorial detallado sobre el funcionamiento del programa, disponible en: "youtu.be/7p5OsPdvgy8"
+    🔒 **Nota:** Es un video privado, requiere solicitar permiso para poder visualizar.
+
+**Versión del Manual: 1.0**
+**Fecha de Última Actualización: 2025-06-18**
+
+---
+
 ## 2. Objetivos del Software
 *   **Centralizar la Gestión de Estudios**: Proveer un único lugar para crear, organizar y almacenar estudios kinesiológicos.
 *   **Facilitar el Procesamiento de Datos**: Automatizar la lectura, validación y estandarización de archivos de datos (TXT, CSV).
 *   **Potenciar el Análisis Estadístico**: Ofrecer herramientas para análisis discretos (comparación de medias, boxplots) y análisis continuos de series temporales (SPM).
 *   **Mejorar la Visualización de Resultados**: Generar gráficos informativos y personalizables.
 *   **Asegurar la Integridad de los Datos**: Implementar mecanismos de validación, copias de seguridad y restauración.
+
+---
 
 ## 3. Flujos Principales de Trabajo
 
@@ -89,6 +97,8 @@ KineViz aborda la necesidad de un sistema unificado que permita pasar de la reco
 2.  Abrir el "Gestor de Análisis Continuos".
 3.  Configurar un nuevo análisis continuo (Ver Sección [4.7.1](#471-diálogo-configurar-análisis-continuo-continuousanalysisconfigdialog)), seleccionando tipo de dato, variable, grupos a comparar y opciones de visualización.
 4.  Ejecutar el análisis para obtener la curva SPM y los clusters significativos.
+
+---
 
 ## 4. Guía Detallada de la Interfaz y Funcionalidades
 
@@ -380,6 +390,8 @@ Permite revertir la última operación de eliminación soportada (ej: eliminar u
     *   La caché es temporal: se borra si se realiza otra operación significativa, si expira un temporizador (configurable en [4.8](#48-diálogo-configuración-de-la-aplicación)), o al cerrar la aplicación.
     *   Debe estar habilitada en la Configuración de la Aplicación.
 
+---
+
 ## 5. Notas Importantes y Consejos
 
 ### 5.1. Formato de Archivos de Entrada
@@ -396,6 +408,8 @@ Permite revertir la última operación de eliminación soportada (ej: eliminar u
 ### 5.3. Importancia del Orden de las VIs
 *   El orden en que se definen las Variables Independientes en el Diálogo "Crear/Editar Estudio" (de arriba hacia abajo) dicta el orden en que sus correspondientes sub-valores deben aparecer en los nombres de los archivos. Este orden es fundamental para la correcta interpretación de los datos por parte de KineViz.
 
+---
+
 ## 6. Glosario
 *   **VI (Variable Independiente)**: Factor o condición que se manipula o categoriza en un estudio.
 *   **Sub-valor (Descriptor)**: Nivel o categoría específica de una VI.
@@ -405,6 +419,8 @@ Permite revertir la última operación de eliminación soportada (ej: eliminar u
 *   **Cinética**: Estudio de las fuerzas que causan el movimiento (ej: momentos articulares, fuerzas de reacción del suelo).
 *   **EMG (Electromiografía)**: Técnica para evaluar y registrar la actividad eléctrica producida por los músculos esqueléticos.
 *   **CSV (Comma-Separated Values)**: Formato de archivo de texto plano para datos tabulares.
+
+---
 
 ## 7. Solución de Problemas Comunes (FAQ)
 *   **P: KineViz no reconoce mis archivos al intentar agregarlos.**
