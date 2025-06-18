@@ -1172,3 +1172,17 @@
 2025-06-18 00:00:35,988 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
 2025-06-18 00:00:35,989 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz.db': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db
 2025-06-18 00:00:35,990 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-18 00:17:15,980 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-18 00:17:15,980 - INFO - [__main__] - Iniciando KineViz...
+2025-06-18 00:17:16,564 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 00:17:16,564 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 00:17:16,565 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz.db': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db
+2025-06-18 00:17:16,566 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-18 00:17:26,352 - INFO - [kineviz.ui.main_window] - Intentando abrir manual de usuario: /Users/arakito/Mati/Codigo/Python/KineViz/kineviz/docs/help/manual_usuario.txt
+2025-06-18 00:22:51,582 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-18 00:22:51,582 - INFO - [__main__] - Iniciando KineViz...
+2025-06-18 00:22:51,798 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 00:22:51,798 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 00:22:51,798 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz.db': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db
+2025-06-18 00:22:51,799 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-18 00:22:52,719 - INFO - [kineviz.ui.main_window] - Intentando abrir manual de usuario: /Users/arakito/Mati/Codigo/Python/KineViz/kineviz/docs/help/manual_usuario.txt

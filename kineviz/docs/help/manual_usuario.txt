@@ -72,8 +72,8 @@ KineViz aborda la necesidad de un sistema unificado que permita pasar de la reco
 ### 3.3. Realización de un Análisis Discreto
 1.  Desde la Vista de Estudio, acceder a "Análisis Discreto".
 2.  En la Vista de Análisis Discreto (Ver Sección [4.6.1](#461-vista-de-tablas-de-resumen-discreteanalysisview)), generar o actualizar las tablas de resumen.
-3.  Abrir el "Gestor de Análisis Individuales".
-4.  Configurar un nuevo análisis individual, seleccionando tipo de dato, cálculo, variable, grupos a comparar y supuestos estadísticos.
+3.  Abrir el "Gestor de Análisis Discretos".
+4.  Configurar un nuevo análisis, seleccionando tipo de dato, cálculo, variable, grupos a comparar y supuestos estadísticos.
 5.  Ejecutar el análisis para obtener resultados estadísticos y gráficos.
 
 ### 3.4. Realización de un Análisis Continuo (SPM)
@@ -264,9 +264,9 @@ Esta vista es el punto de partida para el análisis discreto.
 *   **Acciones**:
     *   Abrir tabla `.xlsx`.
     *   Eliminar tabla.
-    *   **Abrir Gestor de Análisis Individuales**: Navega al diálogo para crear y gestionar análisis más específicos (Ver Sección [4.6.3](#463-diálogo-gestor-de-análisis-individuales-individualanalysismanagerdialog)).
+    *   **Abrir Gestor de Análisis Discretos**: Navega al diálogo para crear y gestionar análisis más específicos (Ver Sección [4.6.3](#463-diálogo-gestor-de-análisis-individuales-individualanalysismanagerdialog)).
 
-#### 4.6.2. Diálogo: Configurar Análisis Individual (`ConfigureIndividualAnalysisDialog`)
+#### 4.6.2. Diálogo: Configurar Análisis Discretos (`ConfigureIndividualAnalysisDialog`)
 Permite definir los parámetros para un análisis estadístico comparativo específico.
 *   **Nombre del Análisis**: Un nombre descriptivo para guardar y identificar el análisis.
 *   **Tipo de Dato (Frecuencia)**: Actualmente fijo a "Cinematica".
@@ -281,8 +281,8 @@ Permite definir los parámetros para un análisis estadístico comparativo espec
     *   **Pareado/No Pareado**: Indicar si las muestras son dependientes o independientes.
 *   **Guardar Configuración**: Guarda la configuración y ejecuta el análisis.
 
-#### 4.6.3. Diálogo: Gestor de Análisis Individuales (`IndividualAnalysisManagerDialog`)
-Lista y permite gestionar los análisis individuales que han sido configurados y guardados.
+#### 4.6.3. Diálogo: Gestor de Análisis Disretos (`IndividualAnalysisManagerDialog`)
+Lista y permite gestionar los análisis que han sido configurados y guardados.
 *   **Lista de Análisis Guardados**:
     *   Columnas: "Nombre Análisis", "Variable Analizada", "Grupos Comparados", "Valores Clave (ej: p-valor)", "Fecha".
 *   **Filtros y Búsqueda**: Por palabra clave, VIs y sus sub-valores.
@@ -292,7 +292,7 @@ Lista y permite gestionar los análisis individuales que han sido configurados y
     *   **Ver Configuración**: Exporta los detalles completos del análisis (incluyendo parámetros, supuestos y archivos contribuyentes por grupo) a un archivo `.txt` y lo abre.
     *   **Abrir Carpeta de Resultados**: Abre la carpeta donde se guardaron los archivos del análisis (JSON de configuración, gráficos).
     *   **Eliminar Análisis**: Borra el análisis guardado y sus archivos.
-*   **Botón "Crear Nuevo Análisis Individual"**: Abre el diálogo de configuración (Ver Sección [4.6.2](#462-diálogo-configurar-análisis-individual-configureindividualanalysisdialog)).
+*   **Botón "Crear Nuevo Análisis"**: Abre el diálogo de configuración (Ver Sección [4.6.2](#462-diálogo-configurar-análisis-individual-configureindividualanalysisdialog)).
 
 ### 4.7. Análisis Continuo (SPM)
 El análisis continuo, utilizando SPM (Statistical Parametric Mapping), permite comparar series temporales completas (curvas) entre grupos, en lugar de solo valores discretos.
