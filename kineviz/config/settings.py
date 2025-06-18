@@ -47,7 +47,8 @@ class AppSettings:
             'enable_pre_restore_backups': 'True',    # New, for pre-restore backups
             'max_pre_restore_backups': '10',         # New, max pre-restore backups
             'pre_restore_backup_cooldown_seconds': '60', # New, cooldown for pre-restore
-            'enable_undo_delete': 'False' # New, for undo delete functionality
+            'enable_undo_delete': 'False', # New, for undo delete functionality
+            'undo_cache_timeout_seconds': '300' # New, 5 minutes timeout for undo cache
         }
         # DESCRIPTOR_ALIASES ya no se gestiona aquí
     }
@@ -160,6 +161,11 @@ class AppSettings:
             if self.get_int_setting('pre_restore_backup_cooldown_seconds', -1) < 0:
                 raw_val = self.config.get('SETTINGS', 'pre_restore_backup_cooldown_seconds', fallback=None)
                 logger.error(f"Config validation failed: 'pre_restore_backup_cooldown_seconds' must be a non-negative integer, got '{raw_val}'.")
+                return False
+
+            if self.get_int_setting('undo_cache_timeout_seconds', -1) < 0:
+                raw_val = self.config.get('SETTINGS', 'undo_cache_timeout_seconds', fallback=None)
+                logger.error(f"Config validation failed: 'undo_cache_timeout_seconds' must be a non-negative integer, got '{raw_val}'.")
                 return False
             
             # Font scale (positive float)
@@ -506,6 +512,23 @@ class AppSettings:
     @enable_undo_delete.setter
     def enable_undo_delete(self, value: bool):
         self.set_setting('enable_undo_delete', str(value))
+
+    @property
+    def undo_cache_timeout_seconds(self) -> int:
+        """Timeout in seconds for the undo cache. Non-negative. 0 means no timeout."""
+        value = self.get_int_setting('undo_cache_timeout_seconds', 300)
+        if value < 0:
+            logger.warning(f"Invalid negative value '{value}' for 'undo_cache_timeout_seconds'. Using default 300.")
+            return 300
+        return value
+
+    @undo_cache_timeout_seconds.setter
+    def undo_cache_timeout_seconds(self, value: int):
+        if value < 0:
+            logger.warning(f"Attempted to set invalid negative value '{value}' for 'undo_cache_timeout_seconds'. Setting to 0 instead.")
+            self.set_setting('undo_cache_timeout_seconds', '0')
+        else:
+            self.set_setting('undo_cache_timeout_seconds', str(value))
 
     def reset_to_defaults(self):
          """Restablece las configuraciones en memoria a los valores por defecto."""
