@@ -63,6 +63,9 @@ class MainWindow:
             settings=self.settings,
             undo_manager=self.undo_manager
         )
+        
+        # Clear undo cache if timed out on application startup
+        self.undo_manager.clear_undo_cache_if_timed_out()
 
         self.current_view = None
         self.style = ttk.Style()
