@@ -285,15 +285,18 @@ class MainView:
             # Obtener estudios paginados y filtrados
             studies_per_page = self.main_window.estudios_por_pagina
             search_query = self.search_term.get() if self.search_term.get() else None
-            search_field_selected = self.search_field_var.get()
+            search_field_selected = self.search_field_var.get() # Get the selected search field
 
             studies = self.study_service.get_studies_paginated(
                 page=self.current_page,
                 per_page=studies_per_page,
                 search_term=search_query,
-                search_field=search_field_selected # Pass search field
+                search_field=search_field_selected # Pass the selected search field
             )
-            total_studies = self.study_service.get_total_studies_count(search_term=search_query, search_field=search_field_selected)
+            total_studies = self.study_service.get_total_studies_count(
+                search_term=search_query,
+                search_field=search_field_selected # Pass the selected search field
+            )
             self.total_pages = (total_studies // studies_per_page) + (1 if total_studies % studies_per_page else 0)
             self.total_pages = max(1, self.total_pages) # Asegurar al menos 1 página
 
