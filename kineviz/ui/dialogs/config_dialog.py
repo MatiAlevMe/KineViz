@@ -899,6 +899,23 @@ class ConfigDialog(Toplevel):
 
             if confirm2:
                 try:
+                    # Attempt to create a pre-restore backup before factory reset
+                    if self.settings.enable_pre_restore_backups:
+                        logger.info("Creando copia de seguridad tipo 'Respaldo' antes de la restauración de fábrica...")
+                        pre_restore_backup_path = backup_manager.create_backup(backup_manager.PRE_RESTORE_BACKUP_SUBDIR)
+                        if pre_restore_backup_path:
+                            messagebox.showinfo("Copia de Respaldo Pre-Restauración de Fábrica",
+                                                f"Se ha creado una copia de respaldo ('{pre_restore_backup_path.name}') antes de proceder con la restauración de fábrica.",
+                                                parent=self)
+                        else:
+                            # Ask user if they want to continue without the pre-restore backup
+                            if not messagebox.askyesno("Error en Copia de Respaldo",
+                                                             "No se pudo crear la copia de seguridad de respaldo antes de la restauración de fábrica.\n"
+                                                             "¿Desea continuar con la restauración de fábrica SIN esta copia de seguridad adicional?",
+                                                             icon='error', parent=self):
+                                return # User chose not to proceed with factory reset
+
+                    # Proceed with factory reset
                     self.reset_callback() # Llama a MainWindow.reset_to_defaults
                     # MainWindow.reset_to_defaults se encarga de mensajes y de cerrar/reiniciar la app si es necesario.
                     # El diálogo de configuración se cerrará si el reseteo es exitoso y la app se reinicia o va a landing.
