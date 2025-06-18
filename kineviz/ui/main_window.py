@@ -525,7 +525,12 @@ class MainWindow:
                 self.study_service.repo._create_tables() # Llama al método privado para recrear tablas
                 studies_base_dir.mkdir(exist_ok=True)
 
-                messagebox.showinfo("Éxito", "Valores por defecto restablecidos correctamente.")
+                # Reset config.ini to default values
+                logger.info("Restableciendo config.ini a valores por defecto...")
+                self.settings.reset_to_defaults() # This saves defaults to config.ini
+                self.reload_settings() # Reload settings in MainWindow and re-apply styles
+
+                messagebox.showinfo("Éxito", "Valores por defecto restablecidos correctamente.\nLa configuración de la aplicación también ha sido restaurada.")
                 self.show_landing_page() # Volver a la landing page
                 self.update_undo_menu_state() # Update undo state after factory reset
             except Exception as e:
