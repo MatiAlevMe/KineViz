@@ -85,35 +85,35 @@ class MainWindow:
 
     def _create_menubar(self):
         """Crea la barra de menú principal de la aplicación."""
-        self.menubar = tk.Menu(self.root) # Store menubar
+        menubar = tk.Menu(self.root)
 
         # --- Menú Archivo ---
-        file_menu = tk.Menu(self.menubar, tearoff=0)
+        file_menu = tk.Menu(menubar, tearoff=0)
         file_menu.add_command(label="Configuración...", command=self.show_config_dialog)
         file_menu.add_separator()
         file_menu.add_command(label="Salir", command=self.root.quit)
-        self.menubar.add_cascade(label="Archivo", menu=file_menu)
+        menubar.add_cascade(label="Archivo", menu=file_menu)
 
-        # --- Comando Deshacer (Undo Command) ---
-        # The "Editar" (Edit) menu is removed as per user request.
-        # "Deshacer" (Undo) is added as a direct command to the menubar.
-        self.menubar.add_command(label="Deshacer", command=self._perform_undo_operation, state=tk.DISABLED)
+        # --- Menú Editar ---
+        self.edit_menu = tk.Menu(menubar, tearoff=0) # Store as self.edit_menu
+        self.undo_command_index = self.edit_menu.add_command(label="Deshacer", command=self._perform_undo_operation, state=tk.DISABLED)
+        menubar.add_cascade(label="Editar", menu=self.edit_menu)
         
         # --- Menú Ayuda ---
-        help_menu = tk.Menu(self.menubar, tearoff=0)
+        help_menu = tk.Menu(menubar, tearoff=0)
         help_menu.add_command(label="Manual de Usuario", command=self.open_user_manual)
         help_menu.add_command(label="Acerca de...", command=self._show_about_dialog)
-        self.menubar.add_cascade(label="Ayuda", menu=help_menu)
+        menubar.add_cascade(label="Ayuda", menu=help_menu)
 
-        self.root.config(menu=self.menubar)
+        self.root.config(menu=menubar)
 
     def _show_about_dialog(self):
         """Muestra un diálogo simple 'Acerca de...'."""
         messagebox.showinfo(
             "Acerca de KineViz",
             "KineViz - Aplicación para Gestión y Análisis Kinesiológico\n\n"
-            "Versión: 0.1.0 (Desarrollo)\n" # Puedes actualizar esto según sea necesario
-            "Desarrollado por: [Tu Nombre/Organización Aquí]",
+            "Versión: 2.0\n" # Puedes actualizar esto según sea necesario
+            "Desarrollado por: Matías Alevropulos",
             parent=self.root
         )
 
@@ -525,13 +525,13 @@ class MainWindow:
 
     def update_undo_menu_state(self):
         """Updates the state of the 'Undo' menu item."""
-        if hasattr(self, 'menubar') and self.settings.enable_undo_delete:
+        if hasattr(self, 'edit_menu') and self.settings.enable_undo_delete:
             if self.study_service.can_undo_last_operation():
-                self.menubar.entryconfig("Deshacer", state=tk.NORMAL)
+                self.edit_menu.entryconfig("Deshacer", state=tk.NORMAL)
             else:
-                self.menubar.entryconfig("Deshacer", state=tk.DISABLED)
-        elif hasattr(self, 'menubar'): # Undo is disabled in settings
-             self.menubar.entryconfig("Deshacer", state=tk.DISABLED)
+                self.edit_menu.entryconfig("Deshacer", state=tk.DISABLED)
+        elif hasattr(self, 'edit_menu'): # Undo is disabled in settings
+             self.edit_menu.entryconfig("Deshacer", state=tk.DISABLED)
 
 
     def _perform_undo_operation(self):
