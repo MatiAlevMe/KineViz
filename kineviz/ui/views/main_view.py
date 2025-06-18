@@ -38,7 +38,7 @@ class MainView:
 
         # --- Bottom Fixed Frames (created here, populated by create_ui_content or methods) ---
         # Order of packing matters for side=tk.BOTTOM
-        # Row 2 of bottom buttons (Delete All, Delete Selected, Create New)
+        # Row 2 of bottom buttons (Delete Selected, Create New)
         self.bottom_buttons_row2_container = ttk.Frame(self.frame)
         self.bottom_buttons_row2_container.pack(side=tk.BOTTOM, fill=tk.X, pady=(5, 0))
 
@@ -210,12 +210,7 @@ class MainView:
         # self.edit_selected_button is moved to Row 2
 
 
-        # --- Bottom Buttons Row 2 (Delete All, Delete Selected | Create New) ---
-        delete_all_button = ttk.Button(self.bottom_buttons_row2_container, text='Eliminar Todos los Estudios',
-                                       command=self._confirm_delete_all_studies, style="Danger.TButton")
-        delete_all_button.pack(side=tk.LEFT, padx=(0, 5))
-        Tooltip(delete_all_button, text="Eliminar TODOS los estudios y sus datos asociados. ¡Acción irreversible!", short_text="Eliminar todo.", enabled=self.main_window.settings.enable_hover_tooltips)
-
+        # --- Bottom Buttons Row 2 (Delete Selected | Create New) ---
         self.delete_selected_button = ttk.Button(self.bottom_buttons_row2_container, text='Eliminar Seleccionado(s)',
                                                  command=self._confirm_delete_selected_studies, style="Danger.TButton", state=tk.DISABLED)
         self.delete_selected_button.pack(side=tk.LEFT, padx=(0, 10))
@@ -267,12 +262,6 @@ class MainView:
             except Exception as e:
                 logger.error(f"Error al eliminar estudios seleccionados: {e}", exc_info=True)
                 messagebox.showerror("Error al Eliminar", f"No se pudieron eliminar los estudios seleccionados:\n{e}", parent=self.root)
-
-    def _confirm_delete_all_studies(self):
-        """
-        Llama al método de MainWindow para confirmar y eliminar todos los estudios.
-        """
-        self.main_window.confirm_delete_all_studies()
 
 
     def load_studies(self):
@@ -383,7 +372,6 @@ class MainView:
             "  - 'Editar Estudio Seleccionado': Modifica los metadatos del estudio.\n"
             "  - 'Eliminar Seleccionado(s)': Elimina los estudios marcados (¡con precaución!).\n"
             "- 'Crear Nuevo Estudio': Inicia el proceso de creación de un nuevo estudio.\n"
-            "- 'Eliminar Todos los Estudios': Borra todos los estudios existentes (¡acción irreversible!).\n"
             "- Paginación: Navega entre páginas si hay muchos estudios.\n"
             "- Menú 'Editar > Deshacer': Si está activado en Configuración, permite revertir la última operación de eliminación."
         )
