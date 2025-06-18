@@ -26,7 +26,8 @@ from kineviz.ui.views.discrete_analysis_view import DiscreteAnalysisView
 from kineviz.core.services.study_service import StudyService
 from kineviz.core.services.file_service import FileService
 from kineviz.core.services.analysis_service import AnalysisService
-from kineviz.config.settings import AppSettings # Importar AppSettings
+from kineviz.config.settings import AppSettings, get_resource_path # Importar AppSettings and get_resource_path
+from kineviz.core.undo_manager import UndoManager, DB_FILENAME # Import UndoManager and DB_FILENAME
 from kineviz.ui.utils import style as app_style # Import the style utility
 
 logger = logging.getLogger(__name__) # Logger para este módulo
@@ -48,10 +49,20 @@ class MainWindow:
         # Ya no necesitamos el objeto self.config ni el bloque try/except aquí
 
         # --- Instanciación de Servicios ---
-        self.study_service = StudyService()
+        # Determine db_path for UndoManager. Assuming DB_FILENAME is relative to project root.
+        # If kineviz.db is in a specific subdirectory, adjust get_resource_path argument.
+        db_path_for_undo = get_resource_path(DB_FILENAME)
+        self.undo_manager = UndoManager(settings=self.settings, study_repository_db_path=str(db_path_for_undo))
+
+        self.study_service = StudyService(settings=self.settings, undo_manager=self.undo_manager)
         self.file_service = FileService(self.study_service) # Servicio para operaciones de archivos dentro de estudios
-        # Pasar solo study_service y file_service a AnalysisService
-        self.analysis_service = AnalysisService(self.study_service, self.file_service) # Servicio para lógica de análisis y reportes
+        # Pasar settings y undo_manager a AnalysisService
+        self.analysis_service = AnalysisService(
+            study_service=self.study_service,
+            file_service=self.file_service,
+            settings=self.settings,
+            undo_manager=self.undo_manager
+        )
 
         self.current_view = None
         self.style = ttk.Style()

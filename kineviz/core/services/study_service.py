@@ -17,8 +17,8 @@ class StudyService:
     def __init__(self):
         self.repo = StudyRepository()
         self.db_path = self.repo.db_path # Expose db_path
-        self.settings = AppSettings() # Instantiate AppSettings
-        self.undo_manager = UndoManager(settings=self.settings, study_repository_db_path=str(self.db_path))
+        self.settings = settings # Use passed AppSettings instance
+        self.undo_manager = undo_manager # Use passed UndoManager instance
 
     def create_study(self, study_data):
         """
