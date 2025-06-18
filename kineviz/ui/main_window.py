@@ -334,26 +334,26 @@ class MainWindow:
                 self.update_undo_menu_state() # Update undo state even on error
 
     def reload_settings(self):
-         """Recarga las configuraciones desde AppSettings."""
-         # No es necesario recargar el archivo, AppSettings lo maneja.
-         # Solo actualizar las variables de MainWindow si es necesario.
-         self.estudios_por_pagina = self.settings.studies_per_page
-         self.files_per_page = self.settings.files_per_page
-         self.analysis_items_per_page = self.settings.analysis_items_per_page # Renamed
-         self.font_scale = self.settings.font_scale
-         self.app_theme = self.settings.theme
+        """Recarga las configuraciones desde AppSettings."""
+        # No es necesario recargar el archivo, AppSettings lo maneja.
+        # Solo actualizar las variables de MainWindow si es necesario.
+        self.estudios_por_pagina = self.settings.studies_per_page
+        self.files_per_page = self.settings.files_per_page
+        self.analysis_items_per_page = self.settings.analysis_items_per_page # Renamed
+        self.font_scale = self.settings.font_scale
+        self.app_theme = self.settings.theme
         
         # Only apply styles if not in the middle of a restart sequence
         if not self.restart_pending:
             self.apply_application_styles() # Re-apply styles
         else:
             logger.info("MainWindow.reload_settings: Reinicio pendiente, omitiendo re-aplicación de estilos.")
-         
-         # Podríamos necesitar refrescar la vista actual si la paginación cambió
-         # o si el cambio de tema/fuente requiere recrear widgets.
-         # For now, a full refresh of the current view might be the simplest
-         # way to ensure changes are visible, though it's a bit heavy.
-         self.refresh_current_view_after_settings_change()
+        
+        # Podríamos necesitar refrescar la vista actual si la paginación cambió
+        # o si el cambio de tema/fuente requiere recrear widgets.
+        # For now, a full refresh of the current view might be the simplest
+        # way to ensure changes are visible, though it's a bit heavy.
+        self.refresh_current_view_after_settings_change()
 
 
     def refresh_current_view_after_settings_change(self):
