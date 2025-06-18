@@ -382,7 +382,8 @@ class MainView:
             "- Navegar entre páginas de estudios si hay muchos.\n"
             "- Crear un nuevo estudio usando el botón 'Crear Nuevo Estudio'.\n"
             "- Eliminar TODOS los estudios existentes usando el botón 'Eliminar Todos los Estudios' (¡con precaución!).\n"
-            "- Eliminar estudios SELECCIONADOS usando el botón 'Eliminar Seleccionado(s)' (¡con precaución!)."
+            "- Eliminar estudios SELECCIONADOS usando el botón 'Eliminar Seleccionado(s)' (¡con precaución!).\n"
+            "- En todas las ventanas donde existan opciones de 'Eliminar' puedes utilizar la opción 'Dehacer' desde el menu editar en la parte superior izquierda de tu sistema operativo, si es que activas la opción desde configuración (ten cuidado, es una función experimental)."
         )
         messagebox.showinfo(help_title, help_message, parent=self.root)
 
