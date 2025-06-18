@@ -1138,3 +1138,37 @@
 2025-06-17 23:48:52,057 - INFO - [kineviz.ui.widgets.charting] - Gráfico interactivo guardado en: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Graficos/LAnkleForce X/testing/boxplot_interactive.html
 2025-06-17 23:48:52,158 - INFO - [kineviz.core.services.analysis_service] - Configuración análisis guardada en: /Users/arakito/Mati/Codigo/Python/KineViz/estudios/Estudio de Salto Vertical/Analisis Discreto/Graficos/LAnkleForce X/testing/config.json
 2025-06-17 23:48:53,666 - DEBUG - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Cargados 1 análisis individuales para estudio 2.
+2025-06-17 23:49:42,247 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 23:49:42,247 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 23:49:42,492 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 23:49:42,492 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 23:49:42,493 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz.db': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db
+2025-06-17 23:49:42,494 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 23:50:57,065 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 2
+2025-06-17 23:50:57,088 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 23:50:57,089 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 23:50:57,089 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 23:50:59,834 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Loaded VIs for study 2: [{'name': 'Edad', 'descriptors': ['Adulto', 'Joven', 'Mayor'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['OS', 'NP', 'BP'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-17 23:50:59,842 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Cargados 1 análisis continuos para estudio 2.
+2025-06-17 23:51:04,564 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 23:51:04,565 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 23:51:04,565 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 23:51:06,061 - DEBUG - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Loaded VIs for study 2: [{'name': 'Edad', 'descriptors': ['Adulto', 'Joven', 'Mayor'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['OS', 'NP', 'BP'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-17 23:51:06,100 - DEBUG - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Cargados 1 análisis individuales para estudio 2.
+2025-06-17 23:51:08,204 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 23:51:08,205 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 23:51:08,205 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 23:51:08,821 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Loaded VIs for study 2: [{'name': 'Edad', 'descriptors': ['Adulto', 'Joven', 'Mayor'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['OS', 'NP', 'BP'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-17 23:51:08,828 - DEBUG - [kineviz.ui.dialogs.continuous_analysis_manager_dialog] - Cargados 1 análisis continuos para estudio 2.
+2025-06-18 00:00:17,170 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-18 00:00:17,170 - INFO - [__main__] - Iniciando KineViz...
+2025-06-18 00:00:17,689 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 00:00:17,689 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 00:00:17,689 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz.db': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db
+2025-06-18 00:00:17,690 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-18 00:00:35,798 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-18 00:00:35,798 - INFO - [__main__] - Iniciando KineViz...
+2025-06-18 00:00:35,988 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 00:00:35,988 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 00:00:35,989 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz.db': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db
+2025-06-18 00:00:35,990 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
