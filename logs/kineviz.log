@@ -48493,3 +48493,25 @@ TypeError: StudyRepository.get_studies_paginated() got an unexpected keyword arg
 2025-06-17 23:27:38,406 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
 2025-06-17 23:27:38,406 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz.db': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db
 2025-06-17 23:27:38,407 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 23:33:55,344 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 23:33:55,345 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 23:33:55,579 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 23:33:55,579 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 23:33:55,579 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz.db': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db
+2025-06-17 23:33:55,580 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 23:33:57,174 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz/assets/DEMO.mp4': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz/assets/DEMO.mp4
+2025-06-17 23:33:57,175 - ERROR - [kineviz.ui.main_window] - Archivo DEMO.mp4 no encontrado en la ruta esperada: /Users/arakito/Mati/Codigo/Python/KineViz/kineviz/assets/DEMO.mp4
+2025-06-17 23:34:32,621 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 23:34:32,621 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 23:34:32,827 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 23:34:32,827 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 23:34:32,828 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz.db': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db
+2025-06-17 23:34:32,829 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 23:36:37,079 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 23:36:37,080 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 23:36:37,323 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 23:36:37,323 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 23:36:37,324 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz.db': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db
+2025-06-17 23:36:37,325 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-17 23:36:46,542 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz/assets/DEMO.mp4': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz/assets/DEMO.mp4
+2025-06-17 23:36:46,543 - ERROR - [kineviz.ui.main_window] - Archivo DEMO.mp4 no encontrado en la ruta esperada: /Users/arakito/Mati/Codigo/Python/KineViz/kineviz/assets/DEMO.mp4
