@@ -11,6 +11,7 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 │   ├── __init__.py
 │   ├── exceptions.py
 │   ├── backup_manager.py # NUEVO: Gestión de copias de seguridad
+│   ├── undo_manager.py   # NUEVO: Gestión de operaciones de deshacer
 │   ├── data_processing/  # Procesamiento de datos
 │   │   ├── processors.py  # (formatos, cálculos)
 │   │   ├── file_handlers.py  # Manejo específico de archivos
@@ -47,7 +48,9 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 │   │   ├── continuous_analysis_config_dialog.py # Para configurar un análisis continuo (SPM)
 │   │   ├── continuous_analysis_manager_dialog.py # Para gestionar análisis continuos (SPM) guardados
 │   │   ├── analysis_dialog.py # (Obsoleto) Diálogo de análisis general anterior
-│   │   └── report_dialog.py # (No implementado/Obsoleto) Para gestión de reportes PDF
+│   │   ├── report_dialog.py # (No implementado/Obsoleto) Para gestión de reportes PDF
+│   │   ├── backup_restore_dialog.py # NUEVO: Para gestionar copias de seguridad y restauraciones
+│   │   ├── comment_dialog.py # NUEVO: Para añadir/editar comentarios de estudio
 │   │
 │   ├── widgets/          # Componentes reutilizables
 │   │   ├── pagination.py
@@ -86,7 +89,8 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 │
 ├── backups/              # NUEVO: Copias de seguridad
 │   ├── automatic/        # Copias de seguridad automáticas
-│   └── manual/           # Copias de seguridad manuales
+│   ├── manual/           # Copias de seguridad manuales
+│   └── .undo_cache/      # Caché temporal para la función "Deshacer"
 │
 ├── docs/                 # Documentación
 │   └── help/             # Documentación de ayuda del software
@@ -455,11 +459,20 @@ La aplicación sigue una estructura modular para separar responsabilidades:
 `file_handlers`: Responsable de leer e interpretar archivos de datos crudos (ej. `.txt`), extraer metadatos, identificar el tipo de frecuencia (Cinemática, Cinética, EMG) y realizar el procesamiento inicial para generar archivos estandarizados (incluyendo la adición de una columna "Tiempo").
 `processors`: Contiene funciones de utilidad para la transformación de datos, cálculos estadísticos básicos (máximo, mínimo, rango) sobre DataFrames de pandas, formateo de valores, y normalización temporal de datos (ej. `normalize_temporal_data`).
 `directory_manager`: Gestiona la creación y la estructura de los directorios para los estudios y los pacientes dentro del sistema de archivos.
-`core.backup_manager.py`: Gestiona la creación y administración de copias de seguridad del sistema. Esto incluye el respaldo selectivo del directorio de estudios, la base de datos (`kineviz.db`), y el archivo de configuración (`config.ini`). Implementa la lógica para copias automáticas rotativas y copias manuales.
+`core.backup_manager.py`: Responsable de la creación, gestión y restauración de copias de seguridad del sistema.
+    -   **Creación de Backups**: Genera copias de seguridad (archivos ZIP con marca de tiempo) que incluyen la base de datos (`kineviz.db`), el archivo de configuración (`config.ini`), y selectivamente el contenido esencial del directorio de estudios (`estudios/`). Diferencia entre copias automáticas (activadas por operaciones críticas) y manuales (iniciadas por el usuario).
+    -   **Gestión de Backups**:
+        -   Automáticos: Implementa rotación (eliminando la más antigua si se excede `max_automatic_backups`), un sistema de bloqueo (`.backup_in_progress.lock`) para evitar ejecuciones concurrentes, y un período de enfriamiento (`automatic_backup_cooldown_seconds`) post-creación.
+        -   Manuales: Permite al usuario crear copias con alias opcionales y también implementa rotación basada en `max_manual_backups`.
+    -   **Restauración de Backups**: Proporciona la lógica para restaurar el sistema a un estado anterior a partir de un archivo de backup seleccionado, reemplazando la base de datos, el archivo de configuración y el contenido relevante de los estudios. (La UI para esto está en `BackupRestoreDialog`).
+`core.undo_manager.py` (`UndoManager`): Gestiona la funcionalidad "Deshacer Eliminación" para operaciones específicas.
+    -   **Mecanismo de Caché**: Antes de una operación de eliminación (ej. estudio, archivos, resultados de análisis), copia los elementos a ser eliminados y el estado actual de la base de datos (`kineviz.db`) a una caché temporal (`kineviz/backups/.undo_cache/`).
+    -   **Operación de Deshacer**: Si el usuario elige "Deshacer", restaura la base de datos y los elementos desde la caché a sus ubicaciones originales.
+    -   **Transitoriedad**: La caché y la opción de deshacer son temporales y se invalidan/limpian después de un corto período de tiempo (`undo_cache_timeout_seconds`), o si se realiza otra operación que modifique datos significativamente, o al cerrar la aplicación. Su disponibilidad es controlada por `AppSettings`.
 `core.exceptions`: Define clases de excepciones personalizadas para un manejo de errores más específico dentro de la aplicación (ej. `FileNotFoundError`, `InvalidFileFormatError`).
 
 3.2 `kineviz.ui` - Capa de Interfaz de Usuario (Tkinter)
-`ui.main_window.py` (`MainWindow`): Es la ventana principal de la aplicación. Orquesta la navegación entre las diferentes vistas y diálogos. Mantiene instancias de los servicios principales (`StudyService`, `FileService`, `AnalysisService`) y `AppSettings`.
+`ui.main_window.py` (`MainWindow`): Es la ventana principal de la aplicación. Orquesta la navegación entre las diferentes vistas y diálogos. Mantiene instancias de los servicios principales (`StudyService`, `FileService`, `AnalysisService`), `AppSettings`, y el `UndoManager`. Gestiona el estado del menú "Editar -> Deshacer" basado en la disponibilidad de una operación de deshacer.
 `ui.views`: Vistas principales que ocupan la mayor parte de la ventana.
 `LandingPage`: Vista inicial que se muestra cuando no existen estudios en la aplicación.
 `MainView`: Muestra la lista paginada de estudios existentes, permitiendo buscar y acceder a ellos.
@@ -470,11 +483,18 @@ La aplicación sigue una estructura modular para separar responsabilidades:
 `StudyDialog`: Para crear nuevos estudios o editar los metadatos de estudios existentes, incluyendo la definición de Variables Independientes (VIs), sus descriptores, y reglas de combinación/obligatoriedad.
 `FileDialog`: Permite al usuario seleccionar y agregar archivos de datos a un estudio específico, validando contra las VIs definidas.
 `DescriptorAliasDialog`: Facilita la gestión (creación, edición, eliminación) de alias para los descriptores de las VIs de un estudio.
-`ConfigDialog`: Permite al usuario modificar configuraciones globales de la aplicación (ej. elementos por página) que se guardan en `config.ini`.
+`ConfigDialog`: Permite al usuario modificar configuraciones globales de la aplicación (ej. elementos por página, configuraciones de copias de seguridad automáticas/manuales, habilitación y temporizador de la función "Deshacer") que se guardan en `config.ini`. Organizada en pestañas para facilitar la navegación.
 `ConfigureIndividualAnalysisDialog`: Diálogo para configurar los parámetros de un análisis discreto individual. Guía al usuario a través de la selección de Tipo de Dato (fijo a "Cinematica"), Cálculo, modo de agrupación de VIs (1VI o 2VIs), grupos específicos a comparar (basados en VIs y sub-valores), la variable/columna a analizar, y los supuestos estadísticos.
 `IndividualAnalysisManagerDialog`: Permite listar, visualizar (gráficos estáticos e interactivos), eliminar y abrir la carpeta de resultados de los análisis individuales guardados. Incluye filtros por palabra clave y VIs (1VI o 2VIs). Ofrece una opción "Ver Configuración" que exporta los detalles del análisis a un archivo `.txt`.
 `ContinuousAnalysisConfigDialog`: Diálogo para configurar los parámetros de un análisis continuo (SPM). Similar al de análisis individual, permite seleccionar Tipo de Dato (fijo a "Cinematica"), modo de agrupación de VIs, grupos a comparar, y la variable/columna a analizar. También incluye opciones de visualización y anotación para el gráfico SPM.
 `ContinuousAnalysisManagerDialog`: Gestiona los análisis continuos (SPM) guardados. Permite listar, ver el gráfico SPM, exportar la configuración a `.txt` (incluyendo claves de archivo contribuyentes), abrir la carpeta de resultados y eliminar análisis. Incluye filtros por palabra clave y VIs (1VI o 2VIs).
+`BackupRestoreDialog`: Interfaz para la gestión de copias de seguridad. Permite al usuario:
+        - Listar copias de seguridad existentes (automáticas y manuales) con paginación.
+        - Crear copias de seguridad manuales con alias.
+        - Asignar/modificar alias a copias manuales existentes.
+        - Eliminar copias de seguridad manuales.
+        - Restaurar el sistema desde una copia de seguridad seleccionada (requiere confirmación).
+`CommentDialog`: Un diálogo modal simple que permite a los usuarios ver, añadir o editar comentarios asociados a un estudio específico. El comentario se guarda en la base de datos a través del `StudyService`.
 `AnalysisDialog`: (Obsoleto) Diálogo de análisis general anterior, reemplazado por funcionalidades más específicas.
 `report_dialog.py`: (No implementado/Obsoleto) Placeholder para una futura gestión de reportes PDF.
 `ui.widgets`: Componentes de UI reutilizables.
@@ -574,3 +594,69 @@ Regla "Al Menos Un Descriptor No-Nulo": Para que un nombre de archivo sea válid
 Internacionalización (i18n): Actualmente la UI está predominantemente en español. No hay un sistema formal de i18n.
 Pruebas Automatizadas: El proyecto tiene una estructura para pruebas (`tests/unit`, `tests/integration`), pero la cobertura y mantenimiento de estas es un proceso continuo.
 Dependencias Clave: `pandas` para manipulación de datos, `numpy` para operaciones numéricas, `scipy` para estadísticas, `matplotlib` y `seaborn` para gráficos estáticos, `plotly` para gráficos interactivos, `reportlab` para PDFs, `openpyxl` para exportación a Excel.
+
+## 9. Sistema de Respaldo, Restauración y Deshacer
+
+KineViz incorpora un sistema robusto para la protección y recuperación de datos, compuesto por copias de seguridad automáticas y manuales, un proceso de restauración, y una funcionalidad de "deshacer" para eliminaciones recientes.
+
+### 9.1 Copias de Seguridad (Backups)
+
+Gestionadas por `backup_manager.py` y configurables a través de `ConfigDialog`.
+
+**Componentes Respaldados:**
+*   Base de datos: `kineviz.db` (estado completo al momento del backup).
+*   Archivo de configuración: `config.ini` (estado actual).
+*   Directorio de estudios (`estudios/`): Respaldo selectivo de contenidos esenciales (archivos originales, procesados, resultados de análisis).
+
+**Formato y Almacenamiento:**
+*   Archivos ZIP individuales con marca de tiempo (ej: `backup_20250616_103000.zip`).
+*   Ubicación: `kineviz/backups/automatic/` y `kineviz/backups/manual/`.
+
+**Tipos de Copias de Seguridad:**
+
+*   **Automáticas:**
+    *   **Activación**: Se disparan *antes* de la finalización de operaciones críticas que modifican datos persistentes (ej. eliminación de estudios, archivos, resultados de análisis). Puntos de activación clave se encuentran en `StudyService`, `FileService`, y `AnalysisService`.
+    *   **Rotación**: Si se excede el número máximo configurado (`max_automatic_backups`), la copia automática más antigua se elimina.
+    *   **Control de Concurrencia**: Un archivo de bloqueo (`.backup_in_progress.lock`) previene ejecuciones simultáneas.
+    *   **Enfriamiento (Cooldown)**: Tras una copia exitosa, un período de enfriamiento (`automatic_backup_cooldown_seconds`) debe transcurrir antes de que se pueda iniciar otra copia automática.
+
+*   **Manuales:**
+    *   **Activación**: Iniciadas por el usuario a través de `BackupRestoreDialog`.
+    *   **Alias**: El usuario puede asignar un alias descriptivo al crear la copia.
+    *   **Rotación**: Similar a las automáticas, controlada por `max_manual_backups`.
+
+### 9.2 Restauración de Copias de Seguridad
+
+Iniciada por el usuario desde `BackupRestoreDialog`.
+
+*   **Proceso**:
+    1. El usuario selecciona una copia de seguridad (automática o manual) de la lista.
+    2. Tras una doble confirmación, el sistema procede a restaurar.
+    3. Se reemplaza la base de datos `kineviz.db` activa con la del backup.
+    4. Se reemplaza el archivo `config.ini` activo con el del backup.
+    5. El contenido selectivo del directorio `estudios/` del backup se restaura, sobrescribiendo los datos actuales si existen o añadiendo los que falten.
+*   **Impacto**: El sistema revierte al estado exacto (datos y configuración) capturado en la copia de seguridad. Se recomienda reiniciar la aplicación después de una restauración.
+
+### 9.3 Funcionalidad "Deshacer Eliminación" (Undo Delete)
+
+Gestionada por `UndoManager` y configurable en `ConfigDialog`.
+
+*   **Propósito**: Permitir la reversión inmediata de la *última* operación de eliminación de elementos específicos (un estudio, un lote de archivos, resultados de análisis). No aplica a todas las operaciones, solo a las explícitamente soportadas.
+*   **Mecanismo**:
+    1. **Preparación (Antes de la eliminación real)**:
+        *   `UndoManager.prepare_undo_cache()`: Se crea (o limpia si ya existe) una caché temporal.
+        *   Se copia el archivo `kineviz.db` actual a `kineviz/backups/.undo_cache/db_backup_for_undo.db`.
+        *   `UndoManager.cache_item_for_undo()`: Los elementos específicos a eliminar (ej. la carpeta del estudio, los archivos de datos, las carpetas de resultados de análisis) se copian a subdirectorios dentro de `kineviz/backups/.undo_cache/`.
+    2. **Eliminación**: Se procede con la eliminación de los elementos del sistema vivo y se actualiza `kineviz.db`.
+    3. **Opción "Deshacer"**: Se habilita la opción "Deshacer" en el menú "Editar" de `MainWindow`.
+*   **Reversión (`UndoManager.perform_undo()`):**
+    1. Se restaura `kineviz.db` desde la copia en `.undo_cache`.
+    2. Los elementos cacheados se mueven de `.undo_cache` de vuelta a sus ubicaciones originales en el sistema de archivos.
+    3. Se limpia la caché `.undo_cache`.
+*   **Transitoriedad y Limitaciones**:
+    *   La opción "Deshacer" y su caché son válidas solo para la última operación de eliminación soportada.
+    *   Se invalida y limpia si:
+        *   Se realiza otra operación significativa que modifique datos (generalmente cualquier operación que llame a `prepare_undo_cache`).
+        *   Expira un temporizador corto (`undo_cache_timeout_seconds`) después de la operación de eliminación.
+        *   Se cierra la aplicación.
+    *   La funcionalidad puede ser habilitada/deshabilitada globalmente en `ConfigDialog`.
