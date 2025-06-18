@@ -178,7 +178,8 @@ class AppSettings:
             boolean_settings = [
                 'show_factory_reset_button', 'enable_hover_tooltips',
                 'enable_automatic_backups', 'enable_manual_backups',
-                'show_advanced_backup_options', 'enable_pre_restore_backups' # Updated
+                'show_advanced_backup_options', 'enable_pre_restore_backups', # Updated
+                'enable_undo_delete' # New
             ]
             for key in boolean_settings:
                 raw_val = self.config.get('SETTINGS', key, fallback=None)
@@ -496,6 +497,14 @@ class AppSettings:
         else:
             self.set_setting('pre_restore_backup_cooldown_seconds', str(value))
 
+    @property
+    def enable_undo_delete(self) -> bool:
+        """Controls if the undo delete feature is enabled."""
+        return self.get_bool_setting('enable_undo_delete', False)
+
+    @enable_undo_delete.setter
+    def enable_undo_delete(self, value: bool):
+        self.set_setting('enable_undo_delete', str(value))
 
     def reset_to_defaults(self):
          """Restablece las configuraciones en memoria a los valores por defecto."""

@@ -12,6 +12,7 @@ MAX_PINNED_STUDIES = 5
 class StudyService:
     def __init__(self):
         self.repo = StudyRepository()
+        self.db_path = self.repo.db_path # Expose db_path
 
     def create_study(self, study_data):
         """
