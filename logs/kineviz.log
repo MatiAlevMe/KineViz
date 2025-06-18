@@ -1482,3 +1482,136 @@
 2025-06-18 00:56:11,109 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
 2025-06-18 00:56:11,109 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz.db': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db
 2025-06-18 00:56:11,110 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-18 01:09:20,835 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-18 01:09:20,835 - INFO - [__main__] - Iniciando KineViz...
+2025-06-18 01:09:21,048 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 01:09:21,048 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 01:09:21,049 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz.db': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db
+2025-06-18 01:09:21,050 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-18 01:09:23,465 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 3, Items: 23, Per Page: 10
+2025-06-18 01:09:23,466 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-18 01:09:27,983 - INFO - [kineviz.ui.dialogs.backup_restore_dialog] - Creando copia de seguridad tipo 'Respaldo' antes de la restauración...
+2025-06-18 01:09:27,984 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 01:09:27,984 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 01:09:27,987 - INFO - [kineviz.core.backup_manager] - Max pre-restore backups (10) reached. Deleting oldest: backup_20250617_220929.zip
+2025-06-18 01:09:27,987 - WARNING - [kineviz.core.backup_manager] - No alias found for 'respaldo/backup_20250617_220929.zip' to remove.
+2025-06-18 01:09:27,988 - INFO - [kineviz.core.backup_manager] - Creating backup: /Users/arakito/Mati/Codigo/Python/KineViz/backups/respaldo/backup_20250618_010927.zip (Type: respaldo, Test Mode: False)
+2025-06-18 01:09:27,989 - DEBUG - [kineviz.core.backup_manager] - Adding file to backup: /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db as kineviz.db
+2025-06-18 01:09:27,990 - DEBUG - [kineviz.core.backup_manager] - Adding file to backup: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini as config.ini
+2025-06-18 01:09:27,990 - DEBUG - [kineviz.core.backup_manager] - Selectively adding files from studies directory: /Users/arakito/Mati/Codigo/Python/KineViz/estudios
+2025-06-18 01:09:27,990 - INFO - [kineviz.core.backup_manager] - Backup created successfully: /Users/arakito/Mati/Codigo/Python/KineViz/backups/respaldo/backup_20250618_010927.zip
+2025-06-18 01:09:27,990 - DEBUG - [kineviz.core.backup_manager] - Updated _last_pre_restore_backup_end_time to 2025-06-18 01:09:27.990865
+2025-06-18 01:09:27,991 - DEBUG - [kineviz.core.backup_manager] - Lock file /Users/arakito/Mati/Codigo/Python/KineViz/backups/respaldo/.pre_restore_backup.lock removed.
+2025-06-18 01:09:29,634 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 3, Items: 23, Per Page: 10
+2025-06-18 01:09:29,635 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-18 01:09:29,635 - INFO - [kineviz.ui.dialogs.backup_restore_dialog] - Attempting to restore from /Users/arakito/Mati/Codigo/Python/KineViz/backups/respaldo/backup_20250618_005608.zip
+2025-06-18 01:09:29,635 - INFO - [kineviz.core.backup_manager] - Starting restoration from backup: /Users/arakito/Mati/Codigo/Python/KineViz/backups/respaldo/backup_20250618_005608.zip
+2025-06-18 01:09:29,635 - INFO - [kineviz.core.backup_manager] - Extracting backup to /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250618_010929...
+2025-06-18 01:09:29,639 - INFO - [kineviz.core.backup_manager] - Backup extracted successfully.
+2025-06-18 01:09:29,639 - INFO - [kineviz.core.backup_manager] - Renaming current live items...
+2025-06-18 01:09:29,639 - INFO - [kineviz.core.backup_manager] - Renamed live DB to /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db.20250618010929.bak
+2025-06-18 01:09:29,640 - INFO - [kineviz.core.backup_manager] - Renamed live config to /Users/arakito/Mati/Codigo/Python/KineViz/config.ini.20250618010929.bak
+2025-06-18 01:09:29,640 - INFO - [kineviz.core.backup_manager] - Moved live studies dir to /Users/arakito/Mati/Codigo/Python/KineViz/estudios.20250618010929.bak
+2025-06-18 01:09:29,640 - INFO - [kineviz.core.backup_manager] - Moving extracted items to live locations...
+2025-06-18 01:09:29,640 - INFO - [kineviz.core.backup_manager] - Restored DB from /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250618_010929/kineviz.db
+2025-06-18 01:09:29,641 - INFO - [kineviz.core.backup_manager] - Restored config from /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250618_010929/config.ini
+2025-06-18 01:09:29,641 - WARNING - [kineviz.core.backup_manager] - No studies directory found in backup archive at /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250618_010929/estudios. Studies not restored.
+2025-06-18 01:09:29,641 - INFO - [kineviz.core.backup_manager] - Restoration successful. Cleaning up .bak files...
+2025-06-18 01:09:29,642 - INFO - [kineviz.core.backup_manager] - .bak files cleaned up.
+2025-06-18 01:09:29,642 - INFO - [kineviz.core.backup_manager] - Restoration process completed successfully.
+2025-06-18 01:09:29,642 - INFO - [kineviz.core.backup_manager] - Cleaned up temporary extraction directory: /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250618_010929
+2025-06-18 01:09:30,831 - INFO - [kineviz.ui.main_window] - BackupRestoreDialog (from landing) indicated a restart is required. Triggering app restart.
+2025-06-18 01:09:30,832 - INFO - [kineviz.ui.main_window] - MainWindow: Solicitud de reinicio de la aplicación recibida.
+2025-06-18 01:09:30,846 - INFO - [__main__] - Reinicio de KineViz solicitado.
+2025-06-18 01:09:30,846 - WARNING - [__main__] - Error al destruir la ventana raíz durante el reinicio, puede que ya no exista.
+2025-06-18 01:09:30,846 - INFO - [__main__] - Reiniciando la aplicación...
+2025-06-18 01:09:30,846 - INFO - [__main__] - Iniciando KineViz...
+2025-06-18 01:09:30,880 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 01:09:30,881 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 01:09:30,881 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz.db': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db
+2025-06-18 01:09:30,882 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-18 01:09:48,975 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-18 01:09:48,976 - INFO - [__main__] - Iniciando KineViz...
+2025-06-18 01:09:49,145 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 01:09:49,145 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 01:09:49,146 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz.db': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db
+2025-06-18 01:09:49,146 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-18 01:09:51,663 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 3, Items: 23, Per Page: 10
+2025-06-18 01:09:51,663 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-18 01:10:01,034 - INFO - [kineviz.ui.dialogs.backup_restore_dialog] - Creando copia de seguridad tipo 'Respaldo' antes de la restauración...
+2025-06-18 01:10:01,034 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 01:10:01,034 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 01:10:01,037 - INFO - [kineviz.core.backup_manager] - Max pre-restore backups (10) reached. Deleting oldest: backup_20250617_221536.zip
+2025-06-18 01:10:01,037 - WARNING - [kineviz.core.backup_manager] - No alias found for 'respaldo/backup_20250617_221536.zip' to remove.
+2025-06-18 01:10:01,038 - INFO - [kineviz.core.backup_manager] - Creating backup: /Users/arakito/Mati/Codigo/Python/KineViz/backups/respaldo/backup_20250618_011001.zip (Type: respaldo, Test Mode: False)
+2025-06-18 01:10:01,039 - DEBUG - [kineviz.core.backup_manager] - Adding file to backup: /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db as kineviz.db
+2025-06-18 01:10:01,039 - DEBUG - [kineviz.core.backup_manager] - Adding file to backup: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini as config.ini
+2025-06-18 01:10:01,040 - DEBUG - [kineviz.core.backup_manager] - Selectively adding files from studies directory: /Users/arakito/Mati/Codigo/Python/KineViz/estudios
+2025-06-18 01:10:01,040 - INFO - [kineviz.core.backup_manager] - Backup created successfully: /Users/arakito/Mati/Codigo/Python/KineViz/backups/respaldo/backup_20250618_011001.zip
+2025-06-18 01:10:01,040 - DEBUG - [kineviz.core.backup_manager] - Updated _last_pre_restore_backup_end_time to 2025-06-18 01:10:01.040537
+2025-06-18 01:10:01,040 - DEBUG - [kineviz.core.backup_manager] - Lock file /Users/arakito/Mati/Codigo/Python/KineViz/backups/respaldo/.pre_restore_backup.lock removed.
+2025-06-18 01:10:02,097 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 3, Items: 23, Per Page: 10
+2025-06-18 01:10:02,097 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-18 01:10:02,097 - INFO - [kineviz.ui.dialogs.backup_restore_dialog] - Attempting to restore from /Users/arakito/Mati/Codigo/Python/KineViz/backups/automatic/backup_20250618_004704.zip
+2025-06-18 01:10:02,097 - INFO - [kineviz.core.backup_manager] - Starting restoration from backup: /Users/arakito/Mati/Codigo/Python/KineViz/backups/automatic/backup_20250618_004704.zip
+2025-06-18 01:10:02,098 - INFO - [kineviz.core.backup_manager] - Extracting backup to /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250618_011002...
+2025-06-18 01:10:02,157 - INFO - [kineviz.core.backup_manager] - Backup extracted successfully.
+2025-06-18 01:10:02,157 - INFO - [kineviz.core.backup_manager] - Renaming current live items...
+2025-06-18 01:10:02,157 - INFO - [kineviz.core.backup_manager] - Renamed live DB to /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db.20250618011002.bak
+2025-06-18 01:10:02,157 - INFO - [kineviz.core.backup_manager] - Renamed live config to /Users/arakito/Mati/Codigo/Python/KineViz/config.ini.20250618011002.bak
+2025-06-18 01:10:02,157 - INFO - [kineviz.core.backup_manager] - Moved live studies dir to /Users/arakito/Mati/Codigo/Python/KineViz/estudios.20250618011002.bak
+2025-06-18 01:10:02,157 - INFO - [kineviz.core.backup_manager] - Moving extracted items to live locations...
+2025-06-18 01:10:02,157 - INFO - [kineviz.core.backup_manager] - Restored DB from /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250618_011002/kineviz.db
+2025-06-18 01:10:02,158 - INFO - [kineviz.core.backup_manager] - Restored config from /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250618_011002/config.ini
+2025-06-18 01:10:02,158 - INFO - [kineviz.core.backup_manager] - Restored studies directory from /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250618_011002/estudios
+2025-06-18 01:10:02,158 - INFO - [kineviz.core.backup_manager] - Restoration successful. Cleaning up .bak files...
+2025-06-18 01:10:02,158 - INFO - [kineviz.core.backup_manager] - .bak files cleaned up.
+2025-06-18 01:10:02,158 - INFO - [kineviz.core.backup_manager] - Restoration process completed successfully.
+2025-06-18 01:10:02,158 - INFO - [kineviz.core.backup_manager] - Cleaned up temporary extraction directory: /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250618_011002
+2025-06-18 01:10:03,361 - INFO - [kineviz.ui.main_window] - BackupRestoreDialog (from landing) indicated a restart is required. Triggering app restart.
+2025-06-18 01:10:03,361 - INFO - [kineviz.ui.main_window] - MainWindow: Solicitud de reinicio de la aplicación recibida.
+2025-06-18 01:10:03,370 - INFO - [__main__] - Reinicio de KineViz solicitado.
+2025-06-18 01:10:03,371 - WARNING - [__main__] - Error al destruir la ventana raíz durante el reinicio, puede que ya no exista.
+2025-06-18 01:10:03,371 - INFO - [__main__] - Reiniciando la aplicación...
+2025-06-18 01:10:03,371 - INFO - [__main__] - Iniciando KineViz...
+2025-06-18 01:10:03,407 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 01:10:03,407 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 01:10:03,407 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz.db': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db
+2025-06-18 01:10:03,408 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-18 01:10:25,631 - WARNING - [kineviz.ui.main_window] - Iniciando restablecimiento a valores por defecto. Eliminando DB: /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db, Directorio Estudios: /Users/arakito/Mati/Codigo/Python/KineViz/estudios
+2025-06-18 01:10:25,632 - INFO - [kineviz.ui.main_window] - Base de datos eliminada: /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db
+2025-06-18 01:10:25,659 - INFO - [kineviz.ui.main_window] - Directorio de estudios eliminado: /Users/arakito/Mati/Codigo/Python/KineViz/estudios
+2025-06-18 01:10:25,659 - INFO - [kineviz.ui.main_window] - Recreando estructura inicial...
+2025-06-18 01:10:27,090 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
+2025-06-18 01:10:30,547 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Updating pagination: Current Page: 1, Total Pages: 3, Items: 23, Per Page: 10
+2025-06-18 01:10:30,547 - DEBUG - [kineviz.ui.dialogs.backup_restore_dialog] - Showing pagination controls.
+2025-06-18 01:10:36,682 - INFO - [kineviz.ui.dialogs.backup_restore_dialog] - Creando copia de seguridad tipo 'Respaldo' antes de la restauración...
+2025-06-18 01:10:36,683 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 01:10:36,683 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 01:10:36,685 - INFO - [kineviz.core.backup_manager] - Pre-restore backup skipped: cooldown period active. 35s since last backup (cooldown: 60s).
+2025-06-18 01:10:37,996 - INFO - [kineviz.ui.dialogs.backup_restore_dialog] - Attempting to restore from /Users/arakito/Mati/Codigo/Python/KineViz/backups/respaldo/backup_20250618_011001.zip
+2025-06-18 01:10:37,996 - INFO - [kineviz.core.backup_manager] - Starting restoration from backup: /Users/arakito/Mati/Codigo/Python/KineViz/backups/respaldo/backup_20250618_011001.zip
+2025-06-18 01:10:37,997 - INFO - [kineviz.core.backup_manager] - Extracting backup to /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250618_011037...
+2025-06-18 01:10:37,999 - INFO - [kineviz.core.backup_manager] - Backup extracted successfully.
+2025-06-18 01:10:37,999 - INFO - [kineviz.core.backup_manager] - Renaming current live items...
+2025-06-18 01:10:38,000 - INFO - [kineviz.core.backup_manager] - Renamed live DB to /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db.20250618011037.bak
+2025-06-18 01:10:38,000 - INFO - [kineviz.core.backup_manager] - Renamed live config to /Users/arakito/Mati/Codigo/Python/KineViz/config.ini.20250618011037.bak
+2025-06-18 01:10:38,001 - INFO - [kineviz.core.backup_manager] - Moved live studies dir to /Users/arakito/Mati/Codigo/Python/KineViz/estudios.20250618011037.bak
+2025-06-18 01:10:38,001 - INFO - [kineviz.core.backup_manager] - Moving extracted items to live locations...
+2025-06-18 01:10:38,001 - INFO - [kineviz.core.backup_manager] - Restored DB from /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250618_011037/kineviz.db
+2025-06-18 01:10:38,001 - INFO - [kineviz.core.backup_manager] - Restored config from /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250618_011037/config.ini
+2025-06-18 01:10:38,001 - WARNING - [kineviz.core.backup_manager] - No studies directory found in backup archive at /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250618_011037/estudios. Studies not restored.
+2025-06-18 01:10:38,001 - INFO - [kineviz.core.backup_manager] - Restoration successful. Cleaning up .bak files...
+2025-06-18 01:10:38,002 - INFO - [kineviz.core.backup_manager] - .bak files cleaned up.
+2025-06-18 01:10:38,002 - INFO - [kineviz.core.backup_manager] - Restoration process completed successfully.
+2025-06-18 01:10:38,002 - INFO - [kineviz.core.backup_manager] - Cleaned up temporary extraction directory: /Users/arakito/Mati/Codigo/Python/KineViz/temp_restore_20250618_011037
+2025-06-18 01:10:39,132 - INFO - [kineviz.ui.main_window] - BackupRestoreDialog (from landing) indicated a restart is required. Triggering app restart.
+2025-06-18 01:10:39,133 - INFO - [kineviz.ui.main_window] - MainWindow: Solicitud de reinicio de la aplicación recibida.
+2025-06-18 01:10:39,144 - INFO - [__main__] - Reinicio de KineViz solicitado.
+2025-06-18 01:10:39,145 - WARNING - [__main__] - Error al destruir la ventana raíz durante el reinicio, puede que ya no exista.
+2025-06-18 01:10:39,145 - INFO - [__main__] - Reiniciando la aplicación...
+2025-06-18 01:10:39,145 - INFO - [__main__] - Iniciando KineViz...
+2025-06-18 01:10:39,180 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 01:10:39,180 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-18 01:10:39,181 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'kineviz.db': /Users/arakito/Mati/Codigo/Python/KineViz/kineviz.db
+2025-06-18 01:10:39,181 - INFO - [kineviz.ui.main_window] - Applying theme: Oscuro, font scale: 1.0
