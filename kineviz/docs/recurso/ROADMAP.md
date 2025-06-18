@@ -499,9 +499,11 @@ La aplicación sigue una estructura modular para separar responsabilidades:
 `report_dialog.py`: (No implementado/Obsoleto) Placeholder para una futura gestión de reportes PDF.
 `ui.widgets`: Componentes de UI reutilizables.
 `FileBrowser`: Widget para listar, filtrar y gestionar archivos dentro de un estudio, con paginación.
-`charting`: Módulo para generar gráficos estáticos (con `matplotlib`/`seaborn`) e interactivos (con `plotly`), como boxplots y gráficos de barras.
+`charting.py`: Módulo para generar gráficos estáticos (con `matplotlib`/`seaborn`) e interactivos (con `plotly`), como boxplots y gráficos de barras.
+`tooltip.py` (`Tooltip` class): Proporciona tooltips personalizadas y estilizadas para los widgets de la interfaz, mejorando la usabilidad al ofrecer información contextual.
 `ui.utils`: Utilidades específicas de la interfaz de usuario.
-`validators`: Contiene funciones para validar entradas del usuario, nombres de archivo según criterios de VIs (formato `ID_Participante [VI_Subvalor1] ... Intento`, donde `ID_Participante` es texto+número), y la consistencia de los datos del estudio.
+`validators.py`: Contiene funciones para validar entradas del usuario, nombres de archivo según criterios de VIs (formato `ID_Participante [VI_Subvalor1] ... Intento`, donde `ID_Participante` es texto+número), y la consistencia de los datos del estudio.
+`style.py`: Gestiona los aspectos visuales y de estilo de la aplicación, incluyendo la obtención de fuentes escaladas y objetos de fuente para asegurar una apariencia consistente y adaptable.
 
 3.3 `kineviz.database` - Persistencia de Datos
 `database.repositories.StudyRepository`: Implementa el patrón Repositorio para abstraer las interacciones con la base de datos SQLite (`kineviz.db`). Es responsable de la creación de tablas y las operaciones CRUD para los datos de los estudios (metadatos, VIs, alias).
@@ -511,7 +513,7 @@ La aplicación sigue una estructura modular para separar responsabilidades:
 `config.ini`: Archivo de texto plano que almacena configuraciones persistentes como el número de elementos por página.
 
 3.5 `kineviz.utils` - Utilidades Generales
-`utils.logger.setup_logging`: Configura el sistema de logging para la aplicación, definiendo el nivel de log y el formato de los mensajes, guardando los logs en archivos.
+`utils.logger.py` (`setup_logging` function): Configura el sistema de logging para la aplicación, definiendo el nivel de log, el formato de los mensajes y la ubicación de los archivos de log.
 
 ## 4. Flujos de Datos Clave (Ejemplos)
 
