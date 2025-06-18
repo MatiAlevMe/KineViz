@@ -119,7 +119,7 @@ class MainWindow:
             "Acerca de KineViz",
             "KineViz - Aplicación para Gestión y Análisis Kinesiológico\n\n"
             "Versión: 2.0\n" # Puedes actualizar esto según sea necesario
-            "Desarrollado por: Matías Alevropulos",
+            "Creado por: Matías Alevropulos",
             parent=self.root
         )
 
@@ -405,7 +405,7 @@ class MainWindow:
         messagebox.showinfo(
             "Bienvenido a KineViz",
             "KineViz - Sistema de gestión y análisis de estudios kinesiológicos\n\n"
-            "Desarrollado por: Matías Alevropulos\n\n"
+            "Creado por: Matías Alevropulos\n\n"
             "Opciones de inicio:\n"
             "1. Ver DEMO interactivo\n"
             "2. Consultar manual de usuario\n"
