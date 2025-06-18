@@ -565,6 +565,8 @@ La aplicación sigue una estructura modular para separar responsabilidades:
 4.5. Al seleccionar una frecuencia, el diálogo llama a `AnalysisService.get_data_columns_for_frequency()` para poblar el combobox de variables.
 4.6. El usuario selecciona una frecuencia, una variable, el modo de agrupación (1VI o 2VIs) y los grupos específicos a comparar.
 4.7. Al "Aceptar", el diálogo pasa la configuración a `AnalysisService`, que intenta realizar el análisis SPM (t-test o ANOVA de un factor) y guarda los resultados y la configuración.
+### Restauración de Fábrica
+Invocada desde `ConfigDialog` (a través del método `trigger_factory_reset_callback` que llama a `MainWindow.reset_to_defaults`), esta operación borra todos los datos del usuario (estudios, análisis, base de datos) y revierte las configuraciones a los valores por defecto. Si la opción "Habilitar copias de respaldo (pre-restauración)" está activada en la configuración (pestaña "Copias de Seguridad" del `ConfigDialog`), KineViz intentará crear una copia de seguridad de tipo 'Respaldo' del estado actual del sistema *antes* de que se ejecute la restauración de fábrica. La aplicación generalmente requiere un reinicio después de esta operación.
 
 ## 5. Patrones de Diseño y Convenciones Importantes
 Capa de Servicios (Service Layer): Centraliza la lógica de negocio y la orquestación de operaciones, desacoplando la UI de la lógica de datos directa.
