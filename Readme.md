@@ -12,7 +12,8 @@ Antes de ejecutar el programa, necesitarás:
 
 Librerías Necesarias
 
-El programa depende de las siguientes librerías:
+El programa depende de varias librerías de Python para su correcto funcionamiento. La lista completa y las versiones específicas se encuentran en el archivo `requirements.txt`.
+Algunas de las librerías clave incluyen:
 
     numpy
     pandas
@@ -21,6 +22,8 @@ El programa depende de las siguientes librerías:
     seaborn
     plotly (para gráficos interactivos)
     tkinter (para la interfaz gráfica de usuario)
+
+Se recomienda encarecidamente instalar todas las dependencias utilizando el archivo `requirements.txt` para asegurar la compatibilidad.
 
 Estructura del Proyecto
 
@@ -45,12 +48,6 @@ Puedes instalar todas las librerías necesarias ejecutando el siguiente comando:
 bash
 
 pip install -r requirements.txt
-
-Alternativamente, puedes instalar cada librería manualmente utilizando pip:
-
-bash
-
-pip install numpy pandas matplotlib scipy seaborn plotly
 
 Instrucciones para Windows 10
 Paso 1: Instalar Python
