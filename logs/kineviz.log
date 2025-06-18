@@ -42696,3 +42696,23 @@ TypeError: StudyRepository.get_studies_paginated() got an unexpected keyword arg
 2025-06-17 19:56:29,571 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
 2025-06-17 19:56:29,571 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
 2025-06-17 19:56:29,572 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 2.0
+2025-06-17 20:03:56,485 - INFO - [root] - Logging configurado. Nivel: DEBUG. Archivo: /Users/arakito/Mati/Codigo/Python/KineViz/logs/kineviz.log
+2025-06-17 20:03:56,485 - INFO - [__main__] - Iniciando KineViz...
+2025-06-17 20:03:56,720 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 20:03:56,720 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 20:03:56,721 - INFO - [kineviz.ui.main_window] - Applying theme: Claro, font scale: 2.0
+2025-06-17 20:04:05,031 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Comentar Seleccionado' para estudio ID 2
+2025-06-17 20:04:07,717 - INFO - [kineviz.database.repositories] - Comentario para estudio ID 2 actualizado.
+2025-06-17 20:04:07,717 - INFO - [kineviz.core.services.study_service] - Comentario actualizado para estudio 2.
+2025-06-17 20:04:07,717 - INFO - [kineviz.ui.dialogs.comment_dialog] - Comentario para estudio 2 guardado.
+2025-06-17 20:04:13,271 - DEBUG - [kineviz.ui.views.main_view] - Acción 'Ver Seleccionado' para estudio ID 2
+2025-06-17 20:04:13,291 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 20:04:13,292 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 20:04:13,292 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
+2025-06-17 20:04:20,863 - DEBUG - [kineviz.config.settings] - Calculated resource path for 'config.ini': /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 20:04:20,864 - INFO - [kineviz.config.settings] - Using configuration file path: /Users/arakito/Mati/Codigo/Python/KineViz/config.ini
+2025-06-17 20:04:22,495 - DEBUG - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Loaded VIs for study 2: [{'name': 'Edad', 'descriptors': ['Adulto', 'Joven', 'Mayor'], 'allows_combination': False, 'is_mandatory': False}, {'name': 'Peso', 'descriptors': ['OS', 'NP', 'BP'], 'allows_combination': False, 'is_mandatory': False}]
+2025-06-17 20:04:22,541 - DEBUG - [kineviz.ui.dialogs.individual_analysis_manager_dialog] - Cargados 0 análisis individuales para estudio 2.
+2025-06-17 20:04:31,887 - DEBUG - [kineviz.ui.views.study_view] - Actualizando display de alias para estudio 2
+2025-06-17 20:04:31,888 - DEBUG - [kineviz.ui.views.study_view] - Aliases cargados para estudio 2: {}
+2025-06-17 20:04:31,888 - DEBUG - [kineviz.ui.views.study_view] - Display de alias actualizado a: 'Alias Asignados: Adulto, BP, Joven, Mayor, NP, OS'
