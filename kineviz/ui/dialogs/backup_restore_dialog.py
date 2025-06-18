@@ -82,7 +82,7 @@ class BackupRestoreDialog(Toplevel):
         main_frame.pack(fill=tk.BOTH, expand=True)
         main_frame.columnconfigure(0, weight=1) # Allow the main content column to expand
         # Configure main_frame rows to allow treeview to expand and button rows to take fixed space
-        main_frame.rowconfigure(1, weight=0) # Treeview frame (DO NOT EXPAND VERTICALLY)
+        main_frame.rowconfigure(1, weight=1) # Treeview frame (ALLOW TO EXPAND VERTICALLY)
         main_frame.rowconfigure(2, weight=0) # Pagination controls frame
         main_frame.rowconfigure(3, weight=0) # Actions row 2
         main_frame.rowconfigure(4, weight=0) # Actions row 3
