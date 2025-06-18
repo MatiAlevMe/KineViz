@@ -229,7 +229,8 @@ class UndoManager:
         info_path = self.undo_cache_dir / UNDO_INFO_FILENAME
         data_to_save = {
             "db_backup_in_cache_path": str(self.db_backup_in_cache_path) if self.db_backup_in_cache_path else None,
-            "cached_items_info": self.cached_items_info
+            "cached_items_info": self.cached_items_info,
+            "prepared_timestamp": datetime.datetime.now().isoformat() # Add timestamp
         }
         try:
             with open(info_path, 'w', encoding='utf-8') as f:
@@ -248,3 +249,32 @@ class UndoManager:
         except (json.JSONDecodeError, OSError) as e:
             logger.error(f"Failed to load undo info from {info_path}: {e}", exc_info=True)
             return None
+
+    def clear_undo_cache_if_timed_out(self):
+        """Clears the undo cache if it has timed out based on settings."""
+        if not self.is_undo_enabled():
+            return
+
+        timeout_seconds = self.settings.undo_cache_timeout_seconds
+        if timeout_seconds <= 0: # 0 or negative means no timeout
+            return
+
+        loaded_info = self._load_undo_info()
+        if not loaded_info:
+            return # No info, so effectively no active cache to timeout
+
+        prepared_timestamp_str = loaded_info.get("prepared_timestamp")
+        if not prepared_timestamp_str:
+            logger.warning("Undo info found but missing 'prepared_timestamp'. Cannot check for timeout.")
+            return
+
+        try:
+            prepared_time = datetime.datetime.fromisoformat(prepared_timestamp_str)
+            elapsed_time = datetime.datetime.now() - prepared_time
+            if elapsed_time.total_seconds() > timeout_seconds:
+                logger.info(f"Undo cache timed out after {elapsed_time.total_seconds():.0f}s (limit: {timeout_seconds}s). Clearing cache.")
+                self.clear_undo_cache()
+            else:
+                logger.debug(f"Undo cache not timed out. Elapsed: {elapsed_time.total_seconds():.0f}s, Limit: {timeout_seconds}s.")
+        except ValueError:
+            logger.error(f"Invalid 'prepared_timestamp' format in undo info: {prepared_timestamp_str}. Cannot check for timeout.", exc_info=True)

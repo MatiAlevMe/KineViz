@@ -60,6 +60,7 @@ class ConfigDialog(Toplevel):
 
         # Undo Delete setting
         self.var_enable_undo_delete = tk.BooleanVar() # New for Undo Delete
+        self.var_undo_cache_timeout_seconds = StringVar() # New for Undo Cache Timeout
 
         # Calculate scaled font once for direct application
         self.scaled_font_tuple = get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale)
@@ -106,6 +107,7 @@ class ConfigDialog(Toplevel):
         
         self.var_show_advanced_backup_opts.set(self.settings.show_advanced_backup_options) # Load new
         self.var_enable_undo_delete.set(self.settings.enable_undo_delete) # Load Undo Delete setting
+        self.var_undo_cache_timeout_seconds.set(str(self.settings.undo_cache_timeout_seconds)) # Load Undo Cache Timeout
 
     def create_widgets(self):
         """Crea los widgets del diálogo usando un Notebook para pestañas."""
@@ -555,6 +557,32 @@ class ConfigDialog(Toplevel):
         enable_undo_delete_help_btn.pack(side=tk.LEFT)
         Tooltip(enable_undo_delete_help_btn, text=enable_undo_delete_long_text, short_text=enable_undo_delete_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
+
+        # --- Timeout para Caché de Deshacer ---
+        self.undo_timeout_frame = ttk.Frame(parent_frame) # Store frame for visibility toggle
+        self.undo_timeout_frame.grid(row=row_idx, column=0, columnspan=2, pady=(0, 5), padx=(20,0), sticky="w") # Indent
+        
+        ttk.Label(self.undo_timeout_frame, text="Timeout caché deshacer (seg):").pack(side=tk.LEFT, padx=(0,5))
+        
+        undo_timeout_entry_frame = ttk.Frame(self.undo_timeout_frame)
+        undo_timeout_entry_frame.pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+        undo_timeout_entry = ttk.Entry(undo_timeout_entry_frame, textvariable=self.var_undo_cache_timeout_seconds, font=self.scaled_font_tuple)
+        undo_timeout_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True)
+        
+        undo_timeout_long_text = (
+            "Tiempo en segundos antes de que la caché de 'Deshacer Eliminación' se borre automáticamente.\n"
+            "Un valor de 0 deshabilita el timeout (la caché solo se borra en la siguiente operación de eliminación, al cerrar la app, o manualmente).\n"
+            "Recomendado: 60-300 segundos."
+        )
+        undo_timeout_short_text = "Timeout para caché de deshacer (seg, 0=sin timeout)."
+        undo_timeout_help_btn = ttk.Button(
+            undo_timeout_entry_frame, text="?", width=3, style="Help.TButton",
+            command=lambda: self._show_input_help("Ayuda: Timeout Caché Deshacer", undo_timeout_long_text)
+        )
+        undo_timeout_help_btn.pack(side=tk.LEFT)
+        Tooltip(undo_timeout_help_btn, text=undo_timeout_long_text, short_text=undo_timeout_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
         
         # --- Switch para mostrar/ocultar botón de Restauración de Fábrica --- (NUEVO ORDEN: DESPUÉS DE BACKUP)
         show_factory_reset_frame = ttk.Frame(parent_frame)
@@ -614,6 +642,7 @@ class ConfigDialog(Toplevel):
         # Ensure initial visibility is set
         self._toggle_factory_reset_visibility()
         self._toggle_advanced_backup_options_visibility()
+        self._toggle_undo_options_visibility() # Call for undo options
 
 
     def _toggle_advanced_backup_options_visibility(self, event=None):
@@ -623,6 +652,14 @@ class ConfigDialog(Toplevel):
                 self.clean_bak_files_frame.grid()
             else:
                 self.clean_bak_files_frame.grid_remove()
+
+    def _toggle_undo_options_visibility(self, event=None):
+        """Muestra u oculta las opciones de Deshacer Eliminación según el checkbox de habilitación."""
+        if hasattr(self, 'undo_timeout_frame'):
+            if self.var_enable_undo_delete.get():
+                self.undo_timeout_frame.grid()
+            else:
+                self.undo_timeout_frame.grid_remove()
     
     def _clean_bak_files_action(self):
         """Acción para limpiar archivos .bak con doble confirmación."""
@@ -679,7 +716,8 @@ class ConfigDialog(Toplevel):
             "Enfriamiento copias automáticas (seg)": self.var_auto_backup_cooldown.get(),
             "Máx. copias de respaldo": self.var_max_pre_restore_backups.get(),
             "Enfriamiento copias de respaldo (seg)": self.var_pre_restore_backup_cooldown.get(),
-            "Máx. copias manuales": self.var_max_manual_backups.get()
+            "Máx. copias manuales": self.var_max_manual_backups.get(),
+            "Timeout caché deshacer (seg)": self.var_undo_cache_timeout_seconds.get() # Add new field
         }
         for label, value_str in inputs_int.items():
             try:
@@ -689,6 +727,7 @@ class ConfigDialog(Toplevel):
                 is_max_pre_restore_backup = (label == "Máx. copias de respaldo")
                 is_cooldown_pre_restore = (label == "Enfriamiento copias de respaldo (seg)")
                 is_max_manual_backup = (label == "Máx. copias manuales")
+                is_undo_timeout = (label == "Timeout caché deshacer (seg)")
 
                 # Max values must be > 0 if their respective backup type is enabled, otherwise >= 1
                 if (is_max_auto_backup and self.var_enable_automatic_backups.get()) or \
@@ -701,8 +740,8 @@ class ConfigDialog(Toplevel):
                     if value_int < 1: # Enforce >=1 even if disabled
                         messagebox.showerror("Valor Inválido", f"'{label}' debe ser un número entero positivo (>=1).", parent=self)
                         return False
-                elif is_cooldown_auto or is_cooldown_pre_restore:
-                    if value_int < 0: # Cooldowns can be 0
+                elif is_cooldown_auto or is_cooldown_pre_restore or is_undo_timeout: # Cooldowns and timeout can be 0
+                    if value_int < 0: 
                         messagebox.showerror("Valor Inválido", f"'{label}' debe ser un número entero no negativo (>=0).", parent=self)
                         return False
                 elif value_int <= 0: # For other general integer settings (pagination, etc.)
@@ -756,6 +795,7 @@ class ConfigDialog(Toplevel):
 
             self.settings.show_advanced_backup_options = self.var_show_advanced_backup_opts.get() # Save new
             self.settings.enable_undo_delete = self.var_enable_undo_delete.get() # Save Undo Delete setting
+            self.settings.undo_cache_timeout_seconds = int(self.var_undo_cache_timeout_seconds.get()) # Save Undo Cache Timeout
             
             # Guardar en el archivo config.ini
             self.settings.save_settings()

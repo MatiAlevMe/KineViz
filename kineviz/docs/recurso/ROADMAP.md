@@ -324,15 +324,16 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
             2. [Hecho] Mover los elementos de la caché "undo" de vuelta a sus ubicaciones originales. (Lógica en `UndoManager.perform_undo()`)
             3. [Hecho] Limpiar la caché "undo". (Lógica en `UndoManager.perform_undo()` y `clear_undo_cache()`)
         - Transitoriedad: La opción "Deshacer" y su caché se invalidan/limpian si:
-            - Se realiza otra operación significativa (Agregar/eliminar elementos).
-            - El usuario navega fuera de la vista/diálogo actual.
-            - Se cierra la aplicación.
-            - (Opcional) Expira un temporizador corto.
+            - [Hecho] Se realiza otra operación significativa (Agregar/eliminar elementos). (Manejado por `prepare_undo_cache` que limpia antes de una nueva operación).
+            - [Pendiente] El usuario navega fuera de la vista/diálogo actual. (Parcialmente manejado por el timeout; limpieza agresiva en cada navegación podría ser contraproducente).
+            - [Hecho] Se cierra la aplicación. (Implementado en `MainWindow._on_close`).
+            - [Hecho] Expira un temporizador corto. (Implementado con `undo_cache_timeout_seconds` y `UndoManager.clear_undo_cache_if_timed_out()`, llamado al inicio de la app).
     2.2 [En Progreso] Integración UI para "Deshacer Eliminación".
         - [Hecho] Botón "Deshacer" añadido al menú "Editar" en `MainWindow`. Su estado (activado/desactivado) se actualiza según la disponibilidad de una operación de deshacer.
         - [Pendiente] Botón temporal "Deshacer" en las vistas/diálogos donde ocurren eliminaciones (`StudyView`, `IndividualAnalysisManagerDialog`, `ContinuousAnalysisManagerDialog`, `MainView` para eliminar estudio) - *Revisar si el botón de menú global es suficiente o si se necesitan botones contextuales.*
     2.3 [En Progreso] Configuración para "Deshacer Eliminación".
         - [Hecho] Opción en `ConfigDialog` para habilitar/deshabilitar esta característica.
+        - [Hecho] Opción en `ConfigDialog` para configurar el `undo_cache_timeout_seconds`.
         - [Hecho] Tooltip explicativo.
         - [Pendiente] Validar manualmente si es que se pueden eliminar todos los estudios junto a la funcionalida de backup de seguridad (rollback/copia manual/auto)
 3. [Hecho] Ayuda en la Interfaz: Añadir Tooltips Adicionales.
