@@ -9,6 +9,8 @@ from kineviz.ui.utils.validators import validate_filename_for_study_criteria
 
 # Asume que StudyRepository está disponible para obtener detalles del estudio si es necesario
 from typing import Dict, Set, Tuple, List, Optional # Añadir tipos necesarios
+from kineviz.config.settings import AppSettings # Import AppSettings
+from kineviz.core.undo_manager import UndoManager # Import UndoManager
 # O que se pasa la ruta base de los estudios.
 logger = logging.getLogger(__name__) # Logger para este módulo
 # Por simplicidad inicial, asumiremos que la estructura de carpetas es conocida.
@@ -24,6 +26,11 @@ class FileService:
         # Determinar la ruta raíz del proyecto para construir rutas absolutas
         self.project_root = Path(__file__).resolve().parent.parent.parent.parent
         self.studies_base_dir = self.project_root / "estudios"
+        # Initialize AppSettings and UndoManager
+        self.settings = AppSettings()
+        # FileService gets db_path via its study_service instance
+        self.undo_manager = UndoManager(settings=self.settings, study_repository_db_path=str(self.study_service.db_path))
+
 
     def _get_study_path(self, study_id: int) -> Path | None:
         """Obtiene la ruta de la carpeta de un estudio por su ID."""
@@ -173,9 +180,24 @@ class FileService:
             create_backup(backup_type='automatic')
         except Exception as e_backup:
             logger.error(f"Error creating automatic backup before deleting file {file_path}: {e_backup}", exc_info=True)
-            # Decide if operation should continue or be aborted. For now, logging and continuing.
+            # Log and continue
+
+        if self.undo_manager.is_undo_enabled():
+            if not self.undo_manager.prepare_undo_cache():
+                logger.error(f"Failed to prepare undo cache for deleting file {file_path}. Aborting delete operation.")
+                raise Exception(f"Failed to prepare undo cache for deleting file {file_path}. Deletion aborted.")
+            
+            # Cache the item for undo
+            # Ensure file_path is a string for cache_item_for_undo
+            original_path_str = str(file_path)
+            if not self.undo_manager.cache_item_for_undo(original_path_str, "study_file"):
+                logger.warning(f"Failed to cache file {original_path_str} for undo. Deletion will proceed but undo might be partial.")
         
-        self._delete_file_no_backup(file_path, study_id)
+        try:
+            self._delete_file_no_backup(file_path, study_id)
+        except Exception as e:
+            logger.error(f"Error during deletion of file {file_path} after undo preparation: {e}", exc_info=True)
+            raise
 
     # Removed study_id_from_path as it's unreliable and caused errors.
     # study_id should be passed directly to delete_file.
@@ -666,63 +688,82 @@ class FileService:
             create_backup(backup_type='automatic')
         except Exception as e_backup:
             logger.error(f"Error creating automatic backup before deleting all files in study {study_id}: {e_backup}", exc_info=True)
-            # Decide if operation should continue or be aborted. For now, logging and continuing.
+            # Log and continue
 
         study_path = self._get_study_path(study_id)
         if not study_path:
             raise ValueError(f"No se pudo obtener la ruta del estudio {study_id} para eliminar archivos.")
 
         logger.info(f"Iniciando eliminación de todos los archivos en el estudio: {study_path.name} (ID: {study_id})")
-        deleted_files_count = 0
         
-        # Carpetas de frecuencia conocidas y la carpeta OG
-        frequency_folders_to_scan = ["Cinematica", "Cinetica", "Electromiografica", "Desconocida", "OG"]
+        files_to_cache_for_undo = []
+        # First, identify all files that will be deleted to cache them
+        if self.undo_manager.is_undo_enabled():
+            frequency_folders_to_scan_for_cache = ["Cinematica", "Cinetica", "Electromiografica", "Desconocida", "OG"]
+            for patient_dir_item_cache in study_path.iterdir():
+                if patient_dir_item_cache.is_dir() and patient_dir_item_cache.name.lower() not in ["reportes", "temp", "analisis discreto", "analisis continuo"]:
+                    patient_path_cache = patient_dir_item_cache
+                    for freq_folder_name_cache in frequency_folders_to_scan_for_cache:
+                        freq_path_cache = patient_path_cache / freq_folder_name_cache
+                        if freq_path_cache.exists() and freq_path_cache.is_dir():
+                            for file_item_cache in freq_path_cache.iterdir():
+                                if file_item_cache.is_file():
+                                    files_to_cache_for_undo.append(file_item_cache)
+                elif patient_dir_item_cache.is_file(): # Loose files in study folder
+                    files_to_cache_for_undo.append(patient_dir_item_cache)
+            
+            if not self.undo_manager.prepare_undo_cache():
+                logger.error(f"Failed to prepare undo cache for deleting all files in study {study_id}. Aborting delete operation.")
+                raise Exception(f"Failed to prepare undo cache for deleting all files in study {study_id}. Deletion aborted.")
 
-        for patient_dir_item in study_path.iterdir():
-            if patient_dir_item.is_dir() and patient_dir_item.name.lower() not in ["reportes", "temp", "analisis discreto", "analisis continuo"]:
-                # Es una carpeta de paciente
-                patient_path = patient_dir_item
-                logger.debug(f"Procesando carpeta de participante: {patient_path.name}")
+            for file_to_cache in files_to_cache_for_undo:
+                if not self.undo_manager.cache_item_for_undo(str(file_to_cache), "study_file"):
+                    logger.warning(f"Failed to cache file {file_to_cache} for undo during 'delete all files'. Deletion will proceed but undo might be partial.")
+
+        # Now, proceed with deletion
+        deleted_files_count = 0
+        frequency_folders_to_scan_for_delete = ["Cinematica", "Cinetica", "Electromiografica", "Desconocida", "OG"]
+        for patient_dir_item_delete in study_path.iterdir():
+            if patient_dir_item_delete.is_dir() and patient_dir_item_delete.name.lower() not in ["reportes", "temp", "analisis discreto", "analisis continuo"]:
+                patient_path_delete = patient_dir_item_delete
+                logger.debug(f"Procesando carpeta de participante para eliminación: {patient_path_delete.name}")
                 
-                for freq_folder_name in frequency_folders_to_scan:
-                    freq_path = patient_path / freq_folder_name
-                    if freq_path.exists() and freq_path.is_dir():
-                        logger.debug(f"  Escaneando carpeta de frecuencia: {freq_path.name}")
-                        for file_item in list(freq_path.iterdir()): # Usar list() para poder modificar mientras se itera
-                            if file_item.is_file():
+                for freq_folder_name_delete in frequency_folders_to_scan_for_delete:
+                    freq_path_delete = patient_path_delete / freq_folder_name_delete
+                    if freq_path_delete.exists() and freq_path_delete.is_dir():
+                        logger.debug(f"  Escaneando carpeta de frecuencia para eliminación: {freq_path_delete.name}")
+                        for file_item_delete in list(freq_path_delete.iterdir()): 
+                            if file_item_delete.is_file():
                                 try:
-                                    file_item.unlink()
+                                    file_item_delete.unlink()
                                     deleted_files_count += 1
-                                    logger.info(f"    Archivo eliminado: {file_item}")
+                                    logger.info(f"    Archivo eliminado: {file_item_delete}")
                                 except OSError as e:
-                                    logger.error(f"    Error eliminando archivo {file_item}: {e}", exc_info=True)
-                                    # Continuar con otros archivos si es posible
+                                    logger.error(f"    Error eliminando archivo {file_item_delete}: {e}", exc_info=True)
                         
-                        # Después de eliminar archivos, verificar si la carpeta de frecuencia está vacía
-                        if not any(freq_path.iterdir()): # Si está vacía
+                        if not any(freq_path_delete.iterdir()): 
                             try:
-                                freq_path.rmdir()
-                                logger.info(f"  Carpeta de frecuencia vacía eliminada: {freq_path}")
+                                freq_path_delete.rmdir()
+                                logger.info(f"  Carpeta de frecuencia vacía eliminada: {freq_path_delete}")
                             except OSError as e:
-                                logger.error(f"  Error eliminando carpeta de frecuencia vacía {freq_path}: {e}", exc_info=True)
+                                logger.error(f"  Error eliminando carpeta de frecuencia vacía {freq_path_delete}: {e}", exc_info=True)
                 
-                # Después de procesar todas las carpetas de frecuencia, verificar si la carpeta del paciente está vacía
-                if not any(patient_path.iterdir()):
+                if not any(patient_path_delete.iterdir()):
                     try:
-                        patient_path.rmdir()
-                        logger.info(f"Carpeta de participante vacía eliminada: {patient_path}")
+                        patient_path_delete.rmdir()
+                        logger.info(f"Carpeta de participante vacía eliminada: {patient_path_delete}")
                     except OSError as e:
-                        logger.error(f"Error eliminando carpeta de participante vacía {patient_path}: {e}", exc_info=True)
-            elif patient_dir_item.is_file(): # Archivos sueltos en la carpeta del estudio (no deberían existir según estructura)
+                        logger.error(f"Error eliminando carpeta de participante vacía {patient_path_delete}: {e}", exc_info=True)
+            elif patient_dir_item_delete.is_file(): 
                 try:
-                    patient_dir_item.unlink() # Eliminar archivo suelto
+                    patient_dir_item_delete.unlink() 
                     deleted_files_count +=1
-                    logger.warning(f"Archivo suelto eliminado de la carpeta del estudio: {patient_dir_item}")
+                    logger.warning(f"Archivo suelto eliminado de la carpeta del estudio: {patient_dir_item_delete}")
                 except OSError as e:
-                    logger.error(f"Error eliminando archivo suelto {patient_dir_item} de la carpeta del estudio: {e}", exc_info=True)
-
+                    logger.error(f"Error eliminando archivo suelto {patient_dir_item_delete} de la carpeta del estudio: {e}", exc_info=True)
 
         logger.info(f"Eliminación de todos los archivos completada para estudio {study_id}. Total eliminados: {deleted_files_count}.")
+
 
     def delete_selected_files(self, study_id: int, file_paths: list[Path]):
         """
@@ -739,8 +780,17 @@ class FileService:
             create_backup(backup_type='automatic')
         except Exception as e_backup:
             logger.error(f"Error creating automatic backup before deleting selected files for study {study_id}: {e_backup}", exc_info=True)
-            # Decide if operation should continue or be aborted. For now, logging and continuing.
+            # Log and continue
             
+        if self.undo_manager.is_undo_enabled():
+            if not self.undo_manager.prepare_undo_cache():
+                logger.error(f"Failed to prepare undo cache for deleting selected files in study {study_id}. Aborting delete operation.")
+                raise Exception(f"Failed to prepare undo cache for deleting selected files in study {study_id}. Deletion aborted.")
+            
+            for file_to_cache in file_paths:
+                if not self.undo_manager.cache_item_for_undo(str(file_to_cache), "study_file"):
+                    logger.warning(f"Failed to cache file {file_to_cache} for undo during 'delete selected files'. Deletion will proceed but undo might be partial.")
+
         errors = []
         for file_path in file_paths:
             try:
