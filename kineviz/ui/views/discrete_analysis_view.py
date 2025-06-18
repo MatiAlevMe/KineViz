@@ -21,13 +21,13 @@ class DiscreteAnalysisView(ttk.Frame):
     """Vista para gestionar y visualizar el análisis discreto (Fase 6)."""
 
     def __init__(self, parent, main_window,
-                 analysis_service: AnalysisService, study_id: int):
+                 analysis_service: AnalysisService, study_id: int, settings: AppSettings):
         super().__init__(parent)
         self.parent = parent
         self.main_window = main_window
         self.analysis_service = analysis_service
         self.study_id = study_id
-        self.settings = AppSettings()
+        self.settings = settings # Use passed AppSettings instance
         self.tables_per_page = self.settings.discrete_tables_per_page
 
         # Estado de UI y datos

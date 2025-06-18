@@ -55,7 +55,7 @@ class MainWindow:
         self.undo_manager = UndoManager(settings=self.settings, study_repository_db_path=str(db_path_for_undo))
 
         self.study_service = StudyService(settings=self.settings, undo_manager=self.undo_manager)
-        self.file_service = FileService(self.study_service) # Servicio para operaciones de archivos dentro de estudios
+        self.file_service = FileService(self.study_service, settings=self.settings) # Pass settings
         # Pasar settings y undo_manager a AnalysisService
         self.analysis_service = AnalysisService(
             study_service=self.study_service,
@@ -253,8 +253,8 @@ class MainWindow:
     def show_discrete_analysis_view(self, study_id: int):
         """Muestra la vista para el análisis discreto (Fase 6)."""
         self.clear_window()
-        # Pasar main_window, analysis_service y study_id
-        self.current_view = DiscreteAnalysisView(self.root, self, self.analysis_service, study_id)
+        # Pasar main_window, analysis_service, study_id y settings
+        self.current_view = DiscreteAnalysisView(self.root, self, self.analysis_service, study_id, settings=self.settings)
         # El pack/grid se maneja dentro de DiscreteAnalysisView
         self.update_undo_menu_state() # Update undo state when view changes
 
