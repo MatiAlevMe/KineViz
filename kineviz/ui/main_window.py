@@ -342,8 +342,12 @@ class MainWindow:
          self.analysis_items_per_page = self.settings.analysis_items_per_page # Renamed
          self.font_scale = self.settings.font_scale
          self.app_theme = self.settings.theme
-         
-         self.apply_application_styles() # Re-apply styles
+        
+        # Only apply styles if not in the middle of a restart sequence
+        if not self.restart_pending:
+            self.apply_application_styles() # Re-apply styles
+        else:
+            logger.info("MainWindow.reload_settings: Reinicio pendiente, omitiendo re-aplicación de estilos.")
          
          # Podríamos necesitar refrescar la vista actual si la paginación cambió
          # o si el cambio de tema/fuente requiere recrear widgets.
@@ -587,31 +591,60 @@ class MainWindow:
             self.update_undo_menu_state() # Ensure menu state is correct
 
     def trigger_app_restart(self):
-        """Prepara la aplicación para un reinicio."""
+        """Prepara la aplicación para un reinicio. Sets self.root to None after destruction."""
         logger.info("MainWindow: Solicitud de reinicio de la aplicación recibida.")
         self.restart_pending = True
-        if hasattr(self.root, 'quit') and hasattr(self.root, 'destroy'):
-            self.root.quit()    # Termina el mainloop de Tkinter
-            self.root.destroy() # Destruye la ventana y libera recursos
-        else:
-            logger.error("MainWindow: self.root no tiene el método quit o destroy. No se puede reiniciar programáticamente de forma limpia.")
+        try:
+            if self.root:
+                try:
+                    self.root.quit()
+                except tk.TclError as e:
+                    logger.warning(f"MainWindow: Error al hacer self.root.quit() durante el reinicio (puede ser normal si no hay mainloop activo o root ya no es válido): {e}")
+
+                try:
+                    if self.root.winfo_exists():
+                        self.root.destroy()
+                    else:
+                        logger.info("MainWindow: La ventana raíz ya no existe, no se necesita destruir para el reinicio.")
+                except tk.TclError as e: # Catch error if winfo_exists fails or destroy fails
+                    logger.warning(f"MainWindow: Error al destruir la ventana raíz durante el reinicio (puede que ya no exista): {e}")
+                finally:
+                    self.root = None # Crucial: mark as gone
+            else:
+                logger.info("MainWindow: La ventana raíz (self.root) es None. No se requiere acción de Tkinter para el reinicio.")
+        except Exception as e: # Catch any other unexpected errors
+            logger.error(f"Excepción inesperada en trigger_app_restart: {e}", exc_info=True)
+            if self.root: # Try to set to None even on error
+                self.root = None
 
     def _on_close(self):
-        """Handles the application closing sequence."""
+        """Handles the application closing sequence. Sets self.root to None after destruction."""
         logger.info("Cerrando la aplicación...")
         # Perform any pre-close cleanup if necessary
         # For example, ensuring threads are joined, files are saved, etc.
         # Currently, no specific pre-close actions identified beyond Tkinter cleanup.
-
         try:
-            if hasattr(self.root, 'quit') and hasattr(self.root, 'destroy'):
-                self.root.quit()    # Stop the Tkinter main event loop
-                self.root.destroy() # Destroy the main window and free resources
+            if self.root:
+                try:
+                    self.root.quit()
+                except tk.TclError as e:
+                    logger.warning(f"MainWindow: Error al hacer self.root.quit() durante el cierre (puede ser normal si no hay mainloop activo o root ya no es válido): {e}")
+                
+                try:
+                    # Check if window still exists before destroying
+                    if self.root.winfo_exists():
+                        self.root.destroy()
+                    else:
+                        logger.info("MainWindow: La ventana raíz ya no existe, no se necesita destruir.")
+                except tk.TclError as e: # Catch error if winfo_exists fails or destroy fails
+                    logger.warning(f"MainWindow: Error al destruir la ventana raíz durante el cierre (puede que ya no exista): {e}")
+                finally:
+                    self.root = None # Crucial: mark as gone
             else:
-                logger.error("MainWindow: self.root no tiene el método quit o destroy. No se puede cerrar programáticamente de forma limpia.")
-                # Fallback for older Tkinter versions or unexpected root object, though unlikely.
-                sys.exit(0) 
-        except Exception as e:
-            logger.error(f"Error durante _on_close: {e}", exc_info=True)
-            # Ensure application exits even if cleanup fails
-            sys.exit(1)
+                logger.info("MainWindow: La ventana raíz (self.root) es None. No se requiere acción de cierre de Tkinter.")
+        except Exception as e: # Catch any other unexpected errors
+            logger.error(f"Error inesperado durante _on_close: {e}", exc_info=True)
+            # Ensure self.root is set to None even if an unexpected error occurs during cleanup
+            if hasattr(self, 'root'): # Check if self has 'root' attr before trying to set it
+                self.root = None
+        # The main application loop (in app.py) should handle sys.exit() based on self.restart_pending.
