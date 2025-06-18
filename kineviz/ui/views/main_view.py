@@ -90,8 +90,8 @@ class MainView:
         action_button_frame.pack(side=tk.RIGHT)
 
         # Packing order is reversed for side=tk.RIGHT to achieve visual L-R order
-        # Desired visual L-R: "Abrir Carpeta" | "Ayuda" | "Configuración" | "Manual"
-        # "?" (MainView Help) button is moved to the search_content_frame (second row).
+        # Desired visual L-R: "Abrir Carpeta" | "DEMO" | "Configuración" | "Manual"
+        # "?" (MainView Help) button (formerly in search_content_frame) is removed.
         
         # 1. Manual (packed first, appears rightmost)
         manual_btn = ttk.Button(action_button_frame, text='Manual', command=self.main_window.open_user_manual, style="Green.TButton")
@@ -105,11 +105,11 @@ class MainView:
         config_tooltip_text = "Abrir el diálogo de configuración de la aplicación."
         Tooltip(config_btn, text=config_tooltip_text, short_text=config_tooltip_text, enabled=self.main_window.settings.enable_hover_tooltips)
 
-        # 3. Ayuda (Welcome Message)
-        help_btn = ttk.Button(action_button_frame, text='Ayuda', command=self.main_window.show_welcome_message)
-        help_btn.pack(side=tk.RIGHT, padx=5)
-        help_tooltip_text = "Mostrar mensaje de bienvenida e introducción."
-        Tooltip(help_btn, text=help_tooltip_text, short_text=help_tooltip_text, enabled=self.main_window.settings.enable_hover_tooltips)
+        # 3. DEMO (Replaces Ayuda - Welcome Message)
+        demo_btn = ttk.Button(action_button_frame, text='DEMO', command=self.main_window.play_demo_video) # Changed text and command
+        demo_btn.pack(side=tk.RIGHT, padx=5)
+        demo_tooltip_text = "Reproducir el video DEMO de la aplicación." # Updated tooltip
+        Tooltip(demo_btn, text=demo_tooltip_text, short_text=demo_tooltip_text, enabled=self.main_window.settings.enable_hover_tooltips)
 
         # 4. Abrir Carpeta (renamed, packed last, appears leftmost)
         open_folder_btn = ttk.Button(action_button_frame, text='Abrir Carpeta',
@@ -140,10 +140,7 @@ class MainView:
         refresh_button = ttk.Button(self.search_content_frame, text="Refrescar", command=self.load_studies)
         Tooltip(refresh_button, text="Recargar la lista de estudios desde la base de datos.", short_text="Recargar lista.", enabled=self.main_window.settings.enable_hover_tooltips)
         
-        main_view_help_button = ttk.Button(self.search_content_frame, text="?", width=3,
-                                           style="Help.TButton", command=self._show_main_view_help)
-        main_view_tooltip_text = "Mostrar ayuda para la ventana principal de estudios."
-        Tooltip(main_view_help_button, text=main_view_tooltip_text, short_text=main_view_tooltip_text, enabled=self.main_window.settings.enable_hover_tooltips)
+        # main_view_help_button ('?') and its tooltip were here, removed.
 
         # Packing order for search elements:
         search_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True) # Entry takes available space
@@ -155,7 +152,7 @@ class MainView:
         spacer_frame.pack(side=tk.LEFT, fill=tk.X, expand=True) # This spacer might not be needed if search_entry expands
 
         # Right side (packed in reverse visual order for right alignment)
-        main_view_help_button.pack(side=tk.RIGHT, padx=(0,0)) 
+        # main_view_help_button.pack(side=tk.RIGHT, padx=(0,0)) # Removed packing for '?' button
         refresh_button.pack(side=tk.RIGHT, padx=(0,5)) 
         clear_button.pack(side=tk.RIGHT, padx=(0,5))
 
@@ -366,26 +363,7 @@ class MainView:
         page_info_label = ttk.Label(self.pagination_container, text=f"Página {self.current_page} de {self.total_pages}")
         page_info_label.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
 
-
-    def _show_main_view_help(self):
-        """Muestra un popup de ayuda para la Vista Principal."""
-        help_title = "Ayuda: Ventana Principal de Estudios"
-        help_message = (
-            "Esta ventana muestra una lista de todos los estudios creados.\n\n"
-            "Funcionalidades:\n"
-            "- Buscar estudios por su nombre.\n"
-            "- Añadir/editar un comentario para un estudio haciendo clic en 'Comentar'.\n"
-            "- Ver detalles de un estudio haciendo clic en 'Ver'.\n"
-            "- Editar un estudio haciendo clic en 'Editar'.\n"
-            "- Eliminar un estudio haciendo clic en 'Eliminar'.\n"
-            "- Destacar hasta 5 estudios usando el icono '📌' para que aparezcan siempre al inicio de la lista.\n"
-            "- Navegar entre páginas de estudios si hay muchos.\n"
-            "- Crear un nuevo estudio usando el botón 'Crear Nuevo Estudio'.\n"
-            "- Eliminar TODOS los estudios existentes usando el botón 'Eliminar Todos los Estudios' (¡con precaución!).\n"
-            "- Eliminar estudios SELECCIONADOS usando el botón 'Eliminar Seleccionado(s)' (¡con precaución!).\n"
-            "- En todas las ventanas donde existan opciones de 'Eliminar' puedes utilizar la opción 'Dehacer' desde el menu editar en la parte superior izquierda de tu sistema operativo, si es que activas la opción desde configuración (ten cuidado, es una función experimental)."
-        )
-        messagebox.showinfo(help_title, help_message, parent=self.root)
+    # _show_main_view_help method removed as it's no longer used.
 
     def go_to_page(self, page_number):
         """Navega a una página específica."""
