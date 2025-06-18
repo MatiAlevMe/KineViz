@@ -96,7 +96,7 @@ class MainWindow:
 
         # --- Menú Editar ---
         self.edit_menu = tk.Menu(menubar, tearoff=0) # Store as self.edit_menu
-        self.undo_command_index = self.edit_menu.add_command(label="Deshacer", command=self._perform_undo_operation, state=tk.DISABLED)
+        # The "Deshacer" command will be managed by update_undo_menu_state
         menubar.add_cascade(label="Editar", menu=self.edit_menu)
         
         # --- Menú Ayuda ---
@@ -524,15 +524,35 @@ class MainWindow:
                 self.update_undo_menu_state() # Update undo state even on error
 
     def update_undo_menu_state(self):
-        """Updates the state of the 'Undo' menu item."""
-        if hasattr(self, 'edit_menu') and self.settings.enable_undo_delete:
-            if self.study_service.can_undo_last_operation():
-                self.edit_menu.entryconfig("Deshacer", state=tk.NORMAL)
-            else:
-                self.edit_menu.entryconfig("Deshacer", state=tk.DISABLED)
-        elif hasattr(self, 'edit_menu'): # Undo is disabled in settings
-             self.edit_menu.entryconfig("Deshacer", state=tk.DISABLED)
+        """Updates the state and presence of the 'Undo' menu item."""
+        if not hasattr(self, 'edit_menu'):
+            return
 
+        undo_label = "Deshacer"
+
+        if self.settings.enable_undo_delete:
+            # Ensure "Undo" command exists
+            try:
+                # Check if item exists by trying to get its index.
+                # If this fails, it means the item is not in the menu.
+                self.edit_menu.index(undo_label)
+            except tk.TclError:
+                # Item does not exist, add it at the top (index 0)
+                self.edit_menu.insert_command(0, label=undo_label, command=self._perform_undo_operation)
+            
+            # Now configure its state
+            if self.study_service.can_undo_last_operation():
+                self.edit_menu.entryconfig(undo_label, state=tk.NORMAL)
+            else:
+                self.edit_menu.entryconfig(undo_label, state=tk.DISABLED)
+        else:
+            # Undo is disabled in settings, remove the menu item if it exists
+            try:
+                self.edit_menu.index(undo_label) # Check if it exists
+                self.edit_menu.delete(undo_label) # If yes, delete it
+            except tk.TclError:
+                # Item does not exist, nothing to do
+                pass
 
     def _perform_undo_operation(self):
         """Performs the undo operation and refreshes the view."""
