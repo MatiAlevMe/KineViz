@@ -53,7 +53,7 @@ class FileBrowser(ttk.Frame):
 
         # Filtro Tipo
         ttk.Label(filter_frame, text="Tipo:").pack(side=tk.LEFT, padx=(10, 5))
-        type_options = ["Todos", "Procesados", "Original"]
+        type_options = ["Todos", "Processed", "Original"]
         self.type_menu = ttk.Combobox(filter_frame, textvariable=self.filter_type_var, values=type_options, state="readonly", style='TCombobox')
         self.type_menu.set(type_options[0])  # Establecer el valor por defecto
         self.type_menu.pack(side=tk.LEFT, padx=5)
