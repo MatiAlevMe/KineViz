@@ -551,9 +551,9 @@ class ConfigDialog(Toplevel):
             "La información para deshacer se guarda en una caché temporal. Esta caché se limpia automáticamente:\n"
             "1. Al iniciar una nueva operación que pueda ser deshecha (ej. otra eliminación).\n"
             "2. Si el 'Timeout caché deshacer' está configurado (>0) y el tiempo ha expirado al iniciar la aplicación.\n"
-            "La caché NO se limpia al cambiar de vista o cerrar la aplicación (a menos que el timeout se cumpla al reabrir).\n"
+            "La caché se limpia al reabrir KineViz luego de que el timeout se cumpla.\n"
             "Esta función es experimental. Úsela con precaución.\n\n"
-            "Nota: La preparación para una *nueva* operación de 'Deshacer' puede requerir un reinicio de la aplicación después de un uso previo o cambio de esta configuración."
+            "Nota: La preparación para una *nueva* operación de 'Deshacer' puede requerir un reinicio de la aplicación (o tiempo de espera en la aplicación) después de un uso previo o cambio de esta configuración."
         )
         enable_undo_delete_short_text = "Habilita/deshabilita la función 'Deshacer Eliminación'."
         enable_undo_delete_help_btn = ttk.Button(
