@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk, Toplevel, messagebox, Canvas, Scrollbar, Frame
-import webbrowser # Para abrir archivo de ayuda
 from pathlib import Path # Para construir ruta de ayuda
 # Importar NUEVO validador de datos y validador de nombres de archivo
 from kineviz.ui.utils.validators import validate_study_iv_data, validate_filename_for_study_criteria
@@ -237,11 +236,9 @@ class StudyDialog(Toplevel):
         button_frame.grid(row=row_idx, column=0, columnspan=2, sticky="se", pady=20, padx=5)
         # No configurar rowconfigure aquí, dejar que los botones estén al final
 
-        # Botón de Ayuda (?)
-        # Usar un estilo para el color o configurar directamente
         # El estilo "Help.TButton" ahora se define globalmente en MainWindow
-        help_button = ttk.Button(button_frame, text="?", width=3, style="Help.TButton", command=self.show_iv_help)
-        help_button.pack(side=tk.LEFT, padx=(0, 10)) # A la izquierda de Cancelar
+        # help_button = ttk.Button(button_frame, text="?", width=3, style="Help.TButton", command=self.show_iv_help) # Botón de ayuda eliminado
+        # help_button.pack(side=tk.LEFT, padx=(0, 10)) # A la izquierda de Cancelar
 
         ttk.Button(button_frame, text="Guardar", command=self.save).pack(side=tk.RIGHT, padx=5)
         ttk.Button(button_frame, text="Cancelar", command=self.destroy).pack(side=tk.RIGHT)
@@ -540,19 +537,19 @@ class StudyDialog(Toplevel):
             is_mandatory_cb_widget.config(state=tk.DISABLED) # Estado base si está oculto
 
 
-    def show_iv_help(self):
-        """Muestra el archivo de ayuda para VIs."""
-        try:
-            # Construir ruta relativa al archivo actual
-            help_file_path = Path(__file__).parent.parent.parent / "docs" / "help" / "study_dialog_iv_help.txt"
-            if help_file_path.exists():
-                # Usar webbrowser para abrir el archivo (más portable)
-                webbrowser.open(help_file_path.as_uri()) # as_uri() para formato file:///
-            else:
-                messagebox.showerror("Error", f"No se encontró el archivo de ayuda:\n{help_file_path}", parent=self)
-        except Exception as e:
-            logger.error(f"Error al abrir archivo de ayuda: {e}", exc_info=True)
-            messagebox.showerror("Error", f"No se pudo abrir el archivo de ayuda:\n{e}", parent=self)
+    # def show_iv_help(self): # Eliminado según solicitud de centralizar ayuda
+    #     """Muestra el archivo de ayuda para VIs."""
+    #     try:
+    #         # Construir ruta relativa al archivo actual
+    #         help_file_path = Path(__file__).parent.parent.parent / "docs" / "help" / "study_dialog_iv_help.txt"
+    #         if help_file_path.exists():
+    #             # Usar webbrowser para abrir el archivo (más portable)
+    #             webbrowser.open(help_file_path.as_uri()) # as_uri() para formato file:///
+    #         else:
+    #             messagebox.showerror("Error", f"No se encontró el archivo de ayuda:\n{help_file_path}", parent=self)
+    #     except Exception as e:
+    #         logger.error(f"Error al abrir archivo de ayuda: {e}", exc_info=True)
+    #         messagebox.showerror("Error", f"No se pudo abrir el archivo de ayuda:\n{e}", parent=self)
 
 
     def save(self):
