@@ -518,3 +518,28 @@ class StudyService:
             logger.error(f"Servicio: Error al eliminar todos los estudios: {e}", exc_info=True)
             # Undo cache might be prepared. It will be cleared on next successful prepare.
             raise # Relanzar para que la UI maneje el error
+
+    def can_undo_last_operation(self) -> bool:
+        """
+        Checks if an undo operation is available via the UndoManager.
+        :return: True if an undo operation can be performed, False otherwise.
+        """
+        if not self.settings.enable_undo_delete: # Check global setting first
+            return False
+        return self.undo_manager.can_undo()
+
+    def undo_last_operation(self) -> bool:
+        """
+        Attempts to perform an undo operation via the UndoManager.
+        :return: True if the undo operation was successful, False otherwise.
+        """
+        if not self.can_undo_last_operation(): # Relies on can_undo_last_operation to check global setting
+            logger.warning("Undo last operation called, but no undo operation is available or undo is disabled.")
+            return False
+        
+        success = self.undo_manager.perform_undo()
+        if success:
+            logger.info("Undo last operation performed successfully by StudyService.")
+        else:
+            logger.error("Undo last operation failed when called by StudyService.")
+        return success
