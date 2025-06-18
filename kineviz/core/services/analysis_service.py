@@ -62,18 +62,19 @@ except ImportError:
 
 class AnalysisService:
     # Eliminar app_settings de la inicialización
-    def __init__(self, study_service: StudyService, file_service: FileService):
+    def __init__(self, study_service: StudyService, file_service: FileService, settings: AppSettings, undo_manager: UndoManager):
         """
         Inicializa el AnalysisService.
 
         :param study_service: Instancia de StudyService.
         :param file_service: Instancia de FileService.
+        :param settings: Instancia de AppSettings.
+        :param undo_manager: Instancia de UndoManager.
         """
         self.study_service = study_service
         self.file_service = file_service
-        self.settings = AppSettings() # Instantiate AppSettings
-        # AnalysisService gets db_path via its study_service instance
-        self.undo_manager = UndoManager(settings=self.settings, study_repository_db_path=str(self.study_service.db_path))
+        self.settings = settings # Use passed AppSettings instance
+        self.undo_manager = undo_manager # Use passed UndoManager instance
 
     def get_analysis_parameters(self, study_id: int) -> dict:
         """

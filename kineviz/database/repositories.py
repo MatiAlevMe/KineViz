@@ -236,13 +236,14 @@ class StudyRepository:
             # Considerar lanzar una excepción personalizada o devolver 0/None
             return 0
 
-    def get_studies_paginated(self, limit: int, offset: int, search_term: str = None):
+    def get_studies_paginated(self, limit: int, offset: int, search_term: str = None, search_field: str = "Nombre de Estudio"):
         """
-        Obtiene una lista paginada de estudios, opcionalmente filtrada por nombre.
+        Obtiene una lista paginada de estudios, opcionalmente filtrada por nombre o comentario.
 
         :param limit: Número máximo de estudios a devolver.
         :param offset: Número de estudios a omitir (para paginación).
-        :param search_term: Término de búsqueda para filtrar por nombre (case-insensitive).
+        :param search_term: Término de búsqueda para filtrar (case-insensitive).
+        :param search_field: Campo por el cual buscar ("Nombre de Estudio" o "Comentario").
         :return: Lista de diccionarios de estudios.
         """
         try:
@@ -252,9 +253,8 @@ class StudyRepository:
                 query = 'SELECT id_estudio, nombre_estudio, is_pinned, comentario FROM estudios'
                 params = []
                 if search_term:
-                    # search_field will determine which column to search
-                    # Defaulting to nombre_estudio if search_field is not 'comentario'
-                    search_column = 'comentario' if hasattr(self, 'search_field') and self.search_field == 'Comentario' else 'nombre_estudio'
+                    # Determine search_column based on search_field parameter
+                    search_column = 'comentario' if search_field == 'Comentario' else 'nombre_estudio'
                     query += f' WHERE {search_column} LIKE ?'
                     params.append(f'%{search_term}%')
                 
