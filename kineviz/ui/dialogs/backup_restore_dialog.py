@@ -423,43 +423,45 @@ class BackupRestoreDialog(Toplevel):
                                    "La creación de copias de seguridad manuales está desactivada en la configuración.", 
                                        parent=self)
             return
-            try:
-                logger.info(f"Attempting to create manual backup with alias: '{alias if alias else 'No Alias'}'")
-                backup_path = backup_manager.create_backup(backup_manager.MANUAL_BACKUPS_SUBDIR)
-                if backup_path: # Backup was created successfully
-                    if alias.strip(): # Only add alias if it's not empty
-                        backup_manager.add_backup_alias(backup_manager.MANUAL_BACKUPS_SUBDIR, backup_path.name, alias.strip())
-                    messagebox.showinfo("Éxito", f"Copia de seguridad manual '{backup_path.name}' creada exitosamente.", parent=self)
-                    self.load_backups()
-                else: # Backup creation failed or was prevented
-                    # Check if it was due to limit
-                    # settings = AppSettings() # AppSettings is available as self.app_settings
-                    max_manual_bkups = self.app_settings.max_manual_backups
-                    
-                    # Re-fetch existing backups count to be sure about the reason
-                    existing_manual_backups = [
-                        b for b in backup_manager.list_backups() 
-                        if b['type'] == backup_manager.MANUAL_BACKUPS_SUBDIR
-                    ]
-                    num_existing_manual = len(existing_manual_backups)
+        # Proceed with creation if alias was not None (even if empty string)
+        # The try block was incorrectly indented under the return statement above.
+        try:
+            logger.info(f"Attempting to create manual backup with alias: '{alias if alias else 'No Alias'}'")
+            backup_path = backup_manager.create_backup(backup_manager.MANUAL_BACKUPS_SUBDIR)
+            if backup_path: # Backup was created successfully
+                if alias.strip(): # Only add alias if it's not empty
+                    backup_manager.add_backup_alias(backup_manager.MANUAL_BACKUPS_SUBDIR, backup_path.name, alias.strip())
+                messagebox.showinfo("Éxito", f"Copia de seguridad manual '{backup_path.name}' creada exitosamente.", parent=self)
+                self.load_backups()
+            else: # Backup creation failed or was prevented
+                # Check if it was due to limit
+                # settings = AppSettings() # AppSettings is available as self.app_settings
+                max_manual_bkups = self.app_settings.max_manual_backups
+                
+                # Re-fetch existing backups count to be sure about the reason
+                existing_manual_backups = [
+                    b for b in backup_manager.list_backups() 
+                    if b['type'] == backup_manager.MANUAL_BACKUPS_SUBDIR
+                ]
+                num_existing_manual = len(existing_manual_backups)
 
-                    if max_manual_bkups > 0 and num_existing_manual >= max_manual_bkups:
-                        messagebox.showwarning("Límite Alcanzado", 
-                                               f"No se puede crear la copia de seguridad manual.\n"
-                                               f"Se ha alcanzado el límite de {max_manual_bkups} copias manuales.\n\n"
-                                               "Por favor, elimine una copia existente para continuar.", 
-                                               parent=self)
-                    elif max_manual_bkups == 0:
-                         messagebox.showwarning("Deshabilitado",
-                                               "La creación de copias de seguridad manuales está deshabilitada (límite configurado a 0).\n\n"
-                                               "Puede cambiar esta configuración en Archivo > Configuración > Copias de Seguridad.",
-                                               parent=self)
-                    else:
-                        # Generic error if not due to limit (e.g., disk error)
-                        messagebox.showerror("Error", "No se pudo crear la copia de seguridad manual.\nConsulte los logs para más detalles.", parent=self)
-            except Exception as e:
-                logger.error(f"Error creando copia manual: {e}", exc_info=True)
-                messagebox.showerror("Error", f"Ocurrió un error al crear la copia manual:\n{e}", parent=self)
+                if max_manual_bkups > 0 and num_existing_manual >= max_manual_bkups:
+                    messagebox.showwarning("Límite Alcanzado", 
+                                           f"No se puede crear la copia de seguridad manual.\n"
+                                           f"Se ha alcanzado el límite de {max_manual_bkups} copias manuales.\n\n"
+                                           "Por favor, elimine una copia existente para continuar.", 
+                                           parent=self)
+                elif max_manual_bkups == 0:
+                     messagebox.showwarning("Deshabilitado",
+                                           "La creación de copias de seguridad manuales está deshabilitada (límite configurado a 0).\n\n"
+                                           "Puede cambiar esta configuración en Archivo > Configuración > Copias de Seguridad.",
+                                           parent=self)
+                else:
+                    # Generic error if not due to limit (e.g., disk error)
+                    messagebox.showerror("Error", "No se pudo crear la copia de seguridad manual.\nConsulte los logs para más detalles.", parent=self)
+        except Exception as e:
+            logger.error(f"Error creando copia manual: {e}", exc_info=True)
+            messagebox.showerror("Error", f"Ocurrió un error al crear la copia manual:\n{e}", parent=self)
 
     def restore_selected_action(self):
         """Acción para restaurar una copia de seguridad seleccionada."""
