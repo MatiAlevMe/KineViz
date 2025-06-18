@@ -236,14 +236,13 @@ class StudyRepository:
             # Considerar lanzar una excepción personalizada o devolver 0/None
             return 0
 
-    def get_studies_paginated(self, limit: int, offset: int, search_term: str = None, search_field: str = "Nombre de Estudio"):
+    def get_studies_paginated(self, limit: int, offset: int, search_term: str = None):
         """
-        Obtiene una lista paginada de estudios, opcionalmente filtrada por nombre o comentario.
+        Obtiene una lista paginada de estudios, opcionalmente filtrada por nombre.
 
         :param limit: Número máximo de estudios a devolver.
         :param offset: Número de estudios a omitir (para paginación).
-        :param search_term: Término de búsqueda para filtrar (case-insensitive).
-        :param search_field: Campo por el cual buscar ("Nombre de Estudio" o "Comentario").
+        :param search_term: Término de búsqueda para filtrar por nombre_estudio (case-insensitive).
         :return: Lista de diccionarios de estudios.
         """
         try:
@@ -253,10 +252,7 @@ class StudyRepository:
                 query = 'SELECT id_estudio, nombre_estudio, is_pinned, comentario FROM estudios'
                 params = []
                 if search_term:
-                    if search_field == 'Comentario':
-                        query += ' WHERE COALESCE(comentario, \'\') LIKE ?'
-                    else: # Default to nombre_estudio
-                        query += ' WHERE nombre_estudio LIKE ?'
+                    query += ' WHERE nombre_estudio LIKE ?'
                     params.append(f'%{search_term}%')
                 
                 query += ' ORDER BY is_pinned DESC, nombre_estudio COLLATE NOCASE ASC LIMIT ? OFFSET ?'
@@ -268,12 +264,11 @@ class StudyRepository:
             logger.error(f"Error al obtener estudios paginados: {e}", exc_info=True)
             return []
 
-    def get_total_studies_count(self, search_term: str = None, search_field: str = "Nombre de Estudio"):
+    def get_total_studies_count(self, search_term: str = None):
         """
-        Cuenta el número total de estudios, opcionalmente filtrado por nombre o comentario.
+        Cuenta el número total de estudios, opcionalmente filtrado por nombre.
 
-        :param search_term: Término de búsqueda para filtrar (case-insensitive).
-        :param search_field: Campo por el cual buscar ("Nombre de Estudio" o "Comentario").
+        :param search_term: Término de búsqueda para filtrar por nombre_estudio (case-insensitive).
         :return: Número total de estudios que coinciden.
         """
         try:
@@ -282,10 +277,7 @@ class StudyRepository:
                 query = 'SELECT COUNT(*) FROM estudios'
                 params = []
                 if search_term:
-                    if search_field == 'Comentario':
-                        query += ' WHERE COALESCE(comentario, \'\') LIKE ?'
-                    else: # Default to nombre_estudio
-                        query += ' WHERE nombre_estudio LIKE ?'
+                    query += ' WHERE nombre_estudio LIKE ?'
                     params.append(f'%{search_term}%')
 
                 cursor.execute(query, params)
