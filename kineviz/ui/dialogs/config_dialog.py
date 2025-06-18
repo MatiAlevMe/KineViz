@@ -541,7 +541,8 @@ class ConfigDialog(Toplevel):
         enable_undo_delete_cb = ttk.Checkbutton(
             enable_undo_delete_frame,
             text="Habilitar 'Deshacer Eliminación' (Experimental)",
-            variable=self.var_enable_undo_delete
+            variable=self.var_enable_undo_delete,
+            command=self._toggle_undo_options_visibility # Add command
         )
         enable_undo_delete_cb.pack(side=tk.LEFT, padx=(0, 5))
         enable_undo_delete_long_text = (
