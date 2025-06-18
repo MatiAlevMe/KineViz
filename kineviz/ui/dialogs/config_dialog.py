@@ -548,7 +548,8 @@ class ConfigDialog(Toplevel):
         enable_undo_delete_long_text = (
             "Permite deshacer la última operación de eliminación de estudios, archivos o resultados de análisis.\n"
             "La opción 'Deshacer' aparecerá en el menú 'Editar' si está habilitada y hay una operación para deshacer.\n"
-            "Esta función es experimental. Úsela con precaución."
+            "Esta función es experimental. Úsela con precaución.\n\n"
+            "Nota: La preparación para una *nueva* operación de 'Deshacer' puede requerir un reinicio de la aplicación después de un uso previo o cambio de esta configuración."
         )
         enable_undo_delete_short_text = "Habilita/deshabilita la función 'Deshacer Eliminación'."
         enable_undo_delete_help_btn = ttk.Button(
