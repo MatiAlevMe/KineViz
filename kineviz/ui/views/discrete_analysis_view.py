@@ -154,7 +154,8 @@ class DiscreteAnalysisView(ttk.Frame):
 
         generate_tables_button = ttk.Button(
             action_frame, text="Generar/Actualizar Tablas Resumen",
-            command=self.generate_tables
+            command=self.generate_tables,
+            style="Green.TButton"
         )
         generate_tables_button.pack(side=tk.LEFT, padx=5)
         Tooltip(generate_tables_button, text="Genera o actualiza las tablas de resumen (.xlsx) con cálculos (Max, Min, Rango) para los datos procesados.", short_text="Generar tablas.", enabled=self.settings.enable_hover_tooltips)
@@ -224,7 +225,7 @@ class DiscreteAnalysisView(ttk.Frame):
         refresh_button.pack(side=tk.LEFT, padx=5)
         Tooltip(refresh_button, text="Recargar la lista de tablas desde el sistema de archivos.", short_text="Refrescar lista.", enabled=self.settings.enable_hover_tooltips)
 
-        apply_filters_button = ttk.Button(vi_controls_row, text="Aplicar Todos los Filtros", command=self.apply_filters)
+        apply_filters_button = ttk.Button(vi_controls_row, text="Aplicar Todos los Filtros", command=self.apply_filters, style="Celeste.TButton")
         apply_filters_button.pack(side=tk.LEFT, padx=5)
         Tooltip(apply_filters_button, text="Aplicar todos los filtros de búsqueda y VIs seleccionados.", short_text="Aplicar filtros.", enabled=self.settings.enable_hover_tooltips)
         
@@ -326,8 +327,8 @@ class DiscreteAnalysisView(ttk.Frame):
         self.delete_selected_button.pack(side=tk.LEFT, padx=5)
         Tooltip(self.delete_selected_button, text="Eliminar las tablas de resumen seleccionadas en la lista.", short_text="Eliminar seleccionadas.", enabled=self.settings.enable_hover_tooltips)
         
-        self.view_table_button = ttk.Button(self.bottom_fixed_table_actions_frame, text="Ver Tabla",
-                                            command=self.view_table, state=tk.DISABLED)
+        self.view_table_button = ttk.Button(self.bottom_fixed_table_actions_frame, text="Ver Tabla Seleccionada",
+                                            command=self.view_table, state=tk.DISABLED, style="Celeste.TButton")
         self.view_table_button.pack(side=tk.RIGHT, padx=5)
         Tooltip(self.view_table_button, text="Abrir la tabla de resumen (.xlsx) seleccionada con la aplicación predeterminada.", short_text="Ver tabla.", enabled=self.settings.enable_hover_tooltips)
 

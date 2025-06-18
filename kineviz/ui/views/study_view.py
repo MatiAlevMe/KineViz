@@ -97,7 +97,7 @@ class StudyView:
         back_button.pack(side=tk.LEFT, padx=(0, 10))
         Tooltip(back_button, text="Regresar a la lista principal de estudios.", short_text="Volver.", enabled=self.main_window.settings.enable_hover_tooltips)
         
-        add_files_button = ttk.Button(header_frame_row1, text="Agregar Archivo(s)", command=self.add_files_dialog, style="Celeste.TButton")
+        add_files_button = ttk.Button(header_frame_row1, text="Agregar Archivo(s)", command=self.add_files_dialog, style="Green.TButton")
         add_files_button.pack(side=tk.LEFT, padx=(0, 10))
         Tooltip(add_files_button, text="Abrir diálogo para agregar archivos de datos a este estudio.", short_text="Agregar archivos.", enabled=self.main_window.settings.enable_hover_tooltips)
 
@@ -208,7 +208,8 @@ class StudyView:
             self.bottom_fixed_file_actions_frame,
             text="Ver Archivo Seleccionado",
             command=self._view_selected_file_from_browser,
-            state=tk.DISABLED
+            state=tk.DISABLED,
+            style="Celeste.TButton"
         )
         self.view_selected_file_button.pack(side=tk.RIGHT, padx=(0,0))
         Tooltip(self.view_selected_file_button, text="Abrir el archivo seleccionado con la aplicación predeterminada (solo 1 selección).", short_text="Ver seleccionado.", enabled=self.main_window.settings.enable_hover_tooltips)

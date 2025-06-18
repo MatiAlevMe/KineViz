@@ -238,7 +238,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         filter_action_buttons_frame = ttk.Frame(search_filter_frame)
         filter_action_buttons_frame.grid(row=6, column=0, columnspan=3, sticky="ew", pady=(5,0)) # New row for these buttons
         
-        apply_button = ttk.Button(filter_action_buttons_frame, text="Aplicar Filtros", command=self._apply_filters_and_search)
+        apply_button = ttk.Button(filter_action_buttons_frame, text="Aplicar Filtros", command=self._apply_filters_and_search, style="Celeste.TButton")
         apply_button.pack(side=tk.LEFT, padx=(0,5)) # Adjusted padding
         Tooltip(apply_button, text="Aplicar todos los filtros seleccionados.", short_text="Aplicar filtros.", enabled=self.settings.enable_hover_tooltips)
         
@@ -253,7 +253,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         refresh_button.pack(side=tk.RIGHT, padx=(0,0)) # Rightmost, no right padding from itself
         Tooltip(refresh_button, text="Recargar la lista de análisis guardados.", short_text="Refrescar lista.", enabled=self.settings.enable_hover_tooltips)
 
-        search_button_moved = ttk.Button(filter_action_buttons_frame, text="Buscar", command=self._apply_filters_and_search)
+        search_button_moved = ttk.Button(filter_action_buttons_frame, text="Buscar", command=self._apply_filters_and_search, style="Celeste.TButton")
         search_button_moved.pack(side=tk.RIGHT, padx=(0,5)) # To the left of Refresh, 5px padding on its right
         Tooltip(search_button_moved, text="Buscar análisis por nombre, cálculo o variable analizada.", short_text="Buscar.", enabled=self.settings.enable_hover_tooltips)
 
@@ -297,15 +297,15 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
         self.analysis_tree.bind("<Double-1>", lambda e: self.view_analysis_plot()) 
 
         # --- Populate Bottom Fixed View Actions Frame ---
-        self.view_plot_button = ttk.Button(self.bottom_fixed_view_actions_frame, text="Ver/Abrir Gráfico", command=self.view_analysis_plot, state=tk.DISABLED)
+        self.view_plot_button = ttk.Button(self.bottom_fixed_view_actions_frame, text="Ver/Abrir Gráfico", command=self.view_analysis_plot, state=tk.DISABLED, style="Green.TButton")
         self.view_plot_button.pack(side=tk.LEFT, padx=5)
         Tooltip(self.view_plot_button, text="Abrir el gráfico estático (PNG) del análisis seleccionado.", short_text="Ver gráfico.", enabled=self.settings.enable_hover_tooltips)
 
-        self.view_interactive_button = ttk.Button(self.bottom_fixed_view_actions_frame, text="Ver Gráfico Interactivo", command=self.view_interactive_plot, state=tk.DISABLED)
+        self.view_interactive_button = ttk.Button(self.bottom_fixed_view_actions_frame, text="Ver Gráfico Interactivo", command=self.view_interactive_plot, state=tk.DISABLED, style="Green.TButton")
         self.view_interactive_button.pack(side=tk.LEFT, padx=5)
         Tooltip(self.view_interactive_button, text="Abrir el gráfico interactivo (HTML) del análisis seleccionado en un navegador.", short_text="Ver interactivo.", enabled=self.settings.enable_hover_tooltips)
 
-        self.view_config_button = ttk.Button(self.bottom_fixed_view_actions_frame, text="Ver Configuración", command=self._view_config, state=tk.DISABLED)
+        self.view_config_button = ttk.Button(self.bottom_fixed_view_actions_frame, text="Ver Configuración", command=self._view_config, state=tk.DISABLED, style="Celeste.TButton")
         self.view_config_button.pack(side=tk.LEFT, padx=5)
         Tooltip(self.view_config_button, text="Ver la configuración detallada del análisis seleccionado en un archivo de texto.", short_text="Ver config.", enabled=self.settings.enable_hover_tooltips)
 
@@ -324,7 +324,7 @@ class IndividualAnalysisManagerDialog(tk.Toplevel):
 
         ttk.Frame(self.bottom_fixed_folder_actions_frame).pack(side=tk.LEFT, expand=True, fill=tk.X) # Spacer
         
-        new_analysis_button = ttk.Button(self.bottom_fixed_folder_actions_frame, text="Nuevo Análisis...", command=self.open_new_analysis_dialog)
+        new_analysis_button = ttk.Button(self.bottom_fixed_folder_actions_frame, text="Nuevo Análisis...", command=self.open_new_analysis_dialog, style="Green.TButton")
         new_analysis_button.pack(side=tk.RIGHT, padx=5)
         Tooltip(new_analysis_button, text="Abrir el diálogo para configurar y generar un nuevo análisis discreto individual.", short_text="Nuevo análisis.", enabled=self.settings.enable_hover_tooltips)
 

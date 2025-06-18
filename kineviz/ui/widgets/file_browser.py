@@ -66,7 +66,7 @@ class FileBrowser(ttk.Frame):
         self.freq_menu.pack(side=tk.LEFT, padx=5)
         
         # Botones de Filtro
-        apply_button = ttk.Button(filter_frame, text="Aplicar", command=self.apply_filters)
+        apply_button = ttk.Button(filter_frame, text="Aplicar", command=self.apply_filters, style="Celeste.TButton")
         apply_button.pack(side=tk.LEFT, padx=5)
         Tooltip(apply_button, text="Aplicar los filtros de búsqueda, tipo y tipo de dato.", short_text="Aplicar filtros.", enabled=self.settings.enable_hover_tooltips if self.settings else False)
 
