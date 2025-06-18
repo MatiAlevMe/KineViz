@@ -484,7 +484,7 @@ class MainWindow:
 
     def reset_to_defaults(self):
         """Restablece la aplicación a su estado inicial."""
-        if messagebox.askyesno("Confirmar Restablecimiento", "¿Está seguro de que desea restablecer los valores por defecto?\n\nEsta acción eliminará permanentemente:\n- Todos los estudios y sus archivos asociados.\n- Todos los reportes generados.\n- La base de datos completa.\n\nEsta acción no se puede deshacer.", icon='warning'):
+        if messagebox.askyesno("Confirmar Restablecimiento", "¿Está seguro de que desea restablecer los valores por defecto?\n\nEsta acción eliminará permanentemente:\n- Todos los estudios y sus archivos asociados.\n- Todos los reportes generados.\n- La base de datos completa.\n- Todas las configuraciones personalizadas.\n\nEsta acción no se puede deshacer.", icon='warning'):
             try:
                 # Obtener rutas desde una fuente central si es posible (e.g., config o servicio)
                 project_root_dir = Path(__file__).resolve().parent.parent.parent
