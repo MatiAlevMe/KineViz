@@ -22,7 +22,7 @@ class MainView:
         # Variables de estado
         self.current_page = 1
         self.search_term = tk.StringVar()
-        self.search_field_var = tk.StringVar(value="Nombre de Estudio") # Para el dropdown de búsqueda
+        # self.search_field_var = tk.StringVar(value="Nombre de Estudio") # Para el dropdown de búsqueda - REMOVED
         self.total_pages = 1
 
         # Crear la interfaz de usuario
@@ -125,14 +125,14 @@ class MainView:
         search_entry = ttk.Entry(self.search_content_frame, textvariable=self.search_term, font=scaled_font_tuple) # Added font
         search_entry.bind("<Return>", lambda event: self.search_studies())
         
-        # Search field dropdown
-        search_field_options = ["Nombre de Estudio", "Comentario"]
-        self.search_field_combo = ttk.Combobox(self.search_content_frame, textvariable=self.search_field_var, values=search_field_options, state="readonly", width=18, font=scaled_font_tuple)
-        self.search_field_combo.set("Nombre de Estudio") # Default value
-        Tooltip(self.search_field_combo, text="Seleccionar campo para la búsqueda.", short_text="Campo de búsqueda.", enabled=self.main_window.settings.enable_hover_tooltips)
+        # Search field dropdown - REMOVED
+        # search_field_options = ["Nombre de Estudio", "Comentario"]
+        # self.search_field_combo = ttk.Combobox(self.search_content_frame, textvariable=self.search_field_var, values=search_field_options, state="readonly", width=18, font=scaled_font_tuple)
+        # self.search_field_combo.set("Nombre de Estudio") # Default value
+        # Tooltip(self.search_field_combo, text="Seleccionar campo para la búsqueda.", short_text="Campo de búsqueda.", enabled=self.main_window.settings.enable_hover_tooltips)
 
         search_button = ttk.Button(self.search_content_frame, text="Buscar", command=self.search_studies)
-        Tooltip(search_button, text="Buscar estudios por el campo y término seleccionados.", short_text="Buscar estudios.", enabled=self.main_window.settings.enable_hover_tooltips)
+        Tooltip(search_button, text="Buscar estudios por nombre.", short_text="Buscar estudios.", enabled=self.main_window.settings.enable_hover_tooltips)
 
         clear_button = ttk.Button(self.search_content_frame, text="Limpiar", command=self.clear_search)
         Tooltip(clear_button, text="Limpiar el término de búsqueda y mostrar todos los estudios.", short_text="Limpiar búsqueda.", enabled=self.main_window.settings.enable_hover_tooltips)
@@ -147,7 +147,7 @@ class MainView:
 
         # Packing order for search elements:
         search_entry.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True) # Entry takes available space
-        self.search_field_combo.pack(side=tk.LEFT, padx=(0,5))
+        # self.search_field_combo.pack(side=tk.LEFT, padx=(0,5)) # REMOVED
         search_button.pack(side=tk.LEFT, padx=(0,5))
         
         # Spacer to push right-aligned buttons to the right
@@ -285,17 +285,17 @@ class MainView:
             # Obtener estudios paginados y filtrados
             studies_per_page = self.main_window.estudios_por_pagina
             search_query = self.search_term.get() if self.search_term.get() else None
-            search_field_selected = self.search_field_var.get() # Get the selected search field
+            # search_field_selected = self.search_field_var.get() # REMOVED
 
             studies = self.study_service.get_studies_paginated(
                 page=self.current_page,
                 per_page=studies_per_page,
-                search_term=search_query,
-                search_field=search_field_selected # Pass the selected search field
+                search_term=search_query
+                # search_field parameter removed from service call
             )
             total_studies = self.study_service.get_total_studies_count(
-                search_term=search_query,
-                search_field=search_field_selected # Pass the selected search field
+                search_term=search_query
+                # search_field parameter removed from service call
             )
             self.total_pages = (total_studies // studies_per_page) + (1 if total_studies % studies_per_page else 0)
             self.total_pages = max(1, self.total_pages) # Asegurar al menos 1 página
