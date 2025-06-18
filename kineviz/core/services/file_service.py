@@ -16,18 +16,19 @@ logger = logging.getLogger(__name__) # Logger para este módulo
 # Por simplicidad inicial, asumiremos que la estructura de carpetas es conocida.
 
 class FileService:
-    def __init__(self, study_service):
+    def __init__(self, study_service, settings: AppSettings):
         """
         Inicializa el FileService.
 
         :param study_service: Una instancia de StudyService para obtener detalles del estudio.
+        :param settings: Una instancia de AppSettings.
         """
         self.study_service = study_service
+        self.settings = settings # Use passed AppSettings instance
         # Determinar la ruta raíz del proyecto para construir rutas absolutas
         self.project_root = Path(__file__).resolve().parent.parent.parent.parent
         self.studies_base_dir = self.project_root / "estudios"
-        # Initialize AppSettings and UndoManager
-        self.settings = AppSettings()
+        # Initialize UndoManager, passing the settings instance
         # FileService gets db_path via its study_service instance
         self.undo_manager = UndoManager(settings=self.settings, study_repository_db_path=str(self.study_service.db_path))
 
