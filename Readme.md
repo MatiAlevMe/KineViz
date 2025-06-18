@@ -155,6 +155,6 @@ Solución de Problemas
 
 Licencia
 
-Este proyecto está bajo la Licencia {rellenar}.
+Este proyecto está bajo la Licencia personal de Matías Alevropulos.
 
 Para más información o consultas, contacta con el desarrollador en matias.alevropulos.e@mail.pucv.cl
