@@ -46,7 +46,8 @@ class AppSettings:
             # 'backup_before_restore' is replaced by enable_pre_restore_backups
             'enable_pre_restore_backups': 'True',    # New, for pre-restore backups
             'max_pre_restore_backups': '10',         # New, max pre-restore backups
-            'pre_restore_backup_cooldown_seconds': '60' # New, cooldown for pre-restore
+            'pre_restore_backup_cooldown_seconds': '60', # New, cooldown for pre-restore
+            'enable_undo_delete': 'False' # New, for undo delete functionality
         }
         # DESCRIPTOR_ALIASES ya no se gestiona aquí
     }
