@@ -83,6 +83,11 @@ class MainWindow:
         file_menu.add_command(label="Salir", command=self.root.quit)
         menubar.add_cascade(label="Archivo", menu=file_menu)
 
+        # --- Menú Editar ---
+        self.edit_menu = tk.Menu(menubar, tearoff=0) # Store as self.edit_menu
+        self.undo_command_index = self.edit_menu.add_command(label="Deshacer", command=self._perform_undo_operation, state=tk.DISABLED)
+        menubar.add_cascade(label="Editar", menu=self.edit_menu)
+        
         # --- Menú Ayuda ---
         help_menu = tk.Menu(menubar, tearoff=0)
         help_menu.add_command(label="Manual de Usuario", command=self.open_user_manual)
@@ -170,6 +175,7 @@ class MainWindow:
         # LandingPage necesita ser adaptada para recibir MainWindow y usar sus métodos
         self.current_view = LandingPage(self.root, self)
         # El pack/grid debe hacerse dentro de LandingPage
+        self.update_undo_menu_state() # Update undo state when view changes
 
     def show_main_view(self):
         """Muestra la vista principal con la lista de estudios."""
@@ -177,6 +183,7 @@ class MainWindow:
         # Instanciar y mostrar la MainView real
         self.current_view = MainView(self.root, self)
         # El empaquetado/grid se maneja dentro de MainView.__init__
+        self.update_undo_menu_state() # Update undo state when view changes
 
 
     def show_study_view(self, study_id: int):
@@ -185,6 +192,7 @@ class MainWindow:
         # Pasar la instancia de file_service a StudyView
         self.current_view = StudyView(self.root, self, study_id, self.file_service)
         # El pack/grid se maneja dentro de StudyView
+        self.update_undo_menu_state() # Update undo state when view changes
 
     def show_backup_restore_dialog_from_landing(self):
         """Muestra el diálogo de gestión de copias de seguridad, invocado desde la landing page."""
@@ -237,6 +245,7 @@ class MainWindow:
         # Pasar main_window, analysis_service y study_id
         self.current_view = DiscreteAnalysisView(self.root, self, self.analysis_service, study_id)
         # El pack/grid se maneja dentro de DiscreteAnalysisView
+        self.update_undo_menu_state() # Update undo state when view changes
 
     def show_continuous_analysis_manager_dialog(self, study_id: int):
         """Muestra el diálogo para gestionar análisis continuos."""
@@ -299,11 +308,13 @@ class MainWindow:
                                     "Todos los estudios han sido eliminados.",
                                     parent=self.root)
                 self.show_landing_page() # Volver a la landing page ya que no hay estudios
+                self.update_undo_menu_state() # Update undo state after deletion
             except Exception as e:
                 logger.critical(f"Error crítico al eliminar todos los estudios: {e}", exc_info=True)
                 messagebox.showerror("Error Crítico",
                                      f"Ocurrió un error al eliminar todos los estudios:\n{e}",
                                      parent=self.root)
+                self.update_undo_menu_state() # Update undo state even on error
 
     def reload_settings(self):
          """Recarga las configuraciones desde AppSettings."""
@@ -349,6 +360,7 @@ class MainWindow:
                 # For other views, or if a generic refresh is preferred:
                 logger.info(f"Refreshing view of type: {type(self.current_view)}. Defaulting to main view if no specific refresh path.")
                 self.show_main_view() # Fallback, or implement more specific refreshes
+        self.update_undo_menu_state() # Update undo state after view refresh
 
 
     def refresh_main_view(self):
@@ -370,6 +382,7 @@ class MainWindow:
             self.show_main_view()
         else:
             self.show_landing_page()
+        self.update_undo_menu_state() # Update undo state after main view refresh
 
 
     # --- Métodos de Ayuda y Utilidades (Adaptados de KineVizApp) ---
@@ -491,11 +504,50 @@ class MainWindow:
 
                 messagebox.showinfo("Éxito", "Valores por defecto restablecidos correctamente.")
                 self.show_landing_page() # Volver a la landing page
+                self.update_undo_menu_state() # Update undo state after factory reset
             except Exception as e:
                 logger.critical(f"Error crítico durante el restablecimiento a valores por defecto: {e}", exc_info=True)
                 # import traceback # Ya no es necesario
                 # traceback.print_exc() # Reemplazado por logger
                 messagebox.showerror("Error", f"Error durante el restablecimiento:\n{str(e)}")
+                self.update_undo_menu_state() # Update undo state even on error
+
+    def update_undo_menu_state(self):
+        """Updates the state of the 'Undo' menu item."""
+        if hasattr(self, 'edit_menu') and self.settings.enable_undo_delete:
+            if self.study_service.can_undo_last_operation():
+                self.edit_menu.entryconfig("Deshacer", state=tk.NORMAL)
+            else:
+                self.edit_menu.entryconfig("Deshacer", state=tk.DISABLED)
+        elif hasattr(self, 'edit_menu'): # Undo is disabled in settings
+             self.edit_menu.entryconfig("Deshacer", state=tk.DISABLED)
+
+
+    def _perform_undo_operation(self):
+        """Performs the undo operation and refreshes the view."""
+        if not self.settings.enable_undo_delete:
+            messagebox.showwarning("Deshacer Deshabilitado", 
+                                   "La función 'Deshacer Eliminación' está deshabilitada en la configuración.", 
+                                   parent=self.root)
+            return
+
+        if self.study_service.can_undo_last_operation():
+            try:
+                success = self.study_service.undo_last_operation()
+                if success:
+                    messagebox.showinfo("Deshacer", "La última operación de eliminación ha sido deshecha.", parent=self.root)
+                    # Refresh the current view to reflect the undone changes
+                    self.refresh_current_view_after_settings_change() # Re-use existing refresh logic
+                else:
+                    messagebox.showerror("Error al Deshacer", "No se pudo completar la operación de deshacer.", parent=self.root)
+            except Exception as e:
+                logger.error(f"Error al intentar deshacer la operación: {e}", exc_info=True)
+                messagebox.showerror("Error Crítico al Deshacer", f"Ocurrió un error inesperado al intentar deshacer:\n{e}", parent=self.root)
+            finally:
+                self.update_undo_menu_state() # Update menu state after attempting undo
+        else:
+            messagebox.showinfo("Deshacer", "No hay ninguna operación para deshacer.", parent=self.root)
+            self.update_undo_menu_state() # Ensure menu state is correct
 
     def trigger_app_restart(self):
         """Prepara la aplicación para un reinicio."""

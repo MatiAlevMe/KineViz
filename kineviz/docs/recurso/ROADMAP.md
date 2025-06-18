@@ -318,7 +318,7 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
                 1. [Hecho] Copiar los elementos a eliminar a una caché temporal "undo" (ej. `kineviz/backups/.undo_cache/`). (Implementado para Estudios en `StudyService`; Implementado para Archivos en `FileService`; Implementado para Resultados de Análisis en `AnalysisService`)
                 2. [Hecho] Copiar el archivo `kineviz.db` actual a esta caché "undo". (Implementado vía `UndoManager.prepare_undo_cache()`)
             - [Hecho] Proceder con la eliminación de los elementos del sistema vivo y actualizar `kineviz.db`. (Integrado en `StudyService` para Estudios; Integrado en `FileService` para Archivos; Integrado en `AnalysisService` para Resultados de Análisis)
-            - [Pendiente] Ofrecer opción "Deshacer" en la UI.
+            - [En Progreso] Ofrecer opción "Deshacer" en la UI. (Añadido botón "Deshacer" al menú Editar en `MainWindow`)
         - Reversión ("Deshacer"):
             1. [Hecho] Reemplazar `kineviz.db` vivo con la copia de la caché "undo". (Lógica en `UndoManager.perform_undo()`)
             2. [Hecho] Mover los elementos de la caché "undo" de vuelta a sus ubicaciones originales. (Lógica en `UndoManager.perform_undo()`)
@@ -328,12 +328,13 @@ Guardar los archivos del analisis en una subcarpeta específica dentro de la car
             - El usuario navega fuera de la vista/diálogo actual.
             - Se cierra la aplicación.
             - (Opcional) Expira un temporizador corto.
-    2.2 [Pendiente] Integración UI para "Deshacer Eliminación".
-        - Botón temporal "Deshacer" en las vistas/diálogos donde ocurren eliminaciones (`StudyView`, `IndividualAnalysisManagerDialog`, `ContinuousAnalysisManagerDialog`, `MainView` para eliminar estudio).
-    2.3 [Pendiente] Configuración para "Deshacer Eliminación".
-        - Opción en `ConfigDialog` para habilitar/deshabilitar esta característica.
-        - Tooltip explicativo.
-        - Validar manualmente si es que se pueden eliminar todos los estudios junto a la funcionalida de backup de seguridad (rollback/copia manual/auto)
+    2.2 [En Progreso] Integración UI para "Deshacer Eliminación".
+        - [Hecho] Botón "Deshacer" añadido al menú "Editar" en `MainWindow`. Su estado (activado/desactivado) se actualiza según la disponibilidad de una operación de deshacer.
+        - [Pendiente] Botón temporal "Deshacer" en las vistas/diálogos donde ocurren eliminaciones (`StudyView`, `IndividualAnalysisManagerDialog`, `ContinuousAnalysisManagerDialog`, `MainView` para eliminar estudio) - *Revisar si el botón de menú global es suficiente o si se necesitan botones contextuales.*
+    2.3 [En Progreso] Configuración para "Deshacer Eliminación".
+        - [Hecho] Opción en `ConfigDialog` para habilitar/deshabilitar esta característica.
+        - [Hecho] Tooltip explicativo.
+        - [Pendiente] Validar manualmente si es que se pueden eliminar todos los estudios junto a la funcionalida de backup de seguridad (rollback/copia manual/auto)
 3. [Hecho] Ayuda en la Interfaz: Añadir Tooltips Adicionales.
 3.1 [Hecho] Añadir tooltips con el mismo icono "i" que se utiliza en la ventana de estudio para explicar las VIs, necesito que estos tooltips explique el formato de cada ventana relevante donde se necesite input del usuario, esto es:
 Editar estudio, crear nuevo estudio, agregar archivos a un estudio, gestor de analisis discretos, gestor de analisis continuos, gestionar alias de sub-valores.

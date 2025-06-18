@@ -58,6 +58,9 @@ class ConfigDialog(Toplevel):
         
         self.var_show_advanced_backup_opts = tk.BooleanVar() # New
 
+        # Undo Delete setting
+        self.var_enable_undo_delete = tk.BooleanVar() # New for Undo Delete
+
         # Calculate scaled font once for direct application
         self.scaled_font_tuple = get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale)
 
@@ -102,6 +105,7 @@ class ConfigDialog(Toplevel):
         self.var_max_manual_backups.set(str(self.settings.max_manual_backups))
         
         self.var_show_advanced_backup_opts.set(self.settings.show_advanced_backup_options) # Load new
+        self.var_enable_undo_delete.set(self.settings.enable_undo_delete) # Load Undo Delete setting
 
     def create_widgets(self):
         """Crea los widgets del diálogo usando un Notebook para pestañas."""
@@ -529,6 +533,29 @@ class ConfigDialog(Toplevel):
         Tooltip(clean_bak_help_btn, text=clean_bak_long_text, short_text=clean_bak_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
+        # --- Switch para habilitar/deshabilitar Deshacer Eliminación ---
+        enable_undo_delete_frame = ttk.Frame(parent_frame)
+        enable_undo_delete_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10, 5), sticky="w")
+        enable_undo_delete_cb = ttk.Checkbutton(
+            enable_undo_delete_frame,
+            text="Habilitar 'Deshacer Eliminación' (Experimental)",
+            variable=self.var_enable_undo_delete
+        )
+        enable_undo_delete_cb.pack(side=tk.LEFT, padx=(0, 5))
+        enable_undo_delete_long_text = (
+            "Permite deshacer la última operación de eliminación de estudios, archivos o resultados de análisis.\n"
+            "La opción 'Deshacer' aparecerá en el menú 'Editar' si está habilitada y hay una operación para deshacer.\n"
+            "Esta función es experimental. Úsela con precaución."
+        )
+        enable_undo_delete_short_text = "Habilita/deshabilita la función 'Deshacer Eliminación'."
+        enable_undo_delete_help_btn = ttk.Button(
+            enable_undo_delete_frame, text="?", width=3, style="Help.TButton",
+            command=lambda: self._show_input_help("Ayuda: Deshacer Eliminación", enable_undo_delete_long_text)
+        )
+        enable_undo_delete_help_btn.pack(side=tk.LEFT)
+        Tooltip(enable_undo_delete_help_btn, text=enable_undo_delete_long_text, short_text=enable_undo_delete_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+        
         # --- Switch para mostrar/ocultar botón de Restauración de Fábrica --- (NUEVO ORDEN: DESPUÉS DE BACKUP)
         show_factory_reset_frame = ttk.Frame(parent_frame)
         show_factory_reset_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10,5), sticky="w")
@@ -728,6 +755,7 @@ class ConfigDialog(Toplevel):
             self.settings.max_manual_backups = int(self.var_max_manual_backups.get())
 
             self.settings.show_advanced_backup_options = self.var_show_advanced_backup_opts.get() # Save new
+            self.settings.enable_undo_delete = self.var_enable_undo_delete.get() # Save Undo Delete setting
             
             # Guardar en el archivo config.ini
             self.settings.save_settings()
