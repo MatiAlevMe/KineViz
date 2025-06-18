@@ -174,6 +174,9 @@ class MainWindow:
 
     def clear_window(self):
         """Limpia la ventana principal antes de mostrar una nueva vista."""
+        if self.root is None:
+            logger.info("MainWindow.clear_window: Root window is None. Skipping clear.")
+            return
         # Destruir vista actual si existe y tiene método destroy
         if self.current_view and hasattr(self.current_view, 'destroy'):
             try:
@@ -335,6 +338,9 @@ class MainWindow:
 
     def reload_settings(self):
         """Recarga las configuraciones desde AppSettings."""
+        if self.root is None:
+            logger.info("MainWindow.reload_settings: Root window is None (likely app closing/restarting). Skipping reload.")
+            return
         # No es necesario recargar el archivo, AppSettings lo maneja.
         # Solo actualizar las variables de MainWindow si es necesario.
         self.estudios_por_pagina = self.settings.studies_per_page
@@ -343,21 +349,30 @@ class MainWindow:
         self.font_scale = self.settings.font_scale
         self.app_theme = self.settings.theme
         
-        # Only apply styles if not in the middle of a restart sequence
-        if not self.restart_pending:
+        # Only apply styles if not in the middle of a restart sequence and root is valid
+        if not self.restart_pending and self.root:
             self.apply_application_styles() # Re-apply styles
-        else:
+        elif self.root is None:
+            logger.info("MainWindow.reload_settings: Root is None, skipping style application.")
+        else: # restart_pending is true
             logger.info("MainWindow.reload_settings: Reinicio pendiente, omitiendo re-aplicación de estilos.")
         
         # Podríamos necesitar refrescar la vista actual si la paginación cambió
         # o si el cambio de tema/fuente requiere recrear widgets.
         # For now, a full refresh of the current view might be the simplest
         # way to ensure changes are visible, though it's a bit heavy.
-        self.refresh_current_view_after_settings_change()
+        if self.root: # Only refresh if root is still valid
+            self.refresh_current_view_after_settings_change()
+        else:
+            logger.info("MainWindow.reload_settings: Root is None, skipping view refresh after settings change.")
 
 
     def refresh_current_view_after_settings_change(self):
         """Refreshes the current view to apply style changes."""
+        if self.root is None:
+            logger.info("MainWindow.refresh_current_view_after_settings_change: Root window is None. Skipping view refresh.")
+            return
+
         if self.current_view:
             if isinstance(self.current_view, MainView):
                 self.show_main_view()
