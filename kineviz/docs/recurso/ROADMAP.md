@@ -93,9 +93,9 @@ Este roadmap describe el proceso de desarrollo de la aplicación KineViz. Inicia
 │   └── .undo_cache/      # Caché temporal para la función "Deshacer"
 │
 ├── docs/                 # Documentación
-│   └── help/             # Documentación de ayuda del software
-│       ├── study_view_help.txt            # Guía Rápida: Variables Independientes y Descriptores
-│       └── study_dialog_iv_help.txt       # Guía Rápida: Vista del Estudio  
+│   ├── help/             # Documentación de ayuda del software
+│   │   └── manual_usuario.txt # Manual de Usuario Principal y Unificado
+│   └── recurso/          # Recursos para la documentación (ej. este ROADMAP)
 └── examples/             # Ejemplos de uso
 
 # Diccionario de Tareas
@@ -161,7 +161,7 @@ Detalle: Modificar la lógica en `kineviz.core.data_processing.file_handlers.lee
 2. [Hecho] Refactorizar UI Creación/Edición Estudio (`StudyDialog`).
 2.1 [Hecho] Flujo UI: Implementada UI jerárquica para definir VIs y sus Descriptores (con botones '+', '🗑️').
 2.2 [Hecho] Restricciones Edición: Deshabilitados añadir/eliminar VIs/Descriptores; permitido renombrar VIs.
-2.3 [Hecho] Botón Ayuda VI: Añadido botón `(?)` coloreado que abre `kineviz/docs/help/study_dialog_iv_help.txt`.
+2.3 [Hecho] Botón Ayuda VI: (Eliminado, ayuda centralizada en manual principal).
 3. [Hecho] Refactorizar Validación (`validators.py`).
 3.1 [Hecho] Validador Datos Estudio: Creado `validate_study_iv_data` (incluye regla anti-"Nulo").
 3.2 [Hecho] Validador Nombres Archivo: Reescrito `validate_filename_for_study_criteria` para formato `[ID_Participante] [VAL_VI1]...[VAL_VIn] NN`, donde `ID_Participante` es una combinación de letras seguidas de números (ej: `P01`, `Sujeto007`). Valida orden de VIs, valores permitidos (incl. "Nulo"), y regla de al menos un descriptor no-Nulo. Devuelve `(bool, subject_id, list[str|None], attempt_num)`.
@@ -175,7 +175,7 @@ Detalle: Modificar la lógica en `kineviz.core.data_processing.file_handlers.lee
 6. [Hecho] Actualizar Vista Estudio (`StudyView`).
 6.1 [Hecho] Mostrar VIs: Añadido label para mostrar nombres de VIs.
 6.2 [Hecho] Mostrar Descriptores (Tooltip/Popup): Añadido botón `ℹ️` que muestra Descriptores por VI (con alias) en popup.
-6.3 [Hecho] Botón Ayuda General: Añadido botón `(?)` que abre `kineviz/docs/help/study_view_help.txt`.
+6.3 [Hecho] Botón Ayuda General: (Eliminado, ayuda centralizada en manual principal).
 7. [Hecho] Refactorizar Gestión de Alias.
 7.1 [Hecho] Mover a DB: Implementado carga/guardado de alias por estudio en `StudyRepository` y `StudyService`.
 7.2 [Hecho] Adaptar `DescriptorAliasDialog`: Carga/guarda alias vía `StudyService`.
@@ -345,11 +345,11 @@ Editar estudio, crear nuevo estudio, agregar archivos a un estudio, gestor de an
 4.1 [Hecho] Decidir si mantener todas las tablas del analisis discreto o solamente las tablas .xlsx para ahorrar espacio.
 4.2 [Hecho] Decidir formato final y filtrado de las ventanas de tablas de datos como:
 Ventana de estudio, ventana de estudio especifico, ventana de tablas de analisis discreto, analisis discreto, analisis continuo
-1. [En Progreso] Refactorizar Documentación
-5.1 [En Progreso] Actualizar ROADMAP con los nuevos archivos que hemos ido agregando al sistema en “## Estrctura de Carpetas del Proyecto” y los cambios de la arquitectura y otras cosas relevantes del proyecto en la sección de “# Arquitectura de KineViz”.
-5.2 [En Progreso] Unir todos los manuales en el manual principal con distintas secciones, esto es primero una descripción general del software (que hace, cual es su necesidad, etc), los objetivos del software, los flujos principales, resumen general de cada ventana o dialogo y lo que hace, una sección que explique en detalle cada parte ventana o dialogo de KineViz, notas importantes, y cualquier información relevante que se requieran de un manual completo para el cliente, explicados en terminos simples cuando se tratén de cosas informaticas pero con un lenguaje posiblemente más tecnico cuando es más del area de investigación kinesiologica que es el area que manejan.
-5.3 [En Progreso] Agregar referencias dentro del mismo manual que diga "Vaya a la sección X" o similares para referirse a que sección ir del manual para alguna información importante dentro de otra sección.
-5.4 [En Progreso] Eliminar todos los botones que hagan referencia a manuales antiguos que no sean el manual principal.
+1. [Hecho] Refactorizar Documentación
+5.1 [Hecho] Actualizar ROADMAP con los nuevos archivos que hemos ido agregando al sistema en “## Estrctura de Carpetas del Proyecto” y los cambios de la arquitectura y otras cosas relevantes del proyecto en la sección de “# Arquitectura de KineViz”.
+5.2 [Hecho] Unir todos los manuales en el manual principal con distintas secciones, esto es primero una descripción general del software (que hace, cual es su necesidad, etc), los objetivos del software, los flujos principales, resumen general de cada ventana o dialogo y lo que hace, una sección que explique en detalle cada parte ventana o dialogo de KineViz, notas importantes, y cualquier información relevante que se requieran de un manual completo para el cliente, explicados en terminos simples cuando se tratén de cosas informaticas pero con un lenguaje posiblemente más tecnico cuando es más del area de investigación kinesiologica que es el area que manejan.
+5.3 [Hecho] Agregar referencias dentro del mismo manual que diga "Vaya a la sección X" o similares para referirse a que sección ir del manual para alguna información importante dentro de otra sección.
+5.4 [Hecho] Eliminar todos los botones que hagan referencia a manuales antiguos que no sean el manual principal.
 
 ## [Hecho] Fase 6: Cambios Opcionales.
 1. [Hecho] (Cambio Manual) Cambiar terminos de:
@@ -431,7 +431,9 @@ La aplicación sigue una estructura modular para separar responsabilidades:
 `database/`: Maneja la persistencia de datos, principalmente la base de datos SQLite.
 `config/`: Gestiona la configuración de la aplicación.
 `utils/`: Utilidades generales como el sistema de logging.
-`docs/`: Documentación del proyecto, incluyendo este archivo y el roadmap.
+`docs/`: Contiene la documentación del proyecto.
+    `docs/help/manual_usuario.txt`: Manual de usuario principal y unificado, accesible desde la aplicación.
+    `docs/recurso/ROADMAP.md`: Este archivo, que detalla el plan de desarrollo y la arquitectura.
 
 ## 3. Módulos Principales y Responsabilidades
 
@@ -472,7 +474,7 @@ La aplicación sigue una estructura modular para separar responsabilidades:
 `core.exceptions`: Define clases de excepciones personalizadas para un manejo de errores más específico dentro de la aplicación (ej. `FileNotFoundError`, `InvalidFileFormatError`).
 
 3.2 `kineviz.ui` - Capa de Interfaz de Usuario (Tkinter)
-`ui.main_window.py` (`MainWindow`): Es la ventana principal de la aplicación. Orquesta la navegación entre las diferentes vistas y diálogos. Mantiene instancias de los servicios principales (`StudyService`, `FileService`, `AnalysisService`), `AppSettings`, y el `UndoManager`. Gestiona el estado del menú "Editar -> Deshacer" basado en la disponibilidad de una operación de deshacer.
+`ui.main_window.py` (`MainWindow`): Es la ventana principal de la aplicación. Orquesta la navegación entre las diferentes vistas y diálogos. Mantiene instancias de los servicios principales (`StudyService`, `FileService`, `AnalysisService`), `AppSettings`, y el `UndoManager`. Gestiona el estado del menú "Editar -> Deshacer" basado en la disponibilidad de una operación de deshacer. Proporciona acceso al manual de usuario principal (`manual_usuario.txt`) a través de un botón de Ayuda general.
 `ui.views`: Vistas principales que ocupan la mayor parte de la ventana.
 `LandingPage`: Vista inicial que se muestra cuando no existen estudios en la aplicación.
 `MainView`: Muestra la lista paginada de estudios existentes, permitiendo buscar y acceder a ellos.
