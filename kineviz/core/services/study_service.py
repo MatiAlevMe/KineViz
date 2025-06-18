@@ -465,56 +465,6 @@ class StudyService:
             # Podríamos relanzar una excepción más genérica o específica del servicio
             raise RuntimeError(f"Error inesperado al cambiar el estado de pin del estudio: {e}")
 
-    def delete_all_studies(self):
-        """
-        Elimina todos los estudios. Llama al método del repositorio.
-        """
-        try:
-            create_backup(backup_type='automatic')
-        except Exception as e_backup:
-            logger.error(f"Error creating automatic backup before deleting all studies: {e_backup}", exc_info=True)
-            # Decide if operation should continue or be aborted. For now, logging and continuing.
-
-        try:
-            # Prepare undo cache before getting study details
-            if self.undo_manager.is_undo_enabled():
-                if not self.undo_manager.prepare_undo_cache():
-                    logger.error("Failed to prepare undo cache for deleting all studies. Aborting operation.")
-                    raise Exception("Failed to prepare undo cache for deleting all studies. Operation aborted.")
-
-            # Get all study details to cache their directories
-            all_studies_details = []
-            try:
-                # Need a way to get all study details (id, name) from repo without pagination
-                # Assuming get_all_studies returns list of dicts with 'id' and 'name'
-                all_studies_from_repo = self.repo.get_all_studies()
-                for study_info in all_studies_from_repo:
-                    all_studies_details.append({'id': study_info['id'], 'name': study_info['name']})
-            except Exception as e_fetch:
-                logger.error(f"Error fetching study details for 'delete_all_studies' undo caching: {e_fetch}", exc_info=True)
-                # If we can't get details, we can't cache. Decide whether to proceed with repo.delete_all_studies.
-                # For safety, if undo is enabled and we can't cache, abort.
-                if self.undo_manager.is_undo_enabled():
-                    raise Exception(f"Failed to fetch study details for undo caching. 'Delete all studies' aborted. Error: {e_fetch}")
-                # If undo is not enabled, proceed with deletion.
-
-            if self.undo_manager.is_undo_enabled():
-                for study_detail in all_studies_details:
-                    study_name = study_detail['name']
-                    study_dir_path = Path(self.repo.studies_base_dir) / study_name
-                    if study_dir_path.exists() and study_dir_path.is_dir():
-                        if not self.undo_manager.cache_item_for_undo(str(study_dir_path), "study_directory"):
-                            logger.warning(f"Failed to cache study directory {study_dir_path} for undo during 'delete all'. Deletion will proceed.")
-                    else:
-                        logger.warning(f"Study directory {study_dir_path} not found for caching during 'delete all'.")
-            
-            self.repo.delete_all_studies() # This deletes all records and their corresponding folders
-            logger.info("Servicio: Todos los estudios han sido eliminados.")
-
-        except Exception as e: # Catch errors from repo call or other issues
-            logger.error(f"Servicio: Error al eliminar todos los estudios: {e}", exc_info=True)
-            # Undo cache might be prepared. It will be cleared on next successful prepare.
-            raise # Relanzar para que la UI maneje el error
 
     def can_undo_last_operation(self) -> bool:
         """
