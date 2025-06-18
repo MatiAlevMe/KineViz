@@ -35,7 +35,7 @@ class AppSettings:
             'font_scale': '1.0',
             'theme': 'Claro', # Changed default
             'show_factory_reset_button': 'False',
-            'enable_hover_tooltips': 'False',
+            'enable_hover_tooltips': 'True', # Changed default
             'max_automatic_backups': '10', # Changed default
             'max_manual_backups': '10',     # Changed default
             'automatic_backup_cooldown_seconds': '60',
