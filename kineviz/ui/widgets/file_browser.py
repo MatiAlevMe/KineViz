@@ -99,6 +99,11 @@ class FileBrowser(ttk.Frame):
         # If a custom parent is provided for pagination, use it. Otherwise, pack locally.
         if self.pagination_parent:
             # If pagination is internal, pack it after the tree.
+            # Pack the pagination frame into its custom parent
+            # when provided. Otherwise, it will be packed below.
+            self.pagination_frame = ttk.Frame(self.pagination_parent)
+            self.pagination_frame.pack(side=tk.TOP, fill=tk.X, pady=(5, 0), padx=5)
+        else:
             self.pagination_frame = ttk.Frame(self)
             self.pagination_frame.pack(side=tk.TOP, fill=tk.X, pady=(5, 0), padx=5)
 
