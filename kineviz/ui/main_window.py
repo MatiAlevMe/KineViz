@@ -407,11 +407,11 @@ class MainWindow:
             "KineViz - Sistema de gestión y análisis de estudios kinesiológicos\n\n"
             "Desarrollado por: Matías Alevropulos\n\n"
             "Opciones de inicio:\n"
-            "1. Ver DEMO interactivo - Muestra las funcionalidades principales\n"
-            "2. Consultar manual de usuario - Documentación completa de uso\n"
-            "3. Crear nuevo estudio - Acceso directo al módulo principal\n\n"
-            "ℹ️ Durante el uso, busque los iconos '?' para ayuda contextual\n\n"
-            "¡Gracias por elegir KineViz para su práctica profesional!"
+            "1. Ver DEMO interactivo\n"
+            "2. Consultar manual de usuario\n"
+            "3. Crear nuevo estudio\n"
+            "ℹ️ Busque los iconos '?' para ayuda contextual\n\n"
+            "¡Gracias por elegir KineViz!"
         )
 
     def open_user_manual(self):
