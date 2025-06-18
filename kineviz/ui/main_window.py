@@ -595,3 +595,23 @@ class MainWindow:
             self.root.destroy() # Destruye la ventana y libera recursos
         else:
             logger.error("MainWindow: self.root no tiene el método quit o destroy. No se puede reiniciar programáticamente de forma limpia.")
+
+    def _on_close(self):
+        """Handles the application closing sequence."""
+        logger.info("Cerrando la aplicación...")
+        # Perform any pre-close cleanup if necessary
+        # For example, ensuring threads are joined, files are saved, etc.
+        # Currently, no specific pre-close actions identified beyond Tkinter cleanup.
+
+        try:
+            if hasattr(self.root, 'quit') and hasattr(self.root, 'destroy'):
+                self.root.quit()    # Stop the Tkinter main event loop
+                self.root.destroy() # Destroy the main window and free resources
+            else:
+                logger.error("MainWindow: self.root no tiene el método quit o destroy. No se puede cerrar programáticamente de forma limpia.")
+                # Fallback for older Tkinter versions or unexpected root object, though unlikely.
+                sys.exit(0) 
+        except Exception as e:
+            logger.error(f"Error durante _on_close: {e}", exc_info=True)
+            # Ensure application exits even if cleanup fails
+            sys.exit(1)
