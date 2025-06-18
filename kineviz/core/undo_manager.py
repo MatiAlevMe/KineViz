@@ -248,14 +248,3 @@ class UndoManager:
         except (json.JSONDecodeError, OSError) as e:
             logger.error(f"Failed to load undo info from {info_path}: {e}", exc_info=True)
             return None
-
-```
-
-```python
-kineviz/config/settings.py
-<<<<<<< SEARCH
-            'max_pre_restore_backups': '10',         # New, max pre-restore backups
-            'pre_restore_backup_cooldown_seconds': '60' # New, cooldown for pre-restore
-        }
-        # DESCRIPTOR_ALIASES ya no se gestiona aquí
-    }
