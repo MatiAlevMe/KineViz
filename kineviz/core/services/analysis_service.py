@@ -2806,18 +2806,23 @@ class AnalysisService:
                             if csv_file_cache.exists() and csv_file_cache.is_file():
                                 items_to_cache_for_undo.append((str(csv_file_cache), "discrete_summary_table_csv"))
             
-            if items_to_cache_for_undo: # Only prepare if there's something to cache
-                if not self.undo_manager.prepare_undo_cache():
-                    logger.error(f"Failed to prepare undo cache for deleting all discrete tables in study {study_id}. Aborting delete operation.")
-                    raise Exception(f"Failed to prepare undo cache for deleting all discrete tables in study {study_id}. Deletion aborted.")
-                
+        if self.undo_manager.is_undo_enabled():
+            # Always prepare cache if undo is enabled for this operation.
+            # This call clears the previous cache and backs up the database.
+            if not self.undo_manager.prepare_undo_cache():
+                logger.error(f"Failed to prepare undo cache for deleting all discrete tables in study {study_id}. Aborting delete operation.")
+                raise Exception(f"Failed to prepare undo cache for deleting all discrete tables in study {study_id}. Deletion aborted.")
+            
+            # If cache preparation was successful, proceed to cache identified items
+            if items_to_cache_for_undo:
                 for path_str, item_type in items_to_cache_for_undo:
                     if not self.undo_manager.cache_item_for_undo(path_str, item_type):
                         logger.warning(f"Failed to cache discrete table item {path_str} (type: {item_type}) for undo during 'delete all'. Deletion will proceed but undo might be partial.")
-            elif not self.undo_manager.is_undo_enabled(): # If undo disabled, no need to prepare or cache
-                pass
-            else: # Undo enabled, but no files found to cache
-                logger.info(f"Undo enabled, but no .xlsx or .csv tables found to cache in {tables_base_dir} for 'delete all'.")
+            else:
+                # This case means undo is enabled, cache is prepared (DB backed up, old cache cleared),
+                # but no specific files from *this* operation needed caching.
+                logger.info(f"Undo cache prepared for 'delete all discrete tables', but no .xlsx or .csv tables found to cache in {tables_base_dir}.")
+        # If undo is not enabled, no caching actions are taken here; prepare_undo_cache would have returned False.
 
 
         deleted_count = 0
@@ -3096,9 +3101,16 @@ class AnalysisService:
                 logger.error(f"Failed to prepare undo cache for deleting selected discrete tables. Aborting delete operation.")
                 raise Exception(f"Failed to prepare undo cache for deleting selected discrete tables. Deletion aborted.")
             
-            for table_str_to_cache in table_paths:
-                if not self.undo_manager.cache_item_for_undo(table_str_to_cache, "discrete_summary_table_xlsx"):
-                    logger.warning(f"Failed to cache discrete table {table_str_to_cache} for undo during 'delete selected'. Deletion will proceed but undo might be partial.")
+            for table_str_to_cache in table_paths: # table_str_to_cache is the path to an .xlsx file
+                xlsx_path_to_cache = Path(table_str_to_cache)
+                if not self.undo_manager.cache_item_for_undo(str(xlsx_path_to_cache), "discrete_summary_table_xlsx"):
+                    logger.warning(f"Failed to cache discrete table {xlsx_path_to_cache} for undo during 'delete selected'. Deletion will proceed but undo might be partial.")
+                
+                # Also cache the corresponding .csv file if it exists
+                csv_path_to_cache = xlsx_path_to_cache.with_suffix('.csv')
+                if csv_path_to_cache.exists() and csv_path_to_cache.is_file():
+                    if not self.undo_manager.cache_item_for_undo(str(csv_path_to_cache), "discrete_summary_table_csv"):
+                        logger.warning(f"Failed to cache corresponding CSV table {csv_path_to_cache} for undo during 'delete selected'. Deletion will proceed but undo might be partial.")
 
         for table_path_str in table_paths:
             try:
