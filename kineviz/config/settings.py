@@ -48,10 +48,13 @@ class AppSettings:
             'max_pre_restore_backups': '10',         # New, max pre-restore backups
             'pre_restore_backup_cooldown_seconds': '60', # New, cooldown for pre-restore
             'enable_undo_delete': 'False', # New, for undo delete functionality
-            'undo_cache_timeout_seconds': '300' # New, 5 minutes timeout for undo cache
+            'undo_cache_timeout_seconds': '300', # New, 5 minutes timeout for undo cache
+            'log_level': 'INFO' # New, for logging level (DEBUG, INFO, WARNING, ERROR)
         }
         # DESCRIPTOR_ALIASES ya no se gestiona aquí
     }
+
+    VALID_LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"]
 
     def __init__(self, config_filename='config.ini'):
         """
@@ -178,6 +181,12 @@ class AppSettings:
             theme_val = self.get_setting('theme', '')
             if theme_val not in ['Claro', 'Oscuro']: # Changed valid themes
                 logger.error(f"Config validation failed: 'theme' must be one of ['Claro', 'Oscuro'], got '{theme_val}'.")
+                return False
+
+            # Log level (specific strings)
+            log_level_val = self.get_setting('log_level', '')
+            if log_level_val.upper() not in self.VALID_LOG_LEVELS:
+                logger.error(f"Config validation failed: 'log_level' must be one of {self.VALID_LOG_LEVELS}, got '{log_level_val}'.")
                 return False
             
             # Booleans (show_factory_reset_button, enable_hover_tooltips, enable_automatic_backups, enable_manual_backups)
@@ -529,6 +538,25 @@ class AppSettings:
             self.set_setting('undo_cache_timeout_seconds', '0')
         else:
             self.set_setting('undo_cache_timeout_seconds', str(value))
+
+    @property
+    def log_level(self) -> str:
+        """Nivel de logging de la aplicación (DEBUG, INFO, WARNING, ERROR)."""
+        value = self.get_setting('log_level', 'INFO').upper()
+        if value not in self.VALID_LOG_LEVELS:
+            logger.warning(f"Invalid log_level '{value}' in config. Defaulting to 'INFO'.")
+            return 'INFO'
+        return value
+
+    @log_level.setter
+    def log_level(self, value: str):
+        if value.upper() in self.VALID_LOG_LEVELS:
+            self.set_setting('log_level', value.upper())
+        else:
+            logger.warning(f"Attempted to set invalid log_level '{value}'. Keeping previous or default.")
+            # Optionally set to a default if you want to enforce correction on set
+            # self.set_setting('log_level', 'INFO')
+
 
     def reset_to_defaults(self):
          """Restablece las configuraciones en memoria a los valores por defecto."""

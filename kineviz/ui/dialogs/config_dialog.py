@@ -6,6 +6,8 @@ from kineviz.config.settings import AppSettings
 from kineviz.ui.widgets.tooltip import Tooltip # Import Tooltip
 from kineviz.ui.dialogs.backup_restore_dialog import BackupRestoreDialog # Import new dialog
 from kineviz.core import backup_manager # Import backup_manager module
+from kineviz.utils import logger as logger_utils # Import the logger module for its functions
+from kineviz.config.settings import AppSettings, VALID_LOG_LEVELS # Import VALID_LOG_LEVELS
 from kineviz.ui.utils.style import get_scaled_font, DEFAULT_FONT_SIZE # For direct font scaling
 import logging # Import logging
 
@@ -62,6 +64,9 @@ class ConfigDialog(Toplevel):
         self.var_enable_undo_delete = tk.BooleanVar() # New for Undo Delete
         self.var_undo_cache_timeout_seconds = StringVar() # New for Undo Cache Timeout
 
+        # Logging settings
+        self.var_log_level = StringVar() # New for Log Level
+
         # Calculate scaled font once for direct application
         self.scaled_font_tuple = get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale)
 
@@ -108,6 +113,7 @@ class ConfigDialog(Toplevel):
         self.var_show_advanced_backup_opts.set(self.settings.show_advanced_backup_options) # Load new
         self.var_enable_undo_delete.set(self.settings.enable_undo_delete) # Load Undo Delete setting
         self.var_undo_cache_timeout_seconds.set(str(self.settings.undo_cache_timeout_seconds)) # Load Undo Cache Timeout
+        self.var_log_level.set(self.settings.log_level) # Load Log Level
 
     def create_widgets(self):
         """Crea los widgets del diálogo usando un Notebook para pestañas."""
@@ -523,7 +529,7 @@ class ConfigDialog(Toplevel):
         # --- Botón Limpiar Archivos .bak (visibilidad controlada) ---
         self.clean_bak_files_frame = ttk.Frame(parent_frame)
         self.clean_bak_files_frame.grid(row=row_idx, column=0, columnspan=2, pady=(5,10), sticky="w", padx=(20,0)) # Indent
-        clean_bak_button = ttk.Button(self.clean_bak_files_frame, text="Limpiar Archivos .bak Residuales", command=self._clean_bak_files_action)
+        clean_bak_button = ttk.Button(self.clean_bak_files_frame, text="Limpiar Archivos .bak Residuales", command=self._clean_bak_files_action, style="Celeste.TButton") # Added style
         clean_bak_button.pack(side=tk.LEFT, padx=(0,5))
         clean_bak_long_text = ("Elimina los archivos y carpetas con extensión '.bak' de la raíz del proyecto.\n"
                             "Estos archivos se crean como medida de seguridad durante las restauraciones.\n"
@@ -535,9 +541,62 @@ class ConfigDialog(Toplevel):
         Tooltip(clean_bak_help_btn, text=clean_bak_long_text, short_text=clean_bak_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
 
+        # --- Separator ---
+        ttk.Separator(parent_frame, orient='horizontal').grid(row=row_idx, column=0, columnspan=2, sticky='ew', pady=10)
+        row_idx += 1
+        
+        # --- Logging Section Title ---
+        logging_title_label = ttk.Label(parent_frame, text="Gestión de Logs", font=get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale, weight="bold"))
+        logging_title_label.grid(row=row_idx, column=0, columnspan=2, sticky="w", pady=(0,5))
+        row_idx += 1
+
+        # --- Log Level ---
+        log_level_frame = ttk.Frame(parent_frame)
+        log_level_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", pady=5, padx=5)
+        
+        ttk.Label(log_level_frame, text="Nivel de Logging:").pack(side=tk.LEFT, padx=(0,5))
+        
+        log_level_combo_frame = ttk.Frame(log_level_frame) # Frame for combobox and help button
+        log_level_combo_frame.pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+        log_level_combo = ttk.Combobox(log_level_combo_frame, textvariable=self.var_log_level, values=VALID_LOG_LEVELS, state="readonly", font=self.scaled_font_tuple)
+        log_level_combo.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True)
+        
+        log_level_long_text = (
+            "Establece el nivel de detalle de los mensajes guardados en los archivos de log.\n"
+            "DEBUG: Muy detallado, útil para desarrolladores o para reportar errores complejos.\n"
+            "INFO: Información general sobre el funcionamiento (predeterminado).\n"
+            "WARNING: Advertencias sobre posibles problemas que no impiden el funcionamiento.\n"
+            "ERROR: Solo errores críticos.\n\n"
+            "Cambiar esta opción requiere reiniciar la aplicación para que tenga efecto."
+        )
+        log_level_short_text = "Nivel de detalle de los logs (requiere reinicio)."
+        log_level_help_btn = ttk.Button(log_level_combo_frame, text="?", width=3, style="Help.TButton",
+                                        command=lambda: self._show_input_help("Ayuda: Nivel de Logging", log_level_long_text))
+        log_level_help_btn.pack(side=tk.LEFT)
+        Tooltip(log_level_help_btn, text=log_level_long_text, short_text=log_level_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+
+        # --- Logging Action Buttons ---
+        log_actions_frame = ttk.Frame(parent_frame)
+        log_actions_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", pady=10, padx=5)
+
+        open_logs_btn = ttk.Button(log_actions_frame, text="Abrir Carpeta de Logs", command=logger_utils.open_logs_folder, style="Celeste.TButton")
+        open_logs_btn.pack(side=tk.LEFT, padx=(0, 10))
+        Tooltip(open_logs_btn, text="Abre la carpeta donde se guardan los archivos de log de KineViz.", short_text="Abrir carpeta de logs.", enabled=self.settings.enable_hover_tooltips)
+
+        export_logs_btn = ttk.Button(log_actions_frame, text="Exportar Logs...", command=lambda: logger_utils.export_logs(self), style="Celeste.TButton")
+        export_logs_btn.pack(side=tk.LEFT)
+        Tooltip(export_logs_btn, text="Comprime la carpeta de logs en un archivo .zip para facilitar su envío o guardado.", short_text="Exportar logs como .zip.", enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+
+        # --- Separator ---
+        ttk.Separator(parent_frame, orient='horizontal').grid(row=row_idx, column=0, columnspan=2, sticky='ew', pady=10)
+        row_idx += 1
+
         # --- Switch para habilitar/deshabilitar Deshacer Eliminación ---
         enable_undo_delete_frame = ttk.Frame(parent_frame)
-        enable_undo_delete_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10, 5), sticky="w")
+        enable_undo_delete_frame.grid(row=row_idx, column=0, columnspan=2, pady=(5, 5), sticky="w") # Adjusted padding
         enable_undo_delete_cb = ttk.Checkbutton(
             enable_undo_delete_frame,
             text="Habilitar 'Deshacer Eliminación' (Experimental)",
@@ -724,8 +783,10 @@ class ConfigDialog(Toplevel):
             "Máx. copias de respaldo": self.var_max_pre_restore_backups.get(),
             "Enfriamiento copias de respaldo (seg)": self.var_pre_restore_backup_cooldown.get(),
             "Máx. copias manuales": self.var_max_manual_backups.get(),
-            "Timeout caché deshacer (seg)": self.var_undo_cache_timeout_seconds.get() # Add new field
+            "Timeout caché deshacer (seg)": self.var_undo_cache_timeout_seconds.get()
         }
+        # Log level is validated by combobox choices
+
         for label, value_str in inputs_int.items():
             try:
                 value_int = int(value_str)
@@ -804,9 +865,24 @@ class ConfigDialog(Toplevel):
             self.settings.enable_undo_delete = self.var_enable_undo_delete.get() # Save Undo Delete setting
             self.settings.undo_cache_timeout_seconds = int(self.var_undo_cache_timeout_seconds.get()) # Save Undo Cache Timeout
             
+            # Logging settings
+            new_log_level = self.var_log_level.get()
+            log_level_changed = (new_log_level != self.settings.log_level)
+            self.settings.log_level = new_log_level
+            
             # Guardar en el archivo config.ini
             self.settings.save_settings()
-            messagebox.showinfo("Éxito", "Configuraciones guardadas correctamente.\nAlgunos cambios pueden requerir reiniciar la aplicación para verlos reflejados.", parent=self)
+            
+            msg = "Configuraciones guardadas correctamente."
+            if log_level_changed:
+                msg += "\n\nEl cambio en el Nivel de Logging requiere reiniciar la aplicación para tener efecto."
+            
+            # Check if other settings that require restart were changed (e.g. font_scale, theme)
+            # For simplicity, the general message about restart for some changes is often sufficient.
+            # If specific tracking is needed, compare old vs new values for theme/font_scale.
+            # For now, the log_level change is the most explicit one needing a restart message here.
+            
+            messagebox.showinfo("Éxito", msg, parent=self)
             self.destroy() # Cerrar diálogo después de guardar
 
         except Exception as e:
