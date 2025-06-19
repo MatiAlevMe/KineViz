@@ -26,9 +26,10 @@ from kineviz.ui.views.discrete_analysis_view import DiscreteAnalysisView
 from kineviz.core.services.study_service import StudyService
 from kineviz.core.services.file_service import FileService
 from kineviz.core.services.analysis_service import AnalysisService
-from kineviz.config.settings import AppSettings, get_resource_path # Importar AppSettings and get_resource_path
+from kineviz.config.settings import AppSettings # get_resource_path will no longer be used for DB path
 from kineviz.core.undo_manager import UndoManager, DB_FILENAME # Import UndoManager and DB_FILENAME
 from kineviz.ui.utils import style as app_style # Import the style utility
+from kineviz.utils.paths import get_application_base_dir # Import for base directory
 
 logger = logging.getLogger(__name__) # Logger para este módulo
 
@@ -49,9 +50,10 @@ class MainWindow:
         # Ya no necesitamos el objeto self.config ni el bloque try/except aquí
 
         # --- Instanciación de Servicios ---
-        # Determine db_path for UndoManager. Assuming DB_FILENAME is relative to project root.
-        # If kineviz.db is in a specific subdirectory, adjust get_resource_path argument.
-        db_path_for_undo = get_resource_path(DB_FILENAME)
+        # Determine db_path for UndoManager.
+        # DB_FILENAME is imported from kineviz.core.undo_manager
+        app_base_dir = get_application_base_dir()
+        db_path_for_undo = app_base_dir / DB_FILENAME
         self.undo_manager = UndoManager(settings=self.settings, study_repository_db_path=str(db_path_for_undo))
 
         self.study_service = StudyService(settings=self.settings, undo_manager=self.undo_manager)
@@ -486,15 +488,10 @@ class MainWindow:
         """Restablece la aplicación a su estado inicial."""
         if messagebox.askyesno("Confirmar Restablecimiento", "¿Está seguro de que desea restablecer los valores por defecto?\n\nEsta acción eliminará permanentemente:\n- Todos los estudios y sus archivos asociados.\n- Todos los reportes generados.\n- La base de datos completa.\n- Todas las configuraciones personalizadas.\n\nEsta acción no se puede deshacer.", icon='warning'):
             try:
-                # Obtener rutas desde una fuente central si es posible (e.g., config o servicio)
-                project_root_dir = Path(__file__).resolve().parent.parent.parent
-                # Asegurarse de que db_path sea absoluto o relativo a project_root_dir
-                db_path_str = self.study_service.repo.db_path
-                db_path = Path(db_path_str)
-                if not db_path.is_absolute():
-                    db_path = project_root_dir / db_path_str
-
-                studies_base_dir = project_root_dir / "estudios" # Asumiendo que está en la raíz
+                app_base_dir = get_application_base_dir()
+                # DB_FILENAME is imported from kineviz.core.undo_manager
+                db_path = app_base_dir / DB_FILENAME
+                studies_base_dir = app_base_dir / "estudios" # STUDIES_DIR_NAME from backup_manager
 
                 logger.warning(f"Iniciando restablecimiento a valores por defecto. Eliminando DB: {db_path}, Directorio Estudios: {studies_base_dir}")
 

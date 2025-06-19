@@ -8,6 +8,10 @@ from pathlib import Path
 # Determinar la raíz del proyecto usando SPECPATH (proporcionado por PyInstaller)
 # SPECPATH es la ruta al directorio que contiene este archivo .spec
 project_root = Path(SPECPATH)
+
+# Import spm1d to get its path
+import spm1d
+
 app_name = 'KineViz'
 entry_point = str(project_root / 'kineviz' / 'app.py')
 
@@ -17,7 +21,9 @@ entry_point = str(project_root / 'kineviz' / 'app.py')
 datas_to_include = [
     ('config.ini', '.'), # Incluir config.ini en la raíz del bundle
     (str(project_root / 'kineviz' / 'docs' / 'help'), 'kineviz/docs/help'), # Archivos de ayuda específicos
-    (str(project_root / 'kineviz' / 'assets'), 'kineviz/assets') # Incluir assets
+    (str(project_root / 'kineviz' / 'assets'), 'kineviz/assets'), # Incluir assets
+    # Add spm1d package data
+    (str(Path(spm1d.__file__).parent), 'spm1d')
 ]
 
 # Opcional: Añadir un icono
