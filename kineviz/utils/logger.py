@@ -8,7 +8,7 @@ import shutil # For shutil.make_archive
 from tkinter import filedialog, messagebox # For export_logs dialogs
 import subprocess # For opening folders on macOS/Linux
 
-LOG_FILENAME = "kineviz_app.log" # Changed to avoid conflict if old logs exist
+LOG_FILENAME = "kineviz.log" # Reverted to original name
 LOG_MAX_BYTES = 5 * 1024 * 1024  # 5 MB
 LOG_BACKUP_COUNT = 3
 
@@ -22,7 +22,7 @@ def get_log_dir() -> Path:
         - Windows: %APPDATA%/KineViz/logs
         - macOS: ~/Library/Logs/KineViz
         - Linux: ~/.config/KineViz/logs
-    For development: project_root/logs_dev (to distinguish from old 'logs' if any)
+    For development: project_root/logs
     Caches the result.
     """
     global _log_dir_cache
@@ -51,7 +51,7 @@ def get_log_dir() -> Path:
             # Assuming this file is in kineviz/utils/logger.py
             # Project root is two levels up
             project_root = Path(__file__).resolve().parent.parent.parent
-            resolved_log_dir = project_root / 'logs_dev' # Use a distinct name for dev
+            resolved_log_dir = project_root / 'logs' # Reverted to 'logs' for dev
         
         _log_dir_cache = resolved_log_dir
         return resolved_log_dir
