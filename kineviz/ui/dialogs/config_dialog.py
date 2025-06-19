@@ -66,6 +66,7 @@ class ConfigDialog(Toplevel):
 
         # Logging settings
         self.var_log_level = StringVar() # New for Log Level
+        self.var_show_support_options = tk.BooleanVar() # New for toggling support/logging options
 
         # Calculate scaled font once for direct application
         self.scaled_font_tuple = get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale)
@@ -114,6 +115,7 @@ class ConfigDialog(Toplevel):
         self.var_enable_undo_delete.set(self.settings.enable_undo_delete) # Load Undo Delete setting
         self.var_undo_cache_timeout_seconds.set(str(self.settings.undo_cache_timeout_seconds)) # Load Undo Cache Timeout
         self.var_log_level.set(self.settings.log_level) # Load Log Level
+        # self.var_show_support_options.set(False) # Default to hidden, or load from settings if persisted
 
     def create_widgets(self):
         """Crea los widgets del diálogo usando un Notebook para pestañas."""
@@ -505,10 +507,86 @@ class ConfigDialog(Toplevel):
     def _create_advanced_tab_widgets(self, parent_frame: ttk.Frame):
         """Crea los widgets para la pestaña 'Avanzado'."""
         parent_frame.columnconfigure(0, weight=1) # Allow labels/buttons to take space
-        # No column 1 needed if elements span or are packed left
+        parent_frame.columnconfigure(1, weight=0) # For help buttons, fixed width
         row_idx = 0
 
-        # --- Switch para mostrar opciones avanzadas de backup --- (NUEVO ORDEN: PRIMERO)
+        # --- Switch para mostrar opciones de Soporte Técnico (Logging) ---
+        show_support_opts_frame = ttk.Frame(parent_frame)
+        show_support_opts_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10,5), sticky="w")
+        show_support_opts_cb = ttk.Checkbutton(
+            show_support_opts_frame,
+            text="Mostrar Opciones de Soporte Técnico",
+            variable=self.var_show_support_options,
+            command=self._toggle_support_options_visibility
+        )
+        show_support_opts_cb.pack(side=tk.LEFT, padx=(0,5))
+        show_support_opts_long_text = "Muestra opciones avanzadas relacionadas con la generación de logs y diagnóstico, útiles para soporte técnico."
+        show_support_opts_short_text = "Opciones de logging y diagnóstico."
+        show_support_opts_help_btn = ttk.Button(show_support_opts_frame, text="?", width=3, style="Help.TButton",
+                                            command=lambda: self._show_input_help("Ayuda: Opciones de Soporte Técnico", show_support_opts_long_text))
+        show_support_opts_help_btn.pack(side=tk.LEFT)
+        Tooltip(show_support_opts_help_btn, text=show_support_opts_long_text, short_text=show_support_opts_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+
+        # --- Log Level (conditionally visible) ---
+        self.log_level_outer_frame = ttk.Frame(parent_frame) # Outer frame for visibility control
+        self.log_level_outer_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", pady=(0,5), padx=(20,0)) # Indent
+        
+        ttk.Label(self.log_level_outer_frame, text="Nivel de Logging:").grid(row=0, column=0, sticky="w", padx=(0,5), pady=2)
+        
+        log_level_combo_frame = ttk.Frame(self.log_level_outer_frame) # Frame for combobox and help button
+        log_level_combo_frame.grid(row=0, column=1, sticky="ew", padx=(0,5), pady=2)
+        log_level_combo_frame.columnconfigure(0, weight=1) # Combobox expands
+
+        log_level_combo = ttk.Combobox(log_level_combo_frame, textvariable=self.var_log_level, values=VALID_LOG_LEVELS, state="readonly", font=self.scaled_font_tuple)
+        log_level_combo.grid(row=0, column=0, sticky="ew", padx=(0,5))
+        
+        log_level_long_text = (
+            "Establece el nivel de detalle de los mensajes guardados en los archivos de log.\n"
+            "DEBUG: Muy detallado, útil para desarrolladores o para reportar errores complejos.\n"
+            "INFO: Información general sobre el funcionamiento.\n"
+            "WARNING: Advertencias sobre posibles problemas (predeterminado).\n"
+            "ERROR: Solo errores críticos.\n\n"
+            "Cambiar esta opción requiere reiniciar la aplicación para que tenga efecto."
+        )
+        log_level_short_text = "Nivel de detalle de los logs (requiere reinicio)."
+        log_level_help_btn = ttk.Button(log_level_combo_frame, text="?", width=3, style="Help.TButton",
+                                        command=lambda: self._show_input_help("Ayuda: Nivel de Logging", log_level_long_text))
+        log_level_help_btn.grid(row=0, column=1, sticky="e", padx=(0,0))
+        Tooltip(log_level_help_btn, text=log_level_long_text, short_text=log_level_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+
+        # --- Open Logs Folder Button (conditionally visible) ---
+        self.open_logs_button_frame = ttk.Frame(parent_frame) # Outer frame for visibility
+        self.open_logs_button_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", pady=(5,0), padx=(20,0)) # Indent
+        self.open_logs_button_frame.columnconfigure(0, weight=1) # Button expands
+
+        open_logs_btn = ttk.Button(self.open_logs_button_frame, text="Abrir Carpeta de Logs", command=logger_utils.open_logs_folder, style="Celeste.TButton")
+        open_logs_btn.grid(row=0, column=0, sticky="ew", padx=(0,5), pady=2)
+        open_logs_long_text = "Abre la carpeta donde se guardan los archivos de log de KineViz. Estos archivos son útiles para diagnosticar problemas."
+        open_logs_short_text = "Abrir carpeta de logs."
+        open_logs_help_btn = ttk.Button(self.open_logs_button_frame, text="?", width=3, style="Help.TButton",
+                                        command=lambda: self._show_input_help("Ayuda: Abrir Carpeta de Logs", open_logs_long_text))
+        open_logs_help_btn.grid(row=0, column=1, sticky="e", padx=(0,5), pady=2)
+        Tooltip(open_logs_help_btn, text=open_logs_long_text, short_text=open_logs_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+
+        # --- Export Logs Button (conditionally visible) ---
+        self.export_logs_button_frame = ttk.Frame(parent_frame) # Outer frame for visibility
+        self.export_logs_button_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", pady=(5,10), padx=(20,0)) # Indent, add bottom padding
+        self.export_logs_button_frame.columnconfigure(0, weight=1) # Button expands
+
+        export_logs_btn = ttk.Button(self.export_logs_button_frame, text="Exportar Logs...", command=lambda: logger_utils.export_logs(self), style="Celeste.TButton")
+        export_logs_btn.grid(row=0, column=0, sticky="ew", padx=(0,5), pady=2)
+        export_logs_long_text = "Comprime la carpeta de logs en un archivo .zip. Esto es útil para enviar los logs al equipo de soporte si se encuentra un problema."
+        export_logs_short_text = "Exportar logs como .zip."
+        export_logs_help_btn = ttk.Button(self.export_logs_button_frame, text="?", width=3, style="Help.TButton",
+                                          command=lambda: self._show_input_help("Ayuda: Exportar Logs", export_logs_long_text))
+        export_logs_help_btn.grid(row=0, column=1, sticky="e", padx=(0,5), pady=2)
+        Tooltip(export_logs_help_btn, text=export_logs_long_text, short_text=export_logs_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+        
+        # --- Switch para mostrar opciones avanzadas de backup ---
         show_adv_backup_frame = ttk.Frame(parent_frame)
         show_adv_backup_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10,5), sticky="w")
         show_adv_backup_cb = ttk.Checkbutton(
@@ -528,72 +606,21 @@ class ConfigDialog(Toplevel):
 
         # --- Botón Limpiar Archivos .bak (visibilidad controlada) ---
         self.clean_bak_files_frame = ttk.Frame(parent_frame)
-        self.clean_bak_files_frame.grid(row=row_idx, column=0, columnspan=2, pady=(5,10), sticky="w", padx=(20,0)) # Indent
-        clean_bak_button = ttk.Button(self.clean_bak_files_frame, text="Limpiar Archivos .bak Residuales", command=self._clean_bak_files_action, style="Celeste.TButton") # Added style
-        clean_bak_button.pack(side=tk.LEFT, padx=(0,5))
+        self.clean_bak_files_frame.grid(row=row_idx, column=0, columnspan=2, pady=(0,10), sticky="ew", padx=(20,0)) # Indent, remove top padding, add bottom
+        self.clean_bak_files_frame.columnconfigure(0, weight=1) # Button expands
+
+        clean_bak_button = ttk.Button(self.clean_bak_files_frame, text="Limpiar Archivos .bak Residuales", command=self._clean_bak_files_action, style="Celeste.TButton")
+        clean_bak_button.grid(row=0, column=0, sticky="ew", padx=(0,5), pady=2)
         clean_bak_long_text = ("Elimina los archivos y carpetas con extensión '.bak' de la raíz del proyecto.\n"
                             "Estos archivos se crean como medida de seguridad durante las restauraciones.\n"
                             "Es seguro eliminarlos si la aplicación funciona correctamente y no necesita revertir una restauración fallida.")
         clean_bak_short_text = "Eliminar archivos .bak."
         clean_bak_help_btn = ttk.Button(self.clean_bak_files_frame, text="?", width=3, style="Help.TButton",
                                         command=lambda: self._show_input_help("Ayuda: Limpiar Archivos .bak", clean_bak_long_text))
-        clean_bak_help_btn.pack(side=tk.LEFT)
+        clean_bak_help_btn.grid(row=0, column=1, sticky="e", padx=(0,5), pady=2)
         Tooltip(clean_bak_help_btn, text=clean_bak_long_text, short_text=clean_bak_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
-
-        # --- Separator ---
-        ttk.Separator(parent_frame, orient='horizontal').grid(row=row_idx, column=0, columnspan=2, sticky='ew', pady=10)
-        row_idx += 1
         
-        # --- Logging Section Title ---
-        logging_title_label = ttk.Label(parent_frame, text="Gestión de Logs", font=get_scaled_font(DEFAULT_FONT_SIZE, self.settings.font_scale, weight="bold"))
-        logging_title_label.grid(row=row_idx, column=0, columnspan=2, sticky="w", pady=(0,5))
-        row_idx += 1
-
-        # --- Log Level ---
-        log_level_frame = ttk.Frame(parent_frame)
-        log_level_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", pady=5, padx=5)
-        
-        ttk.Label(log_level_frame, text="Nivel de Logging:").pack(side=tk.LEFT, padx=(0,5))
-        
-        log_level_combo_frame = ttk.Frame(log_level_frame) # Frame for combobox and help button
-        log_level_combo_frame.pack(side=tk.LEFT, fill=tk.X, expand=True)
-
-        log_level_combo = ttk.Combobox(log_level_combo_frame, textvariable=self.var_log_level, values=VALID_LOG_LEVELS, state="readonly", font=self.scaled_font_tuple)
-        log_level_combo.pack(side=tk.LEFT, padx=(0,5), fill=tk.X, expand=True)
-        
-        log_level_long_text = (
-            "Establece el nivel de detalle de los mensajes guardados en los archivos de log.\n"
-            "DEBUG: Muy detallado, útil para desarrolladores o para reportar errores complejos.\n"
-            "INFO: Información general sobre el funcionamiento (predeterminado).\n"
-            "WARNING: Advertencias sobre posibles problemas que no impiden el funcionamiento.\n"
-            "ERROR: Solo errores críticos.\n\n"
-            "Cambiar esta opción requiere reiniciar la aplicación para que tenga efecto."
-        )
-        log_level_short_text = "Nivel de detalle de los logs (requiere reinicio)."
-        log_level_help_btn = ttk.Button(log_level_combo_frame, text="?", width=3, style="Help.TButton",
-                                        command=lambda: self._show_input_help("Ayuda: Nivel de Logging", log_level_long_text))
-        log_level_help_btn.pack(side=tk.LEFT)
-        Tooltip(log_level_help_btn, text=log_level_long_text, short_text=log_level_short_text, enabled=self.settings.enable_hover_tooltips)
-        row_idx += 1
-
-        # --- Logging Action Buttons ---
-        log_actions_frame = ttk.Frame(parent_frame)
-        log_actions_frame.grid(row=row_idx, column=0, columnspan=2, sticky="w", pady=10, padx=5)
-
-        open_logs_btn = ttk.Button(log_actions_frame, text="Abrir Carpeta de Logs", command=logger_utils.open_logs_folder, style="Celeste.TButton")
-        open_logs_btn.pack(side=tk.LEFT, padx=(0, 10))
-        Tooltip(open_logs_btn, text="Abre la carpeta donde se guardan los archivos de log de KineViz.", short_text="Abrir carpeta de logs.", enabled=self.settings.enable_hover_tooltips)
-
-        export_logs_btn = ttk.Button(log_actions_frame, text="Exportar Logs...", command=lambda: logger_utils.export_logs(self), style="Celeste.TButton")
-        export_logs_btn.pack(side=tk.LEFT)
-        Tooltip(export_logs_btn, text="Comprime la carpeta de logs en un archivo .zip para facilitar su envío o guardado.", short_text="Exportar logs como .zip.", enabled=self.settings.enable_hover_tooltips)
-        row_idx += 1
-
-        # --- Separator ---
-        ttk.Separator(parent_frame, orient='horizontal').grid(row=row_idx, column=0, columnspan=2, sticky='ew', pady=10)
-        row_idx += 1
-
         # --- Switch para habilitar/deshabilitar Deshacer Eliminación ---
         enable_undo_delete_frame = ttk.Frame(parent_frame)
         enable_undo_delete_frame.grid(row=row_idx, column=0, columnspan=2, pady=(5, 5), sticky="w") # Adjusted padding
@@ -706,10 +733,26 @@ class ConfigDialog(Toplevel):
         row_idx += 1
 
         # Ensure initial visibility is set
-        self._toggle_factory_reset_visibility()
+        self._toggle_support_options_visibility() # New call
         self._toggle_advanced_backup_options_visibility()
-        self._toggle_undo_options_visibility() # Call for undo options
+        self._toggle_undo_options_visibility()
+        self._toggle_factory_reset_visibility()
 
+
+    def _toggle_support_options_visibility(self, event=None):
+        """Muestra u oculta las opciones de Soporte Técnico (Logging)."""
+        show = self.var_show_support_options.get()
+        widgets_to_toggle = [
+            getattr(self, 'log_level_outer_frame', None),
+            getattr(self, 'open_logs_button_frame', None),
+            getattr(self, 'export_logs_button_frame', None)
+        ]
+        for widget in widgets_to_toggle:
+            if widget: # Check if attribute exists
+                if show:
+                    widget.grid()
+                else:
+                    widget.grid_remove()
 
     def _toggle_advanced_backup_options_visibility(self, event=None):
         """Muestra u oculta las opciones avanzadas de backup."""
