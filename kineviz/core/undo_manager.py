@@ -6,6 +6,7 @@ import json
 from typing import Optional, List, Dict, Any
 
 from kineviz.config.settings import AppSettings
+from kineviz.utils.paths import get_application_base_dir # Import the new utility
 
 # This should be consistent with StudyRepository and BackupManager
 DB_FILENAME = "kineviz.db"
@@ -19,16 +20,15 @@ UNDO_INFO_FILENAME = "undo_info.json"
 class UndoManager:
     def __init__(self, settings: AppSettings, study_repository_db_path: str):
         self.settings = settings
-        self.project_root = self._get_project_root()
-        self.db_path_live = pathlib.Path(study_repository_db_path)
-        self.undo_cache_dir = self.project_root / "backups" / UNDO_CACHE_SUBDIR
+        self.app_base_dir = get_application_base_dir() # Use the new utility
+        self.db_path_live = pathlib.Path(study_repository_db_path) # This path is correctly passed by MainWindow
+        self.undo_cache_dir = self.app_base_dir / "backups" / UNDO_CACHE_SUBDIR # Use app_base_dir
         self._ensure_dir_exists(self.undo_cache_dir)
 
         self.cached_items_info: List[Dict[str, Any]] = []
         self.db_backup_in_cache_path: Optional[pathlib.Path] = None
 
-    def _get_project_root(self) -> pathlib.Path:
-        return pathlib.Path(__file__).resolve().parent.parent.parent
+    # _get_project_root method is removed
 
     def _ensure_dir_exists(self, dir_path: pathlib.Path) -> bool:
         try:
