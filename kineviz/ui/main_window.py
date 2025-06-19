@@ -412,7 +412,7 @@ class MainWindow:
             "1. Ver DEMO interactivo\n"
             "2. Consultar manual de usuario\n"
             "3. Crear nuevo estudio\n"
-            "4. Restaurar desde un archivo de restauración\n"
+            "4. Restaurar desde una copia de seguridad\n"
             "📌 Busque los iconos '?' para ayuda contextual\n\n"
             "¡Gracias por elegir KineViz!"
         )
