@@ -206,9 +206,23 @@ def apply_theme_and_font(root: tk.Tk, style: ttk.Style, theme_name: str, font_sc
         root.option_add('*TCombobox*Listbox.foreground', colors['widget_fg']) # Texto de los ítems
         root.option_add('*TCombobox*Listbox.selectBackground', colors['select_bg']) # Ítem seleccionado
         root.option_add('*TCombobox*Listbox.selectForeground', colors['select_fg']) # Texto seleccionado
+
+        # Explicitly set tk.Canvas background for better theme consistency
+        root.option_add('*Canvas.background', colors['bg'])
+        # Also set highlightbackground to prevent unexpected border colors if highlightthickness > 0 (though usually it's 0)
+        root.option_add('*Canvas.highlightBackground', colors['bg'])
+
+        # Attempt to style tk.Menu (results may vary by OS, especially Windows)
+        root.option_add('*Menu.background', colors['bg'])
+        root.option_add('*Menu.foreground', colors['fg'])
+        root.option_add('*Menu.activeBackground', colors['select_bg'])
+        root.option_add('*Menu.activeForeground', colors['select_fg'])
+        # For tearoff menus, if ever enabled (tearoff=1)
+        root.option_add('*Menubutton.background', colors['button_bg'])
+        root.option_add('*Menubutton.foreground', colors['button_fg'])
         
     except Exception as e:
-        logger.warning(f"Could not apply global TCombobox Listbox styles: {e}")
+        logger.warning(f"Could not apply global TCombobox Listbox or Menu/Canvas styles: {e}")
 
 
     # --- Treeview Style ---
