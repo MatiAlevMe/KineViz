@@ -7,11 +7,14 @@ __pycache__/
 estudios/
 recursos/
 backups/
-logs/
 *.bak
 .*
 
 ## Build & Dist KineViz (Windows y Mac OS)
-kineviz.spec
 build/
 dist/
+
+## For official version
+ROADMAP.md
+kineviz.spec
+logs/
