@@ -510,12 +510,46 @@ class ConfigDialog(Toplevel):
 
     def _create_advanced_tab_widgets(self, parent_frame: ttk.Frame):
         """Crea los widgets para la pestaña 'Avanzado'."""
-        parent_frame.columnconfigure(0, weight=1) # Allow labels/buttons to take space
-        parent_frame.columnconfigure(1, weight=0) # For help buttons, fixed width
+        # Main frame for the tab, allows canvas and scrollbar to fill
+        tab_content_frame = ttk.Frame(parent_frame)
+        tab_content_frame.pack(fill=tk.BOTH, expand=True)
+        tab_content_frame.columnconfigure(0, weight=1) # Canvas column
+        tab_content_frame.rowconfigure(0, weight=1) # Canvas row
+
+        # Create a canvas
+        canvas = tk.Canvas(tab_content_frame, highlightthickness=0) # Use tk.Canvas for better scrollbar integration
+        canvas.grid(row=0, column=0, sticky="nsew")
+
+        # Create a vertical scrollbar
+        scrollbar = ttk.Scrollbar(tab_content_frame, orient="vertical", command=canvas.yview)
+        scrollbar.grid(row=0, column=1, sticky="ns")
+
+        # Configure the canvas
+        canvas.configure(yscrollcommand=scrollbar.set)
+        
+        # Create a frame inside the canvas to hold the content
+        scrollable_frame = ttk.Frame(canvas, padding="10") # Add padding to the scrollable content
+        scrollable_frame.columnconfigure(0, weight=1) # Allow labels/buttons to take space
+        scrollable_frame.columnconfigure(1, weight=0) # For help buttons, fixed width
+
+        # Add the scrollable frame to a window in the canvas
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+
+        def _on_frame_configure(event=None):
+            canvas.configure(scrollregion=canvas.bbox("all"))
+
+        def _on_canvas_configure(event=None):
+            canvas_width = event.width
+            canvas.itemconfig(canvas.create_window((0,0), window=scrollable_frame, anchor='nw'), width=canvas_width)
+
+        scrollable_frame.bind("<Configure>", _on_frame_configure)
+        canvas.bind('<Configure>', _on_canvas_configure)
+
+
         row_idx = 0
 
         # --- Switch para mostrar opciones de Soporte Técnico (Logging) ---
-        show_support_opts_frame = ttk.Frame(parent_frame)
+        show_support_opts_frame = ttk.Frame(scrollable_frame) # Changed parent_frame to scrollable_frame
         show_support_opts_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10,5), sticky="w")
         show_support_opts_cb = ttk.Checkbutton(
             show_support_opts_frame,
@@ -533,7 +567,7 @@ class ConfigDialog(Toplevel):
         row_idx += 1
 
         # --- Log Level (conditionally visible) ---
-        self.log_level_outer_frame = ttk.Frame(parent_frame) # Outer frame for visibility control
+        self.log_level_outer_frame = ttk.Frame(scrollable_frame) # Outer frame for visibility control
         self.log_level_outer_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", pady=(0,5), padx=(20,0)) # Indent
         
         ttk.Label(self.log_level_outer_frame, text="Nivel de logging:").grid(row=0, column=0, sticky="w", padx=(0,5), pady=2)
@@ -561,7 +595,7 @@ class ConfigDialog(Toplevel):
         row_idx += 1
 
         # --- Open Logs Folder Button (conditionally visible) ---
-        self.open_logs_button_frame = ttk.Frame(parent_frame) # Outer frame for visibility
+        self.open_logs_button_frame = ttk.Frame(scrollable_frame) # Outer frame for visibility
         self.open_logs_button_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", pady=(5,0), padx=(20,0)) # Indent
         # self.open_logs_button_frame.columnconfigure(0, weight=1) # Removed to prevent button expansion
 
@@ -576,7 +610,7 @@ class ConfigDialog(Toplevel):
         row_idx += 1
 
         # --- Export Logs Button (conditionally visible) ---
-        self.export_logs_button_frame = ttk.Frame(parent_frame) # Outer frame for visibility
+        self.export_logs_button_frame = ttk.Frame(scrollable_frame) # Outer frame for visibility
         self.export_logs_button_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", pady=(5,5), padx=(20,0)) # Indent, reduced bottom padding
         # self.export_logs_button_frame.columnconfigure(0, weight=1) # Removed to prevent button expansion
 
@@ -591,7 +625,7 @@ class ConfigDialog(Toplevel):
         row_idx += 1
 
         # --- Open config.ini Button (conditionally visible) ---
-        self.open_config_button_frame = ttk.Frame(parent_frame) # Outer frame for visibility
+        self.open_config_button_frame = ttk.Frame(scrollable_frame) # Outer frame for visibility
         self.open_config_button_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", pady=(5,10), padx=(20,0)) # Indent, add bottom padding
 
         open_config_btn = ttk.Button(self.open_config_button_frame, text="Abrir config.ini", command=self._open_config_ini_action)
@@ -605,7 +639,7 @@ class ConfigDialog(Toplevel):
         row_idx += 1
         
         # --- Switch para mostrar opciones avanzadas de backup ---
-        show_adv_backup_frame = ttk.Frame(parent_frame)
+        show_adv_backup_frame = ttk.Frame(scrollable_frame) # Changed parent_frame to scrollable_frame
         show_adv_backup_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10,5), sticky="w")
         show_adv_backup_cb = ttk.Checkbutton(
             show_adv_backup_frame,
@@ -623,7 +657,7 @@ class ConfigDialog(Toplevel):
         row_idx += 1
 
         # --- Botón Limpiar Archivos .bak (visibilidad controlada) ---
-        self.clean_bak_files_frame = ttk.Frame(parent_frame)
+        self.clean_bak_files_frame = ttk.Frame(scrollable_frame) # Changed parent_frame to scrollable_frame
         self.clean_bak_files_frame.grid(row=row_idx, column=0, columnspan=2, pady=(0,10), sticky="ew", padx=(20,0)) # Indent, remove top padding, add bottom
         # self.clean_bak_files_frame.columnconfigure(0, weight=1) # Removed to prevent button expansion
 
@@ -640,7 +674,7 @@ class ConfigDialog(Toplevel):
         row_idx += 1
 
         # --- Botón Limpiar Caché de Deshacer (visibilidad controlada) ---
-        self.clear_undo_cache_frame = ttk.Frame(parent_frame)
+        self.clear_undo_cache_frame = ttk.Frame(scrollable_frame) # Changed parent_frame to scrollable_frame
         self.clear_undo_cache_frame.grid(row=row_idx, column=0, columnspan=2, pady=(0,10), sticky="ew", padx=(20,0)) # Indent
 
         clear_undo_cache_button = ttk.Button(self.clear_undo_cache_frame, text="Limpiar caché de deshacer", command=self._clear_undo_cache_action)
@@ -656,7 +690,7 @@ class ConfigDialog(Toplevel):
         row_idx += 1
 
         # --- Botón Abrir Carpeta Caché de Deshacer (visibilidad controlada) ---
-        self.open_undo_cache_dir_frame = ttk.Frame(parent_frame)
+        self.open_undo_cache_dir_frame = ttk.Frame(scrollable_frame) # Changed parent_frame to scrollable_frame
         self.open_undo_cache_dir_frame.grid(row=row_idx, column=0, columnspan=2, pady=(0,10), sticky="ew", padx=(20,0)) # Indent
 
         open_undo_cache_dir_button = ttk.Button(self.open_undo_cache_dir_frame, text="Abrir carpeta de caché de deshacer", command=self._open_undo_cache_dir_action)
@@ -670,7 +704,7 @@ class ConfigDialog(Toplevel):
         row_idx += 1
         
         # --- Switch para habilitar/deshabilitar Deshacer Eliminación ---
-        enable_undo_delete_frame = ttk.Frame(parent_frame)
+        enable_undo_delete_frame = ttk.Frame(scrollable_frame) # Changed parent_frame to scrollable_frame
         enable_undo_delete_frame.grid(row=row_idx, column=0, columnspan=2, pady=(5, 5), sticky="w") # Adjusted padding
         enable_undo_delete_cb = ttk.Checkbutton(
             enable_undo_delete_frame,
@@ -699,7 +733,7 @@ class ConfigDialog(Toplevel):
         row_idx += 1
 
         # --- Timeout para Caché de Deshacer ---
-        self.undo_timeout_frame = ttk.Frame(parent_frame) # Store frame for visibility toggle
+        self.undo_timeout_frame = ttk.Frame(scrollable_frame) # Store frame for visibility toggle
         self.undo_timeout_frame.grid(row=row_idx, column=0, columnspan=2, pady=(0, 5), padx=(20,0), sticky="w") # Indent
         
         ttk.Label(self.undo_timeout_frame, text="Timeout caché deshacer (seg):").pack(side=tk.LEFT, padx=(0,5))
@@ -726,7 +760,7 @@ class ConfigDialog(Toplevel):
         row_idx += 1
         
         # --- Switch para mostrar/ocultar botón de Restauración de Fábrica --- (NUEVO ORDEN: DESPUÉS DE BACKUP)
-        show_factory_reset_frame = ttk.Frame(parent_frame)
+        show_factory_reset_frame = ttk.Frame(scrollable_frame) # Changed parent_frame to scrollable_frame
         show_factory_reset_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10,5), sticky="w")
         show_factory_reset_cb = ttk.Checkbutton(
             show_factory_reset_frame,
@@ -745,7 +779,7 @@ class ConfigDialog(Toplevel):
         row_idx += 1
         
         # --- Botón Restablecer Ajustes a Predeterminados --- (NUEVO ORDEN: DESPUÉS DE MOSTRAR OPCIÓN)
-        reset_settings_frame = ttk.Frame(parent_frame)
+        reset_settings_frame = ttk.Frame(scrollable_frame) # Changed parent_frame to scrollable_frame
         reset_settings_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10,5), sticky="w")
         reset_settings_button = ttk.Button(reset_settings_frame, text="Restablecer Ajustes a Predeterminados", command=self.reset_config_settings_to_default_action)
         reset_settings_button.pack(side=tk.LEFT, padx=(0,5))
@@ -761,7 +795,7 @@ class ConfigDialog(Toplevel):
         row_idx += 1
 
         # --- Botón Restaurar KineViz a Estado de Fábrica (visibilidad controlada) ---
-        self.factory_reset_frame = ttk.Frame(parent_frame) 
+        self.factory_reset_frame = ttk.Frame(scrollable_frame)  # Changed parent_frame to scrollable_frame
         self.factory_reset_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10,5), sticky="w")
         factory_reset_button = ttk.Button(self.factory_reset_frame, text="Restaurar KineViz a Estado de Fábrica", command=self.trigger_factory_reset_callback, style="Danger.TButton")
         factory_reset_button.pack(side=tk.LEFT, padx=(0,5))
