@@ -10,6 +10,8 @@ from typing import Optional
 # Configure logger for this module
 logger = logging.getLogger(__name__)
 
+from kineviz.utils.paths import get_application_base_dir # Import the new utility
+
 # AppSettings will be imported locally where needed
 _last_automatic_backup_end_time: Optional[datetime.datetime] = None
 _last_pre_restore_backup_end_time: Optional[datetime.datetime] = None # For "respaldo" backups
@@ -34,7 +36,8 @@ def get_project_root() -> pathlib.Path:
     Assumes this file is located in kineviz/core/backup_manager.py
     The project root is three levels up from this file's directory.
     """
-    return pathlib.Path(__file__).resolve().parent.parent.parent
+    # This function remains the same, get_project_root() is removed.
+    # The caller will now pass paths derived from get_application_base_dir().
 
 
 def _ensure_dir_exists(dir_path: pathlib.Path) -> bool:
@@ -78,8 +81,8 @@ def create_backup(backup_type: str, _is_test_mode: bool = False) -> Optional[pat
         logger.error(f"Invalid backup_type: '{backup_type}'. Must be one of {SUPPORTED_BACKUP_TYPES}.")
         return None
 
-    project_root = get_project_root()
-    backup_destination_base_dir = project_root / BACKUPS_DIR_NAME
+    app_base_dir = get_application_base_dir() # Use new utility
+    backup_destination_base_dir = app_base_dir / BACKUPS_DIR_NAME # Path relative to app base
     backup_destination_subdir = backup_destination_base_dir / backup_type
 
     if not _ensure_dir_exists(backup_destination_subdir):
@@ -253,9 +256,14 @@ def create_backup(backup_type: str, _is_test_mode: bool = False) -> Optional[pat
     zip_filename = f"backup_{timestamp}.zip"
     zip_filepath = backup_destination_subdir / zip_filename
 
-    db_file_path = project_root / DB_FILENAME
-    config_file_path = project_root / CONFIG_FILENAME
-    studies_dir_path = project_root / STUDIES_DIR_NAME
+    # app_base_dir is already defined if control reaches here from the previous change.
+    # If not, it should be fetched: app_base_dir = get_application_base_dir()
+    # Assuming app_base_dir is in scope from the earlier modification in this function.
+    app_base_dir = get_application_base_dir() # Ensure it's available
+
+    db_file_path = app_base_dir / DB_FILENAME
+    config_file_path = app_base_dir / CONFIG_FILENAME
+    studies_dir_path = app_base_dir / STUDIES_DIR_NAME
 
     items_to_backup = []
     if db_file_path.exists() and db_file_path.is_file():
@@ -298,7 +306,8 @@ def create_backup(backup_type: str, _is_test_mode: bool = False) -> Optional[pat
                     
                     # Add the study directory itself to the archive
                     # This ensures empty study folders are backed up.
-                    study_relative_path = study_name_dir.relative_to(project_root)
+                    # app_base_dir should be in scope
+                    study_relative_path = study_name_dir.relative_to(app_base_dir)
                     zf.write(study_name_dir, arcname=study_relative_path) # Add the directory entry
                     logger.debug(f"Adding study directory to backup: {study_name_dir} as {study_relative_path}")
 
@@ -319,7 +328,7 @@ def create_backup(backup_type: str, _is_test_mode: bool = False) -> Optional[pat
                             for ext in ["*.txt", "*.csv"]:
                                 for file_path in og_dir.glob(ext):
                                     if file_path.is_file():
-                                        relative_path = file_path.relative_to(project_root)
+                                        relative_path = file_path.relative_to(app_base_dir) # Use app_base_dir
                                         logger.debug(f"Adding original data file: {file_path} as {relative_path}")
                                         zf.write(file_path, arcname=relative_path)
                         
@@ -329,7 +338,7 @@ def create_backup(backup_type: str, _is_test_mode: bool = False) -> Optional[pat
                                 # Path: estudios/[NOMBRE_ESTUDIO]/[ID_PARTICIPANTE]/[TIPO_DATO]
                                 for file_path in data_type_dir.glob("*.txt"):
                                     if file_path.is_file():
-                                        relative_path = file_path.relative_to(project_root)
+                                        relative_path = file_path.relative_to(app_base_dir) # Use app_base_dir
                                         logger.debug(f"Adding processed data file: {file_path} as {relative_path}")
                                         zf.write(file_path, arcname=relative_path)
 
@@ -344,7 +353,7 @@ def create_backup(backup_type: str, _is_test_mode: bool = False) -> Optional[pat
                                     for ext in ["*.xlsx", "*.csv"]:
                                         for file_path in data_type_sub_dir.glob(ext):
                                             if file_path.is_file():
-                                                relative_path = file_path.relative_to(project_root)
+                                                relative_path = file_path.relative_to(app_base_dir) # Use app_base_dir
                                                 logger.debug(f"Adding discrete analysis table: {file_path} as {relative_path}")
                                                 zf.write(file_path, arcname=relative_path)
                         # Graficos/Config: .../Analisis Discreto/Graficos/[COLUMNA_ANALIZADA]/[NOMBRE_ANALISIS]/ (contenido relevante)
@@ -356,7 +365,7 @@ def create_backup(backup_type: str, _is_test_mode: bool = False) -> Optional[pat
                                         if analysis_name_dir.is_dir():
                                             for file_path in analysis_name_dir.rglob('*'):
                                                 if file_path.is_file():
-                                                    relative_path = file_path.relative_to(project_root)
+                                                    relative_path = file_path.relative_to(app_base_dir) # Use app_base_dir
                                                     logger.debug(f"Adding discrete analysis graphic/config: {file_path} as {relative_path}")
                                                     zf.write(file_path, arcname=relative_path)
                                                     
@@ -370,7 +379,7 @@ def create_backup(backup_type: str, _is_test_mode: bool = False) -> Optional[pat
                                     if analysis_name_dir.is_dir():
                                         for file_path in analysis_name_dir.rglob('*'):
                                             if file_path.is_file():
-                                                relative_path = file_path.relative_to(project_root)
+                                                relative_path = file_path.relative_to(app_base_dir) # Use app_base_dir
                                                 logger.debug(f"Adding continuous analysis file: {file_path} as {relative_path}")
                                                 zf.write(file_path, arcname=relative_path)
             elif studies_dir_path.exists(): # It exists but is not a directory
@@ -408,7 +417,8 @@ def create_backup(backup_type: str, _is_test_mode: bool = False) -> Optional[pat
 def _get_backup_aliases_path() -> pathlib.Path:
     """Returns the path to the backup aliases JSON file."""
     # Aliases file stored directly in the main backups directory
-    return get_project_root() / BACKUPS_DIR_NAME / BACKUP_ALIASES_FILENAME
+    app_base_dir = get_application_base_dir()
+    return app_base_dir / BACKUPS_DIR_NAME / BACKUP_ALIASES_FILENAME
 
 def _load_backup_aliases() -> dict:
     """Loads backup aliases from the JSON file."""
@@ -464,7 +474,8 @@ def remove_backup_alias(backup_type_subdir: str, backup_filename: str) -> bool:
 
 def delete_manual_backup(backup_filename: str) -> bool:
     """Deletes a specific manual backup file and its alias."""
-    backup_file_path = get_project_root() / BACKUPS_DIR_NAME / MANUAL_BACKUPS_SUBDIR / backup_filename
+    app_base_dir = get_application_base_dir()
+    backup_file_path = app_base_dir / BACKUPS_DIR_NAME / MANUAL_BACKUPS_SUBDIR / backup_filename
     if not backup_file_path.exists() or not backup_file_path.is_file():
         logger.error(f"Manual backup file not found: {backup_file_path}")
         return False
@@ -483,12 +494,12 @@ def cleanup_bak_files() -> tuple[int, int]:
     These are typically created during restore operations.
     Returns: (deleted_count, error_count)
     """
-    project_root = get_project_root()
+    app_base_dir = get_application_base_dir()
     deleted_count = 0
     error_count = 0
-    logger.info(f"Iniciando limpieza de archivos/carpetas .bak en: {project_root}")
+    logger.info(f"Iniciando limpieza de archivos/carpetas .bak en: {app_base_dir}")
 
-    for item in project_root.glob("*.bak"):
+    for item in app_base_dir.glob("*.bak"):
         try:
             if item.is_file():
                 item.unlink()
@@ -513,8 +524,8 @@ def list_backups() -> list[dict]:
     Returns a list of dictionaries, each representing a backup.
     """
     all_backups = []
-    project_root = get_project_root()
-    backup_base_dir = project_root / BACKUPS_DIR_NAME
+    app_base_dir = get_application_base_dir()
+    backup_base_dir = app_base_dir / BACKUPS_DIR_NAME
 
     # Load all aliases (manual and automatic)
     all_backup_aliases = _load_backup_aliases()
@@ -558,21 +569,21 @@ def restore_backup(backup_zip_path: pathlib.Path) -> bool:
     Restores the system state from a given backup ZIP file.
     This involves replacing kineviz.db, config.ini, and the estudios/ directory.
     """
-    project_root = get_project_root()
+    app_base_dir = get_application_base_dir()
     if not backup_zip_path.exists() or not backup_zip_path.is_file():
         logger.error(f"Backup file not found: {backup_zip_path}")
         return False
 
-    temp_extract_dir = project_root / f"temp_restore_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    temp_extract_dir = app_base_dir / f"temp_restore_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}" # Temp dir in app base
     
-    live_db_path = project_root / DB_FILENAME
-    live_config_path = project_root / CONFIG_FILENAME
-    live_studies_dir = project_root / STUDIES_DIR_NAME
+    live_db_path = app_base_dir / DB_FILENAME
+    live_config_path = app_base_dir / CONFIG_FILENAME
+    live_studies_dir = app_base_dir / STUDIES_DIR_NAME
 
     # Paths for backed-up (renamed) live items
-    bak_db_path = project_root / f"{DB_FILENAME}.{timestamp_str()}.bak"
-    bak_config_path = project_root / f"{CONFIG_FILENAME}.{timestamp_str()}.bak"
-    bak_studies_dir = project_root / f"{STUDIES_DIR_NAME}.{timestamp_str()}.bak"
+    bak_db_path = app_base_dir / f"{DB_FILENAME}.{timestamp_str()}.bak"
+    bak_config_path = app_base_dir / f"{CONFIG_FILENAME}.{timestamp_str()}.bak"
+    bak_studies_dir = app_base_dir / f"{STUDIES_DIR_NAME}.{timestamp_str()}.bak"
 
     try:
         logger.info(f"Starting restoration from backup: {backup_zip_path}")
@@ -677,9 +688,10 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     
     # Adjust sys.path to allow finding the 'kineviz' package for AppSettings
-    root = get_project_root()
-    if str(root) not in sys.path:
-        sys.path.insert(0, str(root))
+    # The new `get_application_base_dir` handles dev vs bundled path.
+    app_base_dir_for_test = get_application_base_dir()
+    if str(app_base_dir_for_test) not in sys.path: # For dev, this adds project root
+        sys.path.insert(0, str(app_base_dir_for_test))
 
     from kineviz.config.settings import AppSettings # Import AppSettings locally for the test block
     
@@ -690,8 +702,8 @@ if __name__ == '__main__':
     # but the DB and Config will be dummies.
     
     # Create dummy files and directories for testing
-    # root is already defined above
-    (root / TEST_DB_FILENAME).write_text("dummy db content for testing")
+    # app_base_dir_for_test is already defined above
+    (app_base_dir_for_test / TEST_DB_FILENAME).write_text("dummy db content for testing")
     
     # Create a more complete dummy config.ini for testing
     default_settings_for_test = AppSettings.DEFAULT_SETTINGS['SETTINGS']
@@ -700,7 +712,7 @@ if __name__ == '__main__':
         config_content_for_test += f"{key} = {value}\n"
     # Override specific values for test if needed, e.g., max_automatic_backups for the test logic
     config_content_for_test += "dummy_test_specific_setting = True\n" # Example if needed
-    (root / TEST_CONFIG_FILENAME).write_text(config_content_for_test)
+    (app_base_dir_for_test / TEST_CONFIG_FILENAME).write_text(config_content_for_test)
         
     # Temporarily override global constants for the scope of this test
     # The 'global DB_FILENAME, CONFIG_FILENAME' declaration was moved to the top 
@@ -708,7 +720,7 @@ if __name__ == '__main__':
     original_db_filename, original_config_filename = DB_FILENAME, CONFIG_FILENAME
     DB_FILENAME, CONFIG_FILENAME = TEST_DB_FILENAME, TEST_CONFIG_FILENAME
     
-    dummy_studies_dir = root / STUDIES_DIR_NAME # This will be the actual studies dir name
+    dummy_studies_dir = app_base_dir_for_test / STUDIES_DIR_NAME # This will be the actual studies dir name
     dummy_studies_dir.mkdir(exist_ok=True)
     (dummy_studies_dir / "study1").mkdir(exist_ok=True)
     (dummy_studies_dir / "study1" / "data.txt").write_text("study1 data")
@@ -717,7 +729,7 @@ if __name__ == '__main__':
     (dummy_studies_dir / "empty_study").mkdir(exist_ok=True)
 
 
-    logger.info(f"Project root determined as: {root}")
+    logger.info(f"Application base directory for test: {app_base_dir_for_test}")
     
     # Test automatic backup
     logger.info("Attempting to create an automatic backup...")
@@ -745,7 +757,7 @@ if __name__ == '__main__':
         # Create one first then try to create another
         logger.info("Creating one auto backup then testing deletion with max_auto = 0")
         # Temporarily create a backup file to test deletion when max_auto is 0
-        temp_backup_dir = get_project_root() / BACKUPS_DIR_NAME / AUTOMATIC_BACKUPS_SUBDIR
+        temp_backup_dir = app_base_dir_for_test / BACKUPS_DIR_NAME / AUTOMATIC_BACKUPS_SUBDIR
         _ensure_dir_exists(temp_backup_dir)
         (temp_backup_dir / "backup_20000101_000000.zip").write_text("temp")
         
@@ -773,8 +785,8 @@ if __name__ == '__main__':
 
     # --- Clean up dummy files and directories used for testing ---
     logger.info("Cleaning up test-specific dummy files...")
-    (root / TEST_DB_FILENAME).unlink(missing_ok=True)
-    (root / TEST_CONFIG_FILENAME).unlink(missing_ok=True)
+    (app_base_dir_for_test / TEST_DB_FILENAME).unlink(missing_ok=True)
+    (app_base_dir_for_test / TEST_CONFIG_FILENAME).unlink(missing_ok=True)
     
     # Restore original global constants
     DB_FILENAME, CONFIG_FILENAME = original_db_filename, original_config_filename
