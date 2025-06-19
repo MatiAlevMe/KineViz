@@ -250,6 +250,10 @@ class UndoManager:
             logger.error(f"Failed to load undo info from {info_path}: {e}", exc_info=True)
             return None
 
+    def get_undo_cache_dir_path(self) -> pathlib.Path:
+        """Returns the path to the undo cache directory."""
+        return self.undo_cache_dir
+
     def clear_undo_cache_if_timed_out(self):
         """Clears the undo cache if it has timed out based on settings."""
         if not self.is_undo_enabled():

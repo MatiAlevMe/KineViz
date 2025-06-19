@@ -62,7 +62,7 @@ class ConfigDialog(Toplevel):
         self.var_enable_manual_backups = tk.BooleanVar()
         self.var_max_manual_backups = StringVar()
         
-        self.var_show_advanced_backup_opts = tk.BooleanVar() # New
+        self.var_show_advanced_backup_opts = tk.BooleanVar(value=False) # New, defaults to False, not loaded from settings
 
         # Undo Delete setting
         self.var_enable_undo_delete = tk.BooleanVar() # New for Undo Delete
@@ -115,7 +115,7 @@ class ConfigDialog(Toplevel):
         self.var_enable_manual_backups.set(self.settings.enable_manual_backups)
         self.var_max_manual_backups.set(str(self.settings.max_manual_backups))
         
-        self.var_show_advanced_backup_opts.set(self.settings.show_advanced_backup_options) # Load new
+        # self.var_show_advanced_backup_opts is not loaded from settings, defaults to False.
         self.var_enable_undo_delete.set(self.settings.enable_undo_delete) # Load Undo Delete setting
         self.var_undo_cache_timeout_seconds.set(str(self.settings.undo_cache_timeout_seconds)) # Load Undo Cache Timeout
         self.var_log_level.set(self.settings.log_level) # Load Log Level
@@ -654,6 +654,20 @@ class ConfigDialog(Toplevel):
         clear_undo_cache_help_btn.grid(row=0, column=1, sticky="e", padx=(0,5), pady=2)
         Tooltip(clear_undo_cache_help_btn, text=clear_undo_cache_long_text, short_text=clear_undo_cache_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
+
+        # --- Botón Abrir Carpeta Caché de Deshacer (visibilidad controlada) ---
+        self.open_undo_cache_dir_frame = ttk.Frame(parent_frame)
+        self.open_undo_cache_dir_frame.grid(row=row_idx, column=0, columnspan=2, pady=(0,10), sticky="ew", padx=(20,0)) # Indent
+
+        open_undo_cache_dir_button = ttk.Button(self.open_undo_cache_dir_frame, text="Abrir carpeta de caché de Deshacer", command=self._open_undo_cache_dir_action)
+        open_undo_cache_dir_button.grid(row=0, column=0, sticky="w", padx=(0,5), pady=2)
+        open_undo_cache_dir_long_text = "Abre la carpeta donde se almacenan temporalmente los datos para la función 'Deshacer Eliminación'."
+        open_undo_cache_dir_short_text = "Abrir carpeta de caché de Deshacer."
+        open_undo_cache_dir_help_btn = ttk.Button(self.open_undo_cache_dir_frame, text="?", width=3, style="Help.TButton",
+                                               command=lambda: self._show_input_help("Ayuda: Abrir Carpeta Caché de Deshacer", open_undo_cache_dir_long_text))
+        open_undo_cache_dir_help_btn.grid(row=0, column=1, sticky="e", padx=(0,5), pady=2)
+        Tooltip(open_undo_cache_dir_help_btn, text=open_undo_cache_dir_long_text, short_text=open_undo_cache_dir_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
         
         # --- Switch para habilitar/deshabilitar Deshacer Eliminación ---
         enable_undo_delete_frame = ttk.Frame(parent_frame)
@@ -794,7 +808,8 @@ class ConfigDialog(Toplevel):
         show = self.var_show_advanced_backup_opts.get()
         widgets_to_toggle = [
             getattr(self, 'clean_bak_files_frame', None),
-            getattr(self, 'clear_undo_cache_frame', None) # Add new frame here
+            getattr(self, 'clear_undo_cache_frame', None),
+            getattr(self, 'open_undo_cache_dir_frame', None) # Add new frame here
         ]
         for widget in widgets_to_toggle:
             if widget: # Check if attribute exists
@@ -883,15 +898,29 @@ class ConfigDialog(Toplevel):
             messagebox.showerror("Error", f"No se pudo abrir config.ini '{config_file_path}':\n{str(e)}", parent=self)
 
     def _clear_undo_cache_action(self):
-        """Acción para limpiar la caché de Deshacer con confirmación."""
-        confirm = messagebox.askokcancel(
-            "Confirmar Limpieza de Caché de Deshacer",
+        """Acción para limpiar la caché de Deshacer con doble confirmación."""
+        # Primera confirmación
+        confirm1 = messagebox.askokcancel(
+            "Confirmar Limpieza de Caché - Paso 1 de 2",
             "¿Está seguro de que desea eliminar el contenido de la caché de 'Deshacer Eliminación'?\n\n"
-            "Esta acción borrará cualquier estado guardado para deshacer la última operación de eliminación y no se puede revertir.",
+            "Esta acción borrará cualquier estado guardado para deshacer la última operación de eliminación.",
             icon='warning',
             parent=self
         )
-        if not confirm:
+        if not confirm1:
+            return
+
+        # Segunda confirmación (más enfática)
+        confirm2 = messagebox.askokcancel(
+            "Confirmar Limpieza de Caché - Paso 2 de 2",
+            "¡ADVERTENCIA FINAL!\n\n"
+            "Está a punto de eliminar permanentemente el contenido de la caché de 'Deshacer Eliminación'.\n"
+            "Esta acción es IRREVERSIBLE y podría afectar su capacidad para deshacer la última eliminación.\n\n"
+            "¿Está ABSOLUTAMENTE SEGURO de que desea proceder?",
+            icon='error', # Use 'error' icon for more emphasis
+            parent=self
+        )
+        if not confirm2:
             return
 
         try:
@@ -911,6 +940,47 @@ class ConfigDialog(Toplevel):
         except Exception as e:
             logger.error(f"Error durante la limpieza de la caché de Deshacer: {e}", exc_info=True)
             messagebox.showerror("Error", f"Ocurrió un error al limpiar la caché de Deshacer:\n{e}", parent=self)
+
+    def _open_undo_cache_dir_action(self):
+        """Abre la carpeta de caché de Deshacer en el explorador de archivos."""
+        try:
+            if self.reset_callback and hasattr(self.reset_callback.__self__, 'undo_manager'):
+                main_window_instance = self.reset_callback.__self__
+                undo_manager_instance = main_window_instance.undo_manager
+                if undo_manager_instance:
+                    undo_cache_path = undo_manager_instance.get_undo_cache_dir_path()
+                    if undo_cache_path.exists() and undo_cache_path.is_dir():
+                        logger.info(f"Intentando abrir carpeta de caché de Deshacer: {undo_cache_path}")
+                        if sys.platform == "win32":
+                            os.startfile(undo_cache_path)
+                        elif sys.platform == "darwin":  # macOS
+                            subprocess.run(["open", undo_cache_path], check=True)
+                        else:  # linux variants
+                            subprocess.run(["xdg-open", undo_cache_path], check=True)
+                    else:
+                        messagebox.showwarning("Carpeta no Encontrada",
+                                               f"La carpeta de caché de Deshacer no existe o no es un directorio:\n{undo_cache_path}",
+                                               parent=self)
+                        logger.warning(f"Carpeta de caché de Deshacer no encontrada o no es directorio: {undo_cache_path}")
+                else:
+                    logger.error("UndoManager instance not found on MainWindow for opening cache dir.")
+                    messagebox.showerror("Error", "No se pudo encontrar el gestor de Deshacer.", parent=self)
+            else:
+                logger.error("Could not access MainWindow or UndoManager instance to open cache dir.")
+                messagebox.showerror("Error", "No se pudo acceder a la funcionalidad para abrir la carpeta de caché.", parent=self)
+        except FileNotFoundError:
+             messagebox.showerror("Error", f"No se pudo encontrar la carpeta de caché de Deshacer.", parent=self)
+             logger.error(f"Carpeta de caché de Deshacer no encontrada al intentar abrir.", exc_info=True)
+        except PermissionError:
+             messagebox.showerror("Error", f"No tiene permisos para acceder a la carpeta de caché de Deshacer.", parent=self)
+             logger.error(f"Permiso denegado al abrir la carpeta de caché de Deshacer.", exc_info=True)
+        except subprocess.CalledProcessError as e:
+             logger.error(f"Comando para abrir la carpeta de caché de Deshacer falló: {e}", exc_info=True)
+             messagebox.showerror("Error", f"El comando para abrir la carpeta de caché de Deshacer falló:\n{e}", parent=self)
+        except Exception as e:
+            logger.error(f"Error inesperado al abrir la carpeta de caché de Deshacer: {e}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudo abrir la carpeta de caché de Deshacer:\n{str(e)}", parent=self)
+
 
     def validate_input(self) -> bool:
         """Valida que los valores ingresados sean enteros positivos."""
@@ -1003,7 +1073,7 @@ class ConfigDialog(Toplevel):
             self.settings.enable_manual_backups = self.var_enable_manual_backups.get()
             self.settings.max_manual_backups = int(self.var_max_manual_backups.get())
 
-            self.settings.show_advanced_backup_options = self.var_show_advanced_backup_opts.get() # Save new
+            # self.settings.show_advanced_backup_options is not saved as it's transient UI state
             self.settings.enable_undo_delete = self.var_enable_undo_delete.get() # Save Undo Delete setting
             self.settings.undo_cache_timeout_seconds = int(self.var_undo_cache_timeout_seconds.get()) # Save Undo Cache Timeout
             
