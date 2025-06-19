@@ -43,7 +43,7 @@ class AppSettings:
             'backups_per_page': '10',
             'enable_automatic_backups': 'True', # Changed default
             'enable_manual_backups': 'True',     # Changed default
-            'show_advanced_backup_options': 'False', # New
+            # 'show_advanced_backup_options': 'False', # Removed, will not be persisted
             # 'backup_before_restore' is replaced by enable_pre_restore_backups
             'enable_pre_restore_backups': 'True',    # New, for pre-restore backups
             'max_pre_restore_backups': '10',         # New, max pre-restore backups
@@ -77,7 +77,7 @@ class AppSettings:
             'backups_per_page': '10',
             'enable_automatic_backups': 'True', # Changed default
             'enable_manual_backups': 'True',     # Changed default
-            'show_advanced_backup_options': 'False', # New
+            # 'show_advanced_backup_options': 'False', # Removed, will not be persisted
             # 'backup_before_restore' is replaced by enable_pre_restore_backups
             'enable_pre_restore_backups': 'True',    # New, for pre-restore backups
             'max_pre_restore_backups': '10',         # New, max pre-restore backups
@@ -228,7 +228,8 @@ class AppSettings:
             boolean_settings = [
                 'show_factory_reset_button', 'enable_hover_tooltips',
                 'enable_automatic_backups', 'enable_manual_backups',
-                'show_advanced_backup_options', 'enable_pre_restore_backups', # Updated
+                # 'show_advanced_backup_options', # Removed
+                'enable_pre_restore_backups', # Updated
                 'enable_undo_delete' # New
             ]
             for key in boolean_settings:
@@ -485,13 +486,8 @@ class AppSettings:
     def enable_manual_backups(self, value: bool):
         self.set_setting('enable_manual_backups', str(value))
 
-    @property
-    def show_advanced_backup_options(self) -> bool:
-        return self.get_bool_setting('show_advanced_backup_options', False)
-
-    @show_advanced_backup_options.setter
-    def show_advanced_backup_options(self, value: bool):
-        self.set_setting('show_advanced_backup_options', str(value))
+    # Property show_advanced_backup_options removed as it's no longer persisted.
+    # The checkbox in ConfigDialog will manage its state locally.
 
     # Property backup_before_restore is removed, replaced by enable_pre_restore_backups and its related settings
 
