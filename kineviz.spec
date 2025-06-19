@@ -52,7 +52,7 @@ a = Analysis(
         'pandas', 'numpy', # Fundamentales para datos
         'seaborn', 'matplotlib', 'matplotlib.pyplot', 'PIL', 'PIL._imagingtk', 'PIL._tkinter_finder', # Para gráficos estáticos y Tkinter
         'plotly', # Para gráficos interactivos
-        'scipy', 'scipy.stats', 'statannotations', # Para análisis estadístico (nombre corregido)
+        'scipy', 'scipy.stats', 'scipy.special._cdflib', 'statannotations', # Para análisis estadístico (nombre corregido)
         'tkinter', 'tkinter.ttk', 'tkinter.filedialog', 'tkinter.messagebox', 'tkinter.font', # GUI y fuentes
         'configparser', 'logging', 'pathlib', # Utilidades estándar
         'openpyxl', # Para leer/escribir Excel con pandas
