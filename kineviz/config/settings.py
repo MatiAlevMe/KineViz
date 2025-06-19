@@ -219,8 +219,8 @@ class AppSettings:
 
             # Log level (specific strings)
             log_level_val = self.get_setting('log_level', '')
-            if log_level_val.upper() not in self.VALID_LOG_LEVELS:
-                logger.error(f"Config validation failed: 'log_level' must be one of {self.VALID_LOG_LEVELS}, got '{log_level_val}'.")
+            if log_level_val.upper() not in VALID_LOG_LEVELS: # Use module-level VALID_LOG_LEVELS
+                logger.error(f"Config validation failed: 'log_level' must be one of {VALID_LOG_LEVELS}, got '{log_level_val}'.")
                 return False
             
             # Booleans (show_factory_reset_button, enable_hover_tooltips, enable_automatic_backups, enable_manual_backups)
@@ -577,14 +577,14 @@ class AppSettings:
     def log_level(self) -> str:
         """Nivel de logging de la aplicación (DEBUG, INFO, WARNING, ERROR)."""
         value = self.get_setting('log_level', 'INFO').upper()
-        if value not in self.VALID_LOG_LEVELS:
+        if value not in VALID_LOG_LEVELS: # Use module-level VALID_LOG_LEVELS
             logger.warning(f"Invalid log_level '{value}' in config. Defaulting to 'INFO'.")
             return 'INFO'
         return value
 
     @log_level.setter
     def log_level(self, value: str):
-        if value.upper() in self.VALID_LOG_LEVELS:
+        if value.upper() in VALID_LOG_LEVELS: # Use module-level VALID_LOG_LEVELS
             self.set_setting('log_level', value.upper())
         else:
             logger.warning(f"Attempted to set invalid log_level '{value}'. Keeping previous or default.")
