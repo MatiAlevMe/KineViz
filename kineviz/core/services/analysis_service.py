@@ -1571,8 +1571,15 @@ class AnalysisService:
 
             # Cache the .xlsx file. The .csv is implicitly handled by DB restore if needed, or not cached if purely derived.
             # For file system undo, caching the primary user-facing file (.xlsx) is key.
-            if not self.undo_manager.cache_item_for_undo(str(table_path_str), "discrete_summary_table_xlsx"):
-                logger.warning(f"Failed to cache discrete table {table_path_str} for undo. Deletion will proceed but undo might be partial.")
+            xlsx_path = Path(table_path_str)
+            if not self.undo_manager.cache_item_for_undo(str(xlsx_path), "discrete_summary_table_xlsx"):
+                logger.warning(f"Failed to cache discrete table {xlsx_path} for undo. Deletion will proceed but undo might be partial.")
+            
+            # Also cache the corresponding .csv file if it exists
+            csv_path = xlsx_path.with_suffix('.csv')
+            if csv_path.exists() and csv_path.is_file():
+                if not self.undo_manager.cache_item_for_undo(str(csv_path), "discrete_summary_table_csv"):
+                    logger.warning(f"Failed to cache corresponding CSV table {csv_path} for undo. Deletion will proceed but undo might be partial.")
         
         try:
             self._delete_discrete_summary_table_no_backup(table_path_str)
@@ -2786,27 +2793,31 @@ class AnalysisService:
             logger.info(f"No se encontró directorio de tablas de resumen para estudio {study_id}. Nada que eliminar.")
             return 0 # No files deleted
 
-        # Collect all .xlsx files to be deleted for caching
-        files_to_cache_for_undo = []
+        # Collect all .xlsx and their corresponding .csv files to be deleted for caching
+        items_to_cache_for_undo = [] # List of tuples (path_str, item_type)
         if self.undo_manager.is_undo_enabled():
             for freq_dir_cache in tables_base_dir.iterdir():
                 if freq_dir_cache.is_dir():
                     for table_file_cache in freq_dir_cache.iterdir():
                         if table_file_cache.is_file() and table_file_cache.suffix == '.xlsx':
-                            files_to_cache_for_undo.append(str(table_file_cache))
+                            items_to_cache_for_undo.append((str(table_file_cache), "discrete_summary_table_xlsx"))
+                            # Check for corresponding .csv file
+                            csv_file_cache = table_file_cache.with_suffix('.csv')
+                            if csv_file_cache.exists() and csv_file_cache.is_file():
+                                items_to_cache_for_undo.append((str(csv_file_cache), "discrete_summary_table_csv"))
             
-            if files_to_cache_for_undo: # Only prepare if there's something to cache
+            if items_to_cache_for_undo: # Only prepare if there's something to cache
                 if not self.undo_manager.prepare_undo_cache():
                     logger.error(f"Failed to prepare undo cache for deleting all discrete tables in study {study_id}. Aborting delete operation.")
                     raise Exception(f"Failed to prepare undo cache for deleting all discrete tables in study {study_id}. Deletion aborted.")
                 
-                for table_to_cache_str in files_to_cache_for_undo:
-                    if not self.undo_manager.cache_item_for_undo(table_to_cache_str, "discrete_summary_table_xlsx"):
-                        logger.warning(f"Failed to cache discrete table {table_to_cache_str} for undo during 'delete all'. Deletion will proceed but undo might be partial.")
+                for path_str, item_type in items_to_cache_for_undo:
+                    if not self.undo_manager.cache_item_for_undo(path_str, item_type):
+                        logger.warning(f"Failed to cache discrete table item {path_str} (type: {item_type}) for undo during 'delete all'. Deletion will proceed but undo might be partial.")
             elif not self.undo_manager.is_undo_enabled(): # If undo disabled, no need to prepare or cache
                 pass
             else: # Undo enabled, but no files found to cache
-                logger.info(f"Undo enabled, but no .xlsx tables found to cache in {tables_base_dir} for 'delete all'.")
+                logger.info(f"Undo enabled, but no .xlsx or .csv tables found to cache in {tables_base_dir} for 'delete all'.")
 
 
         deleted_count = 0
