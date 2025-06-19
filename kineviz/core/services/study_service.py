@@ -4,7 +4,8 @@ from pathlib import Path # Import Path
 from kineviz.database.repositories import StudyRepository
 from kineviz.core.backup_manager import create_backup # Import for automatic backups
 from kineviz.config.settings import AppSettings # Import AppSettings
-from kineviz.core.undo_manager import UndoManager # Import UndoManager
+from kineviz.core.undo_manager import UndoManager, DB_FILENAME # Import UndoManager and DB_FILENAME
+from kineviz.utils.paths import get_application_base_dir # Import for base directory
 
 # El validador antiguo se eliminará, la validación se hará en el diálogo/nuevo validador
 # from kineviz.ui.utils.validators import validate_study_data
@@ -15,8 +16,10 @@ MAX_PINNED_STUDIES = 5
 
 class StudyService:
     def __init__(self, settings: AppSettings, undo_manager: UndoManager):
-        self.repo = StudyRepository()
-        self.db_path = self.repo.db_path # Expose db_path
+        app_base_dir = get_application_base_dir()
+        absolute_db_path = app_base_dir / DB_FILENAME
+        self.repo = StudyRepository(db_path=str(absolute_db_path))
+        self.db_path = str(absolute_db_path) # Expose db_path, ensuring it's the absolute one
         self.settings = settings # Use passed AppSettings instance
         self.undo_manager = undo_manager # Use passed UndoManager instance
 
