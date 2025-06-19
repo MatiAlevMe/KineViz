@@ -11,6 +11,7 @@ from kineviz.ui.utils.validators import validate_filename_for_study_criteria
 from typing import Dict, Set, Tuple, List, Optional # Añadir tipos necesarios
 from kineviz.config.settings import AppSettings # Import AppSettings
 from kineviz.core.undo_manager import UndoManager # Import UndoManager
+from kineviz.utils.paths import get_application_base_dir # Import for application base directory
 # O que se pasa la ruta base de los estudios.
 logger = logging.getLogger(__name__) # Logger para este módulo
 # Por simplicidad inicial, asumiremos que la estructura de carpetas es conocida.
@@ -25,9 +26,9 @@ class FileService:
         """
         self.study_service = study_service
         self.settings = settings # Use passed AppSettings instance
-        # Determinar la ruta raíz del proyecto para construir rutas absolutas
-        self.project_root = Path(__file__).resolve().parent.parent.parent.parent
-        self.studies_base_dir = self.project_root / "estudios"
+        # Use get_application_base_dir() for studies_base_dir
+        app_base = get_application_base_dir()
+        self.studies_base_dir = app_base / "estudios"
         # Initialize UndoManager, passing the settings instance
         # FileService gets db_path via its study_service instance
         self.undo_manager = UndoManager(settings=self.settings, study_repository_db_path=str(self.study_service.db_path))

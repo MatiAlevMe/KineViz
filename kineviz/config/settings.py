@@ -3,6 +3,7 @@ from pathlib import Path
 import os
 import sys # Necesario para sys._MEIPASS
 import logging # Importar logging
+from kineviz.utils.paths import get_application_base_dir # Import for application base directory
 
 logger = logging.getLogger(__name__) # Logger para este módulo
 
@@ -96,16 +97,15 @@ class AppSettings:
 
         :param config_filename: Nombre del archivo de configuración (relativo a la raíz del proyecto/bundle).
         """
-        # Usar la función auxiliar para obtener la ruta correcta a config.ini
-        self.config_path = get_resource_path(config_filename)
+        # Use get_application_base_dir() for config.ini path
+        app_base = get_application_base_dir()
+        self.config_path = app_base / config_filename
         logger.info(f"Using configuration file path: {self.config_path}")
 
-        # Mantener project_root si se usa en otro lugar, pero basado en __file__ (solo fiable en desarrollo)
-        # O considerar obtenerlo de forma más robusta si es necesario fuera de config
-        try:
-             self.project_root = Path(__file__).resolve().parent.parent.parent
-        except NameError: # __file__ no está definido si se congela con ciertas herramientas? Mejor ser cautos.
-             self.project_root = Path.cwd() # O una ruta por defecto más apropiada
+        # project_root is no longer needed here for config_path resolution.
+        # If other parts of AppSettings rely on self.project_root, it should be reviewed.
+        # For now, we assume its primary use was for config_path.
+        # self.project_root = Path(__file__).resolve().parent.parent.parent # Example, if needed elsewhere
 
         self.config = configparser.ConfigParser()
         self.load_settings()
