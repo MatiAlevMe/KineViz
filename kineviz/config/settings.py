@@ -49,7 +49,7 @@ class AppSettings:
             'pre_restore_backup_cooldown_seconds': '60', # New, cooldown for pre-restore
             'enable_undo_delete': 'False', # New, for undo delete functionality
             'undo_cache_timeout_seconds': '300', # New, 5 minutes timeout for undo cache
-            'log_level': 'INFO' # New, for logging level (DEBUG, INFO, WARNING, ERROR)
+            'log_level': 'WARNING' # New, for logging level (DEBUG, INFO, WARNING, ERROR), default to WARNING
         }
         # DESCRIPTOR_ALIASES ya no se gestiona aquí
     }
@@ -83,7 +83,7 @@ class AppSettings:
             'pre_restore_backup_cooldown_seconds': '60', # New, cooldown for pre-restore
             'enable_undo_delete': 'False', # New, for undo delete functionality
             'undo_cache_timeout_seconds': '300', # New, 5 minutes timeout for undo cache
-            'log_level': 'INFO' # New, for logging level (DEBUG, INFO, WARNING, ERROR)
+            'log_level': 'WARNING' # New, for logging level (DEBUG, INFO, WARNING, ERROR), default to WARNING
         }
         # DESCRIPTOR_ALIASES ya no se gestiona aquí
     }
@@ -576,10 +576,10 @@ class AppSettings:
     @property
     def log_level(self) -> str:
         """Nivel de logging de la aplicación (DEBUG, INFO, WARNING, ERROR)."""
-        value = self.get_setting('log_level', 'INFO').upper()
+        value = self.get_setting('log_level', 'WARNING').upper() # Default to WARNING
         if value not in VALID_LOG_LEVELS: # Use module-level VALID_LOG_LEVELS
-            logger.warning(f"Invalid log_level '{value}' in config. Defaulting to 'INFO'.")
-            return 'INFO'
+            logger.warning(f"Invalid log_level '{value}' in config. Defaulting to 'WARNING'.")
+            return 'WARNING' # Default to WARNING
         return value
 
     @log_level.setter
@@ -589,7 +589,7 @@ class AppSettings:
         else:
             logger.warning(f"Attempted to set invalid log_level '{value}'. Keeping previous or default.")
             # Optionally set to a default if you want to enforce correction on set
-            # self.set_setting('log_level', 'INFO')
+            # self.set_setting('log_level', 'WARNING')
 
 
     def reset_to_defaults(self):
