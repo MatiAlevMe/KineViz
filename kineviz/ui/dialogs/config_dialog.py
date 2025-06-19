@@ -638,6 +638,22 @@ class ConfigDialog(Toplevel):
         clean_bak_help_btn.grid(row=0, column=1, sticky="e", padx=(0,5), pady=2)
         Tooltip(clean_bak_help_btn, text=clean_bak_long_text, short_text=clean_bak_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
+
+        # --- Botón Limpiar Caché de Deshacer (visibilidad controlada) ---
+        self.clear_undo_cache_frame = ttk.Frame(parent_frame)
+        self.clear_undo_cache_frame.grid(row=row_idx, column=0, columnspan=2, pady=(0,10), sticky="ew", padx=(20,0)) # Indent
+
+        clear_undo_cache_button = ttk.Button(self.clear_undo_cache_frame, text="Limpiar caché de Deshacer", command=self._clear_undo_cache_action)
+        clear_undo_cache_button.grid(row=0, column=0, sticky="w", padx=(0,5), pady=2)
+        clear_undo_cache_long_text = ("Elimina el contenido de la carpeta de caché de 'Deshacer Eliminación'.\n"
+                                      "Esto borrará cualquier estado guardado para deshacer la última operación de eliminación.\n"
+                                      "Es seguro hacerlo si no necesita deshacer ninguna acción reciente o si desea liberar espacio.")
+        clear_undo_cache_short_text = "Eliminar caché de Deshacer."
+        clear_undo_cache_help_btn = ttk.Button(self.clear_undo_cache_frame, text="?", width=3, style="Help.TButton",
+                                               command=lambda: self._show_input_help("Ayuda: Limpiar Caché de Deshacer", clear_undo_cache_long_text))
+        clear_undo_cache_help_btn.grid(row=0, column=1, sticky="e", padx=(0,5), pady=2)
+        Tooltip(clear_undo_cache_help_btn, text=clear_undo_cache_long_text, short_text=clear_undo_cache_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
         
         # --- Switch para habilitar/deshabilitar Deshacer Eliminación ---
         enable_undo_delete_frame = ttk.Frame(parent_frame)
@@ -775,11 +791,17 @@ class ConfigDialog(Toplevel):
 
     def _toggle_advanced_backup_options_visibility(self, event=None):
         """Muestra u oculta las opciones avanzadas de backup."""
-        if hasattr(self, 'clean_bak_files_frame'):
-            if self.var_show_advanced_backup_opts.get():
-                self.clean_bak_files_frame.grid()
-            else:
-                self.clean_bak_files_frame.grid_remove()
+        show = self.var_show_advanced_backup_opts.get()
+        widgets_to_toggle = [
+            getattr(self, 'clean_bak_files_frame', None),
+            getattr(self, 'clear_undo_cache_frame', None) # Add new frame here
+        ]
+        for widget in widgets_to_toggle:
+            if widget: # Check if attribute exists
+                if show:
+                    widget.grid()
+                else:
+                    widget.grid_remove()
 
     def _toggle_undo_options_visibility(self, event=None):
         """Muestra u oculta las opciones de Deshacer Eliminación según el checkbox de habilitación."""
@@ -859,6 +881,36 @@ class ConfigDialog(Toplevel):
         except Exception as e:
             logger.error(f"Error inesperado al abrir config.ini {config_file_path}: {e}", exc_info=True)
             messagebox.showerror("Error", f"No se pudo abrir config.ini '{config_file_path}':\n{str(e)}", parent=self)
+
+    def _clear_undo_cache_action(self):
+        """Acción para limpiar la caché de Deshacer con confirmación."""
+        confirm = messagebox.askokcancel(
+            "Confirmar Limpieza de Caché de Deshacer",
+            "¿Está seguro de que desea eliminar el contenido de la caché de 'Deshacer Eliminación'?\n\n"
+            "Esta acción borrará cualquier estado guardado para deshacer la última operación de eliminación y no se puede revertir.",
+            icon='warning',
+            parent=self
+        )
+        if not confirm:
+            return
+
+        try:
+            # Access MainWindow instance via reset_callback, then its undo_manager
+            if self.reset_callback and hasattr(self.reset_callback.__self__, 'undo_manager'):
+                main_window_instance = self.reset_callback.__self__
+                undo_manager_instance = main_window_instance.undo_manager
+                if undo_manager_instance:
+                    undo_manager_instance.clear_undo_cache()
+                    messagebox.showinfo("Limpieza Completada", "La caché de 'Deshacer Eliminación' ha sido limpiada.", parent=self)
+                else:
+                    logger.error("UndoManager instance not found on MainWindow.")
+                    messagebox.showerror("Error", "No se pudo encontrar el gestor de Deshacer.", parent=self)
+            else:
+                logger.error("Could not access MainWindow or UndoManager instance to clear cache.")
+                messagebox.showerror("Error", "No se pudo acceder a la funcionalidad para limpiar la caché.", parent=self)
+        except Exception as e:
+            logger.error(f"Error durante la limpieza de la caché de Deshacer: {e}", exc_info=True)
+            messagebox.showerror("Error", f"Ocurrió un error al limpiar la caché de Deshacer:\n{e}", parent=self)
 
     def validate_input(self) -> bool:
         """Valida que los valores ingresados sean enteros positivos."""
