@@ -12,9 +12,9 @@ backups/
 
 ## Build & Dist KineViz (Windows y Mac OS)
 build/
-## dist/
+dist/
 
 ## For official version
-## ROADMAP.md
-## kineviz.spec
-## logs/
+ROADMAP.md
+kineviz.spec
+logs/
