@@ -559,10 +559,10 @@ class ConfigDialog(Toplevel):
         # --- Open Logs Folder Button (conditionally visible) ---
         self.open_logs_button_frame = ttk.Frame(parent_frame) # Outer frame for visibility
         self.open_logs_button_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", pady=(5,0), padx=(20,0)) # Indent
-        self.open_logs_button_frame.columnconfigure(0, weight=1) # Button expands
+        # self.open_logs_button_frame.columnconfigure(0, weight=1) # Removed to prevent button expansion
 
         open_logs_btn = ttk.Button(self.open_logs_button_frame, text="Abrir Carpeta de Logs", command=logger_utils.open_logs_folder, style="Celeste.TButton")
-        open_logs_btn.grid(row=0, column=0, sticky="ew", padx=(0,5), pady=2)
+        open_logs_btn.grid(row=0, column=0, sticky="w", padx=(0,5), pady=2) # Changed sticky to "w"
         open_logs_long_text = "Abre la carpeta donde se guardan los archivos de log de KineViz. Estos archivos son útiles para diagnosticar problemas."
         open_logs_short_text = "Abrir carpeta de logs."
         open_logs_help_btn = ttk.Button(self.open_logs_button_frame, text="?", width=3, style="Help.TButton",
@@ -574,10 +574,10 @@ class ConfigDialog(Toplevel):
         # --- Export Logs Button (conditionally visible) ---
         self.export_logs_button_frame = ttk.Frame(parent_frame) # Outer frame for visibility
         self.export_logs_button_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", pady=(5,10), padx=(20,0)) # Indent, add bottom padding
-        self.export_logs_button_frame.columnconfigure(0, weight=1) # Button expands
+        # self.export_logs_button_frame.columnconfigure(0, weight=1) # Removed to prevent button expansion
 
         export_logs_btn = ttk.Button(self.export_logs_button_frame, text="Exportar Logs...", command=lambda: logger_utils.export_logs(self), style="Celeste.TButton")
-        export_logs_btn.grid(row=0, column=0, sticky="ew", padx=(0,5), pady=2)
+        export_logs_btn.grid(row=0, column=0, sticky="w", padx=(0,5), pady=2) # Changed sticky to "w"
         export_logs_long_text = "Comprime la carpeta de logs en un archivo .zip. Esto es útil para enviar los logs al equipo de soporte si se encuentra un problema."
         export_logs_short_text = "Exportar logs como .zip."
         export_logs_help_btn = ttk.Button(self.export_logs_button_frame, text="?", width=3, style="Help.TButton",
@@ -607,10 +607,10 @@ class ConfigDialog(Toplevel):
         # --- Botón Limpiar Archivos .bak (visibilidad controlada) ---
         self.clean_bak_files_frame = ttk.Frame(parent_frame)
         self.clean_bak_files_frame.grid(row=row_idx, column=0, columnspan=2, pady=(0,10), sticky="ew", padx=(20,0)) # Indent, remove top padding, add bottom
-        self.clean_bak_files_frame.columnconfigure(0, weight=1) # Button expands
+        # self.clean_bak_files_frame.columnconfigure(0, weight=1) # Removed to prevent button expansion
 
         clean_bak_button = ttk.Button(self.clean_bak_files_frame, text="Limpiar Archivos .bak Residuales", command=self._clean_bak_files_action, style="Celeste.TButton")
-        clean_bak_button.grid(row=0, column=0, sticky="ew", padx=(0,5), pady=2)
+        clean_bak_button.grid(row=0, column=0, sticky="w", padx=(0,5), pady=2) # Changed sticky to "w"
         clean_bak_long_text = ("Elimina los archivos y carpetas con extensión '.bak' de la raíz del proyecto.\n"
                             "Estos archivos se crean como medida de seguridad durante las restauraciones.\n"
                             "Es seguro eliminarlos si la aplicación funciona correctamente y no necesita revertir una restauración fallida.")
