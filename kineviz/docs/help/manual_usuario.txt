@@ -1,5 +1,5 @@
 # MANUAL DE USUARIO KINEVIZ
-**Versión: 1.2** | **Actualizado: 2025-06-18**
+**Versión: 1.3** | **Actualizado: 2025-06-18**
 
 ---
 
@@ -51,11 +51,6 @@ KineViz aborda la necesidad de un sistema unificado que permita pasar de la reco
 2. **Notas Emergentes**: Al posicionar el cursor sobre las diferentes opciones del programa, aparecerá una breve explicación.
     ⚠️ **Nota**: Esta función viene activada por defecto en la configuración del sistema.
 3. **DEMO**: Video introductorio que muestra algunos flujos de trabajo. Puedes acceder directamente desde el programa.
-4. **Video detallado**: Tutorial detallado sobre el funcionamiento del programa, disponible en: "youtu.be/7p5OsPdvgy8"
-    🔒 **Nota:** Es un video privado, requiere solicitar permiso para poder visualizar.
-
-**Versión del Manual: 1.0**
-**Fecha de Última Actualización: 2025-06-18**
 
 ---
 
