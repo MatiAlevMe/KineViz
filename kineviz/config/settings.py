@@ -54,7 +54,41 @@ class AppSettings:
         # DESCRIPTOR_ALIASES ya no se gestiona aquí
     }
 
-    VALID_LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"]
+# Define VALID_LOG_LEVELS at the module level for easier import
+VALID_LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"]
+
+class AppSettings:
+    """Gestiona la carga y guardado de configuraciones desde config.ini."""
+
+    DEFAULT_SETTINGS = {
+        'SETTINGS': {
+            'estudios_por_pagina': '10',
+            'files_per_page': '10',
+            'analysis_items_per_page': '10',
+            'discrete_tables_per_page': '10',
+            'font_scale': '1.0',
+            'theme': 'Claro', # Changed default
+            'show_factory_reset_button': 'False',
+            'enable_hover_tooltips': 'True', # Changed default
+            'max_automatic_backups': '10', # Changed default
+            'max_manual_backups': '10',     # Changed default
+            'automatic_backup_cooldown_seconds': '60',
+            'backups_per_page': '10',
+            'enable_automatic_backups': 'True', # Changed default
+            'enable_manual_backups': 'True',     # Changed default
+            'show_advanced_backup_options': 'False', # New
+            # 'backup_before_restore' is replaced by enable_pre_restore_backups
+            'enable_pre_restore_backups': 'True',    # New, for pre-restore backups
+            'max_pre_restore_backups': '10',         # New, max pre-restore backups
+            'pre_restore_backup_cooldown_seconds': '60', # New, cooldown for pre-restore
+            'enable_undo_delete': 'False', # New, for undo delete functionality
+            'undo_cache_timeout_seconds': '300', # New, 5 minutes timeout for undo cache
+            'log_level': 'INFO' # New, for logging level (DEBUG, INFO, WARNING, ERROR)
+        }
+        # DESCRIPTOR_ALIASES ya no se gestiona aquí
+    }
+
+    # VALID_LOG_LEVELS was moved to module level
 
     def __init__(self, config_filename='config.ini'):
         """
