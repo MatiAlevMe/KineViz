@@ -643,7 +643,7 @@ class ConfigDialog(Toplevel):
         self.clear_undo_cache_frame = ttk.Frame(parent_frame)
         self.clear_undo_cache_frame.grid(row=row_idx, column=0, columnspan=2, pady=(0,10), sticky="ew", padx=(20,0)) # Indent
 
-        clear_undo_cache_button = ttk.Button(self.clear_undo_cache_frame, text="Limpiar caché de Deshacer", command=self._clear_undo_cache_action)
+        clear_undo_cache_button = ttk.Button(self.clear_undo_cache_frame, text="Limpiar caché de deshacer", command=self._clear_undo_cache_action)
         clear_undo_cache_button.grid(row=0, column=0, sticky="w", padx=(0,5), pady=2)
         clear_undo_cache_long_text = ("Elimina el contenido de la carpeta de caché de 'Deshacer Eliminación'.\n"
                                       "Esto borrará cualquier estado guardado para deshacer la última operación de eliminación.\n"
@@ -659,7 +659,7 @@ class ConfigDialog(Toplevel):
         self.open_undo_cache_dir_frame = ttk.Frame(parent_frame)
         self.open_undo_cache_dir_frame.grid(row=row_idx, column=0, columnspan=2, pady=(0,10), sticky="ew", padx=(20,0)) # Indent
 
-        open_undo_cache_dir_button = ttk.Button(self.open_undo_cache_dir_frame, text="Abrir carpeta de caché de Deshacer", command=self._open_undo_cache_dir_action)
+        open_undo_cache_dir_button = ttk.Button(self.open_undo_cache_dir_frame, text="Abrir carpeta de caché de deshacer", command=self._open_undo_cache_dir_action)
         open_undo_cache_dir_button.grid(row=0, column=0, sticky="w", padx=(0,5), pady=2)
         open_undo_cache_dir_long_text = "Abre la carpeta donde se almacenan temporalmente los datos para la función 'Deshacer Eliminación'."
         open_undo_cache_dir_short_text = "Abrir carpeta de caché de Deshacer."
