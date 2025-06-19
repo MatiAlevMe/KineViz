@@ -10,6 +10,10 @@ from kineviz.utils import logger as logger_utils # Import the logger module for 
 from kineviz.config.settings import AppSettings, VALID_LOG_LEVELS # Import VALID_LOG_LEVELS
 from kineviz.ui.utils.style import get_scaled_font, DEFAULT_FONT_SIZE # For direct font scaling
 import logging # Import logging
+import os # For opening files
+import sys # For platform check
+import subprocess # For opening files
+from pathlib import Path # For path operations, though settings.config_path is already a Path
 
 logger = logging.getLogger(__name__) # Add logger for this module
 
@@ -573,7 +577,7 @@ class ConfigDialog(Toplevel):
 
         # --- Export Logs Button (conditionally visible) ---
         self.export_logs_button_frame = ttk.Frame(parent_frame) # Outer frame for visibility
-        self.export_logs_button_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", pady=(5,10), padx=(20,0)) # Indent, add bottom padding
+        self.export_logs_button_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", pady=(5,5), padx=(20,0)) # Indent, reduced bottom padding
         # self.export_logs_button_frame.columnconfigure(0, weight=1) # Removed to prevent button expansion
 
         export_logs_btn = ttk.Button(self.export_logs_button_frame, text="Exportar logs...", command=lambda: logger_utils.export_logs(self))
@@ -584,6 +588,20 @@ class ConfigDialog(Toplevel):
                                           command=lambda: self._show_input_help("Ayuda: Exportar Logs", export_logs_long_text))
         export_logs_help_btn.grid(row=0, column=1, sticky="e", padx=(0,5), pady=2)
         Tooltip(export_logs_help_btn, text=export_logs_long_text, short_text=export_logs_short_text, enabled=self.settings.enable_hover_tooltips)
+        row_idx += 1
+
+        # --- Open config.ini Button (conditionally visible) ---
+        self.open_config_button_frame = ttk.Frame(parent_frame) # Outer frame for visibility
+        self.open_config_button_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", pady=(5,10), padx=(20,0)) # Indent, add bottom padding
+
+        open_config_btn = ttk.Button(self.open_config_button_frame, text="Abrir config.ini", command=self._open_config_ini_action)
+        open_config_btn.grid(row=0, column=0, sticky="w", padx=(0,5), pady=2)
+        open_config_long_text = "Abre el archivo de configuración 'config.ini' en el editor de texto predeterminado. Útil para diagnóstico."
+        open_config_short_text = "Abrir config.ini."
+        open_config_help_btn = ttk.Button(self.open_config_button_frame, text="?", width=3, style="Help.TButton",
+                                          command=lambda: self._show_input_help("Ayuda: Abrir config.ini", open_config_long_text))
+        open_config_help_btn.grid(row=0, column=1, sticky="e", padx=(0,5), pady=2)
+        Tooltip(open_config_help_btn, text=open_config_long_text, short_text=open_config_short_text, enabled=self.settings.enable_hover_tooltips)
         row_idx += 1
         
         # --- Switch para mostrar opciones avanzadas de backup ---
@@ -745,7 +763,8 @@ class ConfigDialog(Toplevel):
         widgets_to_toggle = [
             getattr(self, 'log_level_outer_frame', None),
             getattr(self, 'open_logs_button_frame', None),
-            getattr(self, 'export_logs_button_frame', None)
+            getattr(self, 'export_logs_button_frame', None),
+            getattr(self, 'open_config_button_frame', None) # Add new frame here
         ]
         for widget in widgets_to_toggle:
             if widget: # Check if attribute exists
@@ -812,6 +831,34 @@ class ConfigDialog(Toplevel):
                 logger.error(f"Error durante la limpieza de archivos .bak: {e}", exc_info=True)
                 messagebox.showerror("Error", f"Ocurrió un error al limpiar los archivos .bak:\n{e}", parent=self)
 
+    def _open_config_ini_action(self):
+        """Abre el archivo config.ini con la aplicación predeterminada."""
+        config_file_path = self.settings.config_path
+        if not config_file_path.exists():
+            messagebox.showerror("Error", f"El archivo de configuración no se encontró en:\n{config_file_path}", parent=self)
+            logger.error(f"Archivo config.ini no encontrado en {config_file_path}")
+            return
+
+        try:
+            logger.info(f"Intentando abrir archivo config.ini: {config_file_path}")
+            if sys.platform == "win32":
+                os.startfile(config_file_path)
+            elif sys.platform == "darwin":  # macOS
+                subprocess.run(["open", config_file_path], check=True)
+            else:  # linux variants
+                subprocess.run(["xdg-open", config_file_path], check=True)
+        except FileNotFoundError:
+             messagebox.showerror("Error", f"No se pudo encontrar el archivo config.ini:\n'{config_file_path}'", parent=self)
+             logger.error(f"Archivo config.ini no encontrado al intentar abrir: {config_file_path}", exc_info=True)
+        except PermissionError:
+             messagebox.showerror("Error", f"No tiene permisos para acceder al archivo config.ini:\n'{config_file_path}'", parent=self)
+             logger.error(f"Permiso denegado al abrir config.ini: {config_file_path}", exc_info=True)
+        except subprocess.CalledProcessError as e:
+             logger.error(f"Comando para abrir config.ini {config_file_path} falló: {e}", exc_info=True)
+             messagebox.showerror("Error", f"El comando para abrir config.ini falló:\n{e}", parent=self)
+        except Exception as e:
+            logger.error(f"Error inesperado al abrir config.ini {config_file_path}: {e}", exc_info=True)
+            messagebox.showerror("Error", f"No se pudo abrir config.ini '{config_file_path}':\n{str(e)}", parent=self)
 
     def validate_input(self) -> bool:
         """Valida que los valores ingresados sean enteros positivos."""
