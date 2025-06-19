@@ -53,8 +53,9 @@ a = Analysis(
         'reportlab', # Si se usa para generar PDFs
         'PyPDF2', # Si se usa para manipular PDFs
         'dateutil', # A menudo usado por pandas
-        'pytz' # A menudo usado por pandas
-        'scikit-posthocs'
+        'pytz', # A menudo usado por pandas
+        'scikit-posthocs',
+        'spm1d' # Dependency from requirements.txt
     ],
     hookspath=[],
     # Configuración específica para hooks
