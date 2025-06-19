@@ -6,10 +6,11 @@ import logging # For logging
 import time # For sleep in dummy test
 
 # Import backup_manager functions directly for type hinting and direct calls
-from kineviz.core import backup_manager 
+from kineviz.core import backup_manager
 from kineviz.config.settings import AppSettings # For AppSettings type hint
 from kineviz.ui.widgets.tooltip import Tooltip
 from kineviz.ui.utils.style import get_scaled_font, DEFAULT_FONT_SIZE # For direct font scaling
+from kineviz.utils.paths import get_application_base_dir # Import for base directory
 
 # Setup logger for this module if not configured globally for UI
 logger = logging.getLogger(__name__)
@@ -497,7 +498,8 @@ class BackupRestoreDialog(Toplevel):
                                    parent=self)
             return
 
-        full_backup_path = backup_manager.get_project_root() / backup_manager.BACKUPS_DIR_NAME / backup_type_internal / backup_filename
+        app_base_dir = get_application_base_dir()
+        full_backup_path = app_base_dir / backup_manager.BACKUPS_DIR_NAME / backup_type_internal / backup_filename
 
         if not messagebox.askokcancel("Confirmar Restauración", 
                                      f"¿Está seguro de que desea restaurar el sistema desde la copia '{backup_filename}'?\n\n"
@@ -573,7 +575,16 @@ class BackupRestoreDialog(Toplevel):
         backup_filename = selected_values[3] # Filename is at index 3
         
         # Determine internal backup type string (e.g., "automatic" or "manual")
-        backup_type_internal = backup_manager.AUTOMATIC_BACKUPS_SUBDIR if backup_type_display == "Automática" else backup_manager.MANUAL_BACKUPS_SUBDIR
+        if backup_type_display == "Automática":
+            backup_type_internal = backup_manager.AUTOMATIC_BACKUPS_SUBDIR
+        elif backup_type_display == "Manual":
+            backup_type_internal = backup_manager.MANUAL_BACKUPS_SUBDIR
+        elif backup_type_display == "Respaldo":
+            backup_type_internal = backup_manager.PRE_RESTORE_BACKUP_SUBDIR
+        else:
+            logger.error(f"Unknown backup_type_display for alias assignment: {backup_type_display}")
+            messagebox.showerror("Error", f"Tipo de copia de seguridad desconocido: {backup_type_display}", parent=self)
+            return
 
         new_alias = simpledialog.askstring("Asignar/Editar Alias", 
                                            f"Ingrese un nuevo alias para la copia '{backup_filename}' ({backup_type_display}):\n(Deje vacío para quitar el alias actual)",
