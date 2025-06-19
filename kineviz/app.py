@@ -21,11 +21,11 @@ try:
     # Initialize settings just to get the log level
     # This will also ensure config.ini is created with defaults if it doesn't exist
     temp_settings = AppSettings()
-    initial_log_level = temp_settings.log_level
+    initial_log_level = temp_settings.log_level # Default is now WARNING
 except Exception as e:
     # Fallback if AppSettings fails critically before logging is set up
-    print(f"Error initializing AppSettings for logging: {e}. Defaulting log level to INFO.", file=sys.stderr)
-    initial_log_level = "INFO"
+    print(f"Error initializing AppSettings for logging: {e}. Defaulting log level to WARNING.", file=sys.stderr)
+    initial_log_level = "WARNING" # Fallback to WARNING
 
 setup_logging_system(log_level_name=initial_log_level)
 logger = logging.getLogger(__name__) # Obtener logger para este módulo
