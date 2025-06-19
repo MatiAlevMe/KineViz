@@ -515,7 +515,7 @@ class ConfigDialog(Toplevel):
         show_support_opts_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10,5), sticky="w")
         show_support_opts_cb = ttk.Checkbutton(
             show_support_opts_frame,
-            text="Mostrar Opciones de Soporte Técnico",
+            text="Mostrar opciones avanzadas de soporte técnico",
             variable=self.var_show_support_options,
             command=self._toggle_support_options_visibility
         )
@@ -532,7 +532,7 @@ class ConfigDialog(Toplevel):
         self.log_level_outer_frame = ttk.Frame(parent_frame) # Outer frame for visibility control
         self.log_level_outer_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", pady=(0,5), padx=(20,0)) # Indent
         
-        ttk.Label(self.log_level_outer_frame, text="Nivel de Logging:").grid(row=0, column=0, sticky="w", padx=(0,5), pady=2)
+        ttk.Label(self.log_level_outer_frame, text="Nivel de logging:").grid(row=0, column=0, sticky="w", padx=(0,5), pady=2)
         
         log_level_combo_frame = ttk.Frame(self.log_level_outer_frame) # Frame for combobox and help button
         log_level_combo_frame.grid(row=0, column=1, sticky="ew", padx=(0,5), pady=2)
@@ -561,7 +561,7 @@ class ConfigDialog(Toplevel):
         self.open_logs_button_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", pady=(5,0), padx=(20,0)) # Indent
         # self.open_logs_button_frame.columnconfigure(0, weight=1) # Removed to prevent button expansion
 
-        open_logs_btn = ttk.Button(self.open_logs_button_frame, text="Abrir Carpeta de Logs", command=logger_utils.open_logs_folder, style="Celeste.TButton")
+        open_logs_btn = ttk.Button(self.open_logs_button_frame, text="Abrir carpeta de logs", command=logger_utils.open_logs_folder)
         open_logs_btn.grid(row=0, column=0, sticky="w", padx=(0,5), pady=2) # Changed sticky to "w"
         open_logs_long_text = "Abre la carpeta donde se guardan los archivos de log de KineViz. Estos archivos son útiles para diagnosticar problemas."
         open_logs_short_text = "Abrir carpeta de logs."
@@ -576,7 +576,7 @@ class ConfigDialog(Toplevel):
         self.export_logs_button_frame.grid(row=row_idx, column=0, columnspan=2, sticky="ew", pady=(5,10), padx=(20,0)) # Indent, add bottom padding
         # self.export_logs_button_frame.columnconfigure(0, weight=1) # Removed to prevent button expansion
 
-        export_logs_btn = ttk.Button(self.export_logs_button_frame, text="Exportar Logs...", command=lambda: logger_utils.export_logs(self), style="Celeste.TButton")
+        export_logs_btn = ttk.Button(self.export_logs_button_frame, text="Exportar logs...", command=lambda: logger_utils.export_logs(self))
         export_logs_btn.grid(row=0, column=0, sticky="w", padx=(0,5), pady=2) # Changed sticky to "w"
         export_logs_long_text = "Comprime la carpeta de logs en un archivo .zip. Esto es útil para enviar los logs al equipo de soporte si se encuentra un problema."
         export_logs_short_text = "Exportar logs como .zip."
@@ -609,7 +609,7 @@ class ConfigDialog(Toplevel):
         self.clean_bak_files_frame.grid(row=row_idx, column=0, columnspan=2, pady=(0,10), sticky="ew", padx=(20,0)) # Indent, remove top padding, add bottom
         # self.clean_bak_files_frame.columnconfigure(0, weight=1) # Removed to prevent button expansion
 
-        clean_bak_button = ttk.Button(self.clean_bak_files_frame, text="Limpiar Archivos .bak Residuales", command=self._clean_bak_files_action, style="Celeste.TButton")
+        clean_bak_button = ttk.Button(self.clean_bak_files_frame, text="Limpiar archivos .bak residuales", command=self._clean_bak_files_action)
         clean_bak_button.grid(row=0, column=0, sticky="w", padx=(0,5), pady=2) # Changed sticky to "w"
         clean_bak_long_text = ("Elimina los archivos y carpetas con extensión '.bak' de la raíz del proyecto.\n"
                             "Estos archivos se crean como medida de seguridad durante las restauraciones.\n"
@@ -626,7 +626,7 @@ class ConfigDialog(Toplevel):
         enable_undo_delete_frame.grid(row=row_idx, column=0, columnspan=2, pady=(5, 5), sticky="w") # Adjusted padding
         enable_undo_delete_cb = ttk.Checkbutton(
             enable_undo_delete_frame,
-            text="Habilitar 'Deshacer Eliminación' (Experimental)",
+            text="Habilitar 'deshacer eliminación' (experimental)",
             variable=self.var_enable_undo_delete,
             command=self._toggle_undo_options_visibility # Add command
         )
@@ -682,7 +682,7 @@ class ConfigDialog(Toplevel):
         show_factory_reset_frame.grid(row=row_idx, column=0, columnspan=2, pady=(10,5), sticky="w")
         show_factory_reset_cb = ttk.Checkbutton(
             show_factory_reset_frame,
-            text="Mostrar opción de Restauración de Fábrica (Avanzado)",
+            text="Mostrar opción de restauración de fábrica (avanzado)",
             variable=self.var_show_factory_reset,
             command=self._toggle_factory_reset_visibility
         )
