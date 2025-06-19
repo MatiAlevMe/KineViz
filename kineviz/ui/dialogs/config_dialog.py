@@ -648,7 +648,7 @@ class ConfigDialog(Toplevel):
         clear_undo_cache_long_text = ("Elimina el contenido de la carpeta de caché de 'Deshacer Eliminación'.\n"
                                       "Esto borrará cualquier estado guardado para deshacer la última operación de eliminación.\n"
                                       "Es seguro hacerlo si no necesita deshacer ninguna acción reciente o si desea liberar espacio.")
-        clear_undo_cache_short_text = "Eliminar caché de Deshacer."
+        clear_undo_cache_short_text = "Eliminar caché de deshacer."
         clear_undo_cache_help_btn = ttk.Button(self.clear_undo_cache_frame, text="?", width=3, style="Help.TButton",
                                                command=lambda: self._show_input_help("Ayuda: Limpiar Caché de Deshacer", clear_undo_cache_long_text))
         clear_undo_cache_help_btn.grid(row=0, column=1, sticky="e", padx=(0,5), pady=2)
