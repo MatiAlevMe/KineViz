@@ -12,7 +12,8 @@ Antes de ejecutar el programa, necesitarás:
 
 Librerías Necesarias
 
-El programa depende de las siguientes librerías:
+El programa depende de varias librerías de Python para su correcto funcionamiento. La lista completa y las versiones específicas se encuentran en el archivo `requirements.txt`.
+Algunas de las librerías clave incluyen:
 
     numpy
     pandas
@@ -22,17 +23,31 @@ El programa depende de las siguientes librerías:
     plotly (para gráficos interactivos)
     tkinter (para la interfaz gráfica de usuario)
 
+Se recomienda encarecidamente instalar todas las dependencias utilizando el archivo `requirements.txt` para asegurar la compatibilidad.
+
+Estructura del Proyecto
+
+El proyecto KineViz está organizado en los siguientes módulos principales:
+
+- `kineviz/ui/main_window.py`: Ventana principal y lógica central de la interfaz de usuario.
+- `kineviz/ui/views/landing_page.py`: Página de inicio de la aplicación.
+- `kineviz/core/services/study_service.py`: Lógica central para la gestión de estudios (creación, consulta, etc.).
+- `kineviz/core/services/file_service.py`: Lógica central para el manejo de archivos asociados a los estudios.
+- `kineviz/core/services/analysis_service.py`: Lógica central para las funcionalidades de análisis de datos.
+- `kineviz/ui/views/`: Contiene las diferentes vistas de la aplicación (ej. listado de estudios, vista detallada de un estudio, vista de análisis discreto).
+- `kineviz/ui/dialogs/`: Diálogos para interacciones específicas con el usuario (ej. configuración de la aplicación, configuración de análisis, gestión de copias de seguridad).
+- `kineviz/ui/widgets/`: Componentes reutilizables de la interfaz de usuario (ej. navegador de archivos, visualización de gráficos, tooltips).
+- `kineviz/config/settings.py`: Gestión de la carga y guardado de configuraciones de la aplicación desde `config.ini`.
+- `kineviz/core/backup_manager.py`: Lógica para la creación y gestión de copias de seguridad.
+- `kineviz/core/undo_manager.py`: Gestión de la funcionalidad de deshacer cambios en la aplicación.
+- `kineviz/database/repositories.py`: Define la interacción con la base de datos para la persistencia de datos de estudios.
+- `kineviz/utils/logger.py`: Configuración del sistema de logging para el registro de eventos y errores.
+
 Puedes instalar todas las librerías necesarias ejecutando el siguiente comando:
 
 bash
 
 pip install -r requirements.txt
-
-Alternativamente, puedes instalar cada librería manualmente utilizando pip:
-
-bash
-
-pip install numpy pandas matplotlib scipy seaborn plotly
 
 Instrucciones para Windows 10
 Paso 1: Instalar Python
@@ -140,6 +155,6 @@ Solución de Problemas
 
 Licencia
 
-Este proyecto está bajo la Licencia {rellenar}.
+Este proyecto está bajo la Licencia de uso personal de Matías Alevropulos.
 
 Para más información o consultas, contacta con el desarrollador en matias.alevropulos.e@mail.pucv.cl

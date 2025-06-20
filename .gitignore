@@ -3,9 +3,18 @@ __pycache__/
 *.pyc
 .DS_Store
 
+## KineViz - Personal Folders & Files
 estudios/
 recursos/
+backups/
+*.bak
 .*
-*.docx
-*.pdf
-kineviz.db
+
+## Build & Dist KineViz (Windows y Mac OS)
+build/
+dist/
+
+## If public official version
+##ROADMAP.md
+##kineviz.spec
+##logs/
