@@ -15,6 +15,6 @@ build/
 dist/
 
 ## For official version
-ROADMAP.md
+##ROADMAP.md
 ##kineviz.spec
 logs/
