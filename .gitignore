@@ -14,7 +14,7 @@ backups/
 build/
 dist/
 
-## For official version
+## If public official version
 ##ROADMAP.md
 ##kineviz.spec
-logs/
+##logs/
