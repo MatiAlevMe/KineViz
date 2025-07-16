@@ -15,6 +15,7 @@ build/
 dist/
 
 ## If public official version
-##ROADMAP.md
-##kineviz.spec
-##logs/
+ROADMAP.md
+kineviz.spec
+kineviz.db
+logs/
