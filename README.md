@@ -80,7 +80,7 @@ Paso 2: Descargar el Programa
 
     bash
 
-git clone https://github.com/MatiAlevMe/KineViz-public.git
+git clone https://github.com/MatiAlevMe/KineViz.git
 
 Navega a la carpeta donde guardaste el programa:
 
@@ -129,7 +129,7 @@ Paso 2: Descargar el Programa
 
     bash
 
-git clone https://github.com/MatiAlevMe/KineViz-public.git
+git clone https://github.com/MatiAlevMe/KineViz.git
 
 Navega a la carpeta donde guardaste el programa:
 
