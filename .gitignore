@@ -12,7 +12,6 @@ backups/
 
 ## Build & Dist KineViz (Windows y Mac OS)
 build/
-dist/
 
 ## If public official version
 ROADMAP.md
