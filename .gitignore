@@ -8,7 +8,6 @@ estudios/
 recursos/
 backups/
 *.bak
-.*
 
 ## Build & Dist KineViz (Windows y Mac OS)
 build/
