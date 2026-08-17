@@ -1,6 +1,6 @@
 # KineViz: Análisis, Optimización y Visualización de Datos para Estudios Kinesiológicos
 
-<video src="demo/DEMO.mp4" controls width="100%"></video>
+https://github.com/user-attachments/assets/8f42d280-e442-4c3c-9e67-87c19cef1d0e
 
 **Introducción**
 
