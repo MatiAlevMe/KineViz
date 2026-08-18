@@ -2,7 +2,7 @@
 
 https://github.com/user-attachments/assets/8f42d280-e442-4c3c-9e67-87c19cef1d0e
 
-**Introducción**
+## Introducción
 
 **KineViz** es una aplicación de escritorio diseñada para la gestión integral y el análisis avanzado de datos provenientes de estudios kinesiológicos. Es una herramienta robusta para investigadores, profesionales de la kinesiología, fisioterapeutas y estudiantes que necesiten manejar eficientemente datos de movimiento humano y biomecánica.
 
@@ -201,6 +201,8 @@ Paso 4: Ejecutar el Programa
 
     Problemas con la Ruta de Python: En Windows, si Python no es reconocido, asegúrate de haber agregado Python al PATH del sistema durante la instalación.
 
+---
+
 ## Empaquetado con PyInstaller
 
 Para generar el ejecutable de KineViz usando el archivo de especificación `kineviz.spec`, sigue estos pasos:
@@ -253,9 +255,15 @@ Aunque los pasos anteriores están centrados en Windows, el proceso en macOS es 
 
 ---
 
-**Programación y Compatibilidad:**
+## Programación y Compatibilidad
 
 KineViz está programado principalmente en **Python** y hace uso de diversas bibliotecas de código abierto para el procesamiento, análisis y visualización de datos biomecánicos. Compatible con sistemas **Windows 10** (Versión pública, empaquetada) y **macOS** (Versión privada, desarrollo).
+
+---
+
+## 🔗 Enlaces de interés
+
+- 🎬 Demo: https://youtu.be/jRT3wTW1zlA
 
 ---
 
