@@ -1,0 +1,429 @@
+# MANUAL DE USUARIO KINEVIZ
+**Versión: 1.3** | **Actualizado: 2025-06-18**
+
+---
+
+## Tabla de Contenidos
+1.  [Introducción](#1-introducción)
+    1.1. [¿Qué es KineViz?](#11-qué-es-kineviz)
+    1.2. [¿Para Quién es KineViz?](#12-para-quién-es-kineviz)
+    1.3. [Necesidad que Cubre](#13-necesidad-que-cubre)
+    1.4. [Recursos adicionales de ayuda](#14-recursos-adicionales-de-ayuda)
+2.  [Objetivos del Software](#2-objetivos-del-software)
+3.  [Flujos Principales de Trabajo](#3-flujos-principales-de-trabajo)
+    3.1. [Creación de un Nuevo Estudio](#31-creación-de-un-nuevo-estudio)
+    3.2. [Adición de Archivos a un Estudio](#32-adición-de-archivos-a-un-estudio)
+    3.3. [Realización de un Análisis Discreto](#33-realización-de-un-análisis-discreto)
+    3.4. [Realización de un Análisis Continuo (SPM)](#34-realización-de-un-análisis-continuo-spm)
+4.  [Guía Detallada de la Interfaz y Funcionalidades](#4-guía-detallada-de-la-interfaz-y-funcionalidades)
+    4.1. [Ventana Principal (Lista de Estudios)](#41-ventana-principal-lista-de-estudios)
+    4.2. [Diálogo: Crear/Editar Estudio](#42-diálogo-creareditar-estudio)
+    4.3. [Vista de Estudio](#43-vista-de-estudio)
+    4.4. [Diálogo: Agregar Archivos](#44-diálogo-agregar-archivos)
+    4.5. [Diálogo: Gestionar Alias de Sub-valores](#45-diálogo-gestionar-alias-de-sub-valores)
+    4.6. [Análisis Discreto](#46-análisis-discreto)
+    4.7. [Análisis Continuo (SPM)](#47-análisis-continuo-spm)
+    4.8. [Diálogo: Configuración de la Aplicación](#48-diálogo-configuración-de-la-aplicación)
+    4.9. [Diálogo: Gestión de Copias de Seguridad y Restauración](#49-diálogo-gestión-de-copias-de-seguridad-y-restauración)
+    4.10. [Funcionalidad "Deshacer Eliminación"](#410-funcionalidad-deshacer-eliminación)
+5.  [Notas Importantes y Consejos](#5-notas-importantes-y-consejos)
+    5.1. [Formato de Archivos de Entrada](#51-formato-de-archivos-de-entrada)
+    5.2. [Manejo del Valor "Nulo"](#52-manejo-del-valor-nulo)
+    5.3. [Importancia del Orden de las VIs](#53-importancia-del-orden-de-las-vis)
+6.  [Glosario](#6-glosario)
+7.  [Solución de Problemas Comunes (FAQ)](#7-solución-de-problemas-comunes-faq)
+
+---
+
+## 1. Introducción
+
+### 1.1. ¿Qué es KineViz?
+KineViz es una aplicación de escritorio diseñada para la gestión integral y el análisis avanzado de datos provenientes de estudios kinesiológicos. Facilita la organización de la información, el procesamiento de datos crudos y la ejecución de análisis estadísticos, tanto discretos como continuos (Análisis Estadístico Paramétrico no Multivariado - SPM).
+
+### 1.2. ¿Para Quién es KineViz?
+Este software está dirigido a investigadores, profesionales de la kinesiología, fisioterapeutas, y estudiantes que necesiten una herramienta robusta para manejar datos de movimiento humano, biomecánica, y otras áreas relacionadas.
+
+### 1.3. Necesidad que Cubre
+KineViz aborda la necesidad de un sistema unificado que permita pasar de la recolección de datos crudos a la obtención de resultados analíticos y visualizaciones significativas de manera eficiente y organizada, reduciendo la complejidad de manejar múltiples herramientas y formatos de archivo.
+
+### 1.4. Recursos adicionales de ayuda
+1. **Botón "?"**: Encontrarás ayuda contextual a lo largo del programa mediante botones con el símbolo "?".
+2. **Notas Emergentes**: Al posicionar el cursor sobre las diferentes opciones del programa, aparecerá una breve explicación.
+    ⚠️ **Nota**: Esta función viene activada por defecto en la configuración del sistema.
+3. **DEMO**: Video introductorio que muestra algunos flujos de trabajo. Puedes acceder directamente desde el programa.
+
+---
+
+## 2. Objetivos del Software
+*   **Centralizar la Gestión de Estudios**: Proveer un único lugar para crear, organizar y almacenar estudios kinesiológicos.
+*   **Facilitar el Procesamiento de Datos**: Automatizar la lectura, validación y estandarización de archivos de datos (TXT, CSV).
+*   **Potenciar el Análisis Estadístico**: Ofrecer herramientas para análisis discretos (comparación de medias, boxplots) y análisis continuos de series temporales (SPM).
+*   **Mejorar la Visualización de Resultados**: Generar gráficos informativos y personalizables.
+*   **Asegurar la Integridad de los Datos**: Implementar mecanismos de validación, copias de seguridad y restauración.
+
+---
+
+## 3. Flujos Principales de Trabajo
+
+### 3.1. Creación de un Nuevo Estudio
+1.  Desde la Ventana Principal, hacer clic en "Crear Estudio".
+2.  Completar el formulario del Diálogo "Nuevo Estudio" (Ver Sección [4.2](#42-diálogo-creareditar-estudio)), definiendo:
+    *   Nombre del estudio.
+    *   Cantidad de participantes.
+    *   Cantidad de intentos por prueba.
+    *   Variables Independientes (VIs) y sus sub-valores.
+3.  Guardar el estudio. El sistema creará la estructura de carpetas necesaria.
+
+### 3.2. Adición de Archivos a un Estudio
+1.  En la Ventana Principal, seleccionar un estudio y hacer clic en "Ver".
+2.  En la Vista de Estudio (Ver Sección [4.3](#43-vista-de-estudio)), hacer clic en "Agregar Archivo(s)".
+3.  Utilizar el Diálogo "Agregar Archivos" (Ver Sección [4.4](#44-diálogo-agregar-archivos)) para seleccionar los archivos de datos.
+4.  Los archivos serán validados según el formato de nombre y las VIs definidas, y luego procesados y almacenados.
+
+### 3.3. Realización de un Análisis Discreto
+1.  Desde la Vista de Estudio, acceder a "Análisis Discreto".
+2.  En la Vista de Análisis Discreto (Ver Sección [4.6.1](#461-vista-de-tablas-de-resumen-discreteanalysisview)), generar o actualizar las tablas de resumen.
+3.  Abrir el "Gestor de Análisis Discretos".
+4.  Configurar un nuevo análisis, seleccionando tipo de dato, cálculo, variable, grupos a comparar y supuestos estadísticos.
+5.  Ejecutar el análisis para obtener resultados estadísticos y gráficos.
+
+### 3.4. Realización de un Análisis Continuo (SPM)
+1.  Desde la Vista de Estudio, acceder a "Análisis Continuo".
+2.  Abrir el "Gestor de Análisis Continuos".
+3.  Configurar un nuevo análisis continuo (Ver Sección [4.7.1](#471-diálogo-configurar-análisis-continuo-continuousanalysisconfigdialog)), seleccionando tipo de dato, variable, grupos a comparar y opciones de visualización.
+4.  Ejecutar el análisis para obtener la curva SPM y los clusters significativos.
+
+---
+
+## 4. Guía Detallada de la Interfaz y Funcionalidades
+
+### 4.1. Ventana Principal (Lista de Estudios)
+Esta es la primera ventana que se muestra al iniciar KineViz (si ya existen estudios). Presenta una lista paginada de todos los estudios creados.
+
+*   **Lista de Estudios**: Muestra columnas como "Nombre del Estudio", "Fecha de Creación", "Cantidad de Participantes".
+*   **Botones por Estudio**:
+    *   **Ver**: Abre la Vista de Estudio (Ver Sección [4.3](#43-vista-de-estudio)) para el estudio seleccionado.
+    *   **Editar**: Abre el Diálogo "Editar Estudio" (Ver Sección [4.2](#42-diálogo-creareditar-estudio)) para modificar los metadatos del estudio.
+    *   **Eliminar**: Elimina el estudio seleccionado (requiere confirmación).
+    *   **Chincheta (📌)**: Permite fijar/desfijar estudios para que aparezcan siempre al inicio de la lista.
+*   **Botones Generales**:
+    *   **Crear Estudio**: Abre el Diálogo "Nuevo Estudio" (Ver Sección [4.2](#42-diálogo-creareditar-estudio)).
+    *   **Configuración (⚙️)**: Abre el Diálogo de Configuración de la Aplicación (Ver Sección [4.8](#48-diálogo-configuración-de-la-aplicación)).
+    *   **Ayuda (?)**: Abre este manual de usuario.
+*   **Paginación**: Controles para navegar entre páginas si hay muchos estudios.
+*   **Búsqueda**: Campo para filtrar estudios por nombre.
+
+### 4.2. Diálogo: Crear/Editar Estudio
+Este diálogo se utiliza para definir las características fundamentales de un estudio.
+
+#### 4.2.1. Campos Fijos
+*   **Nombre del Estudio**: Nombre único y descriptivo para el estudio (mínimo 3 caracteres).
+*   **Cantidad de Participantes**: Número entero positivo que representa la cantidad máxima de participantes previstos para el estudio.
+*   **Cantidad de Intento(s) de Prueba**: Número entero positivo que representa la cantidad máxima de intentos por cada combinación de condiciones para cada participante.
+
+#### 4.2.2. Variable(s) Independientes (VIs) y Sub-valores
+
+**¿Qué son?**
+*   **Variable Independiente (VI):** Una categoría o factor que se manipula o varía en el estudio para observar su efecto (ej: "Tipo de Salto", "Condición del Sujeto", "Grupo de Edad").
+*   **Sub-valor (Descriptor):** Un nivel o categoría específica dentro de una Variable Independiente (ej: para la VI "Tipo de Salto", los sub-valores podrían ser "CMJ", "SJ", "DropJump").
+
+**¿Cómo usarlos?**
+1.  **Añadir VI (Solo en modo Creación):**
+    *   Hacer clic en "+ Añadir Variable Independiente" para crear una nueva categoría.
+    *   Asignar un nombre claro y conciso a la VI (ej: "Condicion", "Grupo", "TipoSalto"). Evitar espacios y caracteres especiales.
+2.  **Añadir Sub-valores (Solo en modo Creación):**
+    *   Para cada VI, hacer clic en el icono `+` junto a su nombre para añadir sus sub-valores.
+    *   Cada VI debe tener **al menos dos** sub-valores.
+    *   Los nombres de VI y Sub-valores no pueden estar vacíos.
+    *   El nombre de la VI debe ser único dentro del estudio.
+    *   Los sub-valores deben ser únicos *dentro* de su respectiva VI.
+    *   **Importante:** Un sub-valor **no puede** llamarse "Nulo" (ni "nulo", "NULO", etc.), ya que "Nulo" es una palabra clave reservada para el nombrado de archivos (Ver Sección [4.2.4](#424-nombrar-archivos-y-el-valor-nulo)).
+3.  **Configurar Comportamiento de VI (Solo en modo Creación):**
+    *   **¿Multiple?**:
+        *   **Si está marcado**: Indica que un mismo archivo o intento puede estar asociado con MÁS DE UN sub-valor de esta VI simultáneamente. Esto es útil para VIs donde las condiciones pueden combinarse (ej: VI "Equipamiento" con sub-valores "Zapatillas", "Canilleras"; un participante podría usar ambos). Los nombres de archivo reflejarán esta multiplicidad (ej: `P01 Zapatillas-Canilleras ...`).
+        *   **Si NO está marcado**: Indica que un archivo o intento solo puede estar asociado con UN ÚNICO sub-valor de esta VI. Si un participante tiene un archivo con el sub-valor "PesoObeso" para la VI "PesoCorporal", todos los demás archivos de ese participante para esa misma prueba deben usar "PesoObeso" o "Nulo" (si la VI no es obligatoria para ese archivo específico). El sistema validará esto al agregar archivos.
+    *   **¿Obligatorio?**:
+        *   Esta casilla **solo aparece si se marca "¿Multiple?"** para la VI.
+        *   **Si está marcado (VI Múltiple y Obligatoria)**: Se debe especificar AL MENOS UN sub-valor de esta VI en el nombre del archivo. NO se permite "Nulo" para esta VI. Ej: VI "Equipamiento" (Múltiple, Obligatoria). Archivo `P01 Zapatillas ...` es válido. `P01 Nulo ...` NO sería válido para la posición de "Equipamiento".
+        *   **Si NO está marcado (VI Múltiple pero No Obligatoria)**: Se PUEDE usar "Nulo" para esta VI si no aplica ningún sub-valor. Ej: VI "Equipamiento" (Múltiple, No Obligatoria). Archivo `P01 Nulo ...` es válido para "Equipamiento", siempre que al menos otra VI en el nombre del archivo tenga un sub-valor no-Nulo.
+4.  **Eliminar (Solo en modo Creación):**
+    *   Usar el icono `🗑️` para eliminar una VI completa o un sub-valor específico.
+5.  **Orden de las VIs:**
+    *   El orden en que se definen las VIs (de arriba hacia abajo) es **crucial**. Este orden determina la secuencia en la que los sub-valores correspondientes deben aparecer en los nombres de los archivos de datos. (Ver Sección [4.2.4](#424-nombrar-archivos-y-el-valor-nulo)).
+
+#### 4.2.3. Modo Edición
+Al editar un estudio existente:
+*   **Se puede** cambiar:
+    *   Nombre del Estudio.
+    *   Cantidad de Participantes.
+    *   Cantidad de Intento(s) de Prueba.
+    *   Nombres de las VIs.
+*   **No se puede** cambiar:
+    *   Añadir o eliminar VIs.
+    *   Añadir o eliminar sub-valores.
+    *   Las opciones "¿Multiple?" o "¿Obligatorio?" de las VIs.
+*   **Validaciones Importantes en Edición:**
+    *   No se podrá reducir la "Cantidad de Participantes" por debajo del número de participantes distintos ya presentes en los archivos del estudio.
+    *   No se podrá reducir la "Cantidad de Intento(s) de Prueba" por debajo del número máximo de intentos que cualquier participante ya tenga registrado para alguna condición.
+
+#### 4.2.4. Nombrar Archivos y el Valor "Nulo"
+El formato de nombre de archivo es fundamental para que KineViz interprete correctamente los datos.
+**Formato General:**
+`ID_Participante [SubValor_VI1] [SubValor_VI2] ... [SubValor_VIn] NN.ext`
+
+*   `ID_Participante`: Identificador único del participante. Debe comenzar con una o más letras seguidas de uno o más números (ej: `P01`, `Sujeto007`, `Participante1`). No debe contener espacios.
+*   `[SubValor_VI1]`: Un sub-valor válido de la **primera** VI definida en el diálogo de estudio.
+*   `[SubValor_VI2]`: Un sub-valor válido de la **segunda** VI definida.
+*   ... y así sucesivamente para todas las VIs definidas, respetando el orden.
+*   `NN`: Número del intento (ej: `01`, `02`, `3`).
+*   `.ext`: Extensión del archivo (ej: `.txt`, `.csv`).
+    *Nota: El sufijo `_TipoDeDato` (ej: `_Cinematica`) es añadido por KineViz durante el procesamiento interno y no debe incluirse en el nombre del archivo original.*
+
+**Ejemplo con VIs: "TipoSalto" (CMJ, SJ), "Condicion" (PRE, POST):**
+*   `P01 CMJ PRE 01.txt` (Válido)
+*   `Sujeto02 SJ POST 03.txt` (Válido)
+
+**Uso de "Nulo":**
+*   Si un archivo no corresponde a un sub-valor específico para una VI en particular (y esa VI no es "Obligatoria" si es "Múltiple"), se puede usar la palabra clave `Nulo` (exactamente así, con 'N' mayúscula) en la posición correspondiente de esa VI en el nombre del archivo.
+*   **Regla Fundamental:** El nombre del archivo debe tener **todas** las posiciones de VI representadas (ya sea con un sub-valor válido o con `Nulo`).
+*   **Regla Adicional:** Al menos **una** posición de VI en el nombre del archivo debe tener un sub-valor válido (es decir, el nombre no puede consistir solo en `ID_Participante Nulo Nulo ... NN.ext`).
+
+**Ejemplos con "Nulo" (VIs: "TipoSalto", "Condicion"):**
+*   `Sujeto02 SJ Nulo 03.txt` (Válido - Sin condición específica para la segunda VI, "Condicion")
+*   `Participante03 Nulo PRE 01.txt` (Válido - Sin tipo de salto específico para la primera VI, "TipoSalto")
+*   `P04 CMJ 02.txt` (INVÁLIDO - Falta posición para la segunda VI, "Condicion")
+*   `Sujeto05 Nulo Nulo 01.txt` (INVÁLIDO - Debe tener al menos un sub-valor que no sea "Nulo")
+
+#### 4.2.5. Botones del Diálogo
+*   **Guardar**: Valida los datos ingresados y guarda el estudio (o los cambios si está en modo edición).
+*   **Cancelar**: Cierra el diálogo sin guardar cambios.
+
+### 4.3. Vista de Estudio
+Esta vista se muestra al seleccionar "Ver" un estudio desde la Ventana Principal. Permite gestionar los archivos y acceder a los módulos de análisis para ese estudio específico.
+
+#### 4.3.1. Barra de Acciones Superior
+*   **<< Volver a Estudios**: Regresa a la Ventana Principal (lista de estudios).
+*   **Agregar Archivo(s)**: Abre el Diálogo "Agregar Archivos" (Ver Sección [4.4](#44-diálogo-agregar-archivos)) para incorporar nuevos datos al estudio.
+*   **Abrir Carpeta de Estudio**: Abre la carpeta del estudio en el explorador de archivos de su sistema operativo.
+*   **Gestionar Alias de Sub-valores**: Abre el Diálogo "Gestionar Alias" (Ver Sección [4.5](#45-diálogo-gestionar-alias-de-sub-valores)).
+*   **Análisis Discreto**: Abre la Vista de Análisis Discreto (Ver Sección [4.6.1](#461-vista-de-tablas-de-resumen-discreteanalysisview)).
+*   **Análisis Continuo**: Abre el Gestor de Análisis Continuos (Ver Sección [4.7.2](#472-diálogo-gestor-de-análisis-continuos-continuousanalysismanagerdialog)).
+
+#### 4.3.2. Panel de Detalles del Estudio
+Muestra información clave del estudio actual:
+*   **Nombre del Estudio**
+*   **Cantidad de Participantes** (definida en la configuración del estudio)
+*   **Cantidad de Intento(s) de Prueba** (definida en la configuración del estudio)
+*   **Variable(s) Independientes (VIs)**: Lista los nombres de las VIs definidas.
+    *   **Botón `ℹ️` (junto a VIs)**: Al hacer clic, muestra un mensaje emergente con:
+        *   Cada VI y sus sub-valores definidos (incluyendo alias si existen).
+        *   El modo de manejo de sub-valores para cada VI (ej: "Múltiple y Obligatorio", "No Múltiple").
+*   **Alias Asignados**: Muestra una lista de los sub-valores definidos para el estudio y sus correspondientes alias (si han sido asignados).
+
+#### 4.3.3. Navegador de Archivos
+Componente principal para visualizar y gestionar los archivos del estudio.
+*   **Lista de Archivos**: Tabla con información de cada archivo.
+    *   **Columnas**: "Participante", "Nombre Archivo", "Tipo" (Original/Procesado), "Tipo de Dato" (Cinematica, Cinetica, EMG, etc., o N/A para originales).
+*   **Controles de Búsqueda y Filtro**:
+    *   **Búsqueda por Nombre**: Campo para filtrar archivos por texto en el nombre del archivo o participante.
+    *   **Filtro por Tipo**: Menú desplegable para filtrar por "Original" o "Procesado".
+    *   **Filtro por Tipo de Dato**: Menú desplegable para filtrar por el tipo de dato procesado.
+    *   **Limpiar Filtros**: Restablece todos los filtros.
+*   **Paginación**: Controles para navegar entre páginas de archivos.
+*   **Acciones sobre Archivos (botones en la parte inferior, se activan al seleccionar archivos)**:
+    *   **Ver Archivo Seleccionado**: Abre el archivo seleccionado (solo si se selecciona uno) con la aplicación predeterminada del sistema.
+    *   **Eliminar Archivo(s) Seleccionado(s)**: Elimina permanentemente los archivos seleccionados del estudio (requiere confirmación).
+    *   **Eliminar Todos los Archivos del Estudio**: Elimina permanentemente TODOS los archivos (originales y procesados) de este estudio (requiere doble confirmación). ¡Esta acción es irreversible!
+
+#### 4.3.4. Formato de Nombres de Archivo
+Es crucial que los nombres de los archivos originales sigan el formato especificado en la Sección [4.2.4](#424-nombrar-archivos-y-el-valor-nulo) para que KineViz pueda procesarlos e interpretarlos correctamente.
+
+### 4.4. Diálogo: Agregar Archivos
+Este diálogo se abre desde la Vista de Estudio para añadir nuevos archivos de datos (formato `.txt` o `.csv`).
+
+*   **Selección de Archivos**: Permite navegar por el sistema de archivos y seleccionar uno o múltiples archivos.
+*   **Validaciones al Agregar**:
+    1.  **Formato de Nombre**: Verifica que cada nombre de archivo cumpla con la estructura `ID_Participante [SubValor_VI1] ... NN.ext` y que los sub-valores sean válidos para las VIs definidas en el estudio (Ver Sección [4.2.4](#424-nombrar-archivos-y-el-valor-nulo)).
+    2.  **Límites del Estudio**: Comprueba que la adición de los nuevos archivos no exceda la "Cantidad de Participantes" ni la "Cantidad de Intento(s) de Prueba" configuradas para el estudio.
+    3.  **Reglas de VIs**:
+        *   **Descriptor Fijo**: Si una VI está configurada como "No Múltiple", valida que todos los archivos de un mismo participante usen el mismo sub-valor (o "Nulo") para esa VI.
+        *   **Descriptores Obligatorios**: Si una VI es "Múltiple" y "Obligatoria", valida que los archivos de cada participante eventualmente cubran todos los sub-valores definidos para esa VI.
+*   **Procesamiento**: Si todas las validaciones son exitosas, KineViz:
+    *   Copia los archivos originales a una subcarpeta `/OG/` dentro de la carpeta del participante.
+    *   Procesa cada archivo para identificar el tipo de dato (Cinemática, Cinética, EMG), normalizar su estructura (ej: añadir columna de tiempo), y lo guarda en la subcarpeta correspondiente al tipo de dato.
+*   **Retroalimentación**: Muestra mensajes de éxito o error durante el proceso.
+
+### 4.5. Diálogo: Gestionar Alias de Sub-valores
+Permite asignar nombres más descriptivos o amigables (alias) a los sub-valores (descriptores) de las VIs. Estos alias se utilizarán en leyendas de gráficos, tablas de resultados y otras partes de la UI para mejorar la legibilidad. Los alias son específicos para cada estudio.
+
+*   **Interfaz**: Muestra una lista de todos los sub-valores únicos definidos en las VIs del estudio.
+*   **Asignación**: Para cada sub-valor, se puede ingresar un alias en un campo de texto.
+*   **Guardado**: Los alias se guardan en la base de datos asociados al estudio.
+*   **Impacto**: Al definir un alias (ej: "CMJ" -> "Salto Contra Movimiento"), KineViz usará "Salto Contra Movimiento" en las visualizaciones en lugar de "CMJ".
+
+### 4.6. Análisis Discreto
+El análisis discreto se enfoca en comparar valores puntuales o estadísticos resumidos (ej: máximo, mínimo, promedio) entre diferentes grupos o condiciones.
+
+#### 4.6.1. Vista de Tablas de Resumen (`DiscreteAnalysisView`)
+Esta vista es el punto de partida para el análisis discreto.
+*   **Generar/Actualizar Tablas de Resumen**: Botón para que KineViz procese los archivos del estudio y genere (o actualice) tablas de resumen. Estas tablas contienen cálculos estadísticos básicos (máximo, mínimo, rango, promedio, etc.) para cada variable numérica en los archivos procesados, agrupados por tipo de dato (frecuencia) y por cada combinación única de sub-valores de las VIs. Se guardan internamente como `.csv` y se exportan como `.xlsx`.
+*   **Lista de Tablas Generadas**: Muestra las tablas `.xlsx` disponibles.
+    *   Columnas: "Nombre Archivo", "Cálculo", "Sub-valores" (mostrando la combinación de VIs y sus sub-valores/alias), "Fecha".
+*   **Filtros y Búsqueda**:
+    *   Filtro por Tipo de Dato (frecuencia).
+    *   Filtro por Cálculo (ej: Maximo, Minimo).
+    *   Filtro por 1 o 2 Variables Independientes (VIs) y sus sub-valores.
+    *   Búsqueda por palabra clave.
+*   **Acciones**:
+    *   Abrir tabla `.xlsx`.
+    *   Eliminar tabla.
+    *   **Abrir Gestor de Análisis Discretos**: Navega al diálogo para crear y gestionar análisis más específicos (Ver Sección [4.6.3](#463-diálogo-gestor-de-análisis-individuales-individualanalysismanagerdialog)).
+
+#### 4.6.2. Diálogo: Configurar Análisis Discretos (`ConfigureIndividualAnalysisDialog`)
+Permite definir los parámetros para un análisis estadístico comparativo específico.
+*   **Nombre del Análisis**: Un nombre descriptivo para guardar y identificar el análisis.
+*   **Tipo de Dato (Frecuencia)**: Actualmente fijo a "Cinematica".
+*   **Cálculo**: Seleccionar el estadístico de las tablas de resumen a analizar (ej: Maximo, Minimo, Rango).
+*   **Modo de Agrupación de VIs**:
+    *   **1VI (Efecto Principal)**: Para comparar niveles de una única VI, promediando o agrupando sobre las demás.
+    *   **2VIs (Efecto Simple o Interacción Parcial)**: Para comparar niveles de una VI mientras se mantiene constante un nivel de otra VI.
+*   **Selección de Grupos**: Basado en el modo anterior, permite seleccionar los grupos específicos (combinaciones de sub-valores de VIs) que se desean comparar.
+*   **Variable/Columna a Analizar**: Seleccionar la columna numérica específica de las tablas de resumen que contiene los datos a comparar.
+*   **Supuestos Estadísticos**:
+    *   **Paramétrico/No Paramétrico**: Elegir el tipo de prueba estadística.
+    *   **Pareado/No Pareado**: Indicar si las muestras son dependientes o independientes.
+*   **Guardar Configuración**: Guarda la configuración y ejecuta el análisis.
+
+#### 4.6.3. Diálogo: Gestor de Análisis Disretos (`IndividualAnalysisManagerDialog`)
+Lista y permite gestionar los análisis que han sido configurados y guardados.
+*   **Lista de Análisis Guardados**:
+    *   Columnas: "Nombre Análisis", "Variable Analizada", "Grupos Comparados", "Valores Clave (ej: p-valor)", "Fecha".
+*   **Filtros y Búsqueda**: Por palabra clave, VIs y sus sub-valores.
+*   **Acciones por Análisis**:
+    *   **Ver Gráfico Estático (PNG)**: Muestra el boxplot o gráfico comparativo generado.
+    *   **Ver Gráfico Interactivo (HTML)**: Abre el gráfico interactivo (si se generó) en un navegador.
+    *   **Ver Configuración**: Exporta los detalles completos del análisis (incluyendo parámetros, supuestos y archivos contribuyentes por grupo) a un archivo `.txt` y lo abre.
+    *   **Abrir Carpeta de Resultados**: Abre la carpeta donde se guardaron los archivos del análisis (JSON de configuración, gráficos).
+    *   **Eliminar Análisis**: Borra el análisis guardado y sus archivos.
+*   **Botón "Crear Nuevo Análisis"**: Abre el diálogo de configuración (Ver Sección [4.6.2](#462-diálogo-configurar-análisis-individual-configureindividualanalysisdialog)).
+
+### 4.7. Análisis Continuo (SPM)
+El análisis continuo, utilizando SPM (Statistical Parametric Mapping), permite comparar series temporales completas (curvas) entre grupos, en lugar de solo valores discretos.
+
+#### 4.7.1. Diálogo: Configurar Análisis Continuo (`ContinuousAnalysisConfigDialog`)
+Define los parámetros para un análisis SPM.
+*   **Nombre del Análisis**: Nombre descriptivo.
+*   **Tipo de Dato (Frecuencia)**: Actualmente fijo a "Cinematica".
+*   **Variable/Columna a Analizar**: Seleccionar la columna de datos de serie temporal (ej: "LAnkleAngles_X"). Los datos se normalizarán a 101 puntos (0-100% del ciclo).
+*   **Modo de Agrupación de VIs y Selección de Grupos**: Similar al análisis discreto (1VI o 2VIs) para definir los grupos a comparar.
+*   **Opciones de Visualización y Anotación**: Configurar cómo se mostrarán las curvas promedio (DE, EEM, IC) y si se anotarán los clusters SPM significativos.
+*   **Guardar Configuración**: Guarda la configuración y ejecuta el análisis SPM.
+
+#### 4.7.2. Diálogo: Gestor de Análisis Continuos (`ContinuousAnalysisManagerDialog`)
+Lista y gestiona los análisis SPM guardados.
+*   **Lista de Análisis Guardados**:
+    *   Columnas: "Nombre Análisis", "Variable Analizada", "Grupos Comparados", "Fecha".
+*   **Filtros y Búsqueda**: Por palabra clave, VIs y sus sub-valores.
+*   **Acciones por Análisis**:
+    *   **Ver Gráfico SPM (PNG/HTML)**: Muestra el gráfico con las curvas promedio y la curva del estadístico SPM con umbrales y clusters.
+    *   **Ver Configuración**: Exporta los detalles del análisis (incluyendo parámetros y archivos contribuyentes por grupo) a un archivo `.txt` y lo abre.
+    *   **Abrir Carpeta de Resultados**: Abre la carpeta donde se guardaron los archivos del análisis (JSON de configuración, resultados SPM, gráficos).
+    *   **Eliminar Análisis**: Borra el análisis guardado y sus archivos.
+*   **Botón "Crear Nuevo Análisis Continuo"**: Abre el diálogo de configuración (Ver Sección [4.7.1](#471-diálogo-configurar-análisis-continuo-continuousanalysisconfigdialog)).
+
+### 4.8. Diálogo: Configuración de la Aplicación
+Accesible desde la Ventana Principal (icono ⚙️), permite personalizar el comportamiento de KineViz. Los cambios se guardan en `config.ini`.
+Organizado en pestañas:
+*   **Pestaña General**:
+    *   Estudios por página.
+    *   Archivos por página (en Vista de Estudio).
+    *   Tamaño de fuente (escalado).
+    *   Tema (Claro/Oscuro).
+    *   Habilitar tooltips de ayuda al pasar el mouse.
+*   **Pestaña Copias de Seguridad**:
+    *   Habilitar/deshabilitar copias de seguridad automáticas.
+    *   Número máximo de copias automáticas a retener.
+    *   Número máximo de copias manuales a retener.
+    *   Tiempo de enfriamiento para copias automáticas (segundos).
+    *   Botón "Gestionar Copias de Seguridad" (abre el diálogo descrito en [4.9](#49-diálogo-gestión-de-copias-de-seguridad-y-restauración)).
+*   **Pestaña Deshacer**:
+    *   Habilitar/deshabilitar la función "Deshacer Eliminación".
+    *   Tiempo de expiración de la caché de deshacer (segundos).
+*   **Pestaña Avanzado**:
+    *   **Mostrar opciones avanzadas de copias de seguridad**: Permite acceder a funciones como "Limpiar Archivos .bak Residuales". Esta opción debe estar activada para ver el botón de limpieza.
+    *   **Limpiar Archivos .bak Residuales**: (Visible si la opción anterior está activada) Elimina archivos y carpetas temporales con extensión `.bak` que se crean en la raíz del proyecto como medida de seguridad durante las restauraciones. Es seguro eliminarlos si la aplicación funciona correctamente.
+    *   **Habilitar 'Deshacer Eliminación' (Experimental)**: Activa o desactiva la función para revertir la última operación de eliminación soportada. La opción "Deshacer" aparecerá en el menú "Editar" de la ventana principal si está habilitada y hay una operación para deshacer. La información para deshacer es temporal.
+    *   **Timeout caché deshacer (seg)**: (Visible si 'Deshacer Eliminación' está habilitado) Configura el tiempo en segundos para que la caché de "Deshacer Eliminación" se considere expirada. Un valor de 0 deshabilita el chequeo por timeout.
+    *   **Mostrar opción de Restauración de Fábrica (Avanzado)**: Controla la visibilidad del botón "Restaurar KineViz a Estado de Fábrica". Esta opción está oculta por defecto debido a la naturaleza destructiva de la restauración de fábrica.
+    *   **Restablecer Ajustes a Predeterminados**: Revierte todas las configuraciones de la aplicación (las opciones en todas las pestañas de esta ventana de Configuración) a sus valores originales de fábrica. Esto NO afecta sus estudios, archivos, análisis ni copias de seguridad guardadas. Los cambios se aplican inmediatamente y el diálogo se cierra.
+    *   **Restaurar KineViz a Estado de Fábrica**: (Visible si la opción "Mostrar opción de Restauración de Fábrica" está activada)
+        *   **¡ADVERTENCIA! ESTA ACCIÓN ES IRREVERSIBLE.**
+        *   Elimina TODA la información de la aplicación, incluyendo:
+            *   TODOS los estudios y sus archivos asociados.
+            *   TODOS los análisis guardados (discretos y continuos).
+            *   La base de datos completa de KineViz.
+            *   Todas las configuraciones personalizadas se revertirán a los valores iniciales.
+        *   **Copia de Respaldo Previa**: Si la opción "Habilitar copias de respaldo (pre-restauración)" (ubicada en la pestaña "Copias de Seguridad") está activada, KineViz intentará crear una copia de seguridad de tipo 'Respaldo' del estado actual del sistema *antes* de proceder con la restauración de fábrica. Si esta copia de respaldo falla, se le preguntará si desea continuar con la restauración de fábrica de todas formas.
+        *   La aplicación generalmente requiere un reinicio después de esta operación. Úsela con extrema precaución y solo si es absolutamente necesario.
+
+### 4.9. Diálogo: Gestión de Copias de Seguridad y Restauración
+Permite administrar las copias de seguridad del sistema.
+*   **Lista de Copias de Seguridad**: Muestra copias automáticas y manuales, con tipo, fecha y alias (para manuales). Paginada.
+*   **Acciones**:
+    *   **Crear Copia Manual**: Inicia una copia de seguridad manual. Permite asignar un alias.
+    *   **Restaurar Seleccionada**: Restaura el sistema completo (base de datos, configuración, archivos de estudios) desde la copia ZIP seleccionada. Requiere doble confirmación.
+    *   **Asignar Alias a Manual**: Permite nombrar o renombrar una copia manual existente.
+    *   **Eliminar Manual Seleccionada**: Elimina una copia manual (requiere confirmación).
+    *   **Cancelar**.
+
+### 4.10. Funcionalidad "Deshacer Eliminación"
+Permite revertir la última operación de eliminación soportada (ej: eliminar un estudio, un lote de archivos, un resultado de análisis).
+*   **Acceso**: Menú "Editar" -> "Deshacer" en la Ventana Principal. Se activa solo si hay una operación de deshacer disponible.
+*   **Mecanismo**: Antes de eliminar, KineViz guarda temporalmente los elementos y el estado de la base de datos en una caché. "Deshacer" restaura desde esta caché.
+*   **Limitaciones**:
+    *   Solo para la última operación de eliminación.
+    *   La caché es temporal: se borra si se realiza otra operación significativa, si expira un temporizador (configurable en [4.8](#48-diálogo-configuración-de-la-aplicación)), o al cerrar la aplicación.
+    *   Debe estar habilitada en la Configuración de la Aplicación.
+
+---
+
+## 5. Notas Importantes y Consejos
+
+### 5.1. Formato de Archivos de Entrada
+*   KineViz acepta archivos de datos crudos en formato `.txt` o `.csv`.
+*   Se espera que estos archivos contengan datos tabulares, donde la primera fila puede ser una cabecera.
+*   El separador de columnas (coma, tabulador, espacio) suele detectarse, pero la consistencia es clave.
+
+### 5.2. Manejo del Valor "Nulo"
+*   "Nulo" es una palabra clave (con 'N' mayúscula) usada en los nombres de archivo para indicar que una VI particular no aplica a ese archivo específico.
+*   No se puede nombrar un sub-valor como "Nulo" al definir VIs.
+*   Un nombre de archivo debe tener al menos un sub-valor que no sea "Nulo".
+*   Ver Sección [4.2.4](#424-nombrar-archivos-y-el-valor-nulo) para más detalles.
+
+### 5.3. Importancia del Orden de las VIs
+*   El orden en que se definen las Variables Independientes en el Diálogo "Crear/Editar Estudio" (de arriba hacia abajo) dicta el orden en que sus correspondientes sub-valores deben aparecer en los nombres de los archivos. Este orden es fundamental para la correcta interpretación de los datos por parte de KineViz.
+
+---
+
+## 6. Glosario
+*   **VI (Variable Independiente)**: Factor o condición que se manipula o categoriza en un estudio.
+*   **Sub-valor (Descriptor)**: Nivel o categoría específica de una VI.
+*   **Alias**: Nombre alternativo o más descriptivo asignado a un sub-valor.
+*   **SPM (Statistical Parametric Mapping)**: Técnica estadística para analizar datos continuos como series temporales, identificando diferencias significativas a lo largo del tiempo.
+*   **Cinemática**: Estudio del movimiento sin considerar las fuerzas que lo causan (ej: ángulos articulares, velocidades).
+*   **Cinética**: Estudio de las fuerzas que causan el movimiento (ej: momentos articulares, fuerzas de reacción del suelo).
+*   **EMG (Electromiografía)**: Técnica para evaluar y registrar la actividad eléctrica producida por los músculos esqueléticos.
+*   **CSV (Comma-Separated Values)**: Formato de archivo de texto plano para datos tabulares.
+
+---
+
+## 7. Solución de Problemas Comunes (FAQ)
+*   **P: KineViz no reconoce mis archivos al intentar agregarlos.**
+    *   R: Verifique que los nombres de archivo sigan estrictamente el formato especificado (Ver Sección [4.2.4](#424-nombrar-archivos-y-el-valor-nulo)), incluyendo el ID del participante, el orden y los valores de los sub-valores de las VIs, y el número de intento. Asegúrese de que los sub-valores usados en los nombres de archivo coincidan exactamente con los definidos en el estudio (sensible a mayúsculas/minúsculas).
+*   **P: No puedo editar las VIs o sub-valores de un estudio existente.**
+    *   R: Esto es por diseño. Una vez que un estudio tiene datos o análisis asociados, cambiar la estructura fundamental de las VIs podría invalidar esos datos. Para una estructura de VIs diferente, se recomienda crear un nuevo estudio. Sí puede editar los nombres de las VIs.
+*   **P: El botón "Deshacer" está desactivado.**
+    *   R: La función "Deshacer" solo está disponible inmediatamente después de una operación de eliminación soportada y si está habilitada en la configuración. Si realizó otra acción, cerró la aplicación, o pasó el tiempo de expiración de la caché, la opción se desactiva.
+
+---
+Fin del Manual de Usuario KineViz.
