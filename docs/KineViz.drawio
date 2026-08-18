@@ -1,0 +1,46 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15" version="27.1.6">
+  <diagram name="Modelo Relacional" id="36Sv7Xx4HeZgxdj5Benl">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="xZDXBR00n-reUGbkrcgX-1" value="&lt;b&gt;Estudio&lt;/b&gt;" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="55" width="160" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="xZDXBR00n-reUGbkrcgX-2" value="TEXT id_estudio &lt;b&gt;PK&lt;/b&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="xZDXBR00n-reUGbkrcgX-1">
+          <mxGeometry y="30" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="xZDXBR00n-reUGbkrcgX-3" value="nombre_estudio &lt;b&gt;UK&lt;/b&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="xZDXBR00n-reUGbkrcgX-1">
+          <mxGeometry y="60" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="xZDXBR00n-reUGbkrcgX-4" value="num_participantes" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="xZDXBR00n-reUGbkrcgX-1">
+          <mxGeometry y="90" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="GocwTrwZ1-8nfjg0OqJb-4" value="cantidad_intentos_prueba" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="xZDXBR00n-reUGbkrcgX-1">
+          <mxGeometry y="120" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="GocwTrwZ1-8nfjg0OqJb-3" value="variable_independiente" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="xZDXBR00n-reUGbkrcgX-1">
+          <mxGeometry y="150" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="GocwTrwZ1-8nfjg0OqJb-7" value="alias" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="xZDXBR00n-reUGbkrcgX-1">
+          <mxGeometry y="180" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="GocwTrwZ1-8nfjg0OqJb-8" value="is_pinned" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="xZDXBR00n-reUGbkrcgX-1">
+          <mxGeometry y="210" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="GocwTrwZ1-8nfjg0OqJb-9" value="comentario" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="xZDXBR00n-reUGbkrcgX-1">
+          <mxGeometry y="240" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="GocwTrwZ1-8nfjg0OqJb-10" value="Variable Independiente (JSON)&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;nombre&lt;/div&gt;&lt;div&gt;sub_valores&lt;/div&gt;&lt;div&gt;multiple&lt;/div&gt;&lt;div&gt;obligatorio&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;Ejemplo de estructura JSON:&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;[{\&quot;name\&quot;: \&quot;TipoSalto\&quot;, \&quot;sub_valor\&quot;: [\&quot;CMJ\&quot;, \&quot;SJ\&quot;]}, ...]&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;&amp;nbsp;&lt;/div&gt;&lt;div&gt;Usado por FileService y AnalysisService para validación y agrupación.&lt;/div&gt;&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" vertex="1" parent="1">
+          <mxGeometry x="-250" y="50" width="230" height="225" as="geometry" />
+        </mxCell>
+        <mxCell id="GocwTrwZ1-8nfjg0OqJb-12" value="Alias (JSON)&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;&quot;&gt;sub_valores_og&lt;/span&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;&quot;&gt;valor_asignado&lt;/span&gt;&lt;span style=&quot;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;&quot;&gt;&lt;div&gt;Ejemplo de estructura JSON:&lt;/div&gt;&lt;div&gt;{\&quot;CMJ\&quot;: \&quot;Salto Contra Movimiento\&quot;, \&quot;PRE\&quot;: \&quot;Antes\&quot;}&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;&amp;nbsp;&lt;/div&gt;&lt;div&gt;Usado por UI para mostrar nombres descriptivos.&lt;/div&gt;&lt;/span&gt;&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;align=center;" vertex="1" parent="1">
+          <mxGeometry x="-250" y="325" width="230" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="GocwTrwZ1-8nfjg0OqJb-17" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Estructura de Carpetas:&quot;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp;estudios/[nombre_estudio]/&lt;/div&gt;&lt;div&gt;.../[ID_PARTICIPANTE]/OG/&quot;&lt;/div&gt;&lt;div&gt;.../[ID_PARTICIPANTE]/[TIPO_DATO]/&quot;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &quot;- .../Analisis Discreto/&quot;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &quot;- .../Analisis Continuo/&quot;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;&lt;/div&gt;&lt;div&gt;&amp;nbsp;&amp;nbsp; &amp;nbsp; &quot;Nombres de Archivo:&quot;&lt;/div&gt;&lt;div&gt;P01_CMJ_PRE_01.txt&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;align=center;" vertex="1" parent="1">
+          <mxGeometry x="260" y="50" width="254" height="260" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
