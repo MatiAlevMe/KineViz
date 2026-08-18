@@ -272,6 +272,6 @@ KineViz está programado principalmente en **Python** y hace uso de diversas bib
 
 ## Licencia
 
-Este proyecto está bajo la **GNU Affero General Public License v3.0 (AGPL-3.0)**.
+Este proyecto está bajo la [GNU Affero General Public License v3.0 (AGPL-3.0)](./LICENSE).
 
-Para más información o consultas, contacta con el desarrollador en alevropulos@gmail.com
+Ver el archivo `LICENSE` para los términos completos. Para más información o consultas, contacta con el desarrollador en alevropulos@gmail.com
