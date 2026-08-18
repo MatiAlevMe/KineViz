@@ -261,7 +261,7 @@ KineViz está programado principalmente en **Python** y hace uso de diversas bib
 
 ---
 
-## 🔗 Enlaces de interés
+## Enlaces de interés
 
 - 🎬 Demo: https://youtu.be/jRT3wTW1zlA
 
