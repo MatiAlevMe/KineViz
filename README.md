@@ -273,7 +273,7 @@ KineViz está programado principalmente en **Python** y hace uso de diversas bib
 
 ## 📄 Licencia
 
-Este proyecto es software libre y de código abierto, distribuido bajo la licencia [GNU Affero General Public License v3.0 (AGPL-3.0)](./LICENSE).
+Este proyecto es software libre y de código abierto, distribuido bajo la licencia [GNU AGPL v3.0](./LICENSE).
 
 - **Derechos:** Puedes alojarlo en tus propios servidores, usarlo, modificarlo y redistribuirlo.
 - **Condición clave:** Si ejecutas una versión modificada como un servicio en red, debes liberar el código fuente de dicha versión bajo la misma licencia AGPL-3.0. Nadie puede convertir este software en un producto cerrado o propietario.
