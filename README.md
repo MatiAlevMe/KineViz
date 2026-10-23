@@ -263,10 +263,10 @@ KineViz está programado principalmente en **Python** y hace uso de diversas bib
 
 ## Enlaces de interés
 
-- 🎬 Demo: https://youtu.be/jRT3wTW1zlA
-- 📊 Presentación Final: https://canva.link/xkpewxmikey7dao
-- 📄 [Informe Final](https://docs.google.com/document/d/1G5qcuTXECFHE15CqAeGeT_CAQTQaRDde/edit?usp=drive_link&ouid=101586114750810266259&rtpof=true&sd=true)
+- 🎬 [Demo](https://youtu.be/jRT3wTW1zlA)
 - 📖 [Manual de Usuario](kineviz/docs/help/manual_usuario.txt)
+- 📊 [Presentación Final](https://canva.link/xkpewxmikey7dao)
+- 📄 [Informe Final](https://docs.google.com/document/d/1G5qcuTXECFHE15CqAeGeT_CAQTQaRDde/edit?usp=drive_link&ouid=101586114750810266259&rtpof=true&sd=true)
 - 📋 [Requerimientos](https://docs.google.com/document/d/1hhKEwGBttiY70ydp4qup5L_hvJ7hNZkulLESvlxS6Gc/edit?usp=drive_link)
 
 ---
